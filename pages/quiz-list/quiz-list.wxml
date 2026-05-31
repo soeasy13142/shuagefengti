@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="toolbar">
+    <view class="toolbar-left">
+      <text class="paper-count">共 {{papers.length}} 套题</text>
+    </view>
+    <view class="toolbar-right">
+      <view class="tool-link" bindtap="goToRecords">答题记录</view>
+      <view class="tool-link" bindtap="goToWrongQuestions">错题本</view>
+    </view>
+  </view>
+
+  <view class="paper-list" wx:if="{{papers.length > 0}}">
+    <view
+      class="paper-item"
+      wx:for="{{papers}}"
+      wx:key="id"
+    >
+      <view class="paper-info" data-id="{{item.id}}" bindtap="onTapPaper">
+        <text class="paper-name">{{item.name}}</text>
+        <view class="paper-meta">
+          <text class="paper-count-text">{{item.questionCount}} 题</text>
+          <text class="paper-time">{{item.importTime}}</text>
+        </view>
+      </view>
+      <view class="paper-delete" data-id="{{item.id}}" catchtap="onDeletePaper">
+        <text class="delete-text">删除</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <text class="empty-icon">📂</text>
+    <text class="empty-text">还没有导入任何试题</text>
+    <text class="empty-hint">点击下方按钮导入 .md 文件</text>
+  </view>
+
+  <view class="fab" bindtap="onImport">
+    <text class="fab-text">+</text>
+  </view>
+</view>
