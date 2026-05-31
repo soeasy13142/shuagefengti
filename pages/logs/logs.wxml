@@ -1,0 +1,8 @@
+<view class="container">
+  <text class="title">操作日志</text>
+  <view class="log-list">
+    <view class="log-item" wx:for="{{logs}}" wx:key="index">
+      <text>{{item}}</text>
+    </view>
+  </view>
+</view>

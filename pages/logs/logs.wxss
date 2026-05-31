@@ -1,0 +1,27 @@
+.container {
+  padding: 40rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 30rpx;
+  display: block;
+}
+
+.log-list {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.log-item {
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #eee;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.log-item:last-child {
+  border-bottom: none;
+}

@@ -1,0 +1,8 @@
+<view class="container">
+  <view class="header">
+    <text class="title">欢迎使用我的小程序</text>
+  </view>
+  <view class="body">
+    <text class="desc">小程序已成功初始化，请开始开发吧！</text>
+  </view>
+</view>
