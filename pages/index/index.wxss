@@ -1,23 +1,69 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 40rpx;
+.app-header {
+  text-align: center;
+  padding: 60rpx 0 40rpx;
 }
 
-.header {
-  margin-bottom: 40rpx;
-}
-
-.title {
-  font-size: 44rpx;
+.app-title {
+  display: block;
+  font-size: 52rpx;
   font-weight: bold;
   color: #07c160;
 }
 
-.desc {
-  font-size: 30rpx;
-  color: #666;
+.app-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 12rpx;
+}
+
+.feature-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24rpx;
+}
+
+.feature-card {
+  width: calc(50% - 12rpx);
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 36rpx 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.card-disabled {
+  opacity: 0.5;
+}
+
+.feature-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+}
+
+.feature-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.feature-desc {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+}
+
+.feature-tag {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  font-size: 20rpx;
+  background: #f0f0f0;
+  color: #999;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
 }

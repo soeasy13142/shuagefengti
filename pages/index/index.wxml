@@ -1,8 +1,21 @@
 <view class="container">
-  <view class="header">
-    <text class="title">欢迎使用我的小程序</text>
+  <view class="app-header">
+    <text class="app-title">刷个冯题</text>
+    <text class="app-subtitle">你的学习工具箱</text>
   </view>
-  <view class="body">
-    <text class="desc">小程序已成功初始化，请开始开发吧！</text>
+  <view class="feature-grid">
+    <view
+      class="feature-card {{item.available ? '' : 'card-disabled'}}"
+      wx:for="{{features}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      data-available="{{item.available}}"
+      bindtap="onFeatureTap"
+    >
+      <text class="feature-icon">{{item.icon}}</text>
+      <text class="feature-name">{{item.name}}</text>
+      <text class="feature-desc">{{item.desc}}</text>
+      <text class="feature-tag" wx:if="{{!item.available}}">即将上线</text>
+    </view>
   </view>
 </view>

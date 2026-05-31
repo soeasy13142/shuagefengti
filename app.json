@@ -1,13 +1,19 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/quiz-list/quiz-list",
+    "pages/import-preview/import-preview",
+    "pages/quiz/quiz",
+    "pages/result/result",
+    "pages/records/records",
+    "pages/record-detail/record-detail",
+    "pages/wrong-questions/wrong-questions"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTitleText": "我的小程序",
-    "navigationBarTextStyle": "black",
-    "backgroundColor": "#f8f8f8"
+    "navigationBarBackgroundColor": "#07c160",
+    "navigationBarTitleText": "刷个冯题",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",

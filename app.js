@@ -1,14 +1,6 @@
 App({
   onLaunch() {
-    console.log('App Launch')
+    console.log('刷个冯题 启动');
   },
-  onShow() {
-    console.log('App Show')
-  },
-  onHide() {
-    console.log('App Hide')
-  },
-  globalData: {
-    userInfo: null
-  }
-})
+  globalData: {}
+});
