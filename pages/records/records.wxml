@@ -1,0 +1,28 @@
+<view class="container">
+  <view class="record-list" wx:if="{{records.length > 0}}">
+    <view
+      class="record-item"
+      wx:for="{{records}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onTapRecord"
+    >
+      <view class="record-header">
+        <text class="record-name">{{item.paperName}}</text>
+        <text class="mode-tag {{item.mode === 'practice' ? 'tag-green' : 'tag-blue'}}">
+          {{item.mode === 'practice' ? '练习' : '考试'}}
+        </text>
+      </view>
+      <view class="record-stats">
+        <text class="record-accuracy {{item.accuracy >= 60 ? 'text-green' : 'text-red'}}">{{item.accuracy}}%</text>
+        <text class="record-detail">{{item.correctCount}}/{{item.totalQuestions}} 题</text>
+        <text class="record-time">{{item.endTime}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <text class="empty-icon">📋</text>
+    <text class="empty-text">暂无答题记录</text>
+  </view>
+</view>

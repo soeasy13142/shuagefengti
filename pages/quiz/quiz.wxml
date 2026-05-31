@@ -1,0 +1,120 @@
+<view class="container">
+  <view class="mode-overlay" wx:if="{{!modeSelected}}">
+    <view class="mode-dialog">
+      <text class="mode-title">选择刷题模式</text>
+      <view class="mode-option" data-mode="practice" bindtap="selectMode">
+        <text class="mode-name">练习模式</text>
+        <text class="mode-desc">答完立刻显示对错和解析</text>
+      </view>
+      <view class="mode-option" data-mode="exam" bindtap="selectMode">
+        <text class="mode-name">考试模式</text>
+        <text class="mode-desc">全部答完后统一批改</text>
+      </view>
+    </view>
+  </view>
+
+  <block wx:if="{{modeSelected && currentQuestion}}">
+    <view class="top-bar">
+      <text class="question-num">第 {{currentIdx + 1}} / {{totalQuestions}} 题</text>
+      <text class="type-tag tag {{currentQuestion.type === 'single' ? 'tag-blue' : currentQuestion.type === 'multi' ? 'tag-purple' : currentQuestion.type === 'judge' ? 'tag-orange' : currentQuestion.type === 'fill' ? 'tag-green' : 'tag-gray'}}">
+        {{currentQuestion.type === 'single' ? '单选' : currentQuestion.type === 'multi' ? '多选' : currentQuestion.type === 'judge' ? '判断' : currentQuestion.type === 'fill' ? '填空' : '简答'}}
+      </text>
+    </view>
+
+    <view class="stem-area">
+      <text class="stem-text">{{currentQuestion.stem}}</text>
+    </view>
+
+    <view class="options-area" wx:if="{{currentQuestion.type === 'single'}}">
+      <view
+        class="option-item {{userAnswer === item ? 'option-selected' : ''}} {{answered && mode === 'practice' ? (item === currentQuestion.answer ? 'option-correct' : (userAnswer === item && item !== currentQuestion.answer ? 'option-wrong' : '')) : ''}}"
+        wx:for="{{currentQuestion.options}}"
+        wx:key="*this"
+        data-option="{{item}}"
+        bindtap="onSelectOption"
+      >
+        <text class="option-radio {{userAnswer === item ? 'radio-selected' : ''}}"></text>
+        <text class="option-text">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="options-area" wx:if="{{currentQuestion.type === 'multi'}}">
+      <view
+        class="option-item {{userAnswer && userAnswer.includes(item.charAt(0)) ? 'option-selected' : ''}}"
+        wx:for="{{currentQuestion.options}}"
+        wx:key="*this"
+        data-option="{{item.charAt(0)}}"
+        bindtap="onToggleMulti"
+      >
+        <text class="option-checkbox {{userAnswer && userAnswer.includes(item.charAt(0)) ? 'checkbox-selected' : ''}}"></text>
+        <text class="option-text">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="judge-area" wx:if="{{currentQuestion.type === 'judge'}}">
+      <view class="judge-btn {{userAnswer === 'A' ? 'judge-selected' : ''}}" data-value="A" bindtap="onJudge">
+        <text>对</text>
+      </view>
+      <view class="judge-btn {{userAnswer === 'B' ? 'judge-selected' : ''}}" data-value="B" bindtap="onJudge">
+        <text>错</text>
+      </view>
+    </view>
+
+    <view class="fill-area" wx:if="{{currentQuestion.type === 'fill'}}">
+      <input
+        class="fill-input"
+        placeholder="请输入答案"
+        value="{{userAnswer}}"
+        bindinput="onTextInput"
+        disabled="{{answered && mode === 'practice'}}"
+      />
+    </view>
+
+    <view class="essay-area" wx:if="{{currentQuestion.type === 'essay'}}">
+      <textarea
+        class="essay-input"
+        placeholder="请输入你的答案"
+        value="{{userAnswer}}"
+        bindinput="onTextInput"
+        disabled="{{answered && mode === 'practice'}}"
+        auto-height
+      />
+    </view>
+
+    <view class="explanation-area" wx:if="{{showExplanation && currentQuestion.explanation}}">
+      <text class="explanation-label">解析</text>
+      <text class="explanation-text">{{currentQuestion.explanation}}</text>
+    </view>
+
+    <view class="correct-answer-hint" wx:if="{{answered && mode === 'practice' && (currentQuestion.type === 'fill' || currentQuestion.type === 'essay')}}">
+      <text class="hint-label">参考答案：</text>
+      <text class="hint-value">{{currentQuestion.answer}}</text>
+    </view>
+
+    <view class="bottom-bar">
+      <button class="btn-nav" disabled="{{currentIdx === 0}}" bindtap="goPrev">上一题</button>
+      <button
+        class="btn-submit {{answered && mode === 'practice' ? 'btn-disabled' : ''}}"
+        disabled="{{answered && mode === 'practice'}}"
+        bindtap="onSubmit"
+      >
+        {{answered && mode === 'practice' ? '已提交' : '提交'}}
+      </button>
+      <button
+        class="btn-nav"
+        wx:if="{{currentIdx < totalQuestions - 1}}"
+        disabled="{{mode === 'practice' && !answered}}"
+        bindtap="goNext"
+      >
+        下一题
+      </button>
+      <button
+        class="btn-finish"
+        wx:if="{{currentIdx >= totalQuestions - 1}}"
+        bindtap="finishQuiz"
+      >
+        {{mode === 'exam' ? '交卷并查看结果' : '查看结果'}}
+      </button>
+    </view>
+  </block>
+</view>

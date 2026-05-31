@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="toolbar">
+    <view class="sort-tabs">
+      <text class="sort-tab {{sortBy === 'time' ? 'tab-active' : ''}}" data-sort="time" bindtap="switchSort">按时间</text>
+      <text class="sort-tab {{sortBy === 'paper' ? 'tab-active' : ''}}" data-sort="paper" bindtap="switchSort">按试卷</text>
+    </view>
+    <view class="toolbar-actions">
+      <text class="toggle-link" bindtap="toggleShowMastered">
+        {{showMastered ? '隐藏已掌握' : '显示已掌握'}}
+      </text>
+    </view>
+  </view>
+
+  <view class="wrong-list" wx:if="{{displayList.length > 0}}">
+    <view class="wrong-item {{item.mastered ? 'mastered' : ''}}" wx:for="{{displayList}}" wx:key="questionId">
+      <view class="wrong-info">
+        <text class="wrong-stem">{{item.question.stem}}</text>
+        <view class="wrong-meta">
+          <text class="wrong-count">错误 {{item.wrongCount}} 次</text>
+          <text class="wrong-time">{{item.lastWrongTime}}</text>
+        </view>
+      </view>
+      <view class="wrong-actions" wx:if="{{!item.mastered}}">
+        <text class="master-btn" data-id="{{item.questionId}}" catchtap="onMarkMastered">已掌握</text>
+      </view>
+      <view class="mastered-badge" wx:else>
+        <text>已掌握</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <text class="empty-icon">🎉</text>
+    <text class="empty-text">{{showMastered ? '暂无错题' : '没有未掌握的错题'}}</text>
+  </view>
+
+  <view class="redo-btn" wx:if="{{wrongQuestions.length > 0}}" bindtap="onRedoWrong">
+    <text class="redo-text">重做错题</text>
+  </view>
+</view>

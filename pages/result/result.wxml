@@ -1,0 +1,29 @@
+<view class="container">
+  <view class="result-card">
+    <view class="score-ring">
+      <text class="score-num">{{accuracy}}</text>
+      <text class="score-unit">%</text>
+    </view>
+    <text class="score-label">正确率</text>
+
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{correctCount}}/{{total}}</text>
+        <text class="stat-label">答对题数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{durationText}}</text>
+        <text class="stat-label">用时</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{mode === 'practice' ? '练习' : '考试'}}</text>
+        <text class="stat-label">模式</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button class="btn-secondary" bindtap="onReviewWrong">查看错题</button>
+    <button class="btn-primary" bindtap="onGoHome">返回首页</button>
+  </view>
+</view>

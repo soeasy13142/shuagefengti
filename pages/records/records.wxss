@@ -1,0 +1,70 @@
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.record-item {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 28rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.record-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.mode-tag {
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.tag-green { background: #e6f9ef; color: #07c160; }
+.tag-blue { background: #e6f7ff; color: #1890ff; }
+
+.record-stats {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.record-accuracy {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.text-green { color: #07c160; }
+.text-red { color: #e64340; }
+
+.record-detail, .record-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
