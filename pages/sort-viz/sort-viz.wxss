@@ -1,0 +1,338 @@
+/* 背景 */
+.page {
+  min-height: 100vh;
+  position: relative;
+  background: #0f0f1a;
+  padding-bottom: 60rpx;
+}
+
+.bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80rpx);
+}
+
+.bg-blob-1 {
+  width: 400rpx;
+  height: 400rpx;
+  background: rgba(102, 126, 234, 0.2);
+  top: -80rpx;
+  right: -60rpx;
+}
+
+.bg-blob-2 {
+  width: 300rpx;
+  height: 300rpx;
+  background: rgba(240, 147, 251, 0.15);
+  bottom: 200rpx;
+  left: -40rpx;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 0 28rpx;
+}
+
+/* 算法选择标签 */
+.algo-tabs {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx 0 20rpx;
+}
+
+.algo-tab {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  transition: all 0.25s ease;
+}
+
+.tab-active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.2);
+}
+
+/* 柱状图区域 */
+.chart-area {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  border-radius: 20rpx;
+  padding: 20rpx 16rpx;
+  margin-bottom: 20rpx;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chart-container {
+  position: relative;
+  min-width: 100%;
+  margin: 0 auto;
+}
+
+/* 柱子 */
+.bar-wrapper {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  transition: left 0.35s cubic-bezier(0.34, 1, 0.64, 1);
+}
+
+.bar-value {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6rpx;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.bar-fill {
+  width: 100%;
+  border-radius: 8rpx 8rpx 2rpx 2rpx;
+  transition: height 0.4s ease-out, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* 柱子颜色状态 */
+.bar-default .bar-fill {
+  background: linear-gradient(180deg, #667eea, #4a5acf);
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+.bar-compare .bar-fill {
+  background: linear-gradient(180deg, #74b9ff, #4a9eff);
+  box-shadow: 0 4rpx 20rpx rgba(74, 158, 255, 0.5);
+}
+
+.bar-compare .bar-value {
+  color: #74b9ff;
+}
+
+.bar-swap .bar-fill {
+  background: linear-gradient(180deg, #ff6b6b, #e55039);
+  box-shadow: 0 4rpx 20rpx rgba(255, 107, 107, 0.5);
+}
+
+.bar-swap .bar-value {
+  color: #ff6b6b;
+}
+
+.bar-sorted .bar-fill {
+  background: linear-gradient(180deg, #51cf66, #2b8a3e);
+  box-shadow: 0 4rpx 16rpx rgba(81, 207, 102, 0.4);
+}
+
+.bar-sorted .bar-value {
+  color: #51cf66;
+}
+
+.bar-pivot .bar-fill {
+  background: linear-gradient(180deg, #ffa94d, #e67e22);
+  box-shadow: 0 4rpx 20rpx rgba(255, 169, 77, 0.5);
+}
+
+.bar-pivot .bar-value {
+  color: #ffa94d;
+}
+
+/* 步骤信息 */
+.step-info {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.step-desc {
+  display: block;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+}
+
+.step-stats {
+  display: flex;
+  gap: 28rpx;
+}
+
+.stat {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* 播放控制 */
+.controls {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.control-row {
+  display: flex;
+  justify-content: center;
+  gap: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.ctrl-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
+}
+
+.ctrl-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.ctrl-play {
+  width: 88rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.4);
+}
+
+.ctrl-active {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  box-shadow: 0 6rpx 20rpx rgba(240, 147, 251, 0.4);
+}
+
+.ctrl-icon {
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ctrl-play .ctrl-icon {
+  font-size: 36rpx;
+  color: #fff;
+}
+
+.speed-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.speed-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.speed-slider {
+  flex: 1;
+}
+
+/* 输入区域 */
+.input-area {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.input-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 8rpx;
+}
+
+.input-hint {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 20rpx;
+}
+
+.input-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.input-field {
+  flex: 1;
+  height: 72rpx;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1rpx solid rgba(255, 255, 255, 0.12);
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 26rpx;
+  color: #fff;
+}
+
+.input-btn {
+  width: 120rpx;
+  height: 72rpx;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-btn:active {
+  opacity: 0.85;
+}
+
+.input-btn-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.quick-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.quick-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.quick-btn {
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.quick-btn:active {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.4);
+  color: #667eea;
+}

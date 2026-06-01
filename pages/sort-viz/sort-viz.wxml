@@ -1,0 +1,96 @@
+<view class="page">
+  <!-- 背景 -->
+  <view class="bg">
+    <view class="bg-blob bg-blob-1"></view>
+    <view class="bg-blob bg-blob-2"></view>
+  </view>
+
+  <view class="content">
+    <!-- 算法选择 -->
+    <view class="algo-tabs">
+      <view
+        class="algo-tab {{currentAlgo === item.key ? 'tab-active' : ''}}"
+        wx:for="{{algorithms}}"
+        wx:key="key"
+        data-algo="{{item.key}}"
+        bindtap="selectAlgo"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+
+    <!-- 柱状图区域 -->
+    <view class="chart-area">
+      <view class="chart-container" style="height: 420rpx; width: {{barCount <= 10 ? '100%' : (barCount * 68) + 'rpx'}};">
+        <view
+          class="bar-wrapper {{item.color}}"
+          wx:for="{{bars}}"
+          wx:key="value"
+          style="left: {{item.left}}rpx; width: {{barCount <= 10 ? 52 : (barCount <= 15 ? 38 : 28)}}rpx;"
+        >
+          <text class="bar-value">{{item.value}}</text>
+          <view class="bar-fill" style="height: {{item.height}}rpx;"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 步骤信息 -->
+    <view class="step-info" wx:if="{{ready}}">
+      <text class="step-desc">{{stepDesc}}</text>
+      <view class="step-stats">
+        <text class="stat">步骤 {{stepIndex + 1}}/{{totalSteps}}</text>
+        <text class="stat">比较 {{compareCount}} 次</text>
+        <text class="stat">交换 {{swapCount}} 次</text>
+      </view>
+    </view>
+
+    <!-- 播放控制 -->
+    <view class="controls" wx:if="{{ready}}">
+      <view class="control-row">
+        <view class="ctrl-btn" bindtap="onStepPrev">
+          <text class="ctrl-icon">⏮</text>
+        </view>
+        <view class="ctrl-btn ctrl-play {{playing && !paused ? 'ctrl-active' : ''}}" bindtap="{{playing && !paused ? 'onPause' : 'onPlay'}}">
+          <text class="ctrl-icon">{{playing && !paused ? '⏸' : '▶'}}</text>
+        </view>
+        <view class="ctrl-btn" bindtap="onStepNext">
+          <text class="ctrl-icon">⏭</text>
+        </view>
+        <view class="ctrl-btn" bindtap="onReset">
+          <text class="ctrl-icon">↺</text>
+        </view>
+      </view>
+      <view class="speed-row">
+        <text class="speed-label">慢</text>
+        <slider class="speed-slider" min="1" max="10" step="1" value="{{speed}}" activeColor="#667eea" backgroundColor="rgba(255,255,255,0.1)" block-size="20" bindchange="onSpeedChange" />
+        <text class="speed-label">快</text>
+      </view>
+    </view>
+
+    <!-- 输入区域 -->
+    <view class="input-area">
+      <text class="input-title">输入数字</text>
+      <text class="input-hint">用逗号分隔，如 5,3,8,1,9（1-99，最多20个）</text>
+      <view class="input-row">
+        <input
+          class="input-field"
+          placeholder="输入数字，逗号分隔"
+          value="{{inputText}}"
+          bindinput="onInputChange"
+          bindconfirm="onConfirmInput"
+        />
+        <view class="input-btn" bindtap="onConfirmInput">
+          <text class="input-btn-text">确定</text>
+        </view>
+      </view>
+
+      <view class="quick-row">
+        <text class="quick-label">随机生成：</text>
+        <view class="quick-btn" data-count="5" bindtap="onRandom"><text>5个</text></view>
+        <view class="quick-btn" data-count="10" bindtap="onRandom"><text>10个</text></view>
+        <view class="quick-btn" data-count="15" bindtap="onRandom"><text>15个</text></view>
+        <view class="quick-btn" data-count="20" bindtap="onRandom"><text>20个</text></view>
+      </view>
+    </view>
+  </view>
+</view>

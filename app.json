@@ -7,7 +7,8 @@
     "pages/result/result",
     "pages/records/records",
     "pages/record-detail/record-detail",
-    "pages/wrong-questions/wrong-questions"
+    "pages/wrong-questions/wrong-questions",
+    "pages/sort-viz/sort-viz"
   ],
   "window": {
     "navigationBarBackgroundColor": "#07c160",

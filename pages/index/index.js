@@ -8,7 +8,7 @@ Page({
         name: '排序可视化',
         icon: '📊',
         gradient: 'linear-gradient(135deg, #4facfe, #00f2fe)',
-        available: false
+        available: true
       },
       {
         id: 'vocab',
@@ -43,6 +43,8 @@ Page({
         this.setData({ heroTapped: false });
         wx.navigateTo({ url: '/pages/quiz-list/quiz-list' });
       }, 350);
+    } else if (id === 'sort-viz') {
+      wx.navigateTo({ url: '/pages/sort-viz/sort-viz' });
     }
   },
 
