@@ -1,4 +1,12 @@
-<view class="container" wx:if="{{currentQuestion}}">
+<view class="container" wx:if="{{paperDeleted}}">
+  <view class="empty">
+    <text class="empty-icon">📭</text>
+    <text class="empty-text">试卷已删除</text>
+    <text class="empty-hint">该试卷已被删除，无法查看答题详情</text>
+  </view>
+</view>
+
+<view class="container" wx:elif="{{currentQuestion}}">
   <view class="top-bar">
     <text class="question-num">第 {{currentIdx + 1}} / {{questions.length}} 题</text>
     <text class="result-tag {{currentAnswer.correct ? 'tag-correct' : 'tag-wrong'}}">
@@ -12,19 +20,19 @@
 
   <view class="options-area" wx:if="{{currentQuestion.type === 'single' || currentQuestion.type === 'multi'}}">
     <view
-      class="option-item {{currentAnswer.userAnswer.includes(item.charAt(0)) ? (currentQuestion.answer.includes(item.charAt(0)) ? 'option-correct' : 'option-wrong') : (currentQuestion.answer.includes(item.charAt(0)) ? 'option-correct' : '')}}"
+      class="option-item {{selectedMap[item.letter] ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}"
       wx:for="{{currentQuestion.options}}"
-      wx:key="*this"
+      wx:key="letter"
     >
-      <text class="option-text">{{item}}</text>
+      <text class="option-text">{{item.text}}</text>
     </view>
   </view>
 
   <view class="judge-area" wx:if="{{currentQuestion.type === 'judge'}}">
-    <view class="judge-item {{currentAnswer.userAnswer === 'A' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : (currentQuestion.answer === 'A' ? 'option-correct' : '')}}">
+    <view class="judge-item {{currentAnswer.userAnswer === 'A' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}">
       <text>对</text>
     </view>
-    <view class="judge-item {{currentAnswer.userAnswer === 'B' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : (currentQuestion.answer === 'B' ? 'option-correct' : '')}}">
+    <view class="judge-item {{currentAnswer.userAnswer === 'B' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}">
       <text>错</text>
     </view>
   </view>
@@ -32,7 +40,7 @@
   <view class="answer-compare" wx:if="{{currentQuestion.type === 'fill' || currentQuestion.type === 'essay'}}">
     <view class="compare-row">
       <text class="compare-label">你的答案：</text>
-      <text class="compare-value {{currentAnswer.correct ? 'text-green' : 'text-red'}}">{{currentAnswer.userAnswer}}</text>
+      <text class="compare-value {{currentAnswer.correct ? 'text-green' : 'text-red'}}">{{currentAnswer.userAnswer || '未作答'}}</text>
     </view>
     <view class="compare-row">
       <text class="compare-label">正确答案：</text>

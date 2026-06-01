@@ -8,8 +8,13 @@ Page({
     typeStats: {}
   },
 
-  onLoad(options) {
-    const paperData = JSON.parse(decodeURIComponent(options.data));
+  onLoad() {
+    const paperData = storage.getTempImportData();
+    if (!paperData || !paperData.questions) {
+      wx.showToast({ title: '数据加载失败', icon: 'none' });
+      setTimeout(() => wx.navigateBack(), 1500);
+      return;
+    }
     const typeStats = this.calcTypeStats(paperData.questions);
     this.setData({
       name: paperData.name,
@@ -33,6 +38,7 @@ Page({
       questions: this.data.questions
     };
     storage.savePaper(paper);
+    storage.clearTempImportData();
     wx.showToast({ title: '导入成功' });
     setTimeout(() => {
       wx.navigateBack();

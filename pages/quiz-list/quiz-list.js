@@ -1,5 +1,6 @@
 const storage = require('../../utils/storage');
 const { parseMarkdown } = require('../../utils/markdown-parser');
+const { sampleMarkdown } = require('../../utils/sample-questions');
 
 Page({
   data: {
@@ -29,18 +30,29 @@ Page({
             wx.showToast({ title: '未识别到题目', icon: 'none' });
             return;
           }
-          const paperData = JSON.stringify({
+          storage.setTempImportData({
             name: file.name.replace(/\.md$/i, ''),
-            questions
+            questions: questions
           });
-          wx.navigateTo({
-            url: `/pages/import-preview/import-preview?data=${encodeURIComponent(paperData)}`
-          });
+          wx.navigateTo({ url: '/pages/import-preview/import-preview' });
         } catch (e) {
           wx.showToast({ title: '文件读取失败', icon: 'none' });
         }
       }
     });
+  },
+
+  onImportSample() {
+    const questions = parseMarkdown(sampleMarkdown);
+    if (questions.length === 0) {
+      wx.showToast({ title: '示例数据异常', icon: 'none' });
+      return;
+    }
+    storage.setTempImportData({
+      name: '前端基础示例题',
+      questions: questions
+    });
+    wx.navigateTo({ url: '/pages/import-preview/import-preview' });
   },
 
   onTapPaper(e) {

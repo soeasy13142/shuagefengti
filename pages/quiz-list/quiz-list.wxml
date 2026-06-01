@@ -32,6 +32,9 @@
     <text class="empty-icon">📂</text>
     <text class="empty-text">还没有导入任何试题</text>
     <text class="empty-hint">点击下方按钮导入 .md 文件</text>
+    <view class="sample-btn" bindtap="onImportSample">
+      <text class="sample-btn-text">📄 导入示例试题</text>
+    </view>
   </view>
 
   <view class="fab" bindtap="onImport">

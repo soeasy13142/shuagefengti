@@ -2,38 +2,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: 30rpx;
 }
 
 .paper-count {
   font-size: 26rpx;
-  color: #999;
+  color: #8e8e93;
 }
 
 .toolbar-right {
   display: flex;
-  gap: 24rpx;
+  gap: 32rpx;
 }
 
 .tool-link {
   font-size: 26rpx;
   color: #07c160;
+  font-weight: 500;
 }
 
 .paper-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 20rpx;
 }
 
 .paper-item {
   background: #fff;
-  border-radius: 12rpx;
-  padding: 28rpx;
+  border-radius: 20rpx;
+  padding: 32rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
 }
 
 .paper-info {
@@ -43,9 +44,9 @@
 .paper-name {
   display: block;
   font-size: 30rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8rpx;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 10rpx;
 }
 
 .paper-meta {
@@ -54,8 +55,8 @@
 }
 
 .paper-count-text, .paper-time {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: #8e8e93;
 }
 
 .paper-delete {
@@ -72,12 +73,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 0;
+  padding: 160rpx 0;
 }
 
 .empty-icon {
-  font-size: 80rpx;
-  margin-bottom: 24rpx;
+  font-size: 96rpx;
+  margin-bottom: 28rpx;
 }
 
 .empty-text {
@@ -88,25 +89,44 @@
 
 .empty-hint {
   font-size: 24rpx;
-  color: #999;
+  color: #8e8e93;
+}
+
+.sample-btn {
+  margin-top: 40rpx;
+  padding: 20rpx 48rpx;
+  background: rgba(7, 193, 96, 0.1);
+  border: 1rpx solid rgba(7, 193, 96, 0.3);
+  border-radius: 40rpx;
+}
+
+.sample-btn:active {
+  background: rgba(7, 193, 96, 0.2);
+}
+
+.sample-btn-text {
+  font-size: 26rpx;
+  color: #07c160;
+  font-weight: 500;
 }
 
 .fab {
   position: fixed;
   right: 40rpx;
-  bottom: 80rpx;
-  width: 100rpx;
-  height: 100rpx;
-  background: #07c160;
+  bottom: 100rpx;
+  width: 112rpx;
+  height: 112rpx;
+  background: linear-gradient(135deg, #07c160, #06d6a0);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.4);
+  box-shadow: 0 8rpx 28rpx rgba(7, 193, 96, 0.45);
 }
 
 .fab-text {
   color: #fff;
-  font-size: 48rpx;
+  font-size: 56rpx;
   line-height: 1;
+  font-weight: 300;
 }

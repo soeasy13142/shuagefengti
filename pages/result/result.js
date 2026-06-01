@@ -27,6 +27,6 @@ Page({
   },
 
   onGoHome() {
-    wx.navigateBack({ delta: 3 });
+    wx.reLaunch({ url: '/pages/index/index' });
   }
 });

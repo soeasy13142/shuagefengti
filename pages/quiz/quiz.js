@@ -10,6 +10,7 @@ Page({
     mode: 'practice',
     modeSelected: false,
     userAnswer: '',
+    selectedMap: {},
     answered: false,
     showExplanation: false,
     answers: {},
@@ -37,7 +38,8 @@ Page({
       mode,
       modeSelected: true,
       currentQuestion: this.data.questions[0],
-      startTime: Date.now()
+      startTime: Date.now(),
+      selectedMap: {}
     });
   },
 
@@ -50,13 +52,24 @@ Page({
   onToggleMulti(e) {
     if (this.data.answered && this.data.mode === 'practice') return;
     const option = e.currentTarget.dataset.option;
-    let current = this.data.userAnswer || '';
-    if (current.includes(option)) {
-      current = current.replace(option, '');
+    const map = Object.assign({}, this.data.selectedMap || {});
+    if (map[option]) {
+      delete map[option];
     } else {
-      current = (current + option).split('').sort().join('');
+      map[option] = true;
     }
-    this.setData({ userAnswer: current });
+    const userAnswer = Object.keys(map).sort().join('');
+    this.setData({ selectedMap: map, userAnswer: userAnswer });
+  },
+
+  _buildSelectedMap(answerStr) {
+    const map = {};
+    if (answerStr) {
+      for (var i = 0; i < answerStr.length; i++) {
+        map[answerStr.charAt(i)] = true;
+      }
+    }
+    return map;
   },
 
   onJudge(e) {
@@ -111,10 +124,20 @@ Page({
       });
     } else {
       this.setData({
-        answers: newAnswers,
-        userAnswer: ''
+        answers: newAnswers
       });
-      this.goNext();
+      wx.showToast({ title: '答案已保存', icon: 'success', duration: 800 });
+    }
+  },
+
+  // 自动保存当前答案（切题前调用）
+  _autoSave() {
+    const { currentQuestion, userAnswer, answers } = this.data;
+    if (userAnswer && userAnswer !== '' && currentQuestion) {
+      const correct = this.checkAnswer(currentQuestion, userAnswer);
+      const newAnswers = Object.assign({}, answers);
+      newAnswers[currentQuestion.id] = { userAnswer: userAnswer, correct: correct };
+      this.setData({ answers: newAnswers });
     }
   },
 
@@ -124,34 +147,76 @@ Page({
       this.finishQuiz();
       return;
     }
+
+    this._autoSave();
+
     const nextIdx = currentIdx + 1;
     const nextQ = questions[nextIdx];
     const existingAnswer = this.data.answers[nextQ.id];
+    const restoredAnswer = existingAnswer ? existingAnswer.userAnswer : '';
     this.setData({
       currentIdx: nextIdx,
       currentQuestion: nextQ,
-      userAnswer: existingAnswer ? existingAnswer.userAnswer : '',
+      userAnswer: restoredAnswer,
+      selectedMap: this._buildSelectedMap(restoredAnswer),
       answered: !!existingAnswer,
-      showExplanation: !!existingAnswer
+      showExplanation: this.data.mode === 'practice' && !!existingAnswer
     });
   },
 
   goPrev() {
     const { currentIdx, questions } = this.data;
     if (currentIdx <= 0) return;
+
+    this._autoSave();
+
     const prevIdx = currentIdx - 1;
     const prevQ = questions[prevIdx];
     const existingAnswer = this.data.answers[prevQ.id];
+    const restoredAnswer = existingAnswer ? existingAnswer.userAnswer : '';
     this.setData({
       currentIdx: prevIdx,
       currentQuestion: prevQ,
-      userAnswer: existingAnswer ? existingAnswer.userAnswer : '',
+      userAnswer: restoredAnswer,
+      selectedMap: this._buildSelectedMap(restoredAnswer),
       answered: !!existingAnswer,
       showExplanation: this.data.mode === 'practice' && !!existingAnswer
     });
   },
 
   finishQuiz() {
+    const { answers, questions } = this.data;
+    const answeredCount = Object.keys(answers).length;
+    const total = questions.length;
+
+    if (answeredCount < total) {
+      wx.showModal({
+        title: '确认交卷',
+        content: `你还有 ${total - answeredCount} 题未作答，确定要交卷吗？`,
+        confirmText: '确认交卷',
+        cancelText: '继续答题',
+        success: (res) => {
+          if (res.confirm) {
+            this._doFinishQuiz();
+          }
+        }
+      });
+    } else {
+      wx.showModal({
+        title: '确认交卷',
+        content: '你已完成所有题目，确定要交卷吗？',
+        confirmText: '确认交卷',
+        cancelText: '返回检查',
+        success: (res) => {
+          if (res.confirm) {
+            this._doFinishQuiz();
+          }
+        }
+      });
+    }
+  },
+
+  _doFinishQuiz() {
     const { answers, questions, paper, mode, startTime } = this.data;
     const endTime = Date.now();
     const duration = Math.round((endTime - startTime) / 1000);

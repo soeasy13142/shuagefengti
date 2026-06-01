@@ -1,7 +1,8 @@
 const KEYS = {
   PAPERS: 'papers',
   RECORDS: 'records',
-  WRONG_QUESTIONS: 'wrongQuestions'
+  WRONG_QUESTIONS: 'wrongQuestions',
+  TEMP_IMPORT: 'tempImportData'
 };
 
 function _get(key) {
@@ -14,7 +15,11 @@ function _get(key) {
 }
 
 function _set(key, data) {
-  wx.setStorageSync(key, JSON.stringify(data));
+  try {
+    wx.setStorageSync(key, JSON.stringify(data));
+  } catch (e) {
+    wx.showToast({ title: '存储空间不足', icon: 'none' });
+  }
 }
 
 function getPapers() {
@@ -39,6 +44,12 @@ function getPaperById(id) {
 function deletePaper(id) {
   const papers = getPapers().filter(p => p.id !== id);
   _set(KEYS.PAPERS, papers);
+  // 级联删除关联的答题记录
+  const records = getRecords().filter(r => r.paperId !== id);
+  _set(KEYS.RECORDS, records);
+  // 级联删除关联的错题
+  const wrongs = getWrongQuestions().filter(w => w.paperId !== id);
+  _set(KEYS.WRONG_QUESTIONS, wrongs);
 }
 
 function getRecords() {
@@ -91,8 +102,29 @@ function markMastered(questionId) {
   }
 }
 
+// 临时存储：用于页面间传递大数据（避免 URL 长度限制）
+function setTempImportData(data) {
+  _set(KEYS.TEMP_IMPORT, data);
+}
+
+function getTempImportData() {
+  try {
+    const data = wx.getStorageSync(KEYS.TEMP_IMPORT);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function clearTempImportData() {
+  try {
+    wx.removeStorageSync(KEYS.TEMP_IMPORT);
+  } catch (e) {}
+}
+
 module.exports = {
   getPapers, savePaper, getPaperById, deletePaper,
   getRecords, saveRecord, getRecordsByPaperId,
-  getWrongQuestions, getUnmasteredWrongQuestions, addWrongQuestion, markMastered
+  getWrongQuestions, getUnmasteredWrongQuestions, addWrongQuestion, markMastered,
+  setTempImportData, getTempImportData, clearTempImportData
 };

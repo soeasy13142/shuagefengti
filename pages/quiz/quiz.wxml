@@ -27,27 +27,27 @@
 
     <view class="options-area" wx:if="{{currentQuestion.type === 'single'}}">
       <view
-        class="option-item {{userAnswer === item ? 'option-selected' : ''}} {{answered && mode === 'practice' ? (item === currentQuestion.answer ? 'option-correct' : (userAnswer === item && item !== currentQuestion.answer ? 'option-wrong' : '')) : ''}}"
+        class="option-item {{userAnswer === item.letter ? 'option-selected' : ''}} {{answered && mode === 'practice' ? (item.letter === currentQuestion.answer ? 'option-correct' : (userAnswer === item.letter && item.letter !== currentQuestion.answer ? 'option-wrong' : '')) : ''}}"
         wx:for="{{currentQuestion.options}}"
-        wx:key="*this"
-        data-option="{{item}}"
+        wx:key="letter"
+        data-option="{{item.letter}}"
         bindtap="onSelectOption"
       >
-        <text class="option-radio {{userAnswer === item ? 'radio-selected' : ''}}"></text>
-        <text class="option-text">{{item}}</text>
+        <text class="option-radio {{userAnswer === item.letter ? 'radio-selected' : ''}}"></text>
+        <text class="option-text">{{item.text}}</text>
       </view>
     </view>
 
     <view class="options-area" wx:if="{{currentQuestion.type === 'multi'}}">
       <view
-        class="option-item {{userAnswer && userAnswer.includes(item.charAt(0)) ? 'option-selected' : ''}}"
+        class="option-item {{selectedMap[item.letter] ? 'option-selected' : ''}}"
         wx:for="{{currentQuestion.options}}"
-        wx:key="*this"
-        data-option="{{item.charAt(0)}}"
+        wx:key="letter"
+        data-option="{{item.letter}}"
         bindtap="onToggleMulti"
       >
-        <text class="option-checkbox {{userAnswer && userAnswer.includes(item.charAt(0)) ? 'checkbox-selected' : ''}}"></text>
-        <text class="option-text">{{item}}</text>
+        <text class="option-checkbox {{selectedMap[item.letter] ? 'checkbox-selected' : ''}}"></text>
+        <text class="option-text">{{item.text}}</text>
       </view>
     </view>
 
@@ -94,26 +94,25 @@
     <view class="bottom-bar">
       <button class="btn-nav" disabled="{{currentIdx === 0}}" bindtap="goPrev">上一题</button>
       <button
-        class="btn-submit {{answered && mode === 'practice' ? 'btn-disabled' : ''}}"
-        disabled="{{answered && mode === 'practice'}}"
+        wx:if="{{mode === 'practice'}}"
+        class="btn-submit {{answered ? 'btn-disabled' : ''}}"
+        disabled="{{answered}}"
         bindtap="onSubmit"
       >
-        {{answered && mode === 'practice' ? '已提交' : '提交'}}
+        {{answered ? '已提交' : '提交'}}
       </button>
       <button
         class="btn-nav"
         wx:if="{{currentIdx < totalQuestions - 1}}"
-        disabled="{{mode === 'practice' && !answered}}"
         bindtap="goNext"
       >
         下一题
       </button>
       <button
         class="btn-finish"
-        wx:if="{{currentIdx >= totalQuestions - 1}}"
         bindtap="finishQuiz"
       >
-        {{mode === 'exam' ? '交卷并查看结果' : '查看结果'}}
+        交卷
       </button>
     </view>
   </block>

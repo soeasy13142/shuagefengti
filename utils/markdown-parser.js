@@ -43,7 +43,7 @@ function parseBlock(block) {
     const explanationMatch = line.match(/(?:解析|explanation|解释|说明)[：:]\s*(.+)/i);
 
     if (optionMatch) {
-      options.push(line);
+      options.push({ letter: optionMatch[1], text: line });
     } else if (answerMatch) {
       answerLine = answerMatch[1].trim();
     } else if (explanationMatch) {
@@ -64,10 +64,10 @@ function parseBlock(block) {
 
   let type = 'essay';
   if (options.length >= 2) {
-    const optionLetters = options.map(o => o.match(/^([A-Z])/)[1]);
+    const optionLetters = options.map(o => o.letter);
     const isJudge = options.length === 2 &&
       ((optionLetters.includes('A') && optionLetters.includes('B')) ||
-       options.some(o => /[对错是否真假]/.test(o)));
+       options.some(o => /[对错是否真假]/.test(o.text)));
 
     if (isJudge) {
       type = 'judge';

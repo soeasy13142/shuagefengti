@@ -2,52 +2,55 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: 30rpx;
 }
 
 .sort-tabs {
   display: flex;
-  gap: 8rpx;
-  background: #f0f0f0;
-  border-radius: 8rpx;
+  gap: 4rpx;
+  background: #f0f2f5;
+  border-radius: 12rpx;
   padding: 4rpx;
 }
 
 .sort-tab {
   font-size: 24rpx;
-  padding: 8rpx 24rpx;
-  border-radius: 6rpx;
-  color: #666;
+  padding: 10rpx 28rpx;
+  border-radius: 10rpx;
+  color: #8e8e93;
+  font-weight: 500;
 }
 
 .tab-active {
   background: #fff;
   color: #07c160;
-  font-weight: bold;
+  font-weight: 700;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
 }
 
 .toggle-link {
   font-size: 24rpx;
   color: #1890ff;
+  font-weight: 500;
 }
 
 .wrong-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 20rpx;
 }
 
 .wrong-item {
   background: #fff;
-  border-radius: 12rpx;
-  padding: 24rpx;
+  border-radius: 20rpx;
+  padding: 28rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
 }
 
-.mastered { opacity: 0.5; }
+.mastered { opacity: 0.45; }
 
 .wrong-info {
   flex: 1;
@@ -57,8 +60,9 @@
 .wrong-stem {
   display: block;
   font-size: 28rpx;
-  color: #333;
-  margin-bottom: 8rpx;
+  color: #1a1a2e;
+  margin-bottom: 10rpx;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -74,44 +78,46 @@
 .wrong-count {
   font-size: 22rpx;
   color: #e64340;
+  font-weight: 500;
 }
 
 .wrong-time {
   font-size: 22rpx;
-  color: #999;
+  color: #8e8e93;
 }
 
 .master-btn {
   font-size: 24rpx;
   color: #07c160;
-  padding: 8rpx 20rpx;
-  border: 1rpx solid #07c160;
-  border-radius: 8rpx;
+  padding: 10rpx 24rpx;
+  border: 2rpx solid rgba(7, 193, 96, 0.3);
+  border-radius: 20rpx;
+  font-weight: 500;
 }
 
 .mastered-badge {
   font-size: 22rpx;
-  color: #999;
-  background: #f0f0f0;
-  padding: 6rpx 16rpx;
-  border-radius: 8rpx;
+  color: #8e8e93;
+  background: #f0f2f5;
+  padding: 8rpx 18rpx;
+  border-radius: 20rpx;
 }
 
 .empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 120rpx 0;
+  padding: 160rpx 0;
 }
 
 .empty-icon {
-  font-size: 80rpx;
-  margin-bottom: 24rpx;
+  font-size: 96rpx;
+  margin-bottom: 28rpx;
 }
 
 .empty-text {
   font-size: 28rpx;
-  color: #999;
+  color: #8e8e93;
 }
 
 .redo-btn {
@@ -119,14 +125,16 @@
   bottom: 40rpx;
   left: 30rpx;
   right: 30rpx;
-  background: #07c160;
-  border-radius: 12rpx;
-  padding: 24rpx;
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  border-radius: 20rpx;
+  padding: 28rpx;
   text-align: center;
+  box-shadow: 0 8rpx 28rpx rgba(7, 193, 96, 0.35);
 }
 
 .redo-text {
   color: #fff;
   font-size: 30rpx;
-  font-weight: bold;
+  font-weight: 700;
+  letter-spacing: 2rpx;
 }

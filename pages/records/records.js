@@ -7,7 +7,7 @@ Page({
 
   onShow() {
     const records = storage.getRecords().sort((a, b) => {
-      return new Date(b.endTime) - new Date(a.endTime);
+      return b.endTime > a.endTime ? 1 : -1;
     });
     this.setData({ records });
   },

@@ -1,4 +1,4 @@
 {
-  "navigationBarTitleText": "刷个冯题",
-  "usingComponents": {}
+  "navigationBarBackgroundColor": "#0f0f1a",
+  "navigationBarTextStyle": "white"
 }

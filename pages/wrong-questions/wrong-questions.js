@@ -56,12 +56,10 @@ Page({
       return;
     }
     const questions = unmastered.map(w => w.question);
-    const paperData = JSON.stringify({
+    storage.setTempImportData({
       name: '错题重做',
-      questions
+      questions: questions
     });
-    wx.navigateTo({
-      url: `/pages/import-preview/import-preview?data=${encodeURIComponent(paperData)}`
-    });
+    wx.navigateTo({ url: '/pages/import-preview/import-preview' });
   }
 });

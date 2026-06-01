@@ -1,42 +1,46 @@
 .result-card {
   background: #fff;
-  border-radius: 24rpx;
-  padding: 60rpx 40rpx;
+  border-radius: 32rpx;
+  padding: 64rpx 40rpx;
   text-align: center;
   margin-bottom: 40rpx;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
 }
 
 .score-ring {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
 }
 
 .score-num {
-  font-size: 96rpx;
-  font-weight: bold;
-  color: #07c160;
+  font-size: 108rpx;
+  font-weight: 800;
+  background: linear-gradient(135deg, #07c160, #06d6a0);
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .score-unit {
-  font-size: 40rpx;
+  font-size: 44rpx;
   color: #07c160;
   margin-left: 4rpx;
+  font-weight: 700;
 }
 
 .score-label {
   display: block;
-  font-size: 28rpx;
-  color: #999;
+  font-size: 26rpx;
+  color: #8e8e93;
   margin-bottom: 48rpx;
 }
 
 .stats-grid {
   display: flex;
   justify-content: space-around;
-  border-top: 1rpx solid #f0f0f0;
-  padding-top: 32rpx;
+  border-top: 1rpx solid #f0f2f5;
+  padding-top: 36rpx;
 }
 
 .stat-item {
@@ -47,20 +51,20 @@
 
 .stat-value {
   font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
+  font-weight: 700;
+  color: #1a1a2e;
   margin-bottom: 8rpx;
 }
 
 .stat-label {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: #8e8e93;
 }
 
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 24rpx;
 }
 
 .actions button {

@@ -1,28 +1,34 @@
 Page({
   data: {
+    show: false,
+    heroTapped: false,
     features: [
-      {
-        id: 'quiz',
-        name: '刷题',
-        desc: '导入试题，一题一题刷',
-        icon: '📝',
-        available: true
-      },
       {
         id: 'sort-viz',
         name: '排序可视化',
-        desc: '排序算法动画演示',
         icon: '📊',
+        gradient: 'linear-gradient(135deg, #4facfe, #00f2fe)',
         available: false
       },
       {
         id: 'vocab',
         name: '单词记忆',
-        desc: '高效记忆英语单词',
         icon: '📖',
+        gradient: 'linear-gradient(135deg, #f093fb, #f5576c)',
         available: false
       }
     ]
+  },
+
+  onShow() {
+    // 页面重新显示时重置动画状态（从答题页返回时恢复卡片）
+    this.setData({ heroTapped: false });
+  },
+
+  onReady() {
+    setTimeout(() => {
+      this.setData({ show: true });
+    }, 100);
   },
 
   onFeatureTap(e) {
@@ -32,7 +38,19 @@ Page({
       return;
     }
     if (id === 'quiz') {
-      wx.navigateTo({ url: '/pages/quiz-list/quiz-list' });
+      this.setData({ heroTapped: true });
+      setTimeout(() => {
+        this.setData({ heroTapped: false });
+        wx.navigateTo({ url: '/pages/quiz-list/quiz-list' });
+      }, 350);
     }
+  },
+
+  goToRecords() {
+    wx.navigateTo({ url: '/pages/records/records' });
+  },
+
+  goToWrongQuestions() {
+    wx.navigateTo({ url: '/pages/wrong-questions/wrong-questions' });
   }
 });
