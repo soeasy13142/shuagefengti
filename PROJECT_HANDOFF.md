@@ -681,6 +681,8 @@ wrong-questions
 - `pages/sort-viz/sort-viz.wxss`
 - `pages/sort-viz/sort-viz.json`
 
+设计：已改为 Claude Design 暖奶油画布风格（2026-06-09），与首页统一。深色科技风已替换。
+
 当前功能：
 
 - 首页卡片可进入；
@@ -2977,10 +2979,14 @@ AI 讲一下这题
 | `pages/index/index.json` | 页面导航栏暖奶油，黑字 |
 | `pages/index/index.wxml` | 简化结构：去掉 `tool-photo` 包裹层，标签改 `TOOLS` |
 | `pages/index/index.wxss` | 全部重写：Claude 色彩/衬线标题/奶油卡片/圆角 |
+| `pages/sort-viz/sort-viz.json` | 导航栏暖奶油，黑字 |
+| `pages/sort-viz/sort-viz.wxml` | 去掉 blob 背景层，简化结构 |
+| `pages/sort-viz/sort-viz.wxss` | 全部重写：暖奶油背景 + 奶油卡片 + 珊瑚 CTA + 暖色柱状图 |
 
 ### 25.6 未改动
 
 - `pages/index/index.js`：业务逻辑不变
+- `pages/sort-viz/sort-viz.js`：业务逻辑不变
 - 其他页面：未触碰
 
 ### 25.7 设计节奏
@@ -2998,5 +3004,6 @@ AI 讲一下这题
 ### 25.8 历史记录
 
 - 2026-06-09：首页先用 BMW Corporate 设计语言改造（深海军蓝 Hero + 蓝色 CTA + 零圆角）
-- 2026-06-09：替换为 Claude Design 暖奶油画布风格
+- 2026-06-09：首页替换为 Claude Design 暖奶油画布风格
+- 2026-06-09：排序可视化页面同步改为 Claude Design 暖奶油画布风格
 

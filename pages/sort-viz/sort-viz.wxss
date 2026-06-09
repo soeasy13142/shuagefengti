@@ -1,78 +1,48 @@
-/* 背景 */
+/* ═══════════════════════════════════════════
+   Claude Design — 排序可视化
+   暖奶油画布 · 珊瑚主色 · 奶油卡片
+   ═══════════════════════════════════════════ */
+
 .page {
   min-height: 100vh;
-  position: relative;
-  background: #0f0f1a;
+  background: #faf9f5;
   padding-bottom: 60rpx;
 }
 
-.bg {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 0;
-}
-
-.bg-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80rpx);
-}
-
-.bg-blob-1 {
-  width: 400rpx;
-  height: 400rpx;
-  background: rgba(102, 126, 234, 0.2);
-  top: -80rpx;
-  right: -60rpx;
-}
-
-.bg-blob-2 {
-  width: 300rpx;
-  height: 300rpx;
-  background: rgba(240, 147, 251, 0.15);
-  bottom: 200rpx;
-  left: -40rpx;
-}
-
 .content {
-  position: relative;
-  z-index: 1;
-  padding: 0 28rpx;
+  padding: 0 32rpx;
 }
 
-/* 算法选择标签 */
+/* ── 算法选择标签 ── */
 .algo-tabs {
   display: flex;
   gap: 16rpx;
-  padding: 24rpx 0 20rpx;
+  padding: 24rpx 0 24rpx;
 }
 
 .algo-tab {
   flex: 1;
   text-align: center;
-  padding: 18rpx 0;
+  padding: 20rpx 0;
   border-radius: 16rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 26rpx;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  font-weight: 500;
+  color: #6c6a64;
+  background: #f5f0e8;
   transition: all 0.25s ease;
 }
 
 .tab-active {
-  color: #fff;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
-  border-color: rgba(102, 126, 234, 0.5);
-  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.2);
+  color: #141413;
+  background: #efe9de;
 }
 
-/* 柱状图区域 */
+/* ── 柱状图区域 ── */
 .chart-area {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1rpx solid rgba(255, 255, 255, 0.08);
-  border-radius: 20rpx;
-  padding: 20rpx 16rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx 16rpx;
   margin-bottom: 20rpx;
   overflow-x: auto;
   overflow-y: hidden;
@@ -85,7 +55,7 @@
   margin: 0 auto;
 }
 
-/* 柱子 */
+/* ── 柱子 ── */
 .bar-wrapper {
   position: absolute;
   bottom: 0;
@@ -97,9 +67,10 @@
 }
 
 .bar-value {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 20rpx;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  color: #3d3d3a;
   margin-bottom: 6rpx;
   white-space: nowrap;
   transition: color 0.2s ease;
@@ -107,67 +78,62 @@
 
 .bar-fill {
   width: 100%;
-  border-radius: 8rpx 8rpx 2rpx 2rpx;
-  transition: height 0.4s ease-out, background 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 8rpx 8rpx 4rpx 4rpx;
+  transition: height 0.4s ease-out, background 0.25s ease;
 }
 
-/* 柱子颜色状态 */
+/* 柱子颜色状态 — 暖色调适配浅色背景 */
 .bar-default .bar-fill {
-  background: linear-gradient(180deg, #667eea, #4a5acf);
-  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  background: linear-gradient(180deg, #cc785c, #a9583e);
 }
 
 .bar-compare .bar-fill {
-  background: linear-gradient(180deg, #74b9ff, #4a9eff);
-  box-shadow: 0 4rpx 20rpx rgba(74, 158, 255, 0.5);
+  background: linear-gradient(180deg, #5db8a6, #3d9e8c);
 }
 
 .bar-compare .bar-value {
-  color: #74b9ff;
+  color: #3d9e8c;
 }
 
 .bar-swap .bar-fill {
-  background: linear-gradient(180deg, #ff6b6b, #e55039);
-  box-shadow: 0 4rpx 20rpx rgba(255, 107, 107, 0.5);
+  background: linear-gradient(180deg, #c64545, #a63535);
 }
 
 .bar-swap .bar-value {
-  color: #ff6b6b;
+  color: #c64545;
 }
 
 .bar-sorted .bar-fill {
-  background: linear-gradient(180deg, #51cf66, #2b8a3e);
-  box-shadow: 0 4rpx 16rpx rgba(81, 207, 102, 0.4);
+  background: linear-gradient(180deg, #5db872, #3d9e56);
 }
 
 .bar-sorted .bar-value {
-  color: #51cf66;
+  color: #3d9e56;
 }
 
 .bar-pivot .bar-fill {
-  background: linear-gradient(180deg, #ffa94d, #e67e22);
-  box-shadow: 0 4rpx 20rpx rgba(255, 169, 77, 0.5);
+  background: linear-gradient(180deg, #e8a55a, #d49017);
 }
 
 .bar-pivot .bar-value {
-  color: #ffa94d;
+  color: #d49017;
 }
 
-/* 步骤信息 */
+/* ── 步骤信息 ── */
 .step-info {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1rpx solid rgba(255, 255, 255, 0.08);
-  border-radius: 16rpx;
-  padding: 20rpx 24rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx 28rpx;
   margin-bottom: 20rpx;
 }
 
 .step-desc {
   display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.7);
+  color: #3d3d3a;
   line-height: 1.6;
-  margin-bottom: 12rpx;
+  margin-bottom: 14rpx;
 }
 
 .step-stats {
@@ -176,16 +142,16 @@
 }
 
 .stat {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.4);
+  color: #6c6a64;
 }
 
-/* 播放控制 */
+/* ── 播放控制 ── */
 .controls {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1rpx solid rgba(255, 255, 255, 0.08);
-  border-radius: 16rpx;
-  padding: 20rpx 24rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx 28rpx;
   margin-bottom: 20rpx;
 }
 
@@ -193,45 +159,45 @@
   display: flex;
   justify-content: center;
   gap: 24rpx;
-  margin-bottom: 16rpx;
+  margin-bottom: 20rpx;
 }
 
 .ctrl-btn {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: #f5f0e8;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .ctrl-btn:active {
-  background: rgba(255, 255, 255, 0.15);
+  background: #e8e0d2;
 }
 
 .ctrl-play {
   width: 88rpx;
   height: 88rpx;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border: none;
-  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.4);
+  background: #cc785c;
+}
+
+.ctrl-play:active {
+  background: #a9583e;
 }
 
 .ctrl-active {
-  background: linear-gradient(135deg, #f093fb, #f5576c);
-  box-shadow: 0 6rpx 20rpx rgba(240, 147, 251, 0.4);
+  background: #a9583e;
 }
 
 .ctrl-icon {
   font-size: 32rpx;
-  color: rgba(255, 255, 255, 0.8);
+  color: #6c6a64;
 }
 
 .ctrl-play .ctrl-icon {
   font-size: 36rpx;
-  color: #fff;
+  color: #ffffff;
 }
 
 .speed-row {
@@ -241,8 +207,9 @@
 }
 
 .speed-label {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 20rpx;
-  color: rgba(255, 255, 255, 0.4);
+  color: #6c6a64;
   flex-shrink: 0;
 }
 
@@ -250,64 +217,71 @@
   flex: 1;
 }
 
-/* 输入区域 */
+/* ── 输入区域 ── */
 .input-area {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1rpx solid rgba(255, 255, 255, 0.08);
-  border-radius: 16rpx;
-  padding: 24rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx;
 }
 
 .input-title {
   display: block;
-  font-size: 28rpx;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #141413;
   margin-bottom: 8rpx;
 }
 
 .input-hint {
   display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 20rpx;
+  color: #8e8b82;
+  margin-bottom: 24rpx;
 }
 
 .input-row {
   display: flex;
   gap: 16rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
 }
 
 .input-field {
   flex: 1;
-  height: 72rpx;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1rpx solid rgba(255, 255, 255, 0.12);
-  border-radius: 12rpx;
+  height: 76rpx;
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 16rpx;
   padding: 0 24rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 26rpx;
-  color: #fff;
+  color: #141413;
+}
+
+.input-placeholder {
+  color: #8e8b82;
 }
 
 .input-btn {
   width: 120rpx;
-  height: 72rpx;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 12rpx;
+  height: 76rpx;
+  background: #cc785c;
+  border-radius: 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .input-btn:active {
-  opacity: 0.85;
+  background: #a9583e;
 }
 
 .input-btn-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 26rpx;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 500;
+  color: #ffffff;
 }
 
 .quick-row {
@@ -318,21 +292,21 @@
 }
 
 .quick-label {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.5);
+  color: #6c6a64;
 }
 
 .quick-btn {
-  padding: 12rpx 24rpx;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1rpx solid rgba(255, 255, 255, 0.1);
-  border-radius: 20rpx;
+  padding: 14rpx 28rpx;
+  background: #f5f0e8;
+  border-radius: 999rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.7);
+  color: #3d3d3a;
 }
 
 .quick-btn:active {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.4);
-  color: #667eea;
+  background: #e8e0d2;
+  color: #cc785c;
 }

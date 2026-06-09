@@ -1,10 +1,4 @@
 <view class="page">
-  <!-- 背景 -->
-  <view class="bg">
-    <view class="bg-blob bg-blob-1"></view>
-    <view class="bg-blob bg-blob-2"></view>
-  </view>
-
   <view class="content">
     <!-- 算法选择 -->
     <view class="algo-tabs">
@@ -62,7 +56,7 @@
       </view>
       <view class="speed-row">
         <text class="speed-label">慢</text>
-        <slider class="speed-slider" min="1" max="10" step="1" value="{{speed}}" activeColor="#667eea" backgroundColor="rgba(255,255,255,0.1)" block-size="20" bindchange="onSpeedChange" />
+        <slider class="speed-slider" min="1" max="10" step="1" value="{{speed}}" activeColor="#cc785c" backgroundColor="#e6dfd8" block-size="20" bindchange="onSpeedChange" />
         <text class="speed-label">快</text>
       </view>
     </view>
@@ -75,6 +69,7 @@
         <input
           class="input-field"
           placeholder="输入数字，逗号分隔"
+          placeholder-class="input-placeholder"
           value="{{inputText}}"
           bindinput="onInputChange"
           bindconfirm="onConfirmInput"
