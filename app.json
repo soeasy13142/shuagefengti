@@ -11,10 +11,10 @@
     "pages/sort-viz/sort-viz"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#07c160",
+    "navigationBarBackgroundColor": "#1a2129",
     "navigationBarTitleText": "刷个冯题",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f5f5"
+    "backgroundColor": "#ffffff"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",

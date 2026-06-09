@@ -1,70 +1,53 @@
 <view class="page">
-  <!-- 动态渐变背景 -->
-  <view class="bg">
-    <view class="bg-blob bg-blob-1"></view>
-    <view class="bg-blob bg-blob-2"></view>
-    <view class="bg-blob bg-blob-3"></view>
-    <view class="bg-blob bg-blob-4"></view>
+  <!-- 深色 Hero Band -->
+  <view class="hero-band {{show ? 'anim-in' : ''}}">
+    <text class="hero-title">刷个冯题</text>
+    <text class="hero-tagline">刷题千万道，考试不怕考</text>
+    <view class="hero-cta {{heroTapped ? 'tapped' : ''}}" bindtap="onFeatureTap" data-id="quiz" data-available="true" hover-class="cta-hover" hover-stay-time="100">
+      <text class="cta-text">开始刷题</text>
+    </view>
+    <text class="hero-sub">导入试题 · 5种题型 · 练习/考试</text>
   </view>
 
-  <view class="content">
-    <!-- 标题区 -->
-    <view class="header {{show ? 'anim-in' : ''}}">
-      <view class="logo-ring">
-        <text class="logo-emoji">📝</text>
-      </view>
-      <text class="title">刷个冯题</text>
-      <text class="tagline">刷题千万道，考试不怕考</text>
-    </view>
-
-    <!-- 主功能入口 -->
-    <view class="hero-card {{show ? 'anim-up' : ''}} {{heroTapped ? 'hero-tapped' : ''}}" bindtap="onFeatureTap" data-id="quiz" data-available="true" hover-class="hero-hover" hover-stay-time="100">
-      <view class="hero-glow"></view>
-      <view class="hero-inner">
-        <view class="hero-icon-box">
-          <text class="hero-icon">🚀</text>
-        </view>
-        <view class="hero-text">
-          <text class="hero-name">开始刷题</text>
-          <text class="hero-desc">导入试题 · 5种题型 · 练习/考试</text>
-        </view>
-        <view class="hero-arrow">
-          <text class="arrow-icon">→</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 功能卡片组 -->
-    <view class="card-row {{show ? 'anim-up-delay' : ''}}">
+  <!-- 工具区：白色画布 -->
+  <view class="tools-band {{show ? 'anim-up' : ''}}">
+    <text class="band-label">工具</text>
+    <view class="tool-grid">
       <view
-        class="glass-card {{item.available ? '' : 'glass-disabled'}}"
+        class="tool-card {{item.available ? '' : 'tool-disabled'}}"
         wx:for="{{features}}"
         wx:key="id"
         data-id="{{item.id}}"
         data-available="{{item.available}}"
         bindtap="onFeatureTap"
+        hover-class="tool-hover"
+        hover-stay-time="100"
       >
-        <view class="glass-bg" style="background: {{item.gradient}}"></view>
-        <view class="glass-content">
-          <text class="glass-icon">{{item.icon}}</text>
-          <text class="glass-name">{{item.name}}</text>
-          <text class="glass-tag" wx:if="{{!item.available}}">即将上线</text>
+        <view class="tool-photo">
+          <text class="tool-icon">{{item.icon}}</text>
         </view>
+        <text class="tool-name">{{item.name}}</text>
+        <text class="tool-tag" wx:if="{{!item.available}}">即将上线</text>
+        <text class="tool-link" wx:if="{{item.available}}">进入 ›</text>
       </view>
     </view>
+  </view>
 
-    <!-- 底部入口 -->
-    <view class="bottom-row {{show ? 'anim-up-delay2' : ''}}">
-      <view class="bottom-card" bindtap="goToRecords">
-        <view class="bottom-dot" style="background: #4facfe"></view>
-        <text class="bottom-text">答题记录</text>
-        <text class="bottom-arrow">›</text>
-      </view>
-      <view class="bottom-card" bindtap="goToWrongQuestions">
-        <view class="bottom-dot" style="background: #f093fb"></view>
-        <text class="bottom-text">错题本</text>
-        <text class="bottom-arrow">›</text>
-      </view>
+  <!-- 快捷入口 -->
+  <view class="shortcuts-band {{show ? 'anim-up-delay' : ''}}">
+    <view class="shortcut-row" bindtap="goToRecords" hover-class="row-hover" hover-stay-time="100">
+      <text class="shortcut-label">答题记录</text>
+      <text class="shortcut-arrow">›</text>
     </view>
+    <view class="row-divider"></view>
+    <view class="shortcut-row" bindtap="goToWrongQuestions" hover-class="row-hover" hover-stay-time="100">
+      <text class="shortcut-label">错题本</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 备案号 -->
+  <view class="footer">
+    <text class="icp">苏ICP备2026036865号-1X</text>
   </view>
 </view>
