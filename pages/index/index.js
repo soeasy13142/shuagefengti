@@ -37,7 +37,9 @@ Page({
       wx.showToast({ title: '功能开发中', icon: 'none' });
       return;
     }
-    if (id === 'quiz') {
+    if (id === 'dashboard') {
+      wx.navigateTo({ url: '/pages/dashboard/dashboard' });
+    } else if (id === 'quiz') {
       this.setData({ heroTapped: true });
       setTimeout(() => {
         this.setData({ heroTapped: false });

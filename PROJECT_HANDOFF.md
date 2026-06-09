@@ -192,7 +192,8 @@ my-miniapp/
 │   ├── util.js
 │   ├── storage.js
 │   ├── markdown-parser.js
-│   └── sample-questions.js
+│   ├── sample-questions.js
+│   └── analytics.js
 ├── pages/
 │   ├── index/
 │   ├── quiz-list/
@@ -202,12 +203,14 @@ my-miniapp/
 │   ├── records/
 │   ├── record-detail/
 │   ├── wrong-questions/
+│   ├── dashboard/
 │   └── sort-viz/
 └── tests/
     ├── utils/
     │   ├── util.test.js
     │   ├── storage.test.js
-    │   └── markdown-parser.test.js
+    │   ├── markdown-parser.test.js
+    │   └── analytics.test.js
     └── pages/
         ├── quiz-engine.test.js
         └── sort-viz.test.js
@@ -217,7 +220,7 @@ my-miniapp/
 
 ## 6. 页面注册状态
 
-`app.json` 当前注册了 9 个页面：
+`app.json` 当前注册了 10 个页面：
 
 ```json
 {
@@ -230,6 +233,7 @@ my-miniapp/
     "pages/records/records",
     "pages/record-detail/record-detail",
     "pages/wrong-questions/wrong-questions",
+    "pages/dashboard/dashboard",
     "pages/sort-viz/sort-viz"
   ]
 }
@@ -724,6 +728,34 @@ wrong-questions
 - step 格式正确；
 - swap 步骤索引数量正确。
 
+### 7.15 学习驾驶舱模块
+
+目录：`pages/dashboard/`
+
+文件：
+
+- `pages/dashboard/dashboard.js`
+- `pages/dashboard/dashboard.wxml`
+- `pages/dashboard/dashboard.wxss`
+- `pages/dashboard/dashboard.json`
+
+统计模块：`utils/analytics.js`
+
+测试文件：`tests/utils/analytics.test.js`
+
+功能：
+
+- 首页全宽入口卡片进入；
+- 从 `records`、`wrongQuestions`、`papers` 计算统计数据；
+- 总览指标：累计刷题数、练习次数、平均正确率、错题总数；
+- 题型雷达：5 种题型的正确率条形图，标记最薄弱题型；
+- 7 天学习趋势：柱状图展示每日刷题量；
+- 错题掌握：未掌握/已掌握数量，可跳转错题本；
+- 智能建议（嵌入式）：本地规则引擎生成学习建议，支持跳转对应页面；
+- 空状态：无记录时显示引导卡片。
+
+设计风格：Claude Design 暖奶油画布，与首页统一。
+
 ---
 
 ## 8. 数据结构
@@ -844,14 +876,15 @@ cd /Users/charliepan/Downloads/my-miniapp && npm test
 最近一次运行结果：
 
 ```text
+PASS tests/utils/analytics.test.js
 PASS tests/pages/sort-viz.test.js
 PASS tests/utils/storage.test.js
 PASS tests/utils/markdown-parser.test.js
 PASS tests/utils/util.test.js
 PASS tests/pages/quiz-engine.test.js
 
-Test Suites: 5 passed, 5 total
-Tests:       54 passed, 54 total
+Test Suites: 6 passed, 6 total
+Tests:       59 passed, 59 total
 Snapshots:   0 total
 ```
 

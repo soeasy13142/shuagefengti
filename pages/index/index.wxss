@@ -131,6 +131,40 @@
   position: relative;
 }
 
+/* 学习驾驶舱全宽卡片 */
+.tool-card-full {
+  margin-bottom: 20rpx;
+  padding: 28rpx 28rpx;
+}
+
+.tool-full-row {
+  display: flex;
+  align-items: center;
+}
+
+.tool-full-row .tool-icon {
+  font-size: 48rpx;
+  margin-bottom: 0;
+  margin-right: 20rpx;
+}
+
+.tool-full-info {
+  flex: 1;
+}
+
+.tool-full-info .tool-name {
+  padding: 0;
+  margin-bottom: 4rpx;
+}
+
+.tool-desc {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 22rpx;
+  font-weight: 400;
+  color: #6c6a64;
+}
+
 .tool-card:active {
   background: #e8e0d2;
 }

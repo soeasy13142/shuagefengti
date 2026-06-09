@@ -12,6 +12,17 @@
   <!-- 工具卡片 -->
   <view class="tools-band {{show ? 'anim-up' : ''}}">
     <text class="band-label">TOOLS</text>
+    <!-- 学习驾驶舱 — 全宽入口 -->
+    <view class="tool-card tool-card-full" bindtap="onFeatureTap" data-id="dashboard" data-available="true" hover-class="tool-hover" hover-stay-time="100">
+      <view class="tool-full-row">
+        <text class="tool-icon">📈</text>
+        <view class="tool-full-info">
+          <text class="tool-name">学习驾驶舱</text>
+          <text class="tool-desc">学习数据可视化 · 智能建议</text>
+        </view>
+        <text class="tool-link">进入 ›</text>
+      </view>
+    </view>
     <view class="tool-grid">
       <view
         class="tool-card {{item.available ? '' : 'tool-disabled'}}"

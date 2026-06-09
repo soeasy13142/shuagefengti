@@ -8,6 +8,7 @@
     "pages/records/records",
     "pages/record-detail/record-detail",
     "pages/wrong-questions/wrong-questions",
+    "pages/dashboard/dashboard",
     "pages/sort-viz/sort-viz"
   ],
   "window": {

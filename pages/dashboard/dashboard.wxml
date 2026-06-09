@@ -1,0 +1,104 @@
+<view class="page">
+  <!-- 空状态 -->
+  <view class="empty-hint" wx:if="{{!hasData}}">
+    <text class="empty-title">还没有学习数据</text>
+    <text class="empty-desc">导入题库并完成一次练习后，这里会生成你的学习趋势和智能建议。</text>
+    <view class="empty-button" bindtap="goQuiz">去导入题库</view>
+  </view>
+
+  <view wx:if="{{dashboard}}">
+    <!-- 总览指标 -->
+    <view class="section-label">OVERVIEW</view>
+    <view class="overview-grid">
+      <view class="metric-card">
+        <text class="metric-value">{{dashboard.overview.totalQuestions}}</text>
+        <text class="metric-label">累计刷题</text>
+      </view>
+      <view class="metric-card">
+        <text class="metric-value">{{dashboard.overview.totalSessions}}</text>
+        <text class="metric-label">练习次数</text>
+      </view>
+      <view class="metric-card">
+        <text class="metric-value">{{dashboard.overview.averageAccuracy}}%</text>
+        <text class="metric-label">平均正确率</text>
+      </view>
+      <view class="metric-card">
+        <text class="metric-value">{{dashboard.overview.wrongCount}}</text>
+        <text class="metric-label">错题总数</text>
+      </view>
+    </view>
+
+    <!-- 题型雷达 -->
+    <view class="section-card">
+      <view class="section-title-row">
+        <text class="section-title">题型雷达</text>
+        <text class="section-tag" wx:if="{{dashboard.weakSpot}}">薄弱：{{dashboard.weakSpot.label}}</text>
+      </view>
+      <view class="type-list">
+        <view class="type-row" wx:for="{{dashboard.typeStats}}" wx:key="type">
+          <view class="type-info">
+            <text class="type-name">{{item.label}}</text>
+            <text class="type-meta">{{item.correct}} / {{item.total}}</text>
+          </view>
+          <view class="type-bar-bg">
+            <view class="type-bar-fill" style="width: {{item.accuracy}}%;"></view>
+          </view>
+          <text class="type-accuracy">{{item.accuracy}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 7天趋势 -->
+    <view class="section-card">
+      <view class="section-title-row">
+        <text class="section-title">7 天学习趋势</text>
+      </view>
+      <view class="trend-chart">
+        <view class="trend-item" wx:for="{{dashboard.sevenDayTrend}}" wx:key="date">
+          <view class="trend-bar-wrap">
+            <view class="trend-bar" style="height: {{item.count === 0 ? 8 : (item.count * 160 / maxTrendCount)}}rpx;"></view>
+          </view>
+          <text class="trend-count">{{item.count}}</text>
+          <text class="trend-date">{{item.date}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 错题掌握 -->
+    <view class="section-card">
+      <view class="section-title-row">
+        <text class="section-title">错题掌握</text>
+      </view>
+      <view class="wrong-summary">
+        <view class="wrong-item">
+          <text class="wrong-value">{{dashboard.overview.wrongCount - dashboard.overview.masteredWrongCount}}</text>
+          <text class="wrong-label">未掌握</text>
+        </view>
+        <view class="wrong-item">
+          <text class="wrong-value mastered">{{dashboard.overview.masteredWrongCount}}</text>
+          <text class="wrong-label">已掌握</text>
+        </view>
+      </view>
+      <view class="action-button" bindtap="goWrongQuestions">查看错题本</view>
+    </view>
+
+    <!-- 智能建议（嵌入式 B） -->
+    <view class="section-card suggestion-card">
+      <view class="section-title-row">
+        <text class="section-title">智能建议</text>
+        <text class="section-tag">本地规则</text>
+      </view>
+      <view
+        class="suggestion-item suggestion-{{item.level}}"
+        wx:for="{{dashboard.suggestions}}"
+        wx:key="title"
+        data-action="{{item.actionType}}"
+        bindtap="onSuggestionTap"
+      >
+        <text class="suggestion-title">{{item.title}}</text>
+        <text class="suggestion-content">{{item.content}}</text>
+        <text class="suggestion-action">{{item.actionText}} →</text>
+      </view>
+    </view>
+  </view>
+</view>
