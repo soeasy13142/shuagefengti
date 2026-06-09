@@ -2,7 +2,7 @@ page {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 28rpx;
   color: #1a1a2e;
-  background-color: #f0f2f5;
+  background-color: #faf9f5;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
 }

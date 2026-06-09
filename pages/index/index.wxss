@@ -1,41 +1,36 @@
-/* BMW Corporate Design — 首页 */
+/* ═══════════════════════════════════════════
+   Claude Design — 首页
+   暖奶油画布 · 衬线标题 · 珊瑚主色
+   ═══════════════════════════════════════════ */
 
-/* 入场动画 */
+/* ── 入场动画 ── */
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(30rpx); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(50rpx); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.anim-in {
-  animation: fadeSlideIn 0.5s ease-out both;
-}
+.anim-in       { animation: fadeSlideIn 0.5s ease-out both; }
+.anim-up       { animation: fadeSlideUp 0.5s ease-out 0.2s both; }
+.anim-up-delay { animation: fadeSlideUp 0.5s ease-out 0.35s both; }
 
-.anim-up {
-  animation: fadeSlideUp 0.5s ease-out 0.2s both;
-}
-
-.anim-up-delay {
-  animation: fadeSlideUp 0.5s ease-out 0.35s both;
-}
-
-/* 页面 */
+/* ── 页面画布 ── */
 .page {
   min-height: 100vh;
-  background: #ffffff;
+  background: #faf9f5;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ──────────────────────────────────
-   深色 Hero Band
-   ────────────────────────────────── */
+/* ═══════════════════════════════════════════
+   Hero — 奶油画布 + 衬线大标题
+   ═══════════════════════════════════════════ */
 .hero-band {
-  background: #1a2129;
-  padding: 80rpx 48rpx 64rpx;
+  background: #faf9f5;
+  padding: 96rpx 56rpx 80rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,73 +38,81 @@
 }
 
 .hero-title {
-  font-size: 64rpx;
-  font-weight: 700;
-  color: #ffffff;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 72rpx;
+  font-weight: 400;
+  color: #141413;
   line-height: 1.05;
-  letter-spacing: 0;
-  margin-bottom: 16rpx;
+  letter-spacing: -3rpx;
+  margin-bottom: 20rpx;
 }
 
 .hero-tagline {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 28rpx;
-  font-weight: 300;
-  color: #bbbbbb;
+  font-weight: 400;
+  color: #6c6a64;
   line-height: 1.55;
-  margin-bottom: 48rpx;
+  margin-bottom: 56rpx;
 }
 
-/* 主 CTA — BMW 矩形按钮 */
+/* 主 CTA — 珊瑚色矩形 */
 .hero-cta {
   width: 100%;
-  height: 96rpx;
-  background: #1c69d4;
+  max-width: 560rpx;
+  height: 88rpx;
+  background: #cc785c;
+  border-radius: 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
 }
 
 .hero-cta:active,
 .tapped {
-  background: #0653b6;
+  background: #a9583e;
 }
 
 .cta-hover {
-  background: #0653b6;
+  background: #a9583e;
 }
 
 .cta-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 28rpx;
-  font-weight: 700;
+  font-weight: 500;
   color: #ffffff;
-  letter-spacing: 1rpx;
+  line-height: 1;
 }
 
 .hero-sub {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 24rpx;
-  font-weight: 300;
-  color: #9a9a9a;
+  font-weight: 400;
+  color: #8e8b82;
   letter-spacing: 0;
 }
 
-/* ──────────────────────────────────
-   工具区：白色画布
-   ────────────────────────────────── */
+/* ═══════════════════════════════════════════
+   工具区 — 奶油卡片
+   ═══════════════════════════════════════════ */
 .tools-band {
-  background: #ffffff;
-  padding: 64rpx 48rpx;
+  background: #faf9f5;
+  padding: 0 32rpx 64rpx;
   opacity: 0;
 }
 
 .band-label {
   display: block;
-  font-size: 26rpx;
-  font-weight: 700;
-  color: #262626;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #6c6a64;
   letter-spacing: 3rpx;
   text-transform: uppercase;
-  margin-bottom: 32rpx;
+  margin-bottom: 24rpx;
+  padding-left: 4rpx;
 }
 
 .tool-grid {
@@ -119,71 +122,66 @@
 
 .tool-card {
   flex: 1;
-  background: #ffffff;
-  border: 1rpx solid #e6e6e6;
-  padding: 0;
+  background: #efe9de;
+  border: none;
+  border-radius: 24rpx;
+  padding: 32rpx 24rpx 28rpx;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
 .tool-card:active {
-  border-color: #262626;
+  background: #e8e0d2;
 }
 
 .tool-hover {
-  border-color: #262626;
+  background: #e8e0d2;
 }
 
 .tool-disabled {
   opacity: 0.45;
 }
 
-.tool-photo {
-  background: #fafafa;
-  height: 180rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .tool-icon {
-  font-size: 56rpx;
+  font-size: 48rpx;
+  margin-bottom: 20rpx;
 }
 
 .tool-name {
   display: block;
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #262626;
-  padding: 20rpx 20rpx 8rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #141413;
   line-height: 1.4;
+  margin-bottom: 8rpx;
 }
 
 .tool-tag {
   display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 22rpx;
-  font-weight: 300;
-  color: #6b6b6b;
-  padding: 0 20rpx 20rpx;
+  font-weight: 400;
+  color: #6c6a64;
 }
 
 .tool-link {
   display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 24rpx;
-  font-weight: 700;
-  color: #262626;
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
-  padding: 0 20rpx 24rpx;
+  font-weight: 500;
+  color: #cc785c;
 }
 
-/* ──────────────────────────────────
-   快捷入口
-   ────────────────────────────────── */
+/* ═══════════════════════════════════════════
+   快捷入口 — 奶油卡片
+   ═══════════════════════════════════════════ */
 .shortcuts-band {
-  background: #f7f7f7;
-  padding: 0 48rpx;
+  background: #efe9de;
+  margin: 0 32rpx;
+  border-radius: 24rpx;
+  padding: 0 32rpx;
   opacity: 0;
 }
 
@@ -204,34 +202,36 @@
 
 .row-divider {
   height: 1rpx;
-  background: #e6e6e6;
+  background: #e6dfd8;
 }
 
 .shortcut-label {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 28rpx;
-  font-weight: 700;
-  color: #262626;
+  font-weight: 500;
+  color: #141413;
   letter-spacing: 0;
 }
 
 .shortcut-arrow {
   font-size: 36rpx;
-  color: #6b6b6b;
-  font-weight: 300;
+  color: #6c6a64;
+  font-weight: 400;
 }
 
-/* ──────────────────────────────────
+/* ═══════════════════════════════════════════
    备案号
-   ────────────────────────────────── */
+   ═══════════════════════════════════════════ */
 .footer {
-  background: #ffffff;
-  padding: 48rpx 0 32rpx;
+  background: #faf9f5;
+  padding: 56rpx 0 40rpx;
   text-align: center;
 }
 
 .icp {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   font-size: 22rpx;
-  font-weight: 300;
-  color: #9a9a9a;
+  font-weight: 400;
+  color: #8e8b82;
   letter-spacing: 0;
 }

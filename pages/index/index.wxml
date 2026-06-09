@@ -1,17 +1,17 @@
 <view class="page">
-  <!-- 深色 Hero Band -->
+  <!-- 奶油 Hero -->
   <view class="hero-band {{show ? 'anim-in' : ''}}">
     <text class="hero-title">刷个冯题</text>
     <text class="hero-tagline">刷题千万道，考试不怕考</text>
     <view class="hero-cta {{heroTapped ? 'tapped' : ''}}" bindtap="onFeatureTap" data-id="quiz" data-available="true" hover-class="cta-hover" hover-stay-time="100">
       <text class="cta-text">开始刷题</text>
     </view>
-    <text class="hero-sub">导入试题 · 5种题型 · 练习/考试</text>
+    <text class="hero-sub">导入试题 · 5 种题型 · 练习 / 考试</text>
   </view>
 
-  <!-- 工具区：白色画布 -->
+  <!-- 工具卡片 -->
   <view class="tools-band {{show ? 'anim-up' : ''}}">
-    <text class="band-label">工具</text>
+    <text class="band-label">TOOLS</text>
     <view class="tool-grid">
       <view
         class="tool-card {{item.available ? '' : 'tool-disabled'}}"
@@ -23,9 +23,7 @@
         hover-class="tool-hover"
         hover-stay-time="100"
       >
-        <view class="tool-photo">
-          <text class="tool-icon">{{item.icon}}</text>
-        </view>
+        <text class="tool-icon">{{item.icon}}</text>
         <text class="tool-name">{{item.name}}</text>
         <text class="tool-tag" wx:if="{{!item.available}}">即将上线</text>
         <text class="tool-link" wx:if="{{item.available}}">进入 ›</text>
@@ -33,7 +31,7 @@
     </view>
   </view>
 
-  <!-- 快捷入口 -->
+  <!-- 深色快捷入口 -->
   <view class="shortcuts-band {{show ? 'anim-up-delay' : ''}}">
     <view class="shortcut-row" bindtap="goToRecords" hover-class="row-hover" hover-stay-time="100">
       <text class="shortcut-label">答题记录</text>

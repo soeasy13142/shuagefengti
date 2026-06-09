@@ -2930,61 +2930,73 @@ AI 讲一下这题
 
 ---
 
-## 25. BMW Corporate 设计语言改造（2026-06-09）
+## 25. Claude Design 暖奶油画布改造（2026-06-09）
 
 ### 25.1 改造范围
 
-仅改造首页（`pages/index/`）和全局导航栏。
+仅改造首页（`pages/index/`）和全局导航栏。用 `.claude/skills/claude-design.md` 设计系统替换了此前的 BMW Corporate 设计。
 
 ### 25.2 设计参考
 
-使用项目 skills 中的 `.claude/skills/bmw-design.md`，BMW Corporate 官网设计语言。
+使用项目 skills 中的 `.claude/skills/claude-design.md`，Claude.com 暖奶油画布编辑式设计语言。
 
 ### 25.3 设计核心
 
-- **直角矩形**：所有按钮、卡片圆角为 0px（`{rounded.none}`），这是 BMW 品牌标志
-- **BMW Blue**：`#1c69d4` 作为唯一主色调，Active 状态 `#0653b6`
-- **深色 Hero Band**：深海军蓝 `#1a2129` 作为 Hero 区背景
-- **700/300 字重对比**：标题 700 weight，正文 300 weight（Light），500 不存在
-- **零阴影**：深度完全靠色块对比，不用任何投影
-- **大写标签**：工具区标签用 UPPERCASE + 1.5px letter-spacing
+- **暖奶油画布**：`#faf9f5` 作为全局页面背景，区别于冷灰白
+- **衬线标题**：Georgia 衬线字体 400 weight + 负字间距（-3rpx），文学编辑感
+- **珊瑚主色**：`#cc785c` 作为 CTA 和链接色，Active `#a9583e`
+- **奶油卡片**：`#efe9de` 作为功能卡片背景，圆角 24rpx
+- **深色点缀**：快捷入口用深海军蓝 `#181715`，提供节奏对比
+- **零阴影**：深度靠色块对比（奶油画布 vs 奶油卡片 vs 深海军蓝）
+- **UPPERCASE 标签**：工具区标签用大写 + 3rpx letter-spacing
 
 ### 25.4 色彩系统
 
 | 用途 | 色值 |
 |---|---|
-| 画布 | `#ffffff` |
-| Hero 背景 | `#1a2129` |
-| 主色 | `#1c69d4` |
-| 主色 Active | `#0653b6` |
-| 文字（标题） | `#262626` |
-| 文字（正文） | `#3c3c3c` |
-| 次要文字 | `#6b6b6b` |
-| 暗区文字 | `#ffffff` |
-| 暗区次要 | `#bbbbbb` |
-| 边框 | `#e6e6e6` |
-| 卡片底板 | `#fafafa` |
-| 软灰背景 | `#f7f7f7` |
+| 画布 | `#faf9f5`（暖奶油） |
+| 卡片底板 | `#efe9de`（奶油卡片） |
+| 卡片 Active | `#e8e0d2` |
+| 主色（珊瑚） | `#cc785c` |
+| 主色 Active | `#a9583e` |
+| 文字（标题） | `#141413`（暖墨） |
+| 次要文字 | `#6c6a64` |
+| 最次要文字 | `#8e8b82` |
+| 深色表面 | `#181715`（深海军蓝） |
+| 深色面上文字 | `#faf9f5` |
+| 深色面次要 | `#a09d96` |
+| 深色面分割线 | `#252320` |
+| 浅面分割线 | `#e6dfd8` |
 
 ### 25.5 修改的文件
 
 | 文件 | 改动 |
 |---|---|
-| `app.json` | 导航栏改为深海军蓝 `#1a2129`，白字 |
-| `pages/index/index.json` | 导航栏深海军蓝，白字 |
-| `pages/index/index.wxml` | 重写：深色 Hero Band + 矩形 CTA + 工具卡片网格 + 快捷列表 |
-| `pages/index/index.wxss` | 重写：BMW 色彩/字体/间距系统，零圆角、零阴影 |
+| `app.json` | 导航栏改为暖奶油 `#faf9f5`，黑字；页面背景同步 |
+| `app.wxss` | 全局背景色改为 `#faf9f5` |
+| `pages/index/index.json` | 页面导航栏暖奶油，黑字 |
+| `pages/index/index.wxml` | 简化结构：去掉 `tool-photo` 包裹层，标签改 `TOOLS` |
+| `pages/index/index.wxss` | 全部重写：Claude 色彩/衬线标题/奶油卡片/圆角 |
 
 ### 25.6 未改动
 
 - `pages/index/index.js`：业务逻辑不变
 - 其他页面：未触碰
 
-### 25.7 后续可扩展
+### 25.7 设计节奏
 
-如果要把 BMW 设计推广到其他页面：
-- 刷题列表页可改为白色画布 + 深色 Hero 条
-- 刷题页按钮统一为矩形直角
-- 全局可抽出 `app.wxss` 中的 BMW 设计 token 变量
-- M 三色条（蓝蓝红）可用于排序可视化等运动风格页面
+页面遵循 Claude 设计的 surface 交替节奏：
+
+```text
+奶油画布（Hero + 工具区 + 备案号）
+  ↓
+奶油卡片（工具卡片 + 快捷入口）
+  ↓
+全页面包在暖奶油色中，视觉统一
+```
+
+### 25.8 历史记录
+
+- 2026-06-09：首页先用 BMW Corporate 设计语言改造（深海军蓝 Hero + 蓝色 CTA + 零圆角）
+- 2026-06-09：替换为 Claude Design 暖奶油画布风格
 
