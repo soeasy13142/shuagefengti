@@ -13,6 +13,11 @@
       </view>
     </view>
 
+    <view class="beta-banner">
+      <text class="beta-tag">测试版</text>
+      <text class="beta-text">本功能仍在测试中，操作可能存在显示异常，如遇问题请刷新或切换模式重试</text>
+    </view>
+
     <!-- BST Mode -->
     <block wx:if="{{currentMode === 'bst'}}">
       <view class="viz-area">

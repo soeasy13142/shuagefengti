@@ -1,6 +1,32 @@
 .page { min-height: 100vh; background: #faf9f5; padding-bottom: 60rpx; }
 .content { padding: 0 32rpx; }
 
+/* Beta Banner */
+.beta-banner {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: #fff3cd;
+  border: 2rpx solid #e6c97a;
+  border-radius: 16rpx;
+  padding: 16rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+.beta-tag {
+  flex-shrink: 0;
+  background: #e6a030;
+  color: #fff;
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 4rpx 14rpx;
+  border-radius: 8rpx;
+}
+.beta-text {
+  font-size: 24rpx;
+  color: #8a6d20;
+  line-height: 1.4;
+}
+
 /* Mode Tabs */
 .mode-tabs { display: flex; gap: 12rpx; padding: 24rpx 0; }
 .mode-tab {
