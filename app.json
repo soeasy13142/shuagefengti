@@ -11,7 +11,8 @@
     "pages/dashboard/dashboard",
     "pages/subnet-calc/subnet-calc",
     "pages/sort-viz/sort-viz",
-    "pages/tcp-viz/tcp-viz"
+    "pages/tcp-viz/tcp-viz",
+    "pages/ds-viz/ds-viz"
   ],
   "window": {
     "navigationBarBackgroundColor": "#faf9f5",

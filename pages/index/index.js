@@ -28,6 +28,12 @@ Page({
         name: '单词记忆',
         icon: '📖',
         available: false
+      },
+      {
+        id: 'ds-viz',
+        name: '数据结构',
+        icon: '🌳',
+        available: true
       }
     ]
   },
@@ -61,6 +67,8 @@ Page({
       wx.navigateTo({ url: '/pages/sort-viz/sort-viz' });
     } else if (id === 'subnet-calc') {
       wx.navigateTo({ url: '/pages/subnet-calc/subnet-calc' });
+    } else if (id === 'ds-viz') {
+      wx.navigateTo({ url: '/pages/ds-viz/ds-viz' });
     } else if (id === 'tcp-viz') {
       wx.navigateTo({ url: '/pages/tcp-viz/tcp-viz' });
     }
