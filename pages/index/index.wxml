@@ -1,71 +1,143 @@
 <view class="page">
-  <!-- 奶油 Hero -->
+
+  <!-- ═══ ZONE 1: HERO（保持） ═══ -->
   <view class="hero-band {{show ? 'anim-in' : ''}}">
     <text class="hero-title">刷个冯题</text>
     <text class="hero-tagline">刷题千万道，考试不怕考</text>
-    <view class="hero-cta {{heroTapped ? 'tapped' : ''}}" bindtap="onFeatureTap" data-id="quiz" data-available="true" hover-class="cta-hover" hover-stay-time="100">
+    <view class="hero-cta {{heroTapped ? 'tapped' : ''}}" bindtap="onHeroTap" hover-class="cta-hover" hover-stay-time="100">
       <text class="cta-text">开始刷题</text>
     </view>
     <text class="hero-sub">导入试题 · 5 种题型 · 练习 / 考试</text>
   </view>
 
-  <!-- 工具卡片 -->
-  <view class="tools-band {{show ? 'anim-up' : ''}}">
-    <text class="band-label">工具 Tools</text>
-    <!-- 学习驾驶舱 — 全宽入口 -->
-    <view class="tool-card tool-card-full" bindtap="onFeatureTap" data-id="dashboard" data-available="true" hover-class="tool-hover" hover-stay-time="100">
-      <view class="tool-full-row">
-        <text class="tool-icon">📈</text>
-        <view class="tool-full-info">
-          <text class="tool-name">学习驾驶舱</text>
-          <text class="tool-desc">学习数据可视化 · 智能建议</text>
+  <!-- ═══ ZONE 2: 学习状态条（新增） ═══ -->
+  <view class="stats-band {{show ? 'anim-up' : ''}}" bindtap="goDashboard">
+    <view class="stats-card">
+      <view class="stats-header">
+        <text class="stats-title">📊 学习概览</text>
+        <text class="stats-link">进入 ›</text>
+      </view>
+      <view class="stats-grid" wx:if="{{stats.hasData}}">
+        <view class="stats-item">
+          <text class="stats-value">{{stats.totalQuestions}}</text>
+          <text class="stats-label">累计刷题</text>
         </view>
-        <text class="tool-link">进入 ›</text>
+        <view class="stats-item">
+          <text class="stats-value">{{stats.totalSessions}}</text>
+          <text class="stats-label">练习次数</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-value">{{stats.averageAccuracy}}%</text>
+          <text class="stats-label">正确率</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-value">{{stats.wrongCount}}</text>
+          <text class="stats-label">错题数</text>
+        </view>
       </view>
-    </view>
-
-    <!-- 网工工具 -->
-    <text class="sub-label">网工工具 NETools</text>
-    <view class="tool-grid">
-      <view
-        class="tool-card {{item.available ? '' : 'tool-disabled'}}"
-        wx:for="{{netTools}}"
-        wx:key="id"
-        data-id="{{item.id}}"
-        data-available="{{item.available}}"
-        bindtap="onFeatureTap"
-        hover-class="tool-hover"
-        hover-stay-time="100"
-      >
-        <text class="tool-icon">{{item.icon}}</text>
-        <text class="tool-name">{{item.name}}</text>
-        <text class="tool-tag" wx:if="{{!item.available}}">即将上线</text>
-        <text class="tool-link" wx:if="{{item.available}}">进入 ›</text>
-      </view>
-    </view>
-
-    <!-- 通用工具 -->
-    <text class="sub-label">通用工具 Utilities</text>
-    <view class="tool-grid">
-      <view
-        class="tool-card {{item.available ? '' : 'tool-disabled'}}"
-        wx:for="{{utilTools}}"
-        wx:key="id"
-        data-id="{{item.id}}"
-        data-available="{{item.available}}"
-        bindtap="onFeatureTap"
-        hover-class="tool-hover"
-        hover-stay-time="100"
-      >
-        <text class="tool-icon">{{item.icon}}</text>
-        <text class="tool-name">{{item.name}}</text>
-        <text class="tool-tag" wx:if="{{!item.available}}">即将上线</text>
-        <text class="tool-link" wx:if="{{item.available}}">进入 ›</text>
+      <view class="stats-empty" wx:else>
+        <text class="stats-empty-text">完成一次练习后查看学习数据</text>
       </view>
     </view>
   </view>
 
-  <!-- 深色快捷入口 -->
+  <!-- ═══ ZONE 3: 工具箱（重构核心） ═══ -->
+  <view class="tools-band {{show ? 'anim-up' : ''}}">
+    <text class="band-label">工具箱 Tools</text>
+
+    <!-- 分类标签栏（横向滚动） -->
+    <scroll-view class="category-tabs" scroll-x show-scrollbar="{{false}}" enable-flex>
+      <view class="category-tab {{activeCategory === 'all' ? 'active' : ''}}" data-id="all" bindtap="onCategoryTap">
+        <text>全部工具</text>
+      </view>
+      <view
+        class="category-tab {{activeCategory === item.id ? 'active' : ''}}"
+        wx:for="{{activeCategories}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onCategoryTap"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 「全部工具」视图：按分类分组 -->
+    <block wx:if="{{activeCategory === 'all'}}">
+      <view class="cat-section" wx:for="{{allViewData}}" wx:key="category.id" wx:for-item="section">
+        <text class="sub-label">{{section.category.name}}</text>
+        <view class="tool-grid">
+          <view
+            class="tool-card"
+            wx:for="{{section.tools}}"
+            wx:key="id"
+            wx:for-item="tool"
+            data-id="{{tool.id}}"
+            data-available="{{tool.available}}"
+            bindtap="onToolTap"
+            hover-class="tool-hover"
+            hover-stay-time="100"
+          >
+            <text class="tool-icon">{{tool.icon}}</text>
+            <text class="tool-name">{{tool.name}}</text>
+            <text class="tool-desc">{{tool.description}}</text>
+            <text class="tool-link" wx:if="{{tool.available}}">进入 ›</text>
+            <text class="tool-tag" wx:else>即将上线</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 单一分类视图：可用 + 即将推出 分组 -->
+    <block wx:else>
+      <!-- 可用工具 -->
+      <block wx:if="{{availableTools.length > 0}}">
+        <view class="sub-label">可用工具</view>
+        <view class="tool-grid">
+          <view
+            class="tool-card"
+            wx:for="{{availableTools}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            data-available="true"
+            bindtap="onToolTap"
+            hover-class="tool-hover"
+            hover-stay-time="100"
+          >
+            <text class="tool-icon">{{item.icon}}</text>
+            <text class="tool-name">{{item.name}}</text>
+            <text class="tool-desc">{{item.description}}</text>
+            <text class="tool-link">进入 ›</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- 即将推出：紧凑列表 -->
+      <block wx:if="{{unavailableTools.length > 0}}">
+        <view class="sub-label">即将推出</view>
+        <view class="coming-soon-list">
+          <view
+            class="coming-soon-item"
+            wx:for="{{unavailableTools}}"
+            wx:key="id"
+          >
+            <text class="cs-icon">{{item.icon}}</text>
+            <view class="cs-info">
+              <text class="cs-name">{{item.name}}</text>
+              <text class="cs-desc">{{item.description}}</text>
+            </view>
+            <text class="cs-tag">即将上线</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- 全空 -->
+      <view class="empty-cat" wx:if="{{availableTools.length === 0 && unavailableTools.length === 0}}">
+        <text class="empty-cat-text">该分类的工具正在开发中</text>
+      </view>
+    </block>
+  </view>
+
+  <!-- ═══ ZONE 4: 快捷入口（保持） ═══ -->
   <view class="shortcuts-band {{show ? 'anim-up-delay' : ''}}">
     <view class="shortcut-row" bindtap="goToRecords" hover-class="row-hover" hover-stay-time="100">
       <text class="shortcut-label">答题记录</text>
@@ -78,8 +150,9 @@
     </view>
   </view>
 
-  <!-- 备案号 -->
+  <!-- ═══ ZONE 5: 备案号（保持） ═══ -->
   <view class="footer">
     <text class="icp">苏ICP备2026036865号-1X</text>
   </view>
+
 </view>

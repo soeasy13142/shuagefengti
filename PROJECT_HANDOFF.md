@@ -4116,3 +4116,80 @@ Tests:       139 passed, 139 total
 ```
 
 新增 35 个 TCP 测试用例，原有 104 个测试全部通过。
+
+---
+
+## 31. 首页信息架构重构（2026-06-13）
+
+### 31.1 背景
+
+首页原有 6 个架构问题（详见 `docs/design/2026-06-13-homepage-redesign.md`）：
+
+1. 学习驾驶舱放在「工具」区域，语义错误
+2. 只有 4 个工具就分了 2 个子类，过早抽象
+3. 工具增长无承载空间
+4. 刷题模块与工具模块权重失衡
+5. 「单词记忆」是 dead space
+6. 缺少「工具发现」机制
+
+### 31.2 改动内容
+
+#### 新建文件
+
+| 文件 | 说明 |
+|---|---|
+| `utils/tool-registry.js` | 工具注册表：5 个分类 + 23 个工具（4 个已实现 + 19 个预注册） |
+| `tests/utils/tool-registry.test.js` | 注册表测试：18 个用例 |
+
+#### 修改文件
+
+| 文件 | 改动 |
+|---|---|
+| `pages/index/index.js` | 重写：引入 tool-registry + analytics，新增 loadStats/onCategoryTap |
+| `pages/index/index.wxml` | 重写：5 Zone 结构（Hero/状态条/工具箱/快捷入口/备案号） |
+| `pages/index/index.wxss` | 重写：新增 stats-band、category-tabs、tool-desc 样式 |
+
+#### 未修改文件
+
+`app.json`、`app.wxss`、所有 `pages/` 子页面、所有 `utils/` 工具模块——完全未动。
+
+### 31.3 新首页结构
+
+```
+Zone 1 — Hero（不变）
+  刷个冯题 · Tagline · 开始刷题 CTA
+
+Zone 2 — 学习状态条（新增）
+  📊 学习概览 + 4 个指标（累计刷题/练习次数/正确率/错题数）
+  点击 → Dashboard
+  空数据时显示引导文案
+
+Zone 3 — 工具箱（重构）
+  分类标签栏：[全部工具] [计算机网络] [算法&数据结构] ...
+  全部工具视图：按分类分组，每分类最多 4 张卡片
+  单一分类视图：2 列完整网格（含未实现工具灰显）
+
+Zone 4 — 快捷入口（不变）
+  答题记录 › | 错题本 ›
+
+Zone 5 — 备案号（不变）
+```
+
+### 31.4 工具分类体系
+
+| 分类 | ID | 已实现工具 |
+|---|---|---|
+| 计算机网络 | `network` | 子网计算器、TCP 动画机 |
+| 操作系统 | `os` | 无（5 个预注册） |
+| 密码学 | `crypto` | 无（5 个预注册） |
+| 算法 & 数据结构 | `algo` | 排序可视化、数据结构可视化 |
+| 编译原理 | `compiler` | 无（4 个预注册） |
+
+### 31.5 测试状态
+
+```text
+Test Suites: 12 passed, 12 total
+Tests:       236 passed, 236 total
+```
+
+新增 18 个 tool-registry 测试，原有 218 个测试全部通过。
