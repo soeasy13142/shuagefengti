@@ -1,0 +1,371 @@
+/* ═══════════════════════════════════════════
+   子网计算器 — Claude Design 暖奶油画布
+   ═══════════════════════════════════════════ */
+
+/* ── 页面画布 ── */
+.page {
+  min-height: 100vh;
+  background: #faf9f5;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(80rpx + env(safe-area-inset-bottom));
+}
+
+/* ── 通用 Section ── */
+.section {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-label {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #6c6a64;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  margin-bottom: 20rpx;
+}
+
+/* ═══════════════════════════════════════════
+   IP 输入区
+   ═══════════════════════════════════════════ */
+.ip-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ip-octet {
+  width: 100rpx;
+  height: 80rpx;
+  background: #faf9f5;
+  border: 2rpx solid #e6dfd8;
+  border-radius: 16rpx;
+  text-align: center;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #141413;
+}
+
+.ip-dot {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #141413;
+  margin: 0 8rpx;
+}
+
+.ip-slash {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #cc785c;
+  margin-left: 16rpx;
+  margin-right: 8rpx;
+}
+
+.cidr-value {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #cc785c;
+  min-width: 56rpx;
+}
+
+.error-hint {
+  margin-top: 16rpx;
+  padding: 12rpx 20rpx;
+  background: rgba(252, 165, 165, 0.2);
+  border-radius: 12rpx;
+}
+
+.error-text {
+  font-size: 24rpx;
+  color: #dc2626;
+}
+
+/* ═══════════════════════════════════════════
+   CIDR 滑块
+   ═══════════════════════════════════════════ */
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slider-value {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #cc785c;
+}
+
+.slider-range {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8rpx;
+}
+
+.range-label {
+  font-size: 22rpx;
+  color: #8e8b82;
+}
+
+/* ═══════════════════════════════════════════
+   快捷 CIDR 按钮
+   ═══════════════════════════════════════════ */
+.quick-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.quick-btn {
+  padding: 14rpx 24rpx;
+  background: #faf9f5;
+  border: 2rpx solid #e6dfd8;
+  border-radius: 999rpx;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #141413;
+  transition: all 0.15s ease;
+}
+
+.quick-btn:active {
+  background: #e8e0d2;
+}
+
+.quick-active {
+  background: #cc785c;
+  border-color: #cc785c;
+  color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════
+   二进制位可视化
+   ═══════════════════════════════════════════ */
+.binary-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.binary-label {
+  width: 56rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #6c6a64;
+  flex-shrink: 0;
+}
+
+.binary-bits {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.bit-cell {
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 20rpx;
+  font-weight: 600;
+  margin: 2rpx;
+  border-radius: 6rpx;
+}
+
+.bit-network {
+  background: #cc785c;
+  color: #ffffff;
+}
+
+.bit-host {
+  background: #7dd3fc;
+  color: #0c4a6e;
+}
+
+.bit-gap {
+  margin-right: 12rpx;
+}
+
+.binary-legend {
+  display: flex;
+  gap: 32rpx;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #e6dfd8;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.legend-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 6rpx;
+}
+
+.legend-network {
+  background: #cc785c;
+}
+
+.legend-host {
+  background: #7dd3fc;
+}
+
+.legend-text {
+  font-size: 22rpx;
+  color: #6c6a64;
+}
+
+/* ═══════════════════════════════════════════
+   计算结果
+   ═══════════════════════════════════════════ */
+.result-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #e6dfd8;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-label {
+  font-size: 26rpx;
+  color: #6c6a64;
+}
+
+.result-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #141413;
+}
+
+.result-value.mono {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+}
+
+.result-value.small {
+  font-size: 24rpx;
+}
+
+.result-highlight {
+  background: rgba(204, 120, 92, 0.08);
+  margin: 8rpx -12rpx 0;
+  padding: 16rpx 12rpx;
+  border-radius: 12rpx;
+  border-bottom: none;
+}
+
+.result-highlight .result-value.big {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #cc785c;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+}
+
+/* ═══════════════════════════════════════════
+   地址分类
+   ═══════════════════════════════════════════ */
+.type-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.type-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.type-label {
+  font-size: 26rpx;
+  color: #6c6a64;
+}
+
+.type-value {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #141413;
+}
+
+.type-private {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.type-public {
+  color: #6c6a64;
+}
+
+/* ═══════════════════════════════════════════
+   帮助说明
+   ═══════════════════════════════════════════ */
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.help-header .section-label {
+  margin-bottom: 0;
+}
+
+.help-toggle {
+  font-size: 24rpx;
+  color: #cc785c;
+  font-weight: 500;
+}
+
+.help-content {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #e6dfd8;
+}
+
+.help-item {
+  margin-bottom: 20rpx;
+}
+
+.help-item:last-child {
+  margin-bottom: 0;
+}
+
+.help-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #141413;
+  margin-bottom: 8rpx;
+}
+
+.help-desc {
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6c6a64;
+}
+
+/* ── 底部留白 ── */
+.bottom-spacer {
+  height: 40rpx;
+}

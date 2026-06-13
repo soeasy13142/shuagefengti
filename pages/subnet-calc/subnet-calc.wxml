@@ -1,0 +1,198 @@
+<view class="page">
+  <!-- 输入区 -->
+  <view class="section input-section">
+    <text class="section-label">IP 地址</text>
+    <view class="ip-row">
+      <input class="ip-octet" type="number" maxlength="3" value="{{ip0}}" bindinput="onIp0Input" />
+      <text class="ip-dot">.</text>
+      <input class="ip-octet" type="number" maxlength="3" value="{{ip1}}" bindinput="onIp1Input" />
+      <text class="ip-dot">.</text>
+      <input class="ip-octet" type="number" maxlength="3" value="{{ip2}}" bindinput="onIp2Input" />
+      <text class="ip-dot">.</text>
+      <input class="ip-octet" type="number" maxlength="3" value="{{ip3}}" bindinput="onIp3Input" />
+      <text class="ip-slash">/</text>
+      <text class="cidr-value">{{cidr}}</text>
+    </view>
+    <view class="error-hint" wx:if="{{error}}">
+      <text class="error-text">{{error}}</text>
+    </view>
+  </view>
+
+  <!-- CIDR 滑块 -->
+  <view class="section slider-section">
+    <view class="slider-header">
+      <text class="section-label">CIDR 前缀长度</text>
+      <text class="slider-value">/{{cidr}}</text>
+    </view>
+    <slider
+      class="cidr-slider"
+      min="0"
+      max="32"
+      step="1"
+      value="{{cidr}}"
+      activeColor="#cc785c"
+      backgroundColor="#e6dfd8"
+      block-size="22"
+      block-color="#cc785c"
+      bindchange="onCidrChange"
+    />
+    <view class="slider-range">
+      <text class="range-label">/0</text>
+      <text class="range-label">/32</text>
+    </view>
+  </view>
+
+  <!-- 快捷 CIDR 按钮 -->
+  <view class="section quick-section">
+    <text class="section-label">常用子网</text>
+    <view class="quick-grid">
+      <view
+        class="quick-btn {{cidr === item ? 'quick-active' : ''}}"
+        wx:for="{{quickCidrs}}"
+        wx:key="*this"
+        data-cidr="{{item}}"
+        bindtap="onQuickCidr"
+      >/{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 二进制位可视化 -->
+  <view class="section binary-section" wx:if="{{result}}">
+    <text class="section-label">二进制位运算</text>
+
+    <!-- IP 地址 -->
+    <view class="binary-row">
+      <text class="binary-label">IP</text>
+      <view class="binary-bits">
+        <view
+          class="bit-cell {{item.isNetwork ? 'bit-network' : 'bit-host'}} {{item.isOctetEnd ? 'bit-gap' : ''}}"
+          wx:for="{{ipBits}}"
+          wx:key="index"
+        >{{item.value}}</view>
+      </view>
+    </view>
+
+    <!-- 子网掩码 -->
+    <view class="binary-row">
+      <text class="binary-label">掩码</text>
+      <view class="binary-bits">
+        <view
+          class="bit-cell {{item.isNetwork ? 'bit-network' : 'bit-host'}} {{item.isOctetEnd ? 'bit-gap' : ''}}"
+          wx:for="{{maskBits}}"
+          wx:key="index"
+        >{{item.value}}</view>
+      </view>
+    </view>
+
+    <!-- 网络地址 -->
+    <view class="binary-row">
+      <text class="binary-label">网络</text>
+      <view class="binary-bits">
+        <view
+          class="bit-cell {{item.isNetwork ? 'bit-network' : 'bit-host'}} {{item.isOctetEnd ? 'bit-gap' : ''}}"
+          wx:for="{{networkBits}}"
+          wx:key="index"
+        >{{item.value}}</view>
+      </view>
+    </view>
+
+    <!-- 广播地址 -->
+    <view class="binary-row">
+      <text class="binary-label">广播</text>
+      <view class="binary-bits">
+        <view
+          class="bit-cell {{item.isNetwork ? 'bit-network' : 'bit-host'}} {{item.isOctetEnd ? 'bit-gap' : ''}}"
+          wx:for="{{broadcastBits}}"
+          wx:key="index"
+        >{{item.value}}</view>
+      </view>
+    </view>
+
+    <!-- 分界标注 -->
+    <view class="binary-legend">
+      <view class="legend-item">
+        <view class="legend-dot legend-network"></view>
+        <text class="legend-text">网络位</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-host"></view>
+        <text class="legend-text">主机位</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 计算结果 -->
+  <view class="section result-section" wx:if="{{result}}">
+    <text class="section-label">计算结果</text>
+    <view class="result-grid">
+      <view class="result-item">
+        <text class="result-label">子网掩码</text>
+        <text class="result-value mono">{{result.subnetMask}}</text>
+      </view>
+      <view class="result-item">
+        <text class="result-label">网络地址</text>
+        <text class="result-value mono">{{result.networkAddress}}</text>
+      </view>
+      <view class="result-item">
+        <text class="result-label">广播地址</text>
+        <text class="result-value mono">{{result.broadcastAddress}}</text>
+      </view>
+      <view class="result-item">
+        <text class="result-label">可用范围</text>
+        <text class="result-value mono small">{{result.firstHost}} — {{result.lastHost}}</text>
+      </view>
+      <view class="result-item result-highlight">
+        <text class="result-label">可用主机数</text>
+        <text class="result-value big">{{result.totalHosts}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 子网类型 -->
+  <view class="section type-section" wx:if="{{result}}">
+    <text class="section-label">地址分类</text>
+    <view class="type-card">
+      <view class="type-row">
+        <text class="type-label">地址类别</text>
+        <text class="type-value">{{result.ipClass}} 类</text>
+      </view>
+      <view class="type-row">
+        <text class="type-label">私有地址</text>
+        <text class="type-value {{result.isPrivate ? 'type-private' : 'type-public'}}">{{result.isPrivate ? '是' : '否'}}</text>
+      </view>
+      <view class="type-row">
+        <text class="type-label">说明</text>
+        <text class="type-value">{{result.description}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 帮助说明 -->
+  <view class="section help-section">
+    <view class="help-header" bindtap="toggleHelp">
+      <text class="section-label">帮助说明</text>
+      <text class="help-toggle">{{showHelp ? '收起' : '展开'}}</text>
+    </view>
+    <view class="help-content" wx:if="{{showHelp}}">
+      <view class="help-item">
+        <text class="help-title">什么是 CIDR？</text>
+        <text class="help-desc">CIDR（无类别域间路由）用 /N 表示网络前缀长度。N 越大，子网越小，可用主机数越少。</text>
+      </view>
+      <view class="help-item">
+        <text class="help-title">子网掩码的作用</text>
+        <text class="help-desc">子网掩码将 IP 地址分为网络部分和主机部分。网络位为 1，主机位为 0。</text>
+      </view>
+      <view class="help-item">
+        <text class="help-title">网络地址 & 广播地址</text>
+        <text class="help-desc">网络地址 = IP AND 掩码，是子网的第一个地址。广播地址是最后一个，不能分配给主机。</text>
+      </view>
+      <view class="help-item">
+        <text class="help-title">可用主机数公式</text>
+        <text class="help-desc">2^(32-N) - 2。减 2 是因为网络地址和广播地址不可分配。/32 为单主机地址，/31 为点对点链路。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部留白 -->
+  <view class="bottom-spacer"></view>
+</view>

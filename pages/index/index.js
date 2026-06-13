@@ -4,6 +4,13 @@ Page({
     heroTapped: false,
     features: [
       {
+        id: 'subnet-calc',
+        name: '子网计算器',
+        icon: '🌐',
+        gradient: 'linear-gradient(135deg, #667eea, #764ba2)',
+        available: true
+      },
+      {
         id: 'sort-viz',
         name: '排序可视化',
         icon: '📊',
@@ -47,6 +54,8 @@ Page({
       }, 350);
     } else if (id === 'sort-viz') {
       wx.navigateTo({ url: '/pages/sort-viz/sort-viz' });
+    } else if (id === 'subnet-calc') {
+      wx.navigateTo({ url: '/pages/subnet-calc/subnet-calc' });
     }
   },
 
