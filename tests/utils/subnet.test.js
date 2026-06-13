@@ -5,7 +5,8 @@ const {
   ipToBinary,
   cidrToMask,
   calculateSubnet,
-  classifyIp
+  classifyIp,
+  generateAndSteps
 } = require('../../utils/subnet');
 
 describe('validateIp', () => {
@@ -308,5 +309,64 @@ describe('classifyIp', () => {
   test('当前网络保留地址', () => {
     expect(classifyIp([0, 0, 0, 0]).ipClass).toBe('特殊');
     expect(classifyIp([0, 0, 0, 0]).description).toContain('保留');
+  });
+});
+
+describe('generateAndSteps', () => {
+  const ipBinary = ['11000000', '10101000', '00000001', '01100100'];
+  const maskBinary = ['11111111', '11111111', '11111111', '11000000'];
+
+  test('逐字节模式返回 5 步（4 and-octet + 1 done）', () => {
+    const steps = generateAndSteps(ipBinary, maskBinary, 'octet');
+    expect(steps).toHaveLength(5);
+    expect(steps[0].type).toBe('and-octet');
+    expect(steps[1].type).toBe('and-octet');
+    expect(steps[2].type).toBe('and-octet');
+    expect(steps[3].type).toBe('and-octet');
+    expect(steps[4].type).toBe('done');
+  });
+
+  test('逐位模式返回 33 步（32 and-bit + 1 done）', () => {
+    const steps = generateAndSteps(ipBinary, maskBinary, 'bit');
+    expect(steps).toHaveLength(33);
+    expect(steps[0].type).toBe('and-bit');
+    expect(steps[31].type).toBe('and-bit');
+    expect(steps[32].type).toBe('done');
+  });
+
+  test('逐字节第4段 AND 正确：01100100 AND 11000000 = 01000000', () => {
+    const steps = generateAndSteps(ipBinary, maskBinary, 'octet');
+    const step3 = steps[3];
+    expect(step3.octetIndex).toBe(3);
+    expect(step3.ipBits).toBe('01100100');
+    expect(step3.maskBits).toBe('11000000');
+    expect(step3.resultBits).toBe('01000000');
+    expect(step3.ipDecimal).toBe(100);
+    expect(step3.maskDecimal).toBe(192);
+    expect(step3.resultDecimal).toBe(64);
+  });
+
+  test('逐位模式每步 AND 结果正确', () => {
+    const steps = generateAndSteps(ipBinary, maskBinary, 'bit');
+    for (let i = 0; i < 32; i++) {
+      const step = steps[i];
+      const expected = (step.ipBit === '1' && step.maskBit === '1') ? '1' : '0';
+      expect(step.resultBit).toBe(expected);
+    }
+  });
+
+  test('done 步骤包含正确的网络地址', () => {
+    const steps = generateAndSteps(ipBinary, maskBinary, 'octet');
+    const done = steps[steps.length - 1];
+    expect(done.type).toBe('done');
+    expect(done.resultDecimal).toBe('192.168.1.64');
+    expect(done.resultBinary).toEqual(['11000000', '10101000', '00000001', '01000000']);
+  });
+
+  test('空输入返回空数组', () => {
+    expect(generateAndSteps(null, maskBinary, 'octet')).toEqual([]);
+    expect(generateAndSteps(ipBinary, null, 'octet')).toEqual([]);
+    expect(generateAndSteps([], [], 'octet')).toEqual([]);
+    expect(generateAndSteps(ipBinary, maskBinary, 'invalid')).toEqual([]);
   });
 });

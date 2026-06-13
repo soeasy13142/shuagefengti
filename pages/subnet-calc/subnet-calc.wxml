@@ -121,6 +121,68 @@
     </view>
   </view>
 
+  <!-- AND 运算演示 -->
+  <view class="section and-section" wx:if="{{result}}">
+    <text class="section-label">AND 运算演示</text>
+
+    <!-- 模式切换 -->
+    <view class="and-mode-row">
+      <view class="and-mode-btn {{andMode === 'octet' ? 'and-mode-active' : ''}}" data-mode="octet" bindtap="onAndModeChange">逐字节</view>
+      <view class="and-mode-btn {{andMode === 'bit' ? 'and-mode-active' : ''}}" data-mode="bit" bindtap="onAndModeChange">逐位</view>
+    </view>
+
+    <!-- 动画可视化区 -->
+    <view class="and-viz">
+      <!-- IP 行 -->
+      <view class="and-row">
+        <text class="and-label">IP</text>
+        <view class="and-bits">
+          <view class="and-bit {{item.state}} {{(index + 1) % 8 === 0 && index < 31 ? 'and-bit-gap' : ''}}"
+                wx:for="{{andIpDisplay}}" wx:key="index">{{item.value}}</view>
+        </view>
+      </view>
+
+      <!-- AND 运算符 -->
+      <view class="and-op-row">
+        <text class="and-op-text">AND</text>
+      </view>
+
+      <!-- 掩码行 -->
+      <view class="and-row">
+        <text class="and-label">掩码</text>
+        <view class="and-bits">
+          <view class="and-bit {{item.state}} {{(index + 1) % 8 === 0 && index < 31 ? 'and-bit-gap' : ''}}"
+                wx:for="{{andMaskDisplay}}" wx:key="index">{{item.value}}</view>
+        </view>
+      </view>
+
+      <!-- 分隔线 -->
+      <view class="and-divider"></view>
+
+      <!-- 结果行 -->
+      <view class="and-row">
+        <text class="and-label">网络</text>
+        <view class="and-bits">
+          <view class="and-bit {{item.state}} {{(index + 1) % 8 === 0 && index < 31 ? 'and-bit-gap' : ''}}"
+                wx:for="{{andResultDisplay}}" wx:key="index">{{item.value}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 步骤描述 -->
+    <view class="and-desc">
+      <text class="and-desc-text">{{andStepDesc}}</text>
+    </view>
+
+    <!-- 控制栏 -->
+    <view class="and-controls">
+      <view class="and-ctrl-btn" bindtap="onAndReset">重置</view>
+      <view class="and-ctrl-btn" bindtap="onAndStepPrev">◀</view>
+      <view class="and-ctrl-btn and-play-btn" bindtap="{{andPlaying ? 'onAndPause' : 'onAndPlay'}}">{{andPlaying ? '⏸' : '▶'}}</view>
+      <view class="and-ctrl-btn" bindtap="onAndStepNext">▶</view>
+    </view>
+  </view>
+
   <!-- 计算结果 -->
   <view class="section result-section" wx:if="{{result}}">
     <text class="section-label">计算结果</text>

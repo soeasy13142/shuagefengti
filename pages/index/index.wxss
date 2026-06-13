@@ -115,6 +115,18 @@
   padding-left: 4rpx;
 }
 
+.sub-label {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #8e8b82;
+  letter-spacing: 1rpx;
+  margin-bottom: 16rpx;
+  margin-top: 28rpx;
+  padding-left: 4rpx;
+}
+
 .tool-grid {
   display: flex;
   gap: 20rpx;

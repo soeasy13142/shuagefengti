@@ -369,3 +369,179 @@
 .bottom-spacer {
   height: 40rpx;
 }
+
+/* ═══════════════════════════════════════════
+   AND 运算演示
+   ═══════════════════════════════════════════ */
+.and-section {
+  padding-bottom: 24rpx;
+}
+
+/* 模式切换 */
+.and-mode-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.and-mode-btn {
+  padding: 12rpx 28rpx;
+  background: #faf9f5;
+  border: 2rpx solid #e6dfd8;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #6c6a64;
+  transition: all 0.15s ease;
+}
+
+.and-mode-btn:active {
+  background: #e8e0d2;
+}
+
+.and-mode-active {
+  background: #cc785c;
+  border-color: #cc785c;
+  color: #ffffff;
+}
+
+/* 动画可视化区 */
+.and-viz {
+  margin-bottom: 20rpx;
+}
+
+.and-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.and-label {
+  width: 56rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #6c6a64;
+  flex-shrink: 0;
+}
+
+.and-bits {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.and-bit {
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 20rpx;
+  font-weight: 600;
+  margin: 2rpx;
+  border-radius: 6rpx;
+  transition: all 0.2s ease;
+}
+
+.and-bit-gap {
+  margin-right: 12rpx;
+}
+
+.and-bit-dim {
+  background: #e6dfd8;
+  color: #8e8b82;
+}
+
+.and-bit-active {
+  background: #cc785c;
+  color: #ffffff;
+  transform: scale(1.15);
+  box-shadow: 0 2rpx 8rpx rgba(204, 120, 92, 0.4);
+}
+
+.and-bit-done {
+  background: #e6dfd8;
+  color: #6c6a64;
+}
+
+.and-bit-done-1 {
+  background: #cc785c;
+  color: #ffffff;
+}
+
+.and-bit-done-0 {
+  background: #f5f0ea;
+  color: #8e8b82;
+}
+
+/* AND 运算符 */
+.and-op-row {
+  display: flex;
+  justify-content: center;
+  padding: 8rpx 0;
+}
+
+.and-op-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #cc785c;
+  letter-spacing: 4rpx;
+}
+
+/* 分隔线 */
+.and-divider {
+  height: 2rpx;
+  background: #e6dfd8;
+  margin: 8rpx 0 8rpx 56rpx;
+}
+
+/* 步骤描述 */
+.and-desc {
+  padding: 16rpx 20rpx;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.and-desc-text {
+  font-size: 24rpx;
+  color: #141413;
+  line-height: 1.5;
+}
+
+/* 控制栏 */
+.and-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.and-ctrl-btn {
+  padding: 12rpx 24rpx;
+  background: #faf9f5;
+  border: 2rpx solid #e6dfd8;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #141413;
+  min-width: 72rpx;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.and-ctrl-btn:active {
+  background: #e8e0d2;
+}
+
+.and-play-btn {
+  background: #cc785c;
+  border-color: #cc785c;
+  color: #ffffff;
+  padding: 12rpx 32rpx;
+}
+
+.and-play-btn:active {
+  background: #a9583e;
+}

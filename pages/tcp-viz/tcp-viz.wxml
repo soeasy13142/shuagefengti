@@ -1,0 +1,155 @@
+<view class="tcp-page">
+
+  <!-- 模式选择 -->
+  <view class="mode-tabs">
+    <view class="mode-tab {{mode==='handshake'?'mode-active':''}}" bindtap="onModeChange" data-mode="handshake">三次握手</view>
+    <view class="mode-tab {{mode==='data'?'mode-active':''}}" bindtap="onModeChange" data-mode="data">数据传输</view>
+    <view class="mode-tab {{mode==='data-loss'?'mode-active':''}}" bindtap="onModeChange" data-mode="data-loss">丢包重传</view>
+    <view class="mode-tab {{mode==='teardown'?'mode-active':''}}" bindtap="onModeChange" data-mode="teardown">四次挥手</view>
+  </view>
+
+  <!-- 数据传输场景说明 -->
+  <view class="scenario-hint" wx:if="{{dataScenarioDesc}}">
+    <text class="scenario-hint-text">{{dataScenarioDesc}}</text>
+  </view>
+
+  <!-- 序列图 -->
+  <view class="diagram-card">
+    <!-- 端点标签 -->
+    <view class="diagram-header">
+      <view class="diagram-col col-left">
+        <text class="endpoint-name">Client</text>
+      </view>
+      <view class="diagram-col col-mid"></view>
+      <view class="diagram-col col-right">
+        <text class="endpoint-name">Server</text>
+      </view>
+    </view>
+
+    <!-- 箭头区域 -->
+    <view class="arrows-area">
+      <view wx:for="{{visibleArrows}}" wx:key="step" class="arrow-row">
+        <view class="diagram-col col-left">
+          <view class="v-line-seg"></view>
+        </view>
+        <view class="diagram-col col-mid">
+          <view class="arrow arrow-{{item.direction}} arrow-type-{{item.arrowType}} {{item.isCurrent ? 'arrow-current' : 'arrow-past'}}">
+            <view class="arrow-line"></view>
+            <view class="arrow-head arrow-head-{{item.direction}}"></view>
+            <text class="arrow-label">{{item.label}}</text>
+          </view>
+        </view>
+        <view class="diagram-col col-right">
+          <view class="v-line-seg"></view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="arrows-empty" wx:if="{{visibleArrows.length === 0}}">
+        <text class="arrows-empty-text">点击 ▶ 开始演示</text>
+      </view>
+    </view>
+
+    <!-- 状态标签 -->
+    <view class="state-bar">
+      <view class="state-badge" style="background: {{clientStateColor}}">
+        <text class="state-badge-text">{{clientStateLabel}}</text>
+      </view>
+      <view class="state-badge" style="background: {{serverStateColor}}">
+        <text class="state-badge-text">{{serverStateLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤详情 -->
+  <view class="detail-card" wx:if="{{currentStep}}">
+    <view class="detail-header">
+      <text class="detail-step-num">步骤 {{stepIndex + 1}}/{{totalSteps}}</text>
+      <text class="detail-title">{{currentStep.name}}</text>
+    </view>
+
+    <!-- 标志位 -->
+    <view class="flags-row">
+      <view wx:for="{{flagItems}}" wx:key="name" class="flag-badge {{item.active ? 'flag-active' : ''}}">
+        {{item.name}}
+      </view>
+    </view>
+
+    <!-- seq/ack -->
+    <view class="seq-area">
+      <view class="seq-item" wx:if="{{currentStep.seq !== null && currentStep.seq !== undefined}}">
+        <text class="seq-label">seq</text>
+        <text class="seq-value">{{currentStep.seq}}</text>
+      </view>
+      <view class="seq-item" wx:if="{{currentStep.ack !== null && currentStep.ack !== undefined}}">
+        <text class="seq-label">ack</text>
+        <text class="seq-value">{{currentStep.ack}}</text>
+      </view>
+      <view class="seq-item" wx:if="{{currentStep.dataLen}}">
+        <text class="seq-label">len</text>
+        <text class="seq-value">{{currentStep.dataLen}}</text>
+      </view>
+    </view>
+
+    <!-- 状态变化 -->
+    <view class="state-change-area">
+      <view class="state-change" wx:if="{{currentStep.clientState}}">
+        <text class="sc-label">Client</text>
+        <text class="sc-from">{{currentStep.clientState.from}}</text>
+        <text class="sc-arrow">→</text>
+        <text class="sc-to">{{currentStep.clientState.to}}</text>
+      </view>
+      <view class="state-change" wx:if="{{currentStep.serverState}}">
+        <text class="sc-label">Server</text>
+        <text class="sc-from">{{currentStep.serverState.from}}</text>
+        <text class="sc-arrow">→</text>
+        <text class="sc-to">{{currentStep.serverState.to}}</text>
+      </view>
+    </view>
+
+    <!-- 解释 -->
+    <text class="explanation">{{currentStep.explanation}}</text>
+
+    <!-- 面试提示 -->
+    <view class="exam-tip" wx:if="{{currentStep.examTip}}">
+      <text class="exam-tip-icon">💡</text>
+      <text class="exam-tip-text">{{currentStep.examTip}}</text>
+    </view>
+  </view>
+
+  <!-- 控制栏 -->
+  <view class="control-bar">
+    <view class="ctrl-btn" bindtap="onReset">
+      <text class="ctrl-icon">⏮</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStepPrev">
+      <text class="ctrl-icon">◀</text>
+    </view>
+    <view class="ctrl-btn ctrl-play" bindtap="{{playing ? 'onPause' : 'onPlay'}}">
+      <text class="ctrl-icon">{{playing ? '⏸' : '▶'}}</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStepNext">
+      <text class="ctrl-icon">▶</text>
+    </view>
+    <view class="speed-area">
+      <text class="speed-label">速度</text>
+      <slider class="speed-slider" min="1" max="10" step="1" value="{{speed}}" activeColor="#cc785c" backgroundColor="#e6dfd8" bindchange="onSpeedChange" />
+    </view>
+  </view>
+
+  <!-- 知识点 -->
+  <view class="knowledge-section">
+    <view class="knowledge-toggle" bindtap="onToggleKnowledge">
+      <text class="kt-icon">📚</text>
+      <text class="kt-text">知识点</text>
+      <text class="kt-arrow">{{showKnowledge ? '▲' : '▼'}}</text>
+    </view>
+    <view class="knowledge-list" wx:if="{{showKnowledge}}">
+      <view class="knowledge-card" wx:for="{{knowledgeItems}}" wx:key="title">
+        <text class="kc-title">{{item.title}}</text>
+        <text class="kc-content">{{item.content}}</text>
+      </view>
+    </view>
+  </view>
+
+</view>

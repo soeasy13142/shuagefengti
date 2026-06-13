@@ -11,7 +11,7 @@
 
   <!-- 工具卡片 -->
   <view class="tools-band {{show ? 'anim-up' : ''}}">
-    <text class="band-label">TOOLS</text>
+    <text class="band-label">工具 Tools</text>
     <!-- 学习驾驶舱 — 全宽入口 -->
     <view class="tool-card tool-card-full" bindtap="onFeatureTap" data-id="dashboard" data-available="true" hover-class="tool-hover" hover-stay-time="100">
       <view class="tool-full-row">
@@ -23,10 +23,33 @@
         <text class="tool-link">进入 ›</text>
       </view>
     </view>
+
+    <!-- 网工工具 -->
+    <text class="sub-label">网工工具 NETools</text>
     <view class="tool-grid">
       <view
         class="tool-card {{item.available ? '' : 'tool-disabled'}}"
-        wx:for="{{features}}"
+        wx:for="{{netTools}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        data-available="{{item.available}}"
+        bindtap="onFeatureTap"
+        hover-class="tool-hover"
+        hover-stay-time="100"
+      >
+        <text class="tool-icon">{{item.icon}}</text>
+        <text class="tool-name">{{item.name}}</text>
+        <text class="tool-tag" wx:if="{{!item.available}}">即将上线</text>
+        <text class="tool-link" wx:if="{{item.available}}">进入 ›</text>
+      </view>
+    </view>
+
+    <!-- 通用工具 -->
+    <text class="sub-label">通用工具 Utilities</text>
+    <view class="tool-grid">
+      <view
+        class="tool-card {{item.available ? '' : 'tool-disabled'}}"
+        wx:for="{{utilTools}}"
         wx:key="id"
         data-id="{{item.id}}"
         data-available="{{item.available}}"

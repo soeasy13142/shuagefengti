@@ -2,26 +2,31 @@ Page({
   data: {
     show: false,
     heroTapped: false,
-    features: [
+    netTools: [
       {
         id: 'subnet-calc',
         name: '子网计算器',
         icon: '🌐',
-        gradient: 'linear-gradient(135deg, #667eea, #764ba2)',
         available: true
       },
+      {
+        id: 'tcp-viz',
+        name: 'TCP 动画机',
+        icon: '🔗',
+        available: true
+      }
+    ],
+    utilTools: [
       {
         id: 'sort-viz',
         name: '排序可视化',
         icon: '📊',
-        gradient: 'linear-gradient(135deg, #4facfe, #00f2fe)',
         available: true
       },
       {
         id: 'vocab',
         name: '单词记忆',
         icon: '📖',
-        gradient: 'linear-gradient(135deg, #f093fb, #f5576c)',
         available: false
       }
     ]
@@ -56,6 +61,8 @@ Page({
       wx.navigateTo({ url: '/pages/sort-viz/sort-viz' });
     } else if (id === 'subnet-calc') {
       wx.navigateTo({ url: '/pages/subnet-calc/subnet-calc' });
+    } else if (id === 'tcp-viz') {
+      wx.navigateTo({ url: '/pages/tcp-viz/tcp-viz' });
     }
   },
 

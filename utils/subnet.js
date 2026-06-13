@@ -213,6 +213,81 @@ function classifyIp(ipArr) {
   return { ipClass, isPrivate, description };
 }
 
+/**
+ * 生成 AND 运算步骤（用于动画演示）
+ * @param {string[]} ipBinary - IP 二进制数组（4 个 8 位字符串）
+ * @param {string[]} maskBinary - 掩码二进制数组
+ * @param {string} mode - 'octet'（逐字节，4步）或 'bit'（逐位，32步）
+ * @returns {object[]} 步骤数组
+ */
+function generateAndSteps(ipBinary, maskBinary, mode) {
+  if (!Array.isArray(ipBinary) || !Array.isArray(maskBinary)) return [];
+  if (ipBinary.length !== 4 || maskBinary.length !== 4) return [];
+  if (mode !== 'octet' && mode !== 'bit') return [];
+
+  var steps = [];
+
+  if (mode === 'octet') {
+    for (var i = 0; i < 4; i++) {
+      var ipOctet = ipBinary[i];
+      var maskOctet = maskBinary[i];
+      var resultOctet = '';
+      for (var b = 0; b < 8; b++) {
+        resultOctet += (ipOctet[b] === '1' && maskOctet[b] === '1') ? '1' : '0';
+      }
+      steps.push({
+        type: 'and-octet',
+        octetIndex: i,
+        ipBits: ipOctet,
+        maskBits: maskOctet,
+        resultBits: resultOctet,
+        ipDecimal: parseInt(ipOctet, 2),
+        maskDecimal: parseInt(maskOctet, 2),
+        resultDecimal: parseInt(resultOctet, 2),
+        desc: '第' + (i + 1) + '段 AND：' + parseInt(ipOctet, 2) + ' AND ' + parseInt(maskOctet, 2) + ' = ' + parseInt(resultOctet, 2)
+      });
+    }
+  } else {
+    for (var octet = 0; octet < 4; octet++) {
+      for (var bit = 0; bit < 8; bit++) {
+        var globalIdx = octet * 8 + bit;
+        var ipBit = ipBinary[octet][bit];
+        var maskBit = maskBinary[octet][bit];
+        var resultBit = (ipBit === '1' && maskBit === '1') ? '1' : '0';
+        steps.push({
+          type: 'and-bit',
+          bitIndex: globalIdx,
+          octetIndex: octet,
+          ipBit: ipBit,
+          maskBit: maskBit,
+          resultBit: resultBit,
+          desc: '第' + (globalIdx + 1) + '位：' + ipBit + ' AND ' + maskBit + ' = ' + resultBit
+        });
+      }
+    }
+  }
+
+  // 计算最终网络地址
+  var resultBinary = [];
+  for (var oi = 0; oi < 4; oi++) {
+    var res = '';
+    for (var bi = 0; bi < 8; bi++) {
+      res += (ipBinary[oi][bi] === '1' && maskBinary[oi][bi] === '1') ? '1' : '0';
+    }
+    resultBinary.push(res);
+  }
+  var resultDecimal = resultBinary.map(function(s) { return parseInt(s, 2); }).join('.');
+
+  steps.push({
+    type: 'done',
+    resultBinary: resultBinary,
+    resultDecimal: resultDecimal,
+    desc: 'AND 运算完成！网络地址 = ' + resultDecimal
+  });
+
+  return steps;
+}
+
 module.exports = {
   validateIp,
   validateCidr,
@@ -220,5 +295,6 @@ module.exports = {
   ipToBinary,
   cidrToMask,
   calculateSubnet,
-  classifyIp
+  classifyIp,
+  generateAndSteps
 };

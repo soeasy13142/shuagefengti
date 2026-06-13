@@ -25,7 +25,17 @@ Page({
     // 帮助说明
     showHelp: false,
     // 错误提示
-    error: ''
+    error: '',
+    // AND 动画
+    andSteps: [],
+    andStepIndex: -1,
+    andPlaying: false,
+    andPaused: false,
+    andMode: 'octet',
+    andStepDesc: '点击 ▶ 演示 AND 运算',
+    andIpDisplay: [],
+    andMaskDisplay: [],
+    andResultDisplay: []
   },
 
   onLoad() {
@@ -97,6 +107,9 @@ Page({
       networkBits: this._buildBits(result.networkBinary, cidr),
       broadcastBits: this._buildBits(result.broadcastBinary, cidr)
     });
+
+    // 初始化 AND 动画
+    this._initAndSteps();
   },
 
   // 构建 32 位格子数据，标记网络位/主机位
@@ -111,5 +124,185 @@ Page({
       });
     }
     return bits;
+  },
+
+  /* ========== AND 动画控制 ========== */
+
+  // 初始化 AND 动画步骤
+  _initAndSteps() {
+    if (this._andTimer) {
+      clearTimeout(this._andTimer);
+      this._andTimer = null;
+    }
+    const { result, andMode } = this.data;
+    if (!result) return;
+
+    const steps = subnet.generateAndSteps(result.ipBinary, result.maskBinary, andMode);
+    const ipFull = result.ipBinary.join('');
+    const maskFull = result.maskBinary.join('');
+
+    // 初始化三行显示数据
+    const andIpDisplay = [];
+    const andMaskDisplay = [];
+    const andResultDisplay = [];
+    for (let i = 0; i < 32; i++) {
+      andIpDisplay.push({ value: ipFull[i], state: 'and-bit-dim' });
+      andMaskDisplay.push({ value: maskFull[i], state: 'and-bit-dim' });
+      andResultDisplay.push({ value: '?', state: 'and-bit-dim' });
+    }
+
+    this.setData({
+      andSteps: steps,
+      andStepIndex: -1,
+      andPlaying: false,
+      andPaused: false,
+      andStepDesc: '点击 ▶ 演示 AND 运算',
+      andIpDisplay: andIpDisplay,
+      andMaskDisplay: andMaskDisplay,
+      andResultDisplay: andResultDisplay
+    });
+  },
+
+  // 应用单步到显示数据
+  _applyAndStep(step, allSteps, targetIdx) {
+    const ipFull = this.data.result.ipBinary.join('');
+    const maskFull = this.data.result.maskBinary.join('');
+
+    // 重置所有格子到 dim
+    const andIpDisplay = [];
+    const andMaskDisplay = [];
+    const andResultDisplay = [];
+    for (let i = 0; i < 32; i++) {
+      andIpDisplay.push({ value: ipFull[i], state: 'and-bit-dim' });
+      andMaskDisplay.push({ value: maskFull[i], state: 'and-bit-dim' });
+      andResultDisplay.push({ value: '?', state: 'and-bit-dim' });
+    }
+
+    // 回放到 targetIdx，标记已完成的位
+    for (let s = 0; s <= targetIdx; s++) {
+      const st = allSteps[s];
+      if (st.type === 'and-octet') {
+        for (let b = 0; b < 8; b++) {
+          const idx = st.octetIndex * 8 + b;
+          andIpDisplay[idx].state = 'and-bit-done';
+          andMaskDisplay[idx].state = 'and-bit-done';
+          andResultDisplay[idx] = { value: st.resultBits[b], state: st.resultBits[b] === '1' ? 'and-bit-done-1' : 'and-bit-done-0' };
+        }
+      } else if (st.type === 'and-bit') {
+        const idx = st.bitIndex;
+        andIpDisplay[idx].state = 'and-bit-done';
+        andMaskDisplay[idx].state = 'and-bit-done';
+        andResultDisplay[idx] = { value: st.resultBit, state: st.resultBit === '1' ? 'and-bit-done-1' : 'and-bit-done-0' };
+      } else if (st.type === 'done') {
+        for (let d = 0; d < 32; d++) {
+          andResultDisplay[d] = { value: st.resultBinary[Math.floor(d / 8)][d % 8], state: 'and-bit-done-1' };
+        }
+      }
+    }
+
+    // 高亮当前操作位
+    if (step.type === 'and-octet') {
+      for (let b = 0; b < 8; b++) {
+        const idx = step.octetIndex * 8 + b;
+        andIpDisplay[idx].state = 'and-bit-active';
+        andMaskDisplay[idx].state = 'and-bit-active';
+        andResultDisplay[idx].state = 'and-bit-active';
+      }
+    } else if (step.type === 'and-bit') {
+      andIpDisplay[step.bitIndex].state = 'and-bit-active';
+      andMaskDisplay[step.bitIndex].state = 'and-bit-active';
+      andResultDisplay[step.bitIndex].state = 'and-bit-active';
+    } else if (step.type === 'done') {
+      for (let d = 0; d < 32; d++) {
+        andResultDisplay[d].state = 'and-bit-done-1';
+      }
+    }
+
+    this.setData({
+      andIpDisplay: andIpDisplay,
+      andMaskDisplay: andMaskDisplay,
+      andResultDisplay: andResultDisplay
+    });
+  },
+
+  // 播放
+  onAndPlay() {
+    if (!this.data.result) return;
+    if (!this.data.andSteps || this.data.andSteps.length === 0) {
+      this._initAndSteps();
+    }
+    if (this.data.andStepIndex >= this.data.andSteps.length - 1) {
+      this._initAndSteps();
+    }
+    this.setData({ andPlaying: true, andPaused: false });
+    this._playAndNext();
+  },
+
+  _playAndNext() {
+    if (!this.data.andPlaying || this.data.andPaused) return;
+    const nextIdx = this.data.andStepIndex + 1;
+    if (nextIdx >= this.data.andSteps.length) {
+      this.setData({ andPlaying: false });
+      return;
+    }
+    const step = this.data.andSteps[nextIdx];
+    this.setData({ andStepIndex: nextIdx, andStepDesc: step.desc });
+    this._applyAndStep(step, this.data.andSteps, nextIdx);
+    if (step.type !== 'done') {
+      const delay = this.data.andMode === 'octet' ? 800 : 200;
+      this._andTimer = setTimeout(() => { this._playAndNext(); }, delay);
+    } else {
+      this.setData({ andPlaying: false });
+    }
+  },
+
+  onAndPause() {
+    this.setData({ andPaused: true, andPlaying: false });
+    if (this._andTimer) {
+      clearTimeout(this._andTimer);
+      this._andTimer = null;
+    }
+  },
+
+  onAndStepNext() {
+    if (!this.data.result) return;
+    if (!this.data.andSteps || this.data.andSteps.length === 0) {
+      this._initAndSteps();
+    }
+    this.onAndPause();
+    const idx = this.data.andStepIndex + 1;
+    if (idx >= this.data.andSteps.length) return;
+    const step = this.data.andSteps[idx];
+    this.setData({ andStepIndex: idx, andStepDesc: step.desc });
+    this._applyAndStep(step, this.data.andSteps, idx);
+  },
+
+  onAndStepPrev() {
+    if (!this.data.result || !this.data.andSteps) return;
+    this.onAndPause();
+    const idx = this.data.andStepIndex - 1;
+    if (idx < -1) return;
+    if (idx === -1) {
+      this._initAndSteps();
+      return;
+    }
+    const step = this.data.andSteps[idx];
+    this.setData({ andStepIndex: idx, andStepDesc: step.desc });
+    this._applyAndStep(step, this.data.andSteps, idx);
+  },
+
+  onAndReset() {
+    if (this._andTimer) {
+      clearTimeout(this._andTimer);
+      this._andTimer = null;
+    }
+    this._initAndSteps();
+  },
+
+  onAndModeChange(e) {
+    const mode = e.currentTarget.dataset.mode;
+    if (mode === this.data.andMode) return;
+    this.setData({ andMode: mode });
+    this._initAndSteps();
   }
 });
