@@ -1,5 +1,7 @@
 # Pages
 
+[English](README_EN.md)
+
 小程序页面目录，每个子目录对应一个页面，包含 `.js` / `.wxml` / `.wxss` / `.json` 四个文件。
 
 ## 页面列表（共 13 个）

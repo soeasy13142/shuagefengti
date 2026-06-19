@@ -1,5 +1,7 @@
 # Docs
 
+[English](README_EN.md)
+
 项目设计文档和实现计划。
 
 ## 文件列表

@@ -1,5 +1,7 @@
 # Tests
 
+[English](README_EN.md)
+
 Jest 测试目录，覆盖所有纯 JS 逻辑。
 
 ## 测试结构

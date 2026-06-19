@@ -1,5 +1,7 @@
 # Utils
 
+[English](README_EN.md)
+
 纯 JS 工具函数库，不依赖微信 API，可在 Jest 中独立测试。
 
 ## 文件列表
