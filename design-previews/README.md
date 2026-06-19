@@ -1,68 +1,15 @@
-# 设计方案预览集
+# Design Previews
 
-> 生成时间：2026-06-19
-> 项目：刷个冯题（微信小程序学习工具箱）
+74 个知名品牌首页设计预览，用于设计灵感参考。
 
----
+## 品牌列表
+
+Airbnb, Anthropic, Apple, Arc, Asana, Atlassian, BMW, Canva, Claude, Cursor, Discord, Duolingo, Epic Games, Figma, GitHub, Google, Grammarly, Grok, Gumroad, Headspace, IBM, Intercom, Linear, Loom, Lovable, Lucide, Manus, Mapbox, Masterclass, Meta, Midjourney, Mistral, Monzo, NASA, Nike, Nintendo, Nvidia, Notion, Ollama, OpenCode, Patreon, Pinterest, PlayStation, PostHog, Raycast, Renault, Replicate, Resend, Revolut, RunwayML, Sanity, Sentry, Shopify, Slack, SpaceX, Spotify, Starbucks, Stripe, Supabase, Superhuman, Tesla, The Verge, Together, Uber, Vercel, Vodafone, Voltagent, Warp, Webflow, Wired, Wise, xAI, Zapier
+
+## 格式
+
+每个品牌一个独立 HTML 文件，命名规则 `{brand}-preview.html`。可通过浏览器直接打开查看。
 
 ## 用途
 
-本文件夹包含 **74 份首页设计预览**，每份对应 `design-methods/` 中的一个大厂设计方法论，以完整静态 HTML 页面的形式呈现。
-
-每个 HTML 文件是一个**独立可打开的首页设计稿**——内联 CSS、无外部依赖、打开浏览器即可预览。
-
-## 设计约束
-
-| 约束 | 说明 |
-|---|---|
-| 目标页面 | 小程序首页（`pages/index/index`） |
-| 核心板块 | Hero 区 + 工具箱 + 快捷入口（必须保留） |
-| 自由发挥 | 布局、配色、字体、组件风格可按品牌设计语言调整 |
-| 格式 | 完整静态 HTML + 内联 CSS |
-| 数据 | 使用模拟数据（真实工具名称 + 占位数字） |
-| 响应式 | 按 750rpx 小程序宽度设计（375px 逻辑宽度） |
-
-## 页面内容
-
-每个首页设计包含以下核心板块：
-
-1. **Hero 区**：品牌标题「刷个冯题」+ 标语 + 主 CTA 按钮
-2. **学习状态条**：累计刷题 / 练习次数 / 正确率 / 错题数
-3. **工具箱**：分类标签 + 工具卡片网格（子网计算器、TCP 动画机、排序可视化、数据结构可视化等）
-4. **快捷入口**：答题记录 / 错题本
-
-各品牌设计方案可在保持核心板块的前提下，自由调整：
-- 页面整体色调和背景
-- 卡片样式（圆角/直角/玻璃拟态/投影等）
-- 字体选择和排版层级
-- 图标风格
-- 间距和布局网格
-- 动效暗示（hover 态、active 态的 CSS）
-
-## 文件命名
-
-`{品牌名小写}-preview.html`
-
-示例：
-- `apple-preview.html`
-- `stripe-preview.html`
-- `linear-preview.html`
-
-## 使用方式
-
-1. 在浏览器中直接打开任意 `.html` 文件
-2. 按 `375px` 宽度查看效果最佳（模拟手机屏幕）
-3. 对比不同品牌设计的差异，选择或混搭
-
-## 与 design-methods 的关系
-
-| 文件夹 | 内容 |
-|---|---|
-| `design-methods/` | 设计方法论（文字说明 + 规范参数） |
-| `design-previews/` | 设计预览稿（可视化 HTML 页面） |
-
-方法论是"怎么设计"，预览稿是"设计出来长什么样"。
-
----
-
-*共 74 份设计预览，基于 design-methods/ 中的 74 个品牌方法论生成。*
+作为设计参考，了解各品牌首页的布局、配色、排版和交互风格。本项目当前采用 Claude Design 暖奶油画布风格。
