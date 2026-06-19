@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>刷个冯题 - Apple 设计方案</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f5f5f7;
+      color: #1d1d1f;
+      min-height: 100vh;
+      max-width: 375px;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+    .hero {
+      padding: 80px 32px;
+      text-align: center;
+      background-color: #ffffff;
+    }
+    .hero h1 {
+      font-size: 40px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .hero p {
+      font-size: 17px;
+      color: #1d1d1f;
+      margin-bottom: 24px;
+      line-height: 1.47;
+      opacity: 0.8;
+    }
+    .btn-pill {
+      display: inline-block;
+      background-color: #0066cc;
+      color: #ffffff;
+      border: none;
+      border-radius: 9999px;
+      padding: 12px 24px;
+      font-size: 17px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-pill:hover {
+      background-color: #0071e3;
+    }
+    .btn-pill:active {
+      transform: scale(0.95);
+    }
+    .btn-ghost {
+      display: inline-block;
+      background-color: transparent;
+      color: #0066cc;
+      border: none;
+      border-radius: 9999px;
+      padding: 12px 24px;
+      font-size: 17px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover {
+      text-decoration: underline;
+    }
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      padding: 32px 16px;
+      background-color: #272729;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-item .value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .stat-item .label {
+      font-size: 12px;
+      color: #86868b;
+      margin-top: 4px;
+    }
+    .section {
+      padding: 48px 16px;
+      background-color: #ffffff;
+    }
+    .section-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 20px;
+      letter-spacing: -0.3px;
+    }
+    .tabs {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 12px;
+    }
+    .tab {
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #86868b;
+      padding-bottom: 8px;
+    }
+    .tab.active {
+      color: #1d1d1f;
+      border-bottom: 2px solid #1d1d1f;
+    }
+    .tab:hover:not(.active) {
+      color: #1d1d1f;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .tool-card {
+      background-color: #f5f5f7;
+      border-radius: 18px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tool-card:hover {
+      background-color: #e8e8ed;
+    }
+    .tool-card .icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .tool-card .name {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 4px;
+    }
+    .tool-card .desc {
+      font-size: 14px;
+      color: #86868b;
+      line-height: 1.4;
+    }
+    .tool-card .badge {
+      display: inline-block;
+      background-color: #0066cc;
+      color: #ffffff;
+      border-radius: 9999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .dark-tile {
+      background-color: #272729;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .dark-tile h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .dark-tile p {
+      font-size: 14px;
+      color: #86868b;
+    }
+    .quick-actions {
+      padding: 0 16px 32px;
+      background-color: #ffffff;
+    }
+    .action-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background-color: #f5f5f7;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-item:hover {
+      background-color: #e8e8ed;
+    }
+    .action-item .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .action-item .icon {
+      font-size: 24px;
+    }
+    .action-item .text {
+      font-size: 17px;
+      font-weight: 400;
+      color: #1d1d1f;
+    }
+    .action-item .arrow {
+      color: #86868b;
+      font-size: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 12px;
+      color: #86868b;
+      background-color: #272729;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1>刷个冯题</h1>
+    <p>你的 CS 学习工具箱</p>
+    <button class="btn-pill">开始刷题</button>
+    <button class="btn-ghost">了解更多</button>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="value">328</div>
+      <div class="label">累计刷题</div>
+    </div>
+    <div class="stat-item">
+      <div class="value">47</div>
+      <div class="label">练习次数</div>
+    </div>
+    <div class="stat-item">
+      <div class="value">82%</div>
+      <div class="label">正确率</div>
+    </div>
+    <div class="stat-item">
+      <div class="value">12</div>
+      <div class="label">错题数</div>
+    </div>
+  </div>
+
+  <!-- Toolbox Section -->
+  <div class="section">
+    <h2 class="section-title">工具箱</h2>
+    <div class="tabs">
+      <div class="tab active">全部工具</div>
+      <div class="tab">计算机网络</div>
+      <div class="tab">算法&数据结构</div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="icon">🌐</span>
+        <div class="name">子网计算器</div>
+        <div class="desc">快速计算子网划分</div>
+      </div>
+      <div class="tool-card">
+        <span class="icon">🔗</span>
+        <div class="name">TCP 动画机</div>
+        <div class="desc">可视化 TCP 连接过程</div>
+      </div>
+      <div class="tool-card">
+        <span class="icon">📊</span>
+        <div class="name">排序可视化</div>
+        <div class="desc">直观理解排序算法</div>
+      </div>
+      <div class="tool-card">
+        <span class="icon">🌲</span>
+        <div class="name">数据结构可视化</div>
+        <div class="desc">BST、栈、队列等</div>
+      </div>
+      <div class="tool-card">
+        <span class="icon">📈</span>
+        <div class="name">学习驾驶舱</div>
+        <div class="desc">学习进度一目了然</div>
+      </div>
+      <div class="tool-card">
+        <span class="icon">📝</span>
+        <div class="name">单词记忆</div>
+        <div class="desc">CS 专业词汇速记</div>
+        <span class="badge">即将上线</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dark Tile -->
+  <div class="dark-tile">
+    <h2>高效学习</h2>
+    <p>通过可视化工具深入理解计算机科学概念</p>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <div class="action-item">
+      <div class="left">
+        <span class="icon">📋</span>
+        <span class="text">答题记录</span>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+    <div class="action-item">
+      <div class="left">
+        <span class="icon">❌</span>
+        <span class="text">错题本</span>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    设计方案基于 Apple 设计语言 · 仅供预览
+  </div>
+</body>
+</html>

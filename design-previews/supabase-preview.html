@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>刷个冯题 - Supabase 设计方案</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: #1c1c1c; color: #fff; min-height: 100vh; max-width: 375px; margin: 0 auto; overflow-x: hidden; }
+    .hero { padding: 80px 32px; text-align: center; }
+    .hero h1 { font-size: 40px; font-weight: 700; color: #3ecf8e; margin-bottom: 12px; }
+    .hero p { font-size: 16px; color: #888; margin-bottom: 24px; }
+    .btn-primary { display: inline-block; background-color: #3ecf8e; color: #000; border: none; border-radius: 8px; padding: 14px 28px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .stats-bar { display: flex; justify-content: space-around; padding: 24px 16px; background-color: #232323; }
+    .stat-item { text-align: center; }
+    .stat-item .value { font-size: 24px; font-weight: 700; color: #3ecf8e; }
+    .stat-item .label { font-size: 12px; color: #888; margin-top: 4px; }
+    .section { padding: 48px 16px; }
+    .section-title { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+    .tabs { display: flex; gap: 12px; margin-bottom: 20px; overflow-x: auto; }
+    .tab { flex-shrink: 0; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; background-color: #232323; color: #888; }
+    .tab.active { background-color: #3ecf8e; color: #000; }
+    .tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .tool-card { background-color: #232323; border-radius: 8px; padding: 20px; cursor: pointer; }
+    .tool-card:hover { background-color: #2a2a2a; }
+    .tool-card .icon { font-size: 32px; margin-bottom: 12px; display: block; }
+    .tool-card .name { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .tool-card .desc { font-size: 14px; color: #888; }
+    .tool-card .badge { display: inline-block; background-color: #3ecf8e; color: #000; border-radius: 8px; padding: 4px 10px; font-size: 11px; font-weight: 700; margin-top: 8px; }
+    .quick-actions { padding: 0 16px 32px; }
+    .action-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background-color: #232323; border-radius: 8px; margin-bottom: 12px; cursor: pointer; }
+    .action-item .left { display: flex; align-items: center; gap: 12px; }
+    .action-item .icon { font-size: 24px; }
+    .action-item .text { font-size: 16px; font-weight: 600; color: #fff; }
+    .action-item .arrow { color: #888; font-size: 20px; }
+    .footer { text-align: center; padding: 24px 16px; font-size: 12px; color: #888; background-color: #232323; }
+  </style>
+</head>
+<body>
+  <div class="hero"><h1>刷个冯题</h1><p>你的 CS 学习工具箱</p><button class="btn-primary">开始刷题</button></div>
+  <div class="stats-bar"><div class="stat-item"><div class="value">328</div><div class="label">累计刷题</div></div><div class="stat-item"><div class="value">47</div><div class="label">练习次数</div></div><div class="stat-item"><div class="value">82%</div><div class="label">正确率</div></div><div class="stat-item"><div class="value">12</div><div class="label">错题数</div></div></div>
+  <div class="section"><h2 class="section-title">工具箱</h2><div class="tabs"><div class="tab active">全部工具</div><div class="tab">计算机网络</div><div class="tab">算法&数据结构</div></div><div class="tools-grid"><div class="tool-card"><span class="icon">🌐</span><div class="name">子网计算器</div><div class="desc">快速计算子网划分</div></div><div class="tool-card"><span class="icon">🔗</span><div class="name">TCP 动画机</div><div class="desc">可视化 TCP 连接过程</div></div><div class="tool-card"><span class="icon">📊</span><div class="name">排序可视化</div><div class="desc">直观理解排序算法</div></div><div class="tool-card"><span class="icon">🌲</span><div class="name">数据结构可视化</div><div class="desc">BST、栈、队列等</div></div><div class="tool-card"><span class="icon">📈</span><div class="name">学习驾驶舱</div><div class="desc">学习进度一目了然</div></div><div class="tool-card"><span class="icon">📝</span><div class="name">单词记忆</div><div class="desc">CS 专业词汇速记</div><span class="badge">即将上线</span></div></div></div>
+  <div class="quick-actions"><div class="action-item"><div class="left"><span class="icon">📋</span><span class="text">答题记录</span></div><span class="arrow">→</span></div><div class="action-item"><div class="left"><span class="icon">❌</span><span class="text">错题本</span></div><span class="arrow">→</span></div></div>
+  <div class="footer">设计方案基于 Supabase 设计语言 · 仅供预览</div>
+</body>
+</html>
