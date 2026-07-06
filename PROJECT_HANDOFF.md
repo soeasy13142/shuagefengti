@@ -4193,3 +4193,48 @@ Tests:       236 passed, 236 total
 ```
 
 新增 18 个 tool-registry 测试，原有 218 个测试全部通过。
+
+---
+
+## 32. 设计方法论文档库（2026-06-15）
+
+### 32.1 概述
+
+在 `design-methods/` 文件夹中创建了 **74 份设计方法论文档**，每份对应 `.claude/skills/` 中的一个大厂设计方案。
+
+这些文档不是直接的设计稿，而是"如何设计"的方法论——告诉 agent：
+- 该方案的核心设计思想是什么
+- 哪些设计决策可以迁移到本项目
+- 哪些需要改造、为什么
+- 具体的色彩/字体/组件映射参数（rpx 单位）
+- WXSS 实现示例
+
+### 32.2 文件列表
+
+共 74 个文件，命名规则：`{品牌名小写}-method.md`
+
+涵盖品牌：Airbnb、Airtable、Apple、Binance、BMW、BMW M、Bugatti、Cal、Claude、Clay、ClickHouse、Cohere、Coinbase、Composio、Cursor、Dell 1996、ElevenLabs、Expo、Ferrari、Figma、Framer、HashiCorp、HP、IBM、Intercom、Kraken、Lamborghini、Linear、Lovable、Mastercard、Meta、MiniMax、Mintlify、Miro、Mistral、MongoDB、Nike、Nintendo 2001、Notion、NVIDIA、Ollama、OpenCode、Pinterest、PlayStation、PostHog、Raycast、Renault、Replicate、Resend、Revolut、RunwayML、Sanity、Sentry、Shopify、Slack、SpaceX、Spotify、Starbucks、Stripe、Supabase、Superhuman、Tesla、The Verge、Together AI、Uber、Vercel、Vodafone、Voltagent、Warp、Webflow、Wired、Wise、xAI、Zapier
+
+### 32.3 文档结构
+
+每份文档包含 6 个章节：
+1. **原方案核心提取** — 设计哲学、视觉 DNA、色彩/字体/布局策略
+2. **适配分析** — 可迁移 / 需改造 / 不可迁移的设计决策
+3. **具体实施方法** — 色彩映射表、字体映射、组件规范、布局模板、WXSS 示例
+4. **适用场景建议** — 最适合哪些页面、混搭建议
+5. **实施检查清单** — 该方案特有的检查项
+6. **参考文件** — 源文件和相关文档链接
+
+### 32.4 使用方式
+
+当 agent 需要为某个页面做设计时：
+1. 确定要参考的设计风格（从 `design-methods/` 选择）
+2. 读取对应的 `-method.md` 文件
+3. 按照"具体实施方法"章节的规范编写 WXSS
+4. 对照"实施检查清单"验证
+
+### 32.5 与现有设计系统的关系
+
+- **当前主力风格**：Claude Design 暖奶油画布（见 §25）
+- **本文档库**：提供 74 种备选风格的实施方法论
+- **混搭参考**：每份文档的 §4.3 提供与暖奶油画布的混搭建议
