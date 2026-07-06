@@ -98,3 +98,12 @@ npm test
 - `PROJECT_HANDOFF.md` — 项目交接文档，架构、数据流、开发进度都在里面
 - `docs/superpowers/specs/` — 早期设计规格
 - `docs/superpowers/plans/` — 实现计划
+
+## 仓库说明
+
+以下文件仅保留在本地，不纳入 git 版本控制（已写入 `.gitignore`）：
+
+- `TCP.pdf` — 网络协议参考资料（3MB 二进制）
+- `idea.md` — 个人想法记录草稿
+
+它们曾短暂进入仓库，现已从 git 跟踪中移除，本地副本保留。

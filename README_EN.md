@@ -98,3 +98,12 @@ To import questions: prepare a Markdown file (see `test-questions.md` for format
 - `PROJECT_HANDOFF.md` — Full project handoff: architecture, data flow, development status
 - `docs/superpowers/specs/` — Original design specs
 - `docs/superpowers/plans/` — Implementation plans
+
+## Repo Notes
+
+The following files are kept locally only and are not tracked by git (listed in `.gitignore`):
+
+- `TCP.pdf` — networking protocol reference (3MB binary)
+- `idea.md` — personal idea scratchpad
+
+They were briefly tracked and have since been removed from git; local copies are retained.
