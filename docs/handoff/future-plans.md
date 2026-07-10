@@ -1,0 +1,50 @@
+# 下一步开发建议（Future Plans）
+
+> 派生自 `PROJECT_HANDOFF.md` §12。优先级来自原 P.H. 分级。
+
+## P0 · 继续前先做
+
+1. 跑 `npm test`，确认全绿
+2. `git status --short`，看未提交变更
+3. 判断 `project.config.json` 的未提交变化是否要保留
+
+## P1 · 完善刷题模块
+
+1. 优化错题重做：直接进 quiz 而非走 import-preview，不生成新 paper
+2. 简答题改为自评模式（提交后用户标记对错才入 record）
+3. 增加按试卷筛选记录 / 错题
+4. 增加导入失败时的错误详情（如"第 N 题解析失败"）
+5. 试卷重命名功能
+6. 清空记录、清空错题、导出数据等本地数据管理
+7. Markdown 解析兼容性增强
+
+## P2 · 完善排序可视化
+
+1. 抽出排序算法纯函数到 `utils/sort-algorithms.js`（解 r.3）
+2. 增加插入排序、归并排序、堆排序
+3. 算法复杂度说明卡片
+4. 每步伪代码高亮
+5. 修复上一步回放的原始数组恢复逻辑可靠性
+6. 首页卡片加更详细描述
+
+## P3 · 新模块
+
+首页仍预留 `单词记忆`，可开发方向：
+- 单词卡片
+- 自定义单词本
+- 本地导入 CSV / Markdown
+- 记忆状态
+- 拼写测试
+- 错词复习
+
+## P4 · 增加测试覆盖
+
+- `utils/tcp-states.js` 纯函数 → 单元测试
+- `utils/bst.js` 插入/删除/遍历 → 单元测试
+- `utils/graph.js` BFS/DFS → 单元测试
+- `utils/hash-table.js` 冲突处理 → 单元测试
+- 解 r.11
+
+## P5 · AI 化（远期）
+
+`docs/handoff/decisions.md` 已记录"学习数据驾驶舱 + 轻量 AI 学习建议"为收敛方向。本地规则引擎已就位，远期可替换为云端大模型 API。建议设计 API 时保持 suggestions 结构与 `utils/analytics.js` 一致，便于不改动 dashboard 页面即可切换。
