@@ -52,3 +52,16 @@ index（首页）
 - 页面数据通过 `wx.setStorageSync('key', data)` 传递，上一个页面写入，下一个页面读取
 - 页面逻辑尽量抽取纯函数到 `utils/`，页面文件只负责生命周期和 UI 绑定
 - 设计风格遵循 Claude Design 暖奶油画布规范
+
+## 详细说明
+
+各模块实现细节见 [`docs/handoff/modules/`](../docs/handoff/modules/)：
+
+- `quiz.md` 刷题主链路（含 quiz-list / import-preview / quiz / result / records / record-detail / wrong-questions）
+- `dashboard.md` 学习驾驶舱
+- `subnet-calc.md` 子网计算器
+- `tcp-viz.md` TCP 状态机动画
+- `ds-viz.md` 数据结构可视化（BST / 栈&队列 / 哈希表 / 图）
+- `sort-viz.md` 排序可视化
+
+架构与项目全局说明见 [`docs/handoff/architecture.md`](../docs/handoff/architecture.md)。
