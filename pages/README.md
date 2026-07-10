@@ -24,44 +24,32 @@
 
 ## 页面间数据流动
 
-```
+```text
 index（首页）
   ├─→ quiz-list（试卷列表）
-  │     └─→ import-preview（导入预览）
-  │           └─→ quiz-list（返回）
+  │     ├─→ import-preview（导入预览）
   │     └─→ quiz（开始刷题）
-  │           └─→ result（交卷结果）
-  │                 └─→ record-detail（查看详情）
-  │
-  ├─→ records（答题记录）
-  │     └─→ record-detail（记录详情）
-  │           └─→ quiz（重做）
-  │
-  ├─→ wrong-questions（错题本）
-  │     └─→ quiz（错题重做）
-  │
-  ├─→ dashboard（学习驾驶舱）
-  ├─→ sort-viz（排序可视化）
-  ├─→ subnet-calc（子网计算器）
-  ├─→ tcp-viz（TCP 动画机）
-  └─→ ds-viz（数据结构可视化）
+  │           └─→ result（交卷）├→ record-detail
+  ├─→ records（答题记录）├→ record-detail├→ quiz（重做）
+  ├─→ wrong-questions（错题本）├→ quiz（错题重做）
+  ├─→ dashboard / sort-viz / subnet-calc / tcp-viz / ds-viz（直接入口）
 ```
 
 ## 约定
 
-- 页面数据通过 `wx.setStorageSync('key', data)` 传递，上一个页面写入，下一个页面读取
-- 页面逻辑尽量抽取纯函数到 `utils/`，页面文件只负责生命周期和 UI 绑定
-- 设计风格遵循 Claude Design 暖奶油画布规范
+- 页面间数据通过 `wx.setStorageSync('key', data)` 传递
+- 页面逻辑尽量抽到 `utils/`，页面只负责生命周期和 UI 绑定
+- 设计风格遵循 Claude Design 暖奶油画布
 
 ## 详细说明
 
 各模块实现细节见 [`docs/handoff/modules/`](../docs/handoff/modules/)：
 
-- `quiz.md` 刷题主链路（含 quiz-list / import-preview / quiz / result / records / record-detail / wrong-questions）
+- `quiz.md` 刷题主链路
 - `dashboard.md` 学习驾驶舱
 - `subnet-calc.md` 子网计算器
 - `tcp-viz.md` TCP 状态机动画
-- `ds-viz.md` 数据结构可视化（BST / 栈&队列 / 哈希表 / 图）
+- `ds-viz.md` 数据结构可视化
 - `sort-viz.md` 排序可视化
 
-架构与项目全局说明见 [`docs/handoff/architecture.md`](../docs/handoff/architecture.md)。
+架构全局见 [`docs/handoff/architecture.md`](../docs/handoff/architecture.md)。
