@@ -2,108 +2,86 @@
 
 [English](README_EN.md)
 
-一个微信小程序学习工具箱。最初只是想做一个本地刷题工具，后来陆续加上了排序可视化、子网计算器、TCP 状态机动画、数据结构演示、学习数据驾驶舱，变成了一个有点"瑞士军刀"感觉的学习助手。
+微信小程序学习工具箱：Markdown 刷题、学习驾驶舱、子网计算、TCP 状态机、数据结构可视化、排序可视化。
 
-所有数据都在本地，没有后端，没有账号系统——你导进去的题、刷过的记录、错题本，全在你自己的手机里。
+所有数据都在本机。不接后端、不需要账号——你导进去的题、刷过的记录、错题本都保存在你的手机里。
 
-## 功能
+最初只想做一个本地刷题工具；后来陆续加了 5 个模块，逐渐变成了一个有点"瑞士军刀"感觉的学习助手。
 
-### 刷题
+## 1. 功能清单（7 大模块）
 
-这是最早做的模块，也是最核心的一块。支持从 Markdown 文件导入试题，自动识别单选、多选、判断、填空、简答五种题型。解析器全部用正则手写，没有拉任何 Markdown 库——因为小程序对包大小很敏感，多一个依赖就多几百 KB，划不来。
+| 模块 | 简介 | 详细 |
+|---|---|---|
+| 刷题 | MVP 核心。Markdown 导入，五种题型，练习/考试模式，自动错题入栈 | [docs/handoff/modules/quiz.md](docs/handoff/modules/quiz.md) |
+| 学习驾驶舱 | 累计统计、题型雷达、7 天趋势、本地规则智能建议 | [docs/handoff/modules/dashboard.md](docs/handoff/modules/dashboard.md) |
+| 子网计算器 | IP/CIDR 计算 + 32 位二进制可视化 + AND 运算动画 | [docs/handoff/modules/subnet-calc.md](docs/handoff/modules/subnet-calc.md) |
+| TCP 动画机 | TCP 状态机交互，三次握手/四次挥手逐步骤演示 | [docs/handoff/modules/tcp-viz.md](docs/handoff/modules/tcp-viz.md) |
+| 数据结构可视化 | BST、栈&队列、哈希表、图 BFS/DFS 四种模式 | [docs/handoff/modules/ds-viz.md](docs/handoff/modules/ds-viz.md) |
+| 排序可视化 | 选择/冒泡/快速排序 + 步骤回放 | [docs/handoff/modules/sort-viz.md](docs/handoff/modules/sort-viz.md) |
+| 单词记忆 | 即将上线 | — |
 
-刷题有两种模式：练习模式下每做完一题立刻看解析，适合边学边刷；考试模式模拟真实考场，全部答完才出成绩。做错的题会自动进错题本，后面可以集中重做。答题记录会保存每次的时间、正确率、每道题的具体作答情况。
+## 2. 设计风格
 
-### 子网计算器
+整体采用 **Claude Design 暖奶油画布**：暖奶油背景 `#faf9f5`、奶油卡片 `#efe9de`、珊瑚色 CTA `#cc785c`。零阴影，靠色块对比表达层次。详细规范见 [docs/DESIGN.md](docs/DESIGN.md)。
 
-这大概是最"硬核"的一个工具。输入 IP 地址和 CIDR 前缀长度，实时算出子网掩码、网络地址、广播地址、可用主机范围。
+## 3. 技术栈
 
-真正花了心思的是二进制位可视化那部分。32 个 bit 用小格子排出来，网络位用珊瑚色，主机位用浅蓝色，四行分别展示 IP、子网掩码、网络地址、广播地址的二进制，中间标出网络位和主机位的分界。背后其实就一个很简单的想法：很多人学子网的时候卡在二进制转换上，把这层用肉眼直接看到，理解门槛就低了很多。
+- 微信小程序原生框架（WXML + WXSS + JS）
+- 纯本地存储（`wx.setStorageSync`）
+- Markdown 解析：纯正则手写（不引第三方库，控包大小）
+- 测试：Jest 单元测试（当前 12 suites / 236 tests）
+- 详见 [docs/handoff/architecture.md](docs/handoff/architecture.md)
 
-后面又加了一个 AND 运算的逐步骤动画——可以选择逐字节（4 步）或逐位（32 步）播放，每一步高亮当前参与 AND 运算的两个 bit 和结果。这个动画的步骤序列全部由 `utils/subnet.js` 里的纯函数 `generateAndSteps()` 生成，跟 UI 完全解耦，所以可以单独写测试。43 个测试用例覆盖了从 /0 到 /32 的各种边界情况。
-
-### TCP 动画机
-
-TCP 的状态迁移本身不复杂，但用文字描述很容易让人犯困。这个工具把 TCP 状态机做成了一张可交互的图，配合三次握手和四次挥手的逐步骤动画，每个包（SYN、SYN-ACK、ACK、FIN 等）的发送和接收都会触发状态变化并高亮。
-
-状态机定义全部集中在 `utils/tcp-states.js` 里，是一个纯数据的状态转换表。动画引擎只负责根据这张表驱动 UI，不关心 TCP 协议本身的细节——以后想加其他协议的状态机，换一张表就行。
-
-### 数据结构可视化
-
-四种数据结构的交互演示：二叉搜索树（插入、删除、三种遍历），栈和队列（push/pop/enqueue/dequeue 的实时动画），哈希表（冲突处理和链地址法可视化），图的 BFS 和 DFS 搜索。
-
-每种数据结构的核心算法都抽在 `utils/` 下面（`bst.js`、`graph.js`、`hash-table.js`），页面只负责调用算法拿到步骤序列然后渲染。这种分层的好处是算法可以独立测试，而且 UI 换风格不会影响逻辑。
-
-### 排序可视化
-
-三种排序算法（冒泡、选择、快速）的柱状图动画。用户输入一串数字，每一步的比较和交换都会在柱状图上用不同颜色标记出来，同时显示步骤描述、比较次数、交换次数。支持播放、暂停、逐帧前进后退和调速。
-
-### 学习驾驶舱
-
-把刷题记录和错题数据汇总成一个数据分析页面。顶部四个指标卡片（累计刷题数、练习次数、平均正确率、错题数），中间是题型正确率条形图和 7 天刷题趋势，底部是本地规则引擎生成的学习建议。建议文案看起来有点"AI 味"，但实际上是纯规则判断——比如"多选正确率低于 60% 时提示专项训练"，不依赖任何远程 API。
-
-## 设计
-
-整体用了暖奶油 + 珊瑚色的配色。页面背景是 `#faf9f5`，卡片是 `#efe9de`，CTA 按钮用 `#cc785c` 珊瑚色。阴影全部砍掉了，层次感完全靠色块之间的明暗对比来区分——在微信小程序的渲染环境下，这样做比用 box-shadow 更干净，也不会在某些 Android 机型上出现阴影渲染 bug。
-
-标题统一用 Georgia 衬线体，正文用系统默认无衬线。没有引入任何自定义字体文件，设计规范全靠几个 CSS 变量撑着，改一个变量全局生效。
-
-## 技术
-
-整个项目基于微信小程序原生框架（WXML + WXSS + JS），没有用任何第三方 UI 库或框架。
-
-数据存储用的是 `wx.setStorageSync`，简单粗暴。题目、记录、错题全部 JSON 序列化后存在本地。页面之间传数据有个坑：URL 参数有长度限制，题目多了会超。解决方法是在 `utils/storage.js` 里加了一个 `tempImportData` 临时 key，上一个页面写入，下一个页面读取，读完后清掉。
-
-测试用 Jest，目前 11 个套件 218 个用例全部通过。所有工具函数、算法逻辑都有测试覆盖。页面本身的 WXML/WXSS 没有做自动化测试——在小程序环境下做端到端测试的 ROI 不高，核心逻辑抽出来测就够了。
-
-## 快速开始
-
-需要微信开发者工具和 Node.js ≥ 16。
+## 4. 快速开始
 
 ```bash
 npm install
 npm test
 ```
 
-然后在微信开发者工具里打开项目根目录就行。
+然后用微信开发者工具打开项目根目录即可。
 
-导入试题：准备一个 Markdown 文件（格式参考根目录的 `test-questions.md`），小程序里点「开始刷题」→「导入试卷」，选文件即可。
+导入试题：进入"开始刷题"→"导入试卷"，选一个 Markdown 文件（格式参考根目录的 `test-questions.md`）。
 
-## 目录
+## 5. 文档导航
 
+| 文档 | 用途 |
+|---|---|
+| [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) | 30 秒恢复上下文 |
+| [docs/handoff/](docs/handoff/) | 各模块详解、架构、决策、风险、未来计划 |
+| [docs/DESIGN.md](docs/DESIGN.md) | Claude Design 设计规范 |
+| [docs/superpowers/specs/](docs/superpowers/specs/) | 原始设计 |
+| [docs/superpowers/plans/](docs/superpowers/plans/) | 原始实施计划 |
+| [CLAUDE.md](CLAUDE.md) | 项目 Claude 指令（do/don't 红线） |
+
+## 6. 项目目录
+
+```text
+├── app.{js,json,wxss}           入口和全局配置
+├── pages/                       13 个页面
+│   ├── index/                   首页
+│   ├── quiz-list/               试卷列表
+│   ├── import-preview/          导入预览
+│   ├── quiz/                    刷题
+│   ├── result/                  交卷结果
+│   ├── records/                 答题记录
+│   ├── record-detail/           记录详情
+│   ├── wrong-questions/         错题本
+│   ├── dashboard/               学习驾驶舱
+│   ├── subnet-calc/             子网计算器
+│   ├── sort-viz/                排序可视化
+│   ├── tcp-viz/                 TCP 动画机
+│   └── ds-viz/                  数据结构可视化
+├── utils/                       工具函数
+├── tests/                       Jest
+└── docs/                        设计 / 文档规范
 ```
-├── app.js / app.json / app.wxss      入口和全局配置
-├── pages/                            13 个页面
-│   ├── index/                        首页
-│   ├── quiz-list/                    试卷列表
-│   ├── import-preview/               导入预览
-│   ├── quiz/                         刷题
-│   ├── result/                       交卷结果
-│   ├── records/                      答题记录
-│   ├── record-detail/                记录详情
-│   ├── wrong-questions/              错题本
-│   ├── dashboard/                    学习驾驶舱
-│   ├── sort-viz/                     排序可视化
-│   ├── subnet-calc/                  子网计算器
-│   ├── tcp-viz/                      TCP 动画机
-│   └── ds-viz/                       数据结构可视化
-├── utils/                            工具函数（全部纯 JS，可单独测试）
-├── tests/                            Jest 测试
-├── docs/                             设计文档
-└── design-previews/                  74 个品牌首页设计参考
-```
 
-## 相关文档
+## 7. 仓库说明
 
-- `PROJECT_HANDOFF.md` — 项目交接文档，架构、数据流、开发进度都在里面
-- `docs/superpowers/specs/` — 早期设计规格
-- `docs/superpowers/plans/` — 实现计划
+以下文件仅保留在本地，不入 git（已在 `.gitignore`）：
 
-## 仓库说明
+- `TCP.pdf` — 网络协议参考资料（3 MB 二进制）
+- `idea.md` — 个人想法草稿
 
-以下文件仅保留在本地，不纳入 git 版本控制（已写入 `.gitignore`）：
-
-- `TCP.pdf` — 网络协议参考资料（3MB 二进制）
-- `idea.md` — 个人想法记录草稿
-
-它们曾短暂进入仓库，现已从 git 跟踪中移除，本地副本保留。
+历史归档与过期文档位于 [docs/archive/](docs/archive/)。
