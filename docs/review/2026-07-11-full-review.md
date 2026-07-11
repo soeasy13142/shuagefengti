@@ -460,3 +460,15 @@ key += chars[Math.floor(Math.random() * chars.length)];
 | QUAL-05-001 | `utils/sort-algorithms.js:111` | 内层 `quickSort` 重命名为 `_quickSortRecursive` 消除阴影 | `7dec744` |
 
 ## 用户决策记录（Medium 及以上）
+
+| 组 | 决策 | 落地形态 |
+|---|---|---|
+| P0: ds-viz `const key` TypeError | ✅ 修 | `8590f31` — const→let |
+| P1: finishQuiz 不加 autoSave | ✅ 修 | `8590f31` — 加 this._autoSave() |
+| P1: onLoad 参数校验 3 处 | ✅ 修 | `8590f31` |
+| P1: savePaper + addWrongQuestion id 校验 | ✅ 修 | `8590f31` |
+| COR-12: startTime 守卫 | ✅ 修 | `a134be3` |
+| COR-15: onHide/onUnload autoSave | ✅ 修 | `a134be3` |
+| COR-19: questionTypes 快照 | ✅ 修 | `a134be3` → analytics.js 优先用快照，向后兼容 |
+| I18N: 62 处中文硬编码 | 📋 建 follow-up plan | `docs/handoff/future-plans.md` 追加 |
+| 测试文件 222 var 残留 | ✅ 修 | `a134be3` — var→let 全迁移 |

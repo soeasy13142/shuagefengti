@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-11 · var 全清零 plan 实施完成（接续上次的 normalization plan）
+> 最后更新：2026-07-11 · 全项目 code review 完成（6 维度并行 review + 修复落地）
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -176,3 +176,38 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 - 不主动 `git push`：等待用户决定
 
 参见：`docs/plans/2026-07-11-var-cleanup.md` 实施计划 · `docs/superpowers/specs/2026-07-11-var-cleanup-design.md` design spec · `.superpowers/sdd/progress.md` var-cleanup 账本段
+
+### 2026-07-11 · 全项目 code review 完成
+
+**变更内容**
+
+- 6 维度并行 Workflow fan-out（SEC / COR / PERF / BUS / I18N / QUAL），各 1 个 Sonnet level agent，共 571k tokens / 248 tool calls / ~4 分钟
+- 产出 `docs/review/2026-07-11-full-review.md`（154 条发现：2 Critical / 47 High / 53 Medium / 27 Low / 16 Info）
+- 与 2026-06-15 报告并列对照：24 项仍存，4 项已修（GAP-10/13、COR-13/20），1 项回归（COR-32 ds-viz `const key` TypeError）
+
+**已修复**（用户审批后）
+
+| 类型 | 数量 | 内容 |
+|---|---|---|
+| Critical | 1 | ds-viz.js `const key → let key`（var→const 迁移回归） |
+| P1 High | 4 | finishQuiz autoSave、onLoad 参数校验 3 处、storage 守卫 2 处 |
+| Medium | 3 | COR-12 startTime、COR-15 onHide/unload、COR-19 questionTypes 快照 |
+| Low | 6 | console.log、catch 空块、deletePaper id、markMastered return、sort 比较器、quickSort 阴影 |
+| Test var | 222 | 6 个测试文件 var→let 全迁移 |
+
+**Follow-up**
+
+- I18N：追加到 `docs/handoff/future-plans.md` §P6，独立 plan 实施
+- 剩余 47 High + 53 Medium 项：详见报告 `docs/review/2026-07-11-full-review.md` §10
+
+**理由**
+
+- 覆盖 2026-06-15 之后所有变更（含 b9a543b var→const/let 全清零 refactor 专项回归）
+- 新增业务一致性（BUS）/ i18n 兼容性（I18N）两个维度
+- spec `docs/superpowers/specs/2026-07-11-code-review-design.md` → plan `docs/plans/2026-07-11-full-code-review.md`
+
+**影响**
+
+- 当前 HEAD=`a134be3`
+- 18 项 06-15 遗留未修中，已修 6 项（COR-01/03/05、BUS-10-01、QUAL-01-001/05-001），仍存 12 项
+- 不主动 `git push`

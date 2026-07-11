@@ -43,9 +43,19 @@
 - `utils/bst.js` 插入/删除/遍历 → 单元测试
 - `utils/graph.js` BFS/DFS → 单元测试
 - `utils/hash-table.js` 冲突处理 → 单元测试
-- `tests/` 下 `var → const/let` 迁移 · ~222 处 · **r.8 候选**（2026-07-11 var-cleanup plan 明确排除 `tests/`）
 - 解 r.11
 
-## P5 · AI 化（远期）
+## P6 · i18n 国际化抽象（来自 2026-07-11 code review）
+
+基于 `docs/review/2026-07-11-full-review.md` §5 的 62 条发现，全项目无 i18n 抽象层。
+
+建议方案：
+1. 建 `utils/i18n.js` 模块，key-value 式（`{ 'zh': { title: '刷个冯题' }, 'en': { title: 'Quiz Master' } }`）
+2. 替换 62 处硬编码：WXML 文字 / toast / modal / placeholder / app.json title
+3. 选手语言存在 `app.globalData.lang`，默认 `zh`
+4. 扩展 markdown-parser 正则支持英文 `Question X` 格式 + 判断题 True/False
+5. `formatDuration` 支持 locale 参数
+
+影响范围：全项目，涉及所有 `.wxml`、`.js` 的显示文案。建议单独开一个 plan 实施。
 
 `docs/handoff/decisions.md` 已记录"学习数据驾驶舱 + 轻量 AI 学习建议"为收敛方向。本地规则引擎已就位，远期可替换为云端大模型 API。建议设计 API 时保持 suggestions 结构与 `utils/analytics.js` 一致，便于不改动 dashboard 页面即可切换。
