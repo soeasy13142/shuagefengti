@@ -5,3 +5,10 @@ project.private.config.json
 # 本地参考/个人草稿，不纳入版本控制
 TCP.pdf
 idea.md
+
+# Local-only design skill reference (not part of the project)
+design-methods/
+design-previews/
+
+# macOS filesystem noise (覆盖子目录)
+.DS_Store
