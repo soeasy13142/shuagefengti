@@ -223,7 +223,8 @@ Page({
   },
 
   _doFinishQuiz() {
-    const { answers, questions, paper, mode, startTime } = this.data;
+    const { answers, questions, paper, mode } = this.data;
+    const startTime = this.data.startTime || Date.now();
     const endTime = Date.now();
     const duration = Math.round((endTime - startTime) / 1000);
 
@@ -245,7 +246,8 @@ Page({
       totalQuestions: questions.length,
       correctCount,
       accuracy,
-      answers
+      answers,
+      questionTypes: questions.map(q => ({ id: q.id, type: q.type }))
     };
     storage.saveRecord(record);
 
@@ -272,5 +274,13 @@ Page({
     wx.redirectTo({
       url: `/pages/result/result?data=${encodeURIComponent(resultData)}`
     });
+  },
+
+  onHide() {
+    this._autoSave();
+  },
+
+  onUnload() {
+    this._autoSave();
   }
 });

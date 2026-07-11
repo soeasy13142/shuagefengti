@@ -163,11 +163,26 @@ function buildDashboardData(records, wrongQuestions, papers, now) {
   }
 
   records.forEach(function (record) {
+    if (!record.answers) return;
+    // 优先使用 record.questionTypes 快照（避免试卷修改后统计丢失）
+    const questionTypes = record.questionTypes;
+    if (questionTypes && questionTypes.length > 0) {
+      questionTypes.forEach(function (qt) {
+        const stat = typeMap[qt.type];
+        if (!stat) return;
+        const answer = record.answers[qt.id];
+        if (!answer) return;
+        stat.total += 1;
+        if (answer.correct) stat.correct += 1;
+      });
+      return;
+    }
+    // 向后兼容：无 questionTypes 时从 paper.questions 查找
     let paper = null;
     for (let p = 0; p < papers.length; p++) {
       if (papers[p].id === record.paperId) { paper = papers[p]; break; }
     }
-    if (!paper || !paper.questions || !record.answers) return;
+    if (!paper || !paper.questions) return;
     paper.questions.forEach(function (q) {
       const stat = typeMap[q.type];
       if (!stat) return;

@@ -7,13 +7,13 @@ const { bubbleSort, selectionSort, quickSort } = require('../../utils/sort-algor
 
 // 模拟排序执行，验证最终结果正确
 function simulateSort(arr, steps) {
-  var a = arr.slice();
-  for (var i = 0; i < steps.length; i++) {
-    var step = steps[i];
+  let a = arr.slice();
+  for (let i = 0; i < steps.length; i++) {
+    let step = steps[i];
     if (step.type === 'swap' && step.indices.length === 2) {
-      var idx1 = step.indices[0];
-      var idx2 = step.indices[1];
-      var temp = a[idx1]; a[idx1] = a[idx2]; a[idx2] = temp;
+      let idx1 = step.indices[0];
+      let idx2 = step.indices[1];
+      let temp = a[idx1]; a[idx1] = a[idx2]; a[idx2] = temp;
     }
   }
   return a;
