@@ -5,5 +5,5 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1'
   },
-  setupFiles: ['<rootDir>/__mocks__/wx.js']
+  setupFiles: ['<rootDir>/tests/__mocks__/wx.js']
 };
