@@ -11,7 +11,19 @@ Page({
   },
 
   onLoad(options) {
-    const resultData = JSON.parse(decodeURIComponent(options.data));
+    if (!options || !options.data) {
+      wx.showToast({ title: '结果数据缺失', icon: 'none' });
+      setTimeout(() => wx.navigateBack(), 1500);
+      return;
+    }
+    let resultData;
+    try {
+      resultData = JSON.parse(decodeURIComponent(options.data));
+    } catch (e) {
+      wx.showToast({ title: '结果数据解析失败', icon: 'none' });
+      setTimeout(() => wx.navigateBack(), 1500);
+      return;
+    }
     const minutes = Math.floor(resultData.duration / 60);
     const seconds = resultData.duration % 60;
     this.setData({

@@ -470,7 +470,7 @@ Page({
   _hashRandomKey: function() {
     const chars = 'abcdefghijklmnopqrstuvwxyz';
     const len = Math.floor(Math.random() * 4) + 3;
-    const key = '';
+    let key = '';
     for (let i = 0; i < len; i++) {
       key += chars[Math.floor(Math.random() * chars.length)];
     }

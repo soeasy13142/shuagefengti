@@ -19,6 +19,11 @@ Page({
   },
 
   onLoad(options) {
+    if (!options || !options.paperId) {
+      wx.showToast({ title: '参数错误', icon: 'none' });
+      setTimeout(() => wx.navigateBack(), 1500);
+      return;
+    }
     const paper = storage.getPaperById(options.paperId);
     if (!paper) {
       wx.showToast({ title: '试卷不存在', icon: 'none' });
@@ -185,6 +190,7 @@ Page({
   },
 
   finishQuiz() {
+    this._autoSave();
     const { answers, questions } = this.data;
     const answeredCount = Object.keys(answers).length;
     const total = questions.length;

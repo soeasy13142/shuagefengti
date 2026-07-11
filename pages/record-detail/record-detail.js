@@ -34,6 +34,11 @@ Page({
   },
 
   onLoad(options) {
+    if (!options || !options.recordId) {
+      wx.showToast({ title: '记录参数缺失', icon: 'none' });
+      setTimeout(() => wx.navigateBack(), 1500);
+      return;
+    }
     const records = storage.getRecords();
     const record = records.find(function(r) { return r.id === options.recordId; });
     if (!record) {

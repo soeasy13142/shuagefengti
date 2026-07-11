@@ -28,6 +28,10 @@ function getPapers() {
 }
 
 function savePaper(paper) {
+  if (!paper || !paper.id) {
+    console.warn('[storage] savePaper: invalid paper (missing id)', paper);
+    return;
+  }
   const papers = getPapers();
   const idx = papers.findIndex(p => p.id === paper.id);
   if (idx >= 0) {
@@ -77,6 +81,10 @@ function getUnmasteredWrongQuestions() {
 }
 
 function addWrongQuestion({ questionId, paperId, question }) {
+  if (!questionId) {
+    console.warn('[storage] addWrongQuestion: invalid questionId');
+    return;
+  }
   const wrongs = getWrongQuestions();
   const existing = wrongs.find(w => w.questionId === questionId);
   if (existing) {
