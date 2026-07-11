@@ -390,3 +390,29 @@ Project instructions and memory for Claude Code.
 - **新增 plans（复杂任务）**：`docs/plans/<feature-or-fix-name>.md` —— 必须落盘，让用户能直接看到
 - 新增页面后必须在 `app.json` 注册页面
 - 首页入口修改：`pages/index/index.js` + `.wxml` + `.wxss`
+
+## 代码风格
+
+- 统一使用 `const` 与 `let`，**禁用 `var`**（遗留代码迁移过程中允许暂时保留，但新代码不得引入 `var`）
+- 顶层模块常量：`UPPER_SNAKE_CASE`
+- 私有函数 / 私有模块状态：`_underscore` 前缀
+- 异步优先：`Promise` / `async-await`，避免回调地狱
+- 错误处理：所有 `catch` 必须显式处理或 `throw`，禁止静默吞
+- 注释：`/** */` JSDoc 用于公开 API；行内 `//` 仅用于解释 why
+
+## 命名约定
+
+| 文件类型 | 命名格式 | 示例 |
+|---|---|---|
+| utils | `<module>.js`（小写 + kebab-case 复合词） | `markdown-parser.js` |
+| pages | `<page-name>/` 目录 + 4 文件 | `pages/subnet-calc/` |
+| tests/utils | `<module>.test.js` | `tests/utils/subnet.test.js` |
+| tests/pages | `<engine>.test.js` | `tests/pages/quiz-engine.test.js` |
+| 历史/过程 docs | `YYYY-MM-DD-name.md` | `2026-07-11-normalization-design.md` |
+| 项目级主题 docs | `<topic>.md` | `docs/handoff/decisions.md` |
+| 测试 fixtures | `tests/fixtures/<name>.md` | `tests/fixtures/test-questions.md` |
+| mocks | `tests/__mocks__/<name>.js` | `tests/__mocks__/wx.js` |
+| 项目级 plan | `docs/plans/YYYY-MM-DD-<name>.md` | `docs/plans/2026-07-11-normalization.md` |
+| spec | `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` | `2026-07-11-normalization-design.md` |
+
+**判定原则**：单字模块直接用单词（`quiz`, `result`）；复合概念用 kebab-case（`quiz-list`, `wrong-questions`）。目录名风格统一遵循 "lowercase + kebab-case for compound"。
