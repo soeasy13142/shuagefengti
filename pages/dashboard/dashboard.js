@@ -1,5 +1,5 @@
-var storage = require('../../utils/storage');
-var analytics = require('../../utils/analytics');
+const storage = require('../../utils/storage');
+const analytics = require('../../utils/analytics');
 
 Page({
   data: {
@@ -13,12 +13,12 @@ Page({
   },
 
   _loadDashboard: function () {
-    var records = storage.getRecords();
-    var wrongQuestions = storage.getWrongQuestions();
-    var papers = storage.getPapers();
-    var dashboard = analytics.buildDashboardData(records, wrongQuestions, papers, new Date());
-    var maxTrendCount = 1;
-    for (var i = 0; i < dashboard.sevenDayTrend.length; i++) {
+    const records = storage.getRecords();
+    const wrongQuestions = storage.getWrongQuestions();
+    const papers = storage.getPapers();
+    const dashboard = analytics.buildDashboardData(records, wrongQuestions, papers, new Date());
+    let maxTrendCount = 1;
+    for (let i = 0; i < dashboard.sevenDayTrend.length; i++) {
       if (dashboard.sevenDayTrend[i].count > maxTrendCount) {
         maxTrendCount = dashboard.sevenDayTrend[i].count;
       }
@@ -43,7 +43,7 @@ Page({
   },
 
   onSuggestionTap: function (e) {
-    var actionType = e.currentTarget.dataset.action;
+    const actionType = e.currentTarget.dataset.action;
     if (actionType === 'wrongQuestions') {
       this.goWrongQuestions();
     } else if (actionType === 'records') {

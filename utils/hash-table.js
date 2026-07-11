@@ -13,8 +13,8 @@
  * @returns {{ size: number, buckets: Array, count: number }}
  */
 function createHashTable(size) {
-  var buckets = [];
-  for (var i = 0; i < size; i++) {
+  const buckets = [];
+  for (let i = 0; i < size; i++) {
     buckets.push({ entries: [] });
   }
   return { size: size, buckets: buckets, count: 0 };
@@ -30,8 +30,8 @@ function createHashTable(size) {
  * @returns {number}
  */
 function hash(key, tableSize) {
-  var sum = 0;
-  for (var i = 0; i < key.length; i++) {
+  let sum = 0;
+  for (let i = 0; i < key.length; i++) {
     sum += key.charCodeAt(i);
   }
   return sum % tableSize;
@@ -43,11 +43,11 @@ function hash(key, tableSize) {
  * 深拷贝哈希表（用于步骤快照）
  */
 function cloneTable(table) {
-  var buckets = [];
-  for (var i = 0; i < table.buckets.length; i++) {
-    var entries = [];
-    for (var j = 0; j < table.buckets[i].entries.length; j++) {
-      var e = table.buckets[i].entries[j];
+  const buckets = [];
+  for (let i = 0; i < table.buckets.length; i++) {
+    const entries = [];
+    for (let j = 0; j < table.buckets[i].entries.length; j++) {
+      const e = table.buckets[i].entries[j];
       entries.push({ key: e.key, value: e.value });
     }
     buckets.push({ entries: entries });
@@ -65,9 +65,9 @@ function cloneTable(table) {
  * @returns {{ table: object, steps: Array }}
  */
 function htInsert(table, key, value) {
-  var steps = [];
-  var newTable = cloneTable(table);
-  var bucketIndex = hash(key, newTable.size);
+  const steps = [];
+  const newTable = cloneTable(table);
+  const bucketIndex = hash(key, newTable.size);
 
   // 步骤 1：计算哈希值
   steps.push({
@@ -79,11 +79,11 @@ function htInsert(table, key, value) {
     tableSnapshot: cloneTable(newTable)
   });
 
-  var bucket = newTable.buckets[bucketIndex];
+  const bucket = newTable.buckets[bucketIndex];
 
   // 检查是否已存在（更新值）
-  var found = false;
-  for (var i = 0; i < bucket.entries.length; i++) {
+  let found = false;
+  for (let i = 0; i < bucket.entries.length; i++) {
     if (bucket.entries[i].key === key) {
       bucket.entries[i].value = value;
       found = true;
@@ -137,8 +137,8 @@ function htInsert(table, key, value) {
  * @returns {{ found: boolean, value: *, steps: Array }}
  */
 function htSearch(table, key) {
-  var steps = [];
-  var bucketIndex = hash(key, table.size);
+  const steps = [];
+  const bucketIndex = hash(key, table.size);
 
   // 步骤 1：计算哈希值
   steps.push({
@@ -150,11 +150,11 @@ function htSearch(table, key) {
     tableSnapshot: cloneTable(table)
   });
 
-  var bucket = table.buckets[bucketIndex];
+  const bucket = table.buckets[bucketIndex];
 
   // 遍历链表
-  for (var i = 0; i < bucket.entries.length; i++) {
-    var entry = bucket.entries[i];
+  for (let i = 0; i < bucket.entries.length; i++) {
+    const entry = bucket.entries[i];
     if (entry.key === key) {
       steps.push({
         type: 'found',
@@ -201,8 +201,8 @@ function loadFactor(table) {
  * @returns {number}
  */
 function collisionCount(table) {
-  var count = 0;
-  for (var i = 0; i < table.buckets.length; i++) {
+  let count = 0;
+  for (let i = 0; i < table.buckets.length; i++) {
     if (table.buckets[i].entries.length > 1) {
       count++;
     }

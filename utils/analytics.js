@@ -3,7 +3,7 @@
  * 纯函数，从 records/wrongQuestions/papers 计算统计数据
  */
 
-var TYPE_LABELS = {
+const TYPE_LABELS = {
   single: '单选',
   multi: '多选',
   judge: '判断',
@@ -11,15 +11,15 @@ var TYPE_LABELS = {
   essay: '简答'
 };
 
-var TYPE_KEYS = ['single', 'multi', 'judge', 'fill', 'essay'];
+const TYPE_KEYS = ['single', 'multi', 'judge', 'fill', 'essay'];
 
 function _round(num) {
   return Math.round(num || 0);
 }
 
 function _formatDay(date) {
-  var m = String(date.getMonth() + 1);
-  var d = String(date.getDate());
+  let m = String(date.getMonth() + 1);
+  let d = String(date.getDate());
   if (m.length < 2) m = '0' + m;
   if (d.length < 2) d = '0' + d;
   return m + '-' + d;
@@ -32,19 +32,18 @@ function _buildEmptyTypeStats() {
 }
 
 function _buildSevenDayTrend(records, now) {
-  var days = [];
-  var i;
-  for (i = 6; i >= 0; i--) {
-    var d = new Date(now.getTime());
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now.getTime());
     d.setDate(d.getDate() - i);
     days.push({ date: _formatDay(d), count: 0, correct: 0, total: 0, accuracy: 0 });
   }
 
   records.forEach(function (record) {
-    var raw = record.endTime || record.startTime || '';
-    var dayKey = raw.length >= 10 ? raw.slice(5, 10) : '';
-    var matched = null;
-    for (var j = 0; j < days.length; j++) {
+    const raw = record.endTime || record.startTime || '';
+    const dayKey = raw.length >= 10 ? raw.slice(5, 10) : '';
+    let matched = null;
+    for (let j = 0; j < days.length; j++) {
       if (days[j].date === dayKey) {
         matched = days[j];
         break;
@@ -67,7 +66,7 @@ function _buildSevenDayTrend(records, now) {
 }
 
 function _buildSuggestions(overview, typeStats, weakSpot) {
-  var suggestions = [];
+  const suggestions = [];
 
   if (overview.totalSessions === 0) {
     suggestions.push({
@@ -100,7 +99,7 @@ function _buildSuggestions(overview, typeStats, weakSpot) {
     });
   }
 
-  var unmastered = overview.wrongCount - overview.masteredWrongCount;
+  const unmastered = overview.wrongCount - overview.masteredWrongCount;
   if (unmastered > 0) {
     suggestions.push({
       level: 'info',
@@ -140,62 +139,61 @@ function buildDashboardData(records, wrongQuestions, papers, now) {
   papers = papers || [];
   now = now || new Date();
 
-  var totalSessions = records.length;
-  var totalQuestions = 0;
-  var totalCorrect = 0;
-  var i;
+  const totalSessions = records.length;
+  let totalQuestions = 0;
+  let totalCorrect = 0;
 
-  for (i = 0; i < records.length; i++) {
+  for (let i = 0; i < records.length; i++) {
     totalQuestions += records[i].totalQuestions || 0;
     totalCorrect += records[i].correctCount || 0;
   }
 
-  var averageAccuracy = totalQuestions > 0 ? _round((totalCorrect / totalQuestions) * 100) : 0;
-  var wrongCount = wrongQuestions.length;
-  var masteredWrongCount = 0;
-  for (i = 0; i < wrongQuestions.length; i++) {
+  const averageAccuracy = totalQuestions > 0 ? _round((totalCorrect / totalQuestions) * 100) : 0;
+  const wrongCount = wrongQuestions.length;
+  let masteredWrongCount = 0;
+  for (let i = 0; i < wrongQuestions.length; i++) {
     if (wrongQuestions[i].mastered) masteredWrongCount++;
   }
 
   // 题型统计
-  var typeStats = _buildEmptyTypeStats();
-  var typeMap = {};
-  for (i = 0; i < typeStats.length; i++) {
+  const typeStats = _buildEmptyTypeStats();
+  const typeMap = {};
+  for (let i = 0; i < typeStats.length; i++) {
     typeMap[typeStats[i].type] = typeStats[i];
   }
 
   records.forEach(function (record) {
-    var paper = null;
-    for (var p = 0; p < papers.length; p++) {
+    let paper = null;
+    for (let p = 0; p < papers.length; p++) {
       if (papers[p].id === record.paperId) { paper = papers[p]; break; }
     }
     if (!paper || !paper.questions || !record.answers) return;
     paper.questions.forEach(function (q) {
-      var stat = typeMap[q.type];
+      const stat = typeMap[q.type];
       if (!stat) return;
-      var answer = record.answers[q.id];
+      const answer = record.answers[q.id];
       if (!answer) return;
       stat.total += 1;
       if (answer.correct) stat.correct += 1;
     });
   });
 
-  for (i = 0; i < typeStats.length; i++) {
-    var s = typeStats[i];
+  for (let i = 0; i < typeStats.length; i++) {
+    const s = typeStats[i];
     s.accuracy = s.total > 0 ? _round((s.correct / s.total) * 100) : 0;
   }
 
   // 最薄弱 / 最强题型
-  var activeTypeStats = typeStats.filter(function (s) { return s.total > 0; });
-  var weakSpot = null;
-  var strength = null;
+  const activeTypeStats = typeStats.filter(function (s) { return s.total > 0; });
+  let weakSpot = null;
+  let strength = null;
   if (activeTypeStats.length > 0) {
-    var sorted = activeTypeStats.slice().sort(function (a, b) { return a.accuracy - b.accuracy; });
+    const sorted = activeTypeStats.slice().sort(function (a, b) { return a.accuracy - b.accuracy; });
     weakSpot = sorted[0];
     strength = sorted[sorted.length - 1];
   }
 
-  var overview = {
+  const overview = {
     totalSessions: totalSessions,
     totalQuestions: totalQuestions,
     averageAccuracy: averageAccuracy,

@@ -7,7 +7,7 @@
 
 // ======================== 常量 ========================
 
-var TCP_STATES = {
+const TCP_STATES = {
   CLOSED:      { label: 'CLOSED',      color: '#9ca3af' },
   LISTEN:      { label: 'LISTEN',      color: '#60a5fa' },
   SYN_SENT:    { label: 'SYN_SENT',    color: '#f59e0b' },
@@ -20,7 +20,7 @@ var TCP_STATES = {
   LAST_ACK:    { label: 'LAST_ACK',    color: '#ef4444' }
 };
 
-var TCP_FLAGS = {
+const TCP_FLAGS = {
   SYN: 'SYN',
   ACK: 'ACK',
   FIN: 'FIN',
@@ -192,11 +192,11 @@ function generateDataScenario(type) {
  * @returns {Array} 步骤数组
  */
 function getDataTransferSteps(scenario) {
-  var steps = [];
-  var stepNum = 0;
-  var base = scenario.initialSeq;
-  var windowSize = scenario.windowSize;
-  var segSize = scenario.segmentSize;
+  const steps = [];
+  let stepNum = 0;
+  let base = scenario.initialSeq;
+  const windowSize = scenario.windowSize;
+  const segSize = scenario.segmentSize;
 
   if (scenario.type === 'normal') {
     scenario.segments.forEach(function(seg) {
@@ -219,7 +219,7 @@ function getDataTransferSteps(scenario) {
 
     scenario.segments.forEach(function(seg) {
       stepNum++;
-      var ackNum = seg.seq + seg.dataLen;
+      const ackNum = seg.seq + seg.dataLen;
       base = Math.max(base, ackNum - windowSize + segSize);
       steps.push({
         step: stepNum,
@@ -347,17 +347,17 @@ function getDataTransferSteps(scenario) {
 // ======================== 完整连接生命周期 ========================
 
 function getFullConnectionSteps() {
-  var handshake = getHandshakeSteps();
-  var dataScenario = generateDataScenario('normal');
-  var dataTransfer = getDataTransferSteps(dataScenario);
-  var teardown = getTeardownSteps();
+  const handshake = getHandshakeSteps();
+  const dataScenario = generateDataScenario('normal');
+  const dataTransfer = getDataTransferSteps(dataScenario);
+  const teardown = getTeardownSteps();
 
-  var allSteps = [];
-  var num = 0;
+  const allSteps = [];
+  let num = 0;
 
   handshake.forEach(function(s) {
     num++;
-    var step = JSON.parse(JSON.stringify(s));
+    const step = JSON.parse(JSON.stringify(s));
     step.step = num;
     step.type = 'full';
     allSteps.push(step);
@@ -365,7 +365,7 @@ function getFullConnectionSteps() {
 
   dataTransfer.forEach(function(s) {
     num++;
-    var step = JSON.parse(JSON.stringify(s));
+    const step = JSON.parse(JSON.stringify(s));
     step.step = num;
     step.type = 'full';
     allSteps.push(step);
@@ -373,7 +373,7 @@ function getFullConnectionSteps() {
 
   teardown.forEach(function(s) {
     num++;
-    var step = JSON.parse(JSON.stringify(s));
+    const step = JSON.parse(JSON.stringify(s));
     step.step = num;
     step.type = 'full';
     allSteps.push(step);

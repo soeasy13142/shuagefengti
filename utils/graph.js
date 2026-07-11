@@ -37,14 +37,14 @@ function createSampleGraph(type) {
  * 节点自动布局为圆形排列
  */
 function _buildGraph(nodeIds, edgePairs) {
-  var NODE_RADIUS = 150;
-  var CENTER_X = 200;
-  var CENTER_Y = 180;
-  var nodes = [];
-  var adjList = {};
+  const NODE_RADIUS = 150;
+  const CENTER_X = 200;
+  const CENTER_Y = 180;
+  const nodes = [];
+  const adjList = {};
 
-  for (var i = 0; i < nodeIds.length; i++) {
-    var angle = (2 * Math.PI * i / nodeIds.length) - Math.PI / 2;
+  for (let i = 0; i < nodeIds.length; i++) {
+    const angle = (2 * Math.PI * i / nodeIds.length) - Math.PI / 2;
     nodes.push({
       id: nodeIds[i],
       x: CENTER_X + NODE_RADIUS * Math.cos(angle),
@@ -55,10 +55,10 @@ function _buildGraph(nodeIds, edgePairs) {
     adjList[nodeIds[i]] = [];
   }
 
-  var edges = [];
-  for (var j = 0; j < edgePairs.length; j++) {
-    var from = edgePairs[j][0];
-    var to = edgePairs[j][1];
+  const edges = [];
+  for (let j = 0; j < edgePairs.length; j++) {
+    const from = edgePairs[j][0];
+    const to = edgePairs[j][1];
     edges.push({ from: from, to: to, state: 'normal' });
     adjList[from].push(to);
     adjList[to].push(from);
@@ -73,18 +73,18 @@ function _buildGraph(nodeIds, edgePairs) {
  * 深拷贝图（用于步骤快照）
  */
 function cloneGraph(graph) {
-  var nodes = [];
-  for (var i = 0; i < graph.nodes.length; i++) {
-    var n = graph.nodes[i];
+  const nodes = [];
+  for (let i = 0; i < graph.nodes.length; i++) {
+    const n = graph.nodes[i];
     nodes.push({ id: n.id, x: n.x, y: n.y, state: n.state, visitOrder: n.visitOrder });
   }
-  var edges = [];
-  for (var j = 0; j < graph.edges.length; j++) {
-    var e = graph.edges[j];
+  const edges = [];
+  for (let j = 0; j < graph.edges.length; j++) {
+    const e = graph.edges[j];
     edges.push({ from: e.from, to: e.to, state: e.state });
   }
-  var adjList = {};
-  for (var key in graph.adjList) {
+  const adjList = {};
+  for (const key in graph.adjList) {
     adjList[key] = graph.adjList[key].slice();
   }
   return { nodes: nodes, edges: edges, adjList: adjList };
@@ -94,8 +94,8 @@ function cloneGraph(graph) {
  * 获取已访问节点 ID 列表
  */
 function _getVisitedList(nodes, visited) {
-  var list = [];
-  for (var i = 0; i < nodes.length; i++) {
+  const list = [];
+  for (let i = 0; i < nodes.length; i++) {
     if (visited[nodes[i].id]) {
       list.push(nodes[i].id);
     }
@@ -107,9 +107,9 @@ function _getVisitedList(nodes, visited) {
  * 将访问状态应用到图快照
  */
 function _applyVisitState(graph, visited, currentNode, visitOrder) {
-  var snapshot = cloneGraph(graph);
-  for (var i = 0; i < snapshot.nodes.length; i++) {
-    var n = snapshot.nodes[i];
+  const snapshot = cloneGraph(graph);
+  for (let i = 0; i < snapshot.nodes.length; i++) {
+    const n = snapshot.nodes[i];
     if (visited[n.id]) {
       n.state = 'visited';
       n.visitOrder = visitOrder;
@@ -118,8 +118,8 @@ function _applyVisitState(graph, visited, currentNode, visitOrder) {
       n.state = 'current';
     }
   }
-  for (var j = 0; j < snapshot.edges.length; j++) {
-    var e = snapshot.edges[j];
+  for (let j = 0; j < snapshot.edges.length; j++) {
+    const e = snapshot.edges[j];
     if (visited[e.from] && visited[e.to]) {
       e.state = 'visited';
     }
@@ -136,10 +136,10 @@ function _applyVisitState(graph, visited, currentNode, visitOrder) {
  * @returns {Array} 操作步骤
  */
 function bfs(graph, startNode) {
-  var steps = [];
-  var visited = {};
-  var queue = [];
-  var visitOrder = 0;
+  const steps = [];
+  const visited = {};
+  const queue = [];
+  let visitOrder = 0;
 
   queue.push(startNode);
   steps.push({
@@ -152,7 +152,7 @@ function bfs(graph, startNode) {
   });
 
   while (queue.length > 0) {
-    var current = queue.shift();
+    const current = queue.shift();
 
     if (visited[current]) continue;
     visited[current] = true;
@@ -168,9 +168,9 @@ function bfs(graph, startNode) {
       graphSnapshot: _applyVisitState(graph, visited, current, visitOrder)
     });
 
-    var neighbors = graph.adjList[current] || [];
-    var newNeighbors = [];
-    for (var i = 0; i < neighbors.length; i++) {
+    const neighbors = graph.adjList[current] || [];
+    const newNeighbors = [];
+    for (let i = 0; i < neighbors.length; i++) {
       if (!visited[neighbors[i]]) {
         queue.push(neighbors[i]);
         newNeighbors.push(neighbors[i]);
@@ -209,10 +209,10 @@ function bfs(graph, startNode) {
  * @returns {Array} 操作步骤
  */
 function dfs(graph, startNode) {
-  var steps = [];
-  var visited = {};
-  var visitOrder = { val: 0 };
-  var stack = [];
+  const steps = [];
+  const visited = {};
+  const visitOrder = { val: 0 };
+  const stack = [];
 
   stack.push(startNode);
   steps.push({
@@ -252,9 +252,9 @@ function _dfsRecursive(graph, node, visited, steps, stack, visitOrder) {
     graphSnapshot: _applyVisitState(graph, visited, node, visitOrder.val)
   });
 
-  var neighbors = graph.adjList[node] || [];
-  for (var i = 0; i < neighbors.length; i++) {
-    var neighbor = neighbors[i];
+  const neighbors = graph.adjList[node] || [];
+  for (let i = 0; i < neighbors.length; i++) {
+    const neighbor = neighbors[i];
     if (!visited[neighbor]) {
       stack.push(neighbor);
       steps.push({

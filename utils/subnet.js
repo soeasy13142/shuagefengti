@@ -225,14 +225,14 @@ function generateAndSteps(ipBinary, maskBinary, mode) {
   if (ipBinary.length !== 4 || maskBinary.length !== 4) return [];
   if (mode !== 'octet' && mode !== 'bit') return [];
 
-  var steps = [];
+  const steps = [];
 
   if (mode === 'octet') {
-    for (var i = 0; i < 4; i++) {
-      var ipOctet = ipBinary[i];
-      var maskOctet = maskBinary[i];
-      var resultOctet = '';
-      for (var b = 0; b < 8; b++) {
+    for (let i = 0; i < 4; i++) {
+      const ipOctet = ipBinary[i];
+      const maskOctet = maskBinary[i];
+      let resultOctet = '';
+      for (let b = 0; b < 8; b++) {
         resultOctet += (ipOctet[b] === '1' && maskOctet[b] === '1') ? '1' : '0';
       }
       steps.push({
@@ -248,12 +248,12 @@ function generateAndSteps(ipBinary, maskBinary, mode) {
       });
     }
   } else {
-    for (var octet = 0; octet < 4; octet++) {
-      for (var bit = 0; bit < 8; bit++) {
-        var globalIdx = octet * 8 + bit;
-        var ipBit = ipBinary[octet][bit];
-        var maskBit = maskBinary[octet][bit];
-        var resultBit = (ipBit === '1' && maskBit === '1') ? '1' : '0';
+    for (let octet = 0; octet < 4; octet++) {
+      for (let bit = 0; bit < 8; bit++) {
+        const globalIdx = octet * 8 + bit;
+        const ipBit = ipBinary[octet][bit];
+        const maskBit = maskBinary[octet][bit];
+        const resultBit = (ipBit === '1' && maskBit === '1') ? '1' : '0';
         steps.push({
           type: 'and-bit',
           bitIndex: globalIdx,
@@ -268,15 +268,15 @@ function generateAndSteps(ipBinary, maskBinary, mode) {
   }
 
   // 计算最终网络地址
-  var resultBinary = [];
-  for (var oi = 0; oi < 4; oi++) {
-    var res = '';
-    for (var bi = 0; bi < 8; bi++) {
+  const resultBinary = [];
+  for (let oi = 0; oi < 4; oi++) {
+    let res = '';
+    for (let bi = 0; bi < 8; bi++) {
       res += (ipBinary[oi][bi] === '1' && maskBinary[oi][bi] === '1') ? '1' : '0';
     }
     resultBinary.push(res);
   }
-  var resultDecimal = resultBinary.map(function(s) { return parseInt(s, 2); }).join('.');
+  const resultDecimal = resultBinary.map(function(s) { return parseInt(s, 2); }).join('.');
 
   steps.push({
     type: 'done',

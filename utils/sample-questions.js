@@ -1,5 +1,5 @@
 // 示例试题 markdown 内容
-var sampleMarkdown = '1. 以下哪个是JavaScript的基本数据类型？\n' +
+const sampleMarkdown = '1. 以下哪个是JavaScript的基本数据类型？\n' +
   'A. Object\n' +
   'B. Array\n' +
   'C. String\n' +

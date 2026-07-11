@@ -42,7 +42,7 @@ function inOrderValues(node) {
  * 在子树中查找最小值节点（用于删除后继）
  */
 function findMin(node) {
-  var current = node;
+  let current = node;
   while (current && current.left) {
     current = current.left;
   }
@@ -58,8 +58,8 @@ function findMin(node) {
  * @returns {{ root: object, steps: Array }} 新的根节点和操作步骤
  */
 function insertNode(root, value) {
-  var steps = [];
-  var result = _insert(root, value, steps);
+  const steps = [];
+  const result = _insert(root, value, steps);
   steps.push({
     type: 'done',
     value: value,
@@ -105,7 +105,7 @@ function _insert(node, value, steps) {
  * @returns {Array} 操作步骤
  */
 function searchNode(root, value) {
-  var steps = [];
+  const steps = [];
   _search(root, value, steps, []);
   return steps;
 }
@@ -121,7 +121,7 @@ function _search(node, value, steps, pathSoFar) {
     return;
   }
 
-  var currentPath = pathSoFar.concat([node.value]);
+  const currentPath = pathSoFar.concat([node.value]);
 
   if (value === node.value) {
     steps.push({
@@ -158,8 +158,8 @@ function _search(node, value, steps, pathSoFar) {
  * @returns {{ root: object|null, steps: Array }} 新的根节点和操作步骤
  */
 function deleteNode(root, value) {
-  var steps = [];
-  var result = _delete(root, value, steps, []);
+  const steps = [];
+  const result = _delete(root, value, steps, []);
 
   if (steps.length === 0 || steps[steps.length - 1].type !== 'not-found') {
     steps.push({
@@ -184,7 +184,7 @@ function _delete(node, value, steps, pathSoFar) {
     return null;
   }
 
-  var currentPath = pathSoFar.concat([node.value]);
+  const currentPath = pathSoFar.concat([node.value]);
 
   if (value < node.value) {
     steps.push({
@@ -218,7 +218,7 @@ function _delete(node, value, steps, pathSoFar) {
       return null;
     } else if (!node.left || !node.right) {
       // 情况 2：单子节点
-      var child = node.left || node.right;
+      const child = node.left || node.right;
       steps.push({
         type: 'delete',
         value: value,
@@ -229,7 +229,7 @@ function _delete(node, value, steps, pathSoFar) {
       return child;
     } else {
       // 情况 3：双子节点 — 用后继替换
-      var successor = findMin(node.right);
+      const successor = findMin(node.right);
       steps.push({
         type: 'replace',
         value: value,
@@ -239,7 +239,7 @@ function _delete(node, value, steps, pathSoFar) {
         treeSnapshot: cloneTree(node)
       });
       node.value = successor.value;
-      var deleteResult = _delete(node.right, successor.value, steps, currentPath);
+      const deleteResult = _delete(node.right, successor.value, steps, currentPath);
       node.right = deleteResult;
     }
   }
@@ -255,7 +255,7 @@ function _delete(node, value, steps, pathSoFar) {
  * @returns {Array} 操作步骤
  */
 function traverseTree(root, order) {
-  var steps = [];
+  const steps = [];
   if (!root) {
     steps.push({ type: 'done', path: [], description: '空树，遍历完成' });
     return steps;
@@ -312,10 +312,10 @@ function _postOrder(node, steps) {
 }
 
 function _levelOrder(root, steps) {
-  var queue = [{ node: root, depth: 0 }];
+  const queue = [{ node: root, depth: 0 }];
   while (queue.length > 0) {
-    var item = queue.shift();
-    var n = item.node;
+    const item = queue.shift();
+    const n = item.node;
     steps.push({
       type: 'visit',
       value: n.value,
@@ -349,30 +349,30 @@ function treeHeight(root) {
  * @returns {{ nodes: Array, edges: Array, width: number, height: number }}
  */
 function layoutTree(root) {
-  var nodes = [];
-  var edges = [];
+  const nodes = [];
+  const edges = [];
   if (!root) return { nodes: nodes, edges: edges, width: 0, height: 0 };
 
-  var NODE_H_GAP = 90;
-  var NODE_V_GAP = 80;
-  var index = { val: 0 };
-  var maxIndex = { val: 0 };
+  const NODE_H_GAP = 90;
+  const NODE_V_GAP = 80;
+  const index = { val: 0 };
+  const maxIndex = { val: 0 };
 
   _layoutNodes(root, 0, index, maxIndex, NODE_H_GAP, NODE_V_GAP, nodes);
 
   // 计算实际边界
-  var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  for (var bi = 0; bi < nodes.length; bi++) {
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (let bi = 0; bi < nodes.length; bi++) {
     if (nodes[bi].x < minX) minX = nodes[bi].x;
     if (nodes[bi].x > maxX) maxX = nodes[bi].x;
     if (nodes[bi].y < minY) minY = nodes[bi].y;
     if (nodes[bi].y > maxY) maxY = nodes[bi].y;
   }
 
-  for (var i = 0; i < nodes.length; i++) {
-    var n = nodes[i];
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i];
     if (n.leftVal !== undefined) {
-      for (var j = 0; j < nodes.length; j++) {
+      for (let j = 0; j < nodes.length; j++) {
         if (nodes[j].value === n.leftVal) {
           edges.push({
             x1: n.x, y1: n.y,
@@ -384,7 +384,7 @@ function layoutTree(root) {
       }
     }
     if (n.rightVal !== undefined) {
-      for (var k = 0; k < nodes.length; k++) {
+      for (let k = 0; k < nodes.length; k++) {
         if (nodes[k].value === n.rightVal) {
           edges.push({
             x1: n.x, y1: n.y,
@@ -397,16 +397,16 @@ function layoutTree(root) {
     }
   }
 
-  var treeW = nodes.length > 0 ? maxX + NODE_H_GAP : 0;
-  var treeH = nodes.length > 0 ? maxY + NODE_V_GAP : 0;
+  const treeW = nodes.length > 0 ? maxX + NODE_H_GAP : 0;
+  const treeH = nodes.length > 0 ? maxY + NODE_V_GAP : 0;
   return { nodes: nodes, edges: edges, width: treeW, height: treeH };
 }
 
 function _layoutNodes(node, depth, index, maxIndex, hGap, vGap, result) {
   if (!node) return;
   _layoutNodes(node.left, depth + 1, index, maxIndex, hGap, vGap, result);
-  var x = index.val * hGap;
-  var y = depth * vGap;
+  const x = index.val * hGap;
+  const y = depth * vGap;
   if (index.val > maxIndex.val) maxIndex.val = index.val;
   index.val++;
   result.push({
