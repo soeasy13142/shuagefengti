@@ -38,16 +38,16 @@ Page({
   /* ========== 可视化辅助 ========== */
 
   _buildBars: function(values) {
-    var max = 0;
-    for (var i = 0; i < values.length; i++) {
+    let max = 0;
+    for (let i = 0; i < values.length; i++) {
       if (values[i] > max) max = values[i];
     }
     if (max === 0) max = 1;
-    var count = values.length;
-    var bars = [];
-    for (var j = 0; j < count; j++) {
-      var pct = values[j] / max;
-      var height = Math.round(60 + pct * 320);
+    const count = values.length;
+    const bars = [];
+    for (let j = 0; j < count; j++) {
+      const pct = values[j] / max;
+      const height = Math.round(60 + pct * 320);
       bars.push({
         value: values[j],
         left: j * 68,
@@ -59,19 +59,19 @@ Page({
   },
 
   _resetBarColors: function() {
-    var bars = this.data.bars.slice();
-    for (var i = 0; i < bars.length; i++) {
+    const bars = this.data.bars.slice();
+    for (let i = 0; i < bars.length; i++) {
       bars[i].color = 'bar-default';
     }
     this.setData({ bars: bars });
   },
 
   _applyStep: function(step) {
-    var bars = this.data.bars.slice();
-    var compareCount = this.data.compareCount;
-    var swapCount = this.data.swapCount;
+    const bars = this.data.bars.slice();
+    let compareCount = this.data.compareCount;
+    let swapCount = this.data.swapCount;
 
-    for (var i = 0; i < bars.length; i++) {
+    for (let i = 0; i < bars.length; i++) {
       if (bars[i].color !== 'bar-sorted') {
         bars[i].color = 'bar-default';
       }
@@ -79,33 +79,33 @@ Page({
 
     if (step.type === 'compare') {
       compareCount++;
-      for (var c = 0; c < step.indices.length; c++) {
+      for (let c = 0; c < step.indices.length; c++) {
         if (bars[step.indices[c]].color !== 'bar-sorted') {
           bars[step.indices[c]].color = 'bar-compare';
         }
       }
     } else if (step.type === 'swap') {
       swapCount++;
-      var idx1 = step.indices[0];
-      var idx2 = step.indices[1];
+      const idx1 = step.indices[0];
+      const idx2 = step.indices[1];
       bars[idx1].color = 'bar-swap';
       bars[idx2].color = 'bar-swap';
-      var tempLeft = bars[idx1].left;
+      const tempLeft = bars[idx1].left;
       bars[idx1].left = bars[idx2].left;
       bars[idx2].left = tempLeft;
-      var tempBar = bars[idx1];
+      const tempBar = bars[idx1];
       bars[idx1] = bars[idx2];
       bars[idx2] = tempBar;
     } else if (step.type === 'sorted') {
-      for (var s = 0; s < step.indices.length; s++) {
+      for (let s = 0; s < step.indices.length; s++) {
         bars[step.indices[s]].color = 'bar-sorted';
       }
     } else if (step.type === 'pivot') {
-      for (var p = 0; p < step.indices.length; p++) {
+      for (let p = 0; p < step.indices.length; p++) {
         bars[step.indices[p]].color = 'bar-pivot';
       }
     } else if (step.type === 'done') {
-      for (var d = 0; d < bars.length; d++) {
+      for (let d = 0; d < bars.length; d++) {
         bars[d].color = 'bar-sorted';
       }
     }
@@ -121,7 +121,7 @@ Page({
 
   selectAlgo: function(e) {
     if (this.data.playing) return;
-    var algo = e.currentTarget.dataset.algo;
+    const algo = e.currentTarget.dataset.algo;
     this.setData({ currentAlgo: algo });
     if (this.data.ready) {
       this._initSteps();
@@ -129,13 +129,13 @@ Page({
   },
 
   _initSteps: function() {
-    var values = [];
-    var bars = this.data.bars;
-    for (var i = 0; i < bars.length; i++) {
+    const values = [];
+    const bars = this.data.bars;
+    for (let i = 0; i < bars.length; i++) {
       values.push(bars[i].value);
     }
-    var generator = this._getStepGenerator(this.data.currentAlgo);
-    var steps = generator(values);
+    const generator = this._getStepGenerator(this.data.currentAlgo);
+    const steps = generator(values);
     this._resetBarColors();
     this.setData({
       steps: steps,
@@ -166,18 +166,18 @@ Page({
 
   _playNext: function() {
     if (!this.data.playing || this.data.paused) return;
-    var nextIdx = this.data.stepIndex + 1;
+    const nextIdx = this.data.stepIndex + 1;
     if (nextIdx >= this.data.totalSteps) {
       this.setData({ playing: false });
       return;
     }
-    var step = this.data.steps[nextIdx];
+    const step = this.data.steps[nextIdx];
     this.setData({ stepIndex: nextIdx, stepDesc: step.desc });
     this._applyStep(step);
     if (step.type !== 'done') {
-      var speed = this.data.speed;
-      var delay = Math.max(50, 800 - speed * 80);
-      var self = this;
+      const speed = this.data.speed;
+      const delay = Math.max(50, 800 - speed * 80);
+      const self = this;
       this._timer = setTimeout(function() {
         self._playNext();
       }, delay);
@@ -196,7 +196,7 @@ Page({
 
   onStepPrev: function() {
     if (!this.data.ready || !this.data.steps) return;
-    var idx = this.data.stepIndex - 1;
+    const idx = this.data.stepIndex - 1;
     if (idx < 0) return;
     this.onPause();
     this._replayToIndex(idx);
@@ -208,24 +208,24 @@ Page({
       this._initSteps();
     }
     this.onPause();
-    var idx = this.data.stepIndex + 1;
+    const idx = this.data.stepIndex + 1;
     if (idx >= this.data.totalSteps) return;
     this._replayToIndex(idx);
   },
 
   _replayToIndex: function(targetIdx) {
-    var bars = this._buildBars(this._getOriginalValues());
-    var steps = this.data.steps;
-    var compareCount = 0;
-    var swapCount = 0;
+    let bars = this._buildBars(this._getOriginalValues());
+    const steps = this.data.steps;
+    let compareCount = 0;
+    let swapCount = 0;
 
     this.setData({ bars: bars, compareCount: 0, swapCount: 0 });
 
-    for (var i = 0; i <= targetIdx; i++) {
-      var step = steps[i];
+    for (let i = 0; i <= targetIdx; i++) {
+      const step = steps[i];
       bars = this.data.bars.slice();
 
-      for (var j = 0; j < bars.length; j++) {
+      for (let j = 0; j < bars.length; j++) {
         if (bars[j].color !== 'bar-sorted') {
           bars[j].color = 'bar-default';
         }
@@ -233,33 +233,33 @@ Page({
 
       if (step.type === 'compare') {
         compareCount++;
-        for (var c = 0; c < step.indices.length; c++) {
+        for (let c = 0; c < step.indices.length; c++) {
           if (bars[step.indices[c]].color !== 'bar-sorted') {
             bars[step.indices[c]].color = 'bar-compare';
           }
         }
       } else if (step.type === 'swap') {
         swapCount++;
-        var idx1 = step.indices[0];
-        var idx2 = step.indices[1];
+        const idx1 = step.indices[0];
+        const idx2 = step.indices[1];
         bars[idx1].color = 'bar-swap';
         bars[idx2].color = 'bar-swap';
-        var tempLeft = bars[idx1].left;
+        const tempLeft = bars[idx1].left;
         bars[idx1].left = bars[idx2].left;
         bars[idx2].left = tempLeft;
-        var tempBar = bars[idx1];
+        const tempBar = bars[idx1];
         bars[idx1] = bars[idx2];
         bars[idx2] = tempBar;
       } else if (step.type === 'sorted') {
-        for (var s = 0; s < step.indices.length; s++) {
+        for (let s = 0; s < step.indices.length; s++) {
           bars[step.indices[s]].color = 'bar-sorted';
         }
       } else if (step.type === 'pivot') {
-        for (var p = 0; p < step.indices.length; p++) {
+        for (let p = 0; p < step.indices.length; p++) {
           bars[step.indices[p]].color = 'bar-pivot';
         }
       } else if (step.type === 'done') {
-        for (var d = 0; d < bars.length; d++) {
+        for (let d = 0; d < bars.length; d++) {
           bars[d].color = 'bar-sorted';
         }
       }
@@ -274,16 +274,16 @@ Page({
   },
 
   _getOriginalValues: function() {
-    var values = [];
-    var initBars = this.data.steps ? null : this.data.bars;
+    const values = [];
+    const initBars = this.data.steps ? null : this.data.bars;
     if (!initBars) {
-      var bars = this.data.bars;
-      for (var i = 0; i < bars.length; i++) {
+      const bars = this.data.bars;
+      for (let i = 0; i < bars.length; i++) {
         values.push(bars[i].value);
       }
       return values;
     }
-    for (var j = 0; j < initBars.length; j++) {
+    for (let j = 0; j < initBars.length; j++) {
       values.push(initBars[j].value);
     }
     return values;
@@ -295,7 +295,7 @@ Page({
       this._timer = null;
     }
     if (this.data.bars.length > 0) {
-      var bars = this._buildBars(this._getOriginalValues());
+      const bars = this._buildBars(this._getOriginalValues());
       this.setData({
         bars: bars,
         steps: null,
@@ -321,16 +321,16 @@ Page({
   },
 
   onConfirmInput: function() {
-    var text = this.data.inputText.replace(/\s+/g, '');
+    const text = this.data.inputText.replace(/\s+/g, '');
     if (!text) {
       wx.showToast({ title: '请输入数字', icon: 'none' });
       return;
     }
-    var parts = text.split(/[,，、\s]+/);
-    var values = [];
-    for (var i = 0; i < parts.length; i++) {
+    const parts = text.split(/[,，、\s]+/);
+    const values = [];
+    for (let i = 0; i < parts.length; i++) {
       if (parts[i] === '') continue;
-      var num = parseInt(parts[i], 10);
+      const num = parseInt(parts[i], 10);
       if (isNaN(num)) {
         wx.showToast({ title: '请输入有效数字', icon: 'none' });
         return;
@@ -349,7 +349,7 @@ Page({
       wx.showToast({ title: '最多 20 个数字', icon: 'none' });
       return;
     }
-    var bars = this._buildBars(values);
+    const bars = this._buildBars(values);
     this.setData({
       bars: bars,
       barCount: values.length,
@@ -367,12 +367,12 @@ Page({
   },
 
   onRandom: function(e) {
-    var count = parseInt(e.currentTarget.dataset.count, 10);
-    var values = [];
-    for (var i = 0; i < count; i++) {
+    const count = parseInt(e.currentTarget.dataset.count, 10);
+    const values = [];
+    for (let i = 0; i < count; i++) {
       values.push(Math.floor(Math.random() * 95) + 5);
     }
-    var bars = this._buildBars(values);
+    const bars = this._buildBars(values);
     this.setData({
       bars: bars,
       barCount: count,

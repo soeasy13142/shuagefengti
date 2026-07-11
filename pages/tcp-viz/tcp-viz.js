@@ -1,11 +1,11 @@
-var tcpStates = require('../../utils/tcp-states');
-var TCP_STATES = tcpStates.TCP_STATES;
-var getHandshakeSteps = tcpStates.getHandshakeSteps;
-var getTeardownSteps = tcpStates.getTeardownSteps;
-var getDataTransferSteps = tcpStates.getDataTransferSteps;
-var generateDataScenario = tcpStates.generateDataScenario;
+const tcpStates = require('../../utils/tcp-states');
+const TCP_STATES = tcpStates.TCP_STATES;
+const getHandshakeSteps = tcpStates.getHandshakeSteps;
+const getTeardownSteps = tcpStates.getTeardownSteps;
+const getDataTransferSteps = tcpStates.getDataTransferSteps;
+const generateDataScenario = tcpStates.generateDataScenario;
 
-var KNOWLEDGE_ITEMS = [
+const KNOWLEDGE_ITEMS = [
   {
     title: '为什么是三次握手？',
     content: '两次握手不安全：历史连接请求可能被服务器误认为新连接，造成资源浪费。四次握手浪费：第三次握手已经可以确认双方收发正常，不需要第四次。三次是安全与效率的最小平衡。'
@@ -57,9 +57,9 @@ Page({
   },
 
   _loadSteps: function(mode) {
-    var steps;
-    var clientInit, serverInit;
-    var scenarioDesc = '';
+    let steps;
+    let clientInit, serverInit;
+    let scenarioDesc = '';
 
     if (mode === 'handshake') {
       steps = getHandshakeSteps();
@@ -70,13 +70,13 @@ Page({
       clientInit = 'ESTABLISHED';
       serverInit = 'ESTABLISHED';
     } else if (mode === 'data') {
-      var scenario = generateDataScenario('normal');
+      const scenario = generateDataScenario('normal');
       steps = getDataTransferSteps(scenario);
       clientInit = 'ESTABLISHED';
       serverInit = 'ESTABLISHED';
       scenarioDesc = scenario.description;
     } else if (mode === 'data-loss') {
-      var lossScenario = generateDataScenario('loss');
+      const lossScenario = generateDataScenario('loss');
       steps = getDataTransferSteps(lossScenario);
       clientInit = 'ESTABLISHED';
       serverInit = 'ESTABLISHED';
@@ -102,7 +102,7 @@ Page({
   },
 
   onModeChange: function(e) {
-    var mode = e.currentTarget.dataset.mode;
+    const mode = e.currentTarget.dataset.mode;
     if (mode === this.data.mode) return;
     this._loadSteps(mode);
   },
@@ -153,8 +153,8 @@ Page({
       return;
     }
     this._applyStep(this.data.stepIndex + 1);
-    var delay = Math.max(200, 1500 - this.data.speed * 150);
-    var self = this;
+    const delay = Math.max(200, 1500 - this.data.speed * 150);
+    const self = this;
     this._timer = setTimeout(function() {
       self._playNext();
     }, delay);
@@ -162,11 +162,11 @@ Page({
 
   _applyStep: function(index) {
     if (index < 0 || index >= this.data.totalSteps) return;
-    var step = this.data.steps[index];
-    var arrows = this._buildArrows(index);
-    var flagItems = this._buildFlagItems(step);
-    var clientState = this._getStateAt(index, 'client');
-    var serverState = this._getStateAt(index, 'server');
+    const step = this.data.steps[index];
+    const arrows = this._buildArrows(index);
+    const flagItems = this._buildFlagItems(step);
+    const clientState = this._getStateAt(index, 'client');
+    const serverState = this._getStateAt(index, 'server');
 
     this.setData({
       stepIndex: index,
@@ -185,7 +185,7 @@ Page({
       this._loadSteps(this.data.mode);
       return;
     }
-    var clientInit, serverInit;
+    let clientInit, serverInit;
     if (this.data.mode === 'handshake') {
       clientInit = 'CLOSED'; serverInit = 'LISTEN';
     } else {
@@ -199,15 +199,15 @@ Page({
       serverStateLabel: serverInit,
       serverStateColor: TCP_STATES[serverInit].color
     });
-    for (var i = 0; i <= targetIndex; i++) {
+    for (let i = 0; i <= targetIndex; i++) {
       this._applyStep(i);
     }
   },
 
   _buildArrows: function(upToIndex) {
-    var arrows = [];
-    for (var i = 0; i <= upToIndex; i++) {
-      var step = this.data.steps[i];
+    const arrows = [];
+    for (let i = 0; i <= upToIndex; i++) {
+      const step = this.data.steps[i];
       arrows.push({
         step: step.step,
         direction: step.direction === 'client→server' ? 'left-to-right' : 'right-to-left',
@@ -220,7 +220,7 @@ Page({
   },
 
   _buildArrowLabel: function(step) {
-    var parts = [];
+    const parts = [];
     if (step.flags.SYN) parts.push('SYN');
     if (step.flags.FIN) parts.push('FIN');
     if (step.flags.PSH) parts.push('PSH');
@@ -240,25 +240,25 @@ Page({
   },
 
   _buildFlagItems: function(step) {
-    var flagNames = ['SYN', 'ACK', 'FIN', 'RST', 'PSH', 'URG'];
-    var items = [];
-    for (var i = 0; i < flagNames.length; i++) {
+    const flagNames = ['SYN', 'ACK', 'FIN', 'RST', 'PSH', 'URG'];
+    const items = [];
+    for (let i = 0; i < flagNames.length; i++) {
       items.push({ name: flagNames[i], active: step.flags[flagNames[i]] });
     }
     return items;
   },
 
   _getStateAt: function(upToIndex, side) {
-    var initState;
+    let initState;
     if (this.data.mode === 'handshake') {
       initState = side === 'client' ? 'CLOSED' : 'LISTEN';
     } else {
       initState = 'ESTABLISHED';
     }
-    var state = initState;
-    for (var i = 0; i <= upToIndex; i++) {
-      var step = this.data.steps[i];
-      var stateChange = side === 'client' ? step.clientState : step.serverState;
+    let state = initState;
+    for (let i = 0; i <= upToIndex; i++) {
+      const step = this.data.steps[i];
+      const stateChange = side === 'client' ? step.clientState : step.serverState;
       if (stateChange) {
         state = stateChange.to;
       }

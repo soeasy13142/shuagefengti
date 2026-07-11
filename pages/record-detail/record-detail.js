@@ -13,9 +13,9 @@ Page({
   },
 
   _buildSelectedMap(answerStr) {
-    var map = {};
+    const map = {};
     if (answerStr) {
-      for (var i = 0; i < answerStr.length; i++) {
+      for (let i = 0; i < answerStr.length; i++) {
         map[answerStr.charAt(i)] = true;
       }
     }
@@ -23,8 +23,8 @@ Page({
   },
 
   _updateCurrent(idx) {
-    var q = this.data.questions[idx];
-    var answer = this.data.record.answers[q.id] || { userAnswer: '', correct: false };
+    const q = this.data.questions[idx];
+    const answer = this.data.record.answers[q.id] || { userAnswer: '', correct: false };
     this.setData({
       currentIdx: idx,
       currentQuestion: q,
@@ -34,15 +34,15 @@ Page({
   },
 
   onLoad(options) {
-    var records = storage.getRecords();
-    var record = records.find(function(r) { return r.id === options.recordId; });
+    const records = storage.getRecords();
+    const record = records.find(function(r) { return r.id === options.recordId; });
     if (!record) {
       wx.showToast({ title: '记录不存在', icon: 'none' });
       return;
     }
-    var paper = storage.getPaperById(record.paperId);
-    var questions = paper ? paper.questions : [];
-    var paperDeleted = !paper;
+    const paper = storage.getPaperById(record.paperId);
+    const questions = paper ? paper.questions : [];
+    const paperDeleted = !paper;
     this.setData({
       record: record,
       paper: paper,

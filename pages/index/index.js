@@ -1,6 +1,6 @@
-var storage = require('../../utils/storage');
-var analytics = require('../../utils/analytics');
-var registry = require('../../utils/tool-registry');
+const storage = require('../../utils/storage');
+const analytics = require('../../utils/analytics');
+const registry = require('../../utils/tool-registry');
 
 Page({
   data: {
@@ -33,17 +33,17 @@ Page({
   },
 
   onReady() {
-    var self = this;
+    const self = this;
     setTimeout(function() {
       self.setData({ show: true });
     }, 100);
   },
 
   loadStats() {
-    var records = storage.getRecords();
-    var wrongQuestions = storage.getWrongQuestions();
-    var papers = storage.getPapers();
-    var dashboard = analytics.buildDashboardData(records, wrongQuestions, papers, new Date());
+    const records = storage.getRecords();
+    const wrongQuestions = storage.getWrongQuestions();
+    const papers = storage.getPapers();
+    const dashboard = analytics.buildDashboardData(records, wrongQuestions, papers, new Date());
 
     this.setData({
       stats: {
@@ -57,8 +57,8 @@ Page({
   },
 
   loadTools() {
-    var activeCategories = registry.getActiveCategories();
-    var allViewData = this._buildAllViewData(activeCategories);
+    const activeCategories = registry.getActiveCategories();
+    const allViewData = this._buildAllViewData(activeCategories);
 
     this.setData({
       activeCategories: activeCategories,
@@ -69,7 +69,7 @@ Page({
 
   _buildAllViewData(activeCategories) {
     return activeCategories.map(function(cat) {
-      var tools = registry.getFeaturedToolsByCategory(cat.id, 4);
+      let tools = registry.getFeaturedToolsByCategory(cat.id, 4);
       if (tools.length === 0) {
         tools = registry.getToolsByCategory(cat.id).filter(function(t) { return t.available; });
       }
@@ -81,10 +81,10 @@ Page({
   },
 
   onCategoryTap(e) {
-    var categoryId = e.currentTarget.dataset.id;
-    var currentTools = [];
-    var availableTools = [];
-    var unavailableTools = [];
+    const categoryId = e.currentTarget.dataset.id;
+    let currentTools = [];
+    let availableTools = [];
+    let unavailableTools = [];
 
     if (categoryId !== 'all') {
       currentTools = registry.getToolsByCategory(categoryId);
@@ -101,22 +101,22 @@ Page({
   },
 
   onToolTap(e) {
-    var id = e.currentTarget.dataset.id;
-    var available = e.currentTarget.dataset.available;
+    const id = e.currentTarget.dataset.id;
+    const available = e.currentTarget.dataset.available;
 
     if (!available) {
       wx.showToast({ title: '功能开发中', icon: 'none' });
       return;
     }
 
-    var tool = registry.TOOLS.find(function(t) { return t.id === id; });
+    const tool = registry.TOOLS.find(function(t) { return t.id === id; });
     if (tool && tool.route) {
       wx.navigateTo({ url: tool.route });
     }
   },
 
   onHeroTap() {
-    var self = this;
+    const self = this;
     this.setData({ heroTapped: true });
     setTimeout(function() {
       self.setData({ heroTapped: false });

@@ -43,6 +43,7 @@
 - `utils/bst.js` 插入/删除/遍历 → 单元测试
 - `utils/graph.js` BFS/DFS → 单元测试
 - `utils/hash-table.js` 冲突处理 → 单元测试
+- `tests/` 下 `var → const/let` 迁移 · ~222 处 · **r.8 候选**（2026-07-11 var-cleanup plan 明确排除 `tests/`）
 - 解 r.11
 
 ## P5 · AI 化（远期）

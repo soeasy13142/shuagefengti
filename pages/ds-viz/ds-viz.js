@@ -1,11 +1,11 @@
-var bst = require('../../utils/bst');
-var hashTable = require('../../utils/hash-table');
-var graph = require('../../utils/graph');
+const bst = require('../../utils/bst');
+const hashTable = require('../../utils/hash-table');
+const graph = require('../../utils/graph');
 
-var NODE_R = 20;
-var CANVAS_W = 600;
-var CANVAS_H = 500;
-var PAD = 50;
+const NODE_R = 20;
+const CANVAS_W = 600;
+const CANVAS_H = 500;
+const PAD = 50;
 
 Page({
   data: {
@@ -59,7 +59,7 @@ Page({
   _ctx: null,
 
   onLoad: function() {
-    var self = this;
+    const self = this;
     this._ctx = wx.createCanvasContext('vizCanvas', this);
     setTimeout(function() { self._canvasReady = true; }, 200);
   },
@@ -68,7 +68,7 @@ Page({
 
   onModeChange: function(e) {
     if (this.data.playing) return;
-    var mode = e.currentTarget.dataset.mode;
+    const mode = e.currentTarget.dataset.mode;
     this._stopTimer();
     this.setData({ currentMode: mode, ready: false, playing: false, paused: false, steps: [], stepIndex: -1, stepDesc: '', dragX: 0, dragY: 0 });
     if (mode === 'hash' && !this.data.hashTable) {
@@ -83,7 +83,7 @@ Page({
   /* ========== Canvas Drag ========== */
 
   onCanvasTouchStart: function(e) {
-    var t = e.touches[0];
+    const t = e.touches[0];
     this._dragStartX = t.clientX;
     this._dragStartY = t.clientY;
     this._dragOriginX = this.data.dragX;
@@ -92,9 +92,9 @@ Page({
   },
 
   onCanvasTouchMove: function(e) {
-    var t = e.touches[0];
-    var dx = t.clientX - this._dragStartX;
-    var dy = t.clientY - this._dragStartY;
+    const t = e.touches[0];
+    const dx = t.clientX - this._dragStartX;
+    const dy = t.clientY - this._dragStartY;
     if (!this._isDragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
       this._isDragging = true;
     }
@@ -115,7 +115,7 @@ Page({
 
   _drawCanvas: function() {
     if (!this._canvasReady || !this._ctx) return;
-    var ctx = this._ctx;
+    const ctx = this._ctx;
     ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
 
     if (this.data.currentMode === 'bst') {
@@ -129,18 +129,21 @@ Page({
 
   _computeScale: function(nodes) {
     if (nodes.length === 0) return { scale: 1, ox: 0, oy: 0 };
-    var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    for (var i = 0; i < nodes.length; i++) {
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    for (let i = 0; i < nodes.length; i++) {
       if (nodes[i].x < minX) minX = nodes[i].x;
       if (nodes[i].x > maxX) maxX = nodes[i].x;
       if (nodes[i].y < minY) minY = nodes[i].y;
       if (nodes[i].y > maxY) maxY = nodes[i].y;
     }
-    var treeW = maxX - minX + 80;
-    var treeH = maxY - minY + 80;
-    var scale = Math.min((CANVAS_W - 2 * PAD) / treeW, (CANVAS_H - 2 * PAD) / treeH);
-    var ox = PAD + ((CANVAS_W - 2 * PAD) - treeW * scale) / 2 - minX * scale;
-    var oy = PAD + ((CANVAS_H - 2 * PAD) - treeH * scale) / 2 - minY * scale;
+    const treeW = maxX - minX + 80;
+    const treeH = maxY - minY + 80;
+    const scale = Math.min((CANVAS_W - 2 * PAD) / treeW, (CANVAS_H - 2 * PAD) / treeH);
+    const ox = PAD + ((CANVAS_W - 2 * PAD) - treeW * scale) / 2 - minX * scale;
+    const oy = PAD + ((CANVAS_H - 2 * PAD) - treeH * scale) / 2 - minY * scale;
     return { scale: scale, ox: ox, oy: oy };
   },
 
@@ -152,7 +155,7 @@ Page({
       this._drawCanvas();
       return;
     }
-    var layout = bst.layoutTree(root);
+    const layout = bst.layoutTree(root);
     this.setData({
       bstNodes: layout.nodes,
       bstEdges: layout.edges,
@@ -162,15 +165,15 @@ Page({
   },
 
   _drawTree: function(ctx) {
-    var nodes = this.data.bstNodes;
-    var edges = this.data.bstEdges;
+    const nodes = this.data.bstNodes;
+    const edges = this.data.bstEdges;
     if (nodes.length === 0) return;
 
-    var t = this._computeScale(nodes);
-    var s = t.scale, ox = t.ox + (this.data.dragX || 0), oy = t.oy + (this.data.dragY || 0);
+    const t = this._computeScale(nodes);
+    const s = t.scale, ox = t.ox + (this.data.dragX || 0), oy = t.oy + (this.data.dragY || 0);
 
-    for (var i = 0; i < edges.length; i++) {
-      var e = edges[i];
+    for (let i = 0; i < edges.length; i++) {
+      const e = edges[i];
       ctx.beginPath();
       ctx.moveTo(e.x1 * s + ox, e.y1 * s + oy);
       ctx.lineTo(e.x2 * s + ox, e.y2 * s + oy);
@@ -179,11 +182,11 @@ Page({
       ctx.stroke();
     }
 
-    for (var j = 0; j < nodes.length; j++) {
-      var n = nodes[j];
-      var cx = n.x * s + ox;
-      var cy = n.y * s + oy;
-      var st = n.state || 'normal';
+    for (let j = 0; j < nodes.length; j++) {
+      const n = nodes[j];
+      const cx = n.x * s + ox;
+      const cy = n.y * s + oy;
+      const st = n.state || 'normal';
 
       ctx.beginPath();
       ctx.arc(cx, cy, NODE_R, 0, 2 * Math.PI);
@@ -214,19 +217,20 @@ Page({
   },
 
   _highlightPath: function(path, state) {
-    var nodes = this.data.bstNodes.slice();
-    var edges = this.data.bstEdges.slice();
-    for (var i = 0; i < nodes.length; i++) {
+    const nodes = this.data.bstNodes.slice();
+    const edges = this.data.bstEdges.slice();
+    for (let i = 0; i < nodes.length; i++) {
       if (path.indexOf(nodes[i].value) !== -1) {
         nodes[i].state = state;
       } else if (nodes[i].state !== 'visited') {
         nodes[i].state = 'normal';
       }
     }
-    for (var j = 0; j < edges.length; j++) {
-      var e = edges[j];
-      var n1 = null, n2 = null;
-      for (var k = 0; k < nodes.length; k++) {
+    for (let j = 0; j < edges.length; j++) {
+      const e = edges[j];
+      let n1 = null;
+      let n2 = null;
+      for (let k = 0; k < nodes.length; k++) {
         if (Math.abs(nodes[k].x - e.x1) < 1 && Math.abs(nodes[k].y - e.y1) < 1) n1 = nodes[k];
         if (Math.abs(nodes[k].x - e.x2) < 1 && Math.abs(nodes[k].y - e.y2) < 1) n2 = nodes[k];
       }
@@ -241,12 +245,12 @@ Page({
   },
 
   _resetHighlights: function() {
-    var nodes = this.data.bstNodes.slice();
-    for (var i = 0; i < nodes.length; i++) {
+    const nodes = this.data.bstNodes.slice();
+    for (let i = 0; i < nodes.length; i++) {
       if (nodes[i].state !== 'visited') nodes[i].state = 'normal';
     }
-    var edges = this.data.bstEdges.slice();
-    for (var j = 0; j < edges.length; j++) edges[j].state = 'normal';
+    const edges = this.data.bstEdges.slice();
+    for (let j = 0; j < edges.length; j++) edges[j].state = 'normal';
     this.setData({ bstNodes: nodes, bstEdges: edges });
   },
 
@@ -263,10 +267,10 @@ Page({
     } else if (step.type === 'visit') {
       this._highlightPath(step.path || [], 'visited');
     } else if (step.type === 'done') {
-      var nodes = this.data.bstNodes.slice();
-      for (var i = 0; i < nodes.length; i++) nodes[i].state = 'normal';
-      var edges = this.data.bstEdges.slice();
-      for (var j = 0; j < edges.length; j++) edges[j].state = 'normal';
+      const nodes = this.data.bstNodes.slice();
+      for (let i = 0; i < nodes.length; i++) nodes[i].state = 'normal';
+      const edges = this.data.bstEdges.slice();
+      for (let j = 0; j < edges.length; j++) edges[j].state = 'normal';
       this.setData({ bstNodes: nodes, bstEdges: edges });
       this._drawCanvas();
     }
@@ -275,34 +279,34 @@ Page({
   onBstInput: function(e) { this.setData({ bstInput: e.detail.value }); },
 
   onBstInsert: function() {
-    var num = parseInt(this.data.bstInput, 10);
+    const num = parseInt(this.data.bstInput, 10);
     if (isNaN(num) || num < 1 || num > 99) {
       wx.showToast({ title: '请输入 1-99 的数字', icon: 'none' });
       return;
     }
     this._stopTimer();
-    var result = bst.insertNode(this.data.bstRoot, num);
+    const result = bst.insertNode(this.data.bstRoot, num);
     this.setData({ bstRoot: result.root, bstInput: '' });
     this._syncBstRender(result.root);
     this.setData({ steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '插入 ' + num + '，点击 ▶ 播放', playing: false, paused: false });
   },
 
   onBstSearch: function() {
-    var num = parseInt(this.data.bstInput, 10);
+    const num = parseInt(this.data.bstInput, 10);
     if (isNaN(num)) { wx.showToast({ title: '请输入数字', icon: 'none' }); return; }
     if (!this.data.bstRoot) { wx.showToast({ title: '树为空', icon: 'none' }); return; }
     this._stopTimer();
-    var steps = bst.searchNode(this.data.bstRoot, num);
+    const steps = bst.searchNode(this.data.bstRoot, num);
     this._resetHighlights();
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: '查找 ' + num + '，点击 ▶ 播放', playing: false, paused: false });
   },
 
   onBstDelete: function() {
-    var num = parseInt(this.data.bstInput, 10);
+    const num = parseInt(this.data.bstInput, 10);
     if (isNaN(num)) { wx.showToast({ title: '请输入数字', icon: 'none' }); return; }
     if (!this.data.bstRoot) { wx.showToast({ title: '树为空', icon: 'none' }); return; }
     this._stopTimer();
-    var result = bst.deleteNode(this.data.bstRoot, num);
+    const result = bst.deleteNode(this.data.bstRoot, num);
     this.setData({ bstRoot: result.root, bstInput: '' });
     this._syncBstRender(result.root);
     this.setData({ steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '删除 ' + num + '，点击 ▶ 播放', playing: false, paused: false });
@@ -311,23 +315,24 @@ Page({
   onBstTraverse: function(e) {
     if (!this.data.bstRoot) { wx.showToast({ title: '树为空', icon: 'none' }); return; }
     this._stopTimer();
-    var order = e.currentTarget.dataset.order;
-    var steps = bst.traverseTree(this.data.bstRoot, order);
+    const order = e.currentTarget.dataset.order;
+    const steps = bst.traverseTree(this.data.bstRoot, order);
     this._resetHighlights();
-    var names = { pre: '前序', in: '中序', post: '后序', level: '层序' };
+    const names = { pre: '前序', in: '中序', post: '后序', level: '层序' };
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: names[order] + '遍历，点击 ▶ 播放', playing: false, paused: false });
   },
 
 
   _bstRandomNum: function() {
-    var existing = {};
+    const existing = {};
     (function collect(n) {
       if (!n) return;
       existing[n.value] = true;
       collect(n.left);
       collect(n.right);
     })(this.data.bstRoot);
-    var tries = 0, num;
+    let tries = 0;
+    let num;
     do {
       num = Math.floor(Math.random() * 99) + 1;
       tries++;
@@ -336,17 +341,17 @@ Page({
   },
 
   onBstRandom: function() {
-    var num = this._bstRandomNum();
+    const num = this._bstRandomNum();
     this.setData({ bstInput: String(num) });
     this.onBstInsert();
   },
 
   onBstRandomBatch: function() {
-    var count = 5;
-    var inserted = [];
-    for (var i = 0; i < count; i++) {
-      var num = this._bstRandomNum();
-      var result = bst.insertNode(this.data.bstRoot, num);
+    const count = 5;
+    const inserted = [];
+    for (let i = 0; i < count; i++) {
+      const num = this._bstRandomNum();
+      const result = bst.insertNode(this.data.bstRoot, num);
       this.setData({ bstRoot: result.root });
       inserted.push(num);
     }
@@ -366,7 +371,7 @@ Page({
 
 
   onSqRandom: function() {
-    var num = Math.floor(Math.random() * 99) + 1;
+    const num = Math.floor(Math.random() * 99) + 1;
     this.setData({ sqInput: String(num) });
     if (this.data.sqType === 'stack') {
       this.onSqPush();
@@ -376,16 +381,16 @@ Page({
   },
 
   onSqRandomBatch: function() {
-    var count = 5;
-    var elems = this.data.sqElements.slice();
-    var inserted = [];
-    for (var i = 0; i < count; i++) {
-      var num = Math.floor(Math.random() * 99) + 1;
+    const count = 5;
+    const elems = this.data.sqElements.slice();
+    const inserted = [];
+    for (let i = 0; i < count; i++) {
+      const num = Math.floor(Math.random() * 99) + 1;
       elems.push({ value: num, state: 'normal' });
       inserted.push(num);
     }
     this._stopTimer();
-    var label = this.data.sqType === 'stack' ? 'Push' : 'Enqueue';
+    const label = this.data.sqType === 'stack' ? 'Push' : 'Enqueue';
     this.setData({
       sqElements: elems,
       sqInput: '',
@@ -410,11 +415,11 @@ Page({
   onSqInput: function(e) { this.setData({ sqInput: e.detail.value }); },
 
   onSqPush: function() {
-    var num = parseInt(this.data.sqInput, 10);
+    const num = parseInt(this.data.sqInput, 10);
     if (isNaN(num) || num < 1 || num > 99) { wx.showToast({ title: '请输入 1-99', icon: 'none' }); return; }
     this._stopTimer();
-    var elems = this.data.sqElements.slice();
-    var steps = [];
+    const elems = this.data.sqElements.slice();
+    const steps = [];
     elems.push({ value: num, state: 'normal' });
     steps.push({ type: 'push', value: num, elements: JSON.parse(JSON.stringify(elems)), description: 'Push ' + num + ' 到栈顶' });
     steps.push({ type: 'done', description: '操作完成' });
@@ -425,9 +430,9 @@ Page({
   onSqPop: function() {
     if (this.data.sqElements.length === 0) { wx.showToast({ title: '栈为空', icon: 'none' }); return; }
     this._stopTimer();
-    var elems = this.data.sqElements.slice();
-    var steps = [];
-    var val = elems[elems.length - 1].value;
+    const elems = this.data.sqElements.slice();
+    const steps = [];
+    const val = elems[elems.length - 1].value;
     elems[elems.length - 1].state = 'removing';
     steps.push({ type: 'pop', value: val, elements: JSON.parse(JSON.stringify(elems)), description: 'Pop ' + val + ' 从栈顶' });
     elems.pop();
@@ -436,11 +441,11 @@ Page({
   },
 
   onSqEnqueue: function() {
-    var num = parseInt(this.data.sqInput, 10);
+    const num = parseInt(this.data.sqInput, 10);
     if (isNaN(num) || num < 1 || num > 99) { wx.showToast({ title: '请输入 1-99', icon: 'none' }); return; }
     this._stopTimer();
-    var elems = this.data.sqElements.slice();
-    var steps = [];
+    const elems = this.data.sqElements.slice();
+    const steps = [];
     elems.push({ value: num, state: 'normal' });
     steps.push({ type: 'enqueue', value: num, elements: JSON.parse(JSON.stringify(elems)), description: 'Enqueue ' + num + ' 到队尾' });
     steps.push({ type: 'done', description: '操作完成' });
@@ -451,9 +456,9 @@ Page({
   onSqDequeue: function() {
     if (this.data.sqElements.length === 0) { wx.showToast({ title: '队列为空', icon: 'none' }); return; }
     this._stopTimer();
-    var elems = this.data.sqElements.slice();
-    var steps = [];
-    var val = elems[0].value;
+    const elems = this.data.sqElements.slice();
+    const steps = [];
+    const val = elems[0].value;
     elems[0].state = 'removing';
     steps.push({ type: 'dequeue', value: val, elements: JSON.parse(JSON.stringify(elems)), description: 'Dequeue ' + val + ' 从队首' });
     elems.shift();
@@ -463,28 +468,28 @@ Page({
 
 
   _hashRandomKey: function() {
-    var chars = 'abcdefghijklmnopqrstuvwxyz';
-    var len = Math.floor(Math.random() * 4) + 3;
-    var key = '';
-    for (var i = 0; i < len; i++) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz';
+    const len = Math.floor(Math.random() * 4) + 3;
+    const key = '';
+    for (let i = 0; i < len; i++) {
       key += chars[Math.floor(Math.random() * chars.length)];
     }
     return key;
   },
 
   onHashRandom: function() {
-    var key = this._hashRandomKey();
+    const key = this._hashRandomKey();
     this.setData({ hashInput: key });
     this.onHashInsert();
   },
 
   onHashRandomBatch: function() {
-    var count = 5;
-    var table = this.data.hashTable || hashTable.createHashTable(this.data.hashTableSize);
-    var inserted = [];
-    for (var i = 0; i < count; i++) {
-      var key = this._hashRandomKey();
-      var result = hashTable.htInsert(table, key, key);
+    const count = 5;
+    let table = this.data.hashTable || hashTable.createHashTable(this.data.hashTableSize);
+    const inserted = [];
+    for (let i = 0; i < count; i++) {
+      const key = this._hashRandomKey();
+      const result = hashTable.htInsert(table, key, key);
       table = result.table;
       inserted.push(key);
     }
@@ -508,21 +513,21 @@ Page({
   onHashInput: function(e) { this.setData({ hashInput: e.detail.value }); },
 
   onHashInsert: function() {
-    var key = this.data.hashInput.trim();
+    const key = this.data.hashInput.trim();
     if (!key) { wx.showToast({ title: '请输入 key', icon: 'none' }); return; }
     this._stopTimer();
-    var table = this.data.hashTable || hashTable.createHashTable(this.data.hashTableSize);
-    var result = hashTable.htInsert(table, key, key);
+    const table = this.data.hashTable || hashTable.createHashTable(this.data.hashTableSize);
+    const result = hashTable.htInsert(table, key, key);
     this.setData({ hashTable: result.table, hashBuckets: result.table.buckets, hashInput: '', steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '插入 "' + key + '"，点击 ▶ 播放', ready: true, playing: false, paused: false });
   },
 
   onHashSearch: function() {
-    var key = this.data.hashInput.trim();
+    const key = this.data.hashInput.trim();
     if (!key) { wx.showToast({ title: '请输入 key', icon: 'none' }); return; }
-    var table = this.data.hashTable;
+    const table = this.data.hashTable;
     if (!table || table.count === 0) { wx.showToast({ title: '表为空', icon: 'none' }); return; }
     this._stopTimer();
-    var result = hashTable.htSearch(table, key);
+    const result = hashTable.htSearch(table, key);
     this.setData({ hashInput: '', steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '查找 "' + key + '"，点击 ▶ 播放', playing: false, paused: false });
   },
 
@@ -535,8 +540,8 @@ Page({
   /* ========== Graph ========== */
 
   _initGraph: function(type) {
-    var t = type || this.data.graphType;
-    var g = graph.createSampleGraph(t);
+    const t = type || this.data.graphType;
+    const g = graph.createSampleGraph(t);
     this.setData({ graphData: g, graphType: t, graphNodes: g.nodes, graphEdges: g.edges, ready: true });
     this._drawCanvas();
   },
@@ -551,29 +556,30 @@ Page({
   onGraphBfs: function() {
     if (!this.data.graphData) return;
     this._stopTimer();
-    var steps = graph.bfs(this.data.graphData, this.data.graphData.nodes[0].id);
+    const steps = graph.bfs(this.data.graphData, this.data.graphData.nodes[0].id);
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: 'BFS 从 ' + this.data.graphData.nodes[0].id + ' 开始，点击 ▶ 播放', playing: false, paused: false });
   },
 
   onGraphDfs: function() {
     if (!this.data.graphData) return;
     this._stopTimer();
-    var steps = graph.dfs(this.data.graphData, this.data.graphData.nodes[0].id);
+    const steps = graph.dfs(this.data.graphData, this.data.graphData.nodes[0].id);
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: 'DFS 从 ' + this.data.graphData.nodes[0].id + ' 开始，点击 ▶ 播放', playing: false, paused: false });
   },
 
   _drawGraphOnCanvas: function(ctx) {
-    var nodes = this.data.graphNodes;
-    var edges = this.data.graphEdges;
+    const nodes = this.data.graphNodes;
+    const edges = this.data.graphEdges;
     if (nodes.length === 0) return;
 
-    var t = this._computeScale(nodes);
-    var s = t.scale, ox = t.ox + (this.data.dragX || 0), oy = t.oy + (this.data.dragY || 0);
+    const t = this._computeScale(nodes);
+    const s = t.scale, ox = t.ox + (this.data.dragX || 0), oy = t.oy + (this.data.dragY || 0);
 
-    for (var i = 0; i < edges.length; i++) {
-      var e = edges[i];
-      var n1 = null, n2 = null;
-      for (var j = 0; j < nodes.length; j++) {
+    for (let i = 0; i < edges.length; i++) {
+      const e = edges[i];
+      let n1 = null;
+      let n2 = null;
+      for (let j = 0; j < nodes.length; j++) {
         if (nodes[j].id === e.from) n1 = nodes[j];
         if (nodes[j].id === e.to) n2 = nodes[j];
       }
@@ -587,11 +593,11 @@ Page({
       }
     }
 
-    for (var k = 0; k < nodes.length; k++) {
-      var n = nodes[k];
-      var cx = n.x * s + ox;
-      var cy = n.y * s + oy;
-      var st = n.state || 'normal';
+    for (let k = 0; k < nodes.length; k++) {
+      const n = nodes[k];
+      const cx = n.x * s + ox;
+      const cy = n.y * s + oy;
+      const st = n.state || 'normal';
 
       ctx.beginPath();
       ctx.arc(cx, cy, NODE_R, 0, 2 * Math.PI);
@@ -623,9 +629,9 @@ Page({
 
   _applyGraphStep: function(step) {
     if (step.graphSnapshot) {
-      var snap = step.graphSnapshot;
-      var nodes = snap.nodes;
-      var t = this._computeScale(nodes);
+      const snap = step.graphSnapshot;
+      const nodes = snap.nodes;
+      const t = this._computeScale(nodes);
       this.setData({ graphNodes: snap.nodes, graphEdges: snap.edges });
       this._drawCanvas();
     }
@@ -648,14 +654,14 @@ Page({
 
   _playNext: function() {
     if (!this.data.playing || this.data.paused) return;
-    var idx = this.data.stepIndex + 1;
+    const idx = this.data.stepIndex + 1;
     if (idx >= this.data.totalSteps) { this.setData({ playing: false }); return; }
-    var step = this.data.steps[idx];
+    const step = this.data.steps[idx];
     this.setData({ stepIndex: idx, stepDesc: step.description || step.desc || '' });
     this._applyStep(step);
     if (step.type !== 'done') {
-      var delay = Math.max(50, 800 - this.data.speed * 80);
-      var self = this;
+      const delay = Math.max(50, 800 - this.data.speed * 80);
+      const self = this;
       this._timer = setTimeout(function() { self._playNext(); }, delay);
     } else {
       this.setData({ playing: false });
@@ -663,7 +669,7 @@ Page({
   },
 
   _applyStep: function(step) {
-    var mode = this.data.currentMode;
+    const mode = this.data.currentMode;
     if (mode === 'bst') this._applyBstStep(step);
     else if (mode === 'stack-queue') this._applySqStep(step);
     else if (mode === 'hash') this._applyHashStep(step);
@@ -688,7 +694,7 @@ Page({
   onStepNext: function() {
     if (!this.data.steps) return;
     this.onPause();
-    var idx = this.data.stepIndex + 1;
+    const idx = this.data.stepIndex + 1;
     if (idx >= this.data.totalSteps) return;
     this._replayToIndex(idx);
   },
@@ -696,14 +702,14 @@ Page({
   _replayToIndex: function(targetIdx) {
     if (targetIdx < 0 || targetIdx >= this.data.totalSteps) return;
     this._resetPlayback();
-    for (var i = 0; i <= targetIdx; i++) {
+    for (let i = 0; i <= targetIdx; i++) {
       this.setData({ stepIndex: i, stepDesc: this.data.steps[i].description || this.data.steps[i].desc || '' });
       this._applyStep(this.data.steps[i]);
     }
   },
 
   _resetPlayback: function() {
-    var mode = this.data.currentMode;
+    const mode = this.data.currentMode;
     if (mode === 'bst') {
       this._syncBstRender(this.data.bstRoot);
     } else if (mode === 'stack-queue') {
@@ -721,14 +727,14 @@ Page({
 
   onReset: function() {
     this._stopTimer();
-    var mode = this.data.currentMode;
+    const mode = this.data.currentMode;
     if (mode === 'bst') {
       this.setData({ bstRoot: null, bstNodes: [], bstEdges: [], ready: false });
       this._drawCanvas();
     } else if (mode === 'stack-queue') {
       this.setData({ sqElements: [], ready: false });
     } else if (mode === 'hash') {
-      var table = hashTable.createHashTable(this.data.hashTableSize);
+      const table = hashTable.createHashTable(this.data.hashTableSize);
       this.setData({ hashTable: table, hashBuckets: table.buckets, ready: false });
     } else if (mode === 'graph') {
       this._initGraph();

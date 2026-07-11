@@ -65,7 +65,7 @@ Page({
   _buildSelectedMap(answerStr) {
     const map = {};
     if (answerStr) {
-      for (var i = 0; i < answerStr.length; i++) {
+      for (let i = 0; i < answerStr.length; i++) {
         map[answerStr.charAt(i)] = true;
       }
     }

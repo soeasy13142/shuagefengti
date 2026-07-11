@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-10 · 文档规范化整理
+> 最后更新：2026-07-11 · var 全清零 plan 实施完成（接续上次的 normalization plan）
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -136,9 +136,43 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 **影响**
 
 - 项目进入「约定文档化」状态：新人读 CLAUDE.md 即知命名 / 风格 / 文件结构
-- 仍 deferred（**已在 2026-07-11 normalization 范围外**，留待后续 plan）：
-  - `pages/quiz / record-detail / sort-viz / tcp-viz / ds-viz / index` 的 `var` 迁移（pages 第一批仅 dashboard 完成；其余 5 个 pages 文件含 ~190 处 var，**r.7 候选**）
-  - `utils/sort-algorithms.js` 内 24 处 `var`（随 Task 8 byte-for-byte 搬迁；**r.6 候选**）
-- 不主动 `git push`：等待用户决定（squash / 直推 / 回退 / 继续修剩余 var）
+- 仍 deferred（**已在 2026-07-11 var-cleanup 范围外**，留待后续 plan）：
+  - ~~`pages/quiz / record-detail / sort-viz / tcp-viz / ds-viz / index` 的 `var` 迁移（pages 第一批仅 dashboard 完成；其余 5 个 pages 文件含 ~190 处 var，**r.7 候选**）~~ → **已完成（见下方 §8 · 2026-07-11 var 全清零 plan 实施完成）**
+  - ~~`utils/sort-algorithms.js` 内 24 处 `var`（随 Task 8 byte-for-byte 搬迁；**r.6 候选**）~~ → **已完成（见下方 §8 · 2026-07-11 var 全清零 plan 实施完成）**
+  - `tests/` 下 ~222 处 `var`（**r.8 候选**；tests/ 不在 var-cleanup 范围）
+- 不主动 `git push`：等待用户决定（squash / 直推 / 回退 / 继续修 `tests/` 内 var）
 
 参见：`docs/plans/2026-07-11-normalization.md` 实施计划 · `.superpowers/sdd/progress.md` 任务账本 · `docs/superpowers/specs/2026-07-11-normalization-design.md` design spec
+
+### 2026-07-11 · var 全清零 plan 实施完成（8 Task · 7 commit）
+
+**变更内容**
+
+- 范围：仅 `utils/` + `pages/`（`tests/` 不在范围内，r.8 候选）
+- 7 文件 / **283 处 var → const/let**（24 + 1 + 9 + 65 + 34 + 131 + 19），按方案 B 每文件 1 commit：
+  - `727a3f1` `refactor(utils/sort-algorithms): var → const/let 全迁移`
+  - `a7faf99` `refactor(pages/quiz): var → const/let 全迁移`
+  - `ceb46bf` `refactor(pages/record-detail): var → const/let 全迁移`
+  - `2864f78` `refactor(pages/sort-viz): var → const/let 全迁移`
+  - `681879e` `refactor(pages/tcp-viz): var → const/let 全迁移`
+  - `e3e0e8f` `refactor(pages/ds-viz): var → const/let 全迁移`
+  - `39a2f8d` `refactor(pages/index): var → const/let 全迁移`
+- 全程 `npm test` gate 全绿（12 suites / 236 tests）不变
+- subagent 正确判定了 4 个「再次赋值」变量（`tools` / `currentTools` / `availableTools` / `unavailableTools`）改 `let`，其他改 `const`；纠正了 brief 里两条与文件实际不符的判定规则（`pages/index` 不存在 `for (var i)` 循环；该用 `let` 不能 `const`）
+
+**理由**
+
+- 接续上次 normalization 计划末尾 deferred 的 r.6（`utils/sort-algorithms.js`）+ r.7（5 个 pages 文件），一次性清理
+- spec `docs/superpowers/specs/2026-07-11-var-cleanup-design.md` 经 brainstorming → writing-plans → 用户批准；计划文档 `docs/plans/2026-07-11-var-cleanup.md`（619 行 / 50 checkbox）
+- 严格按 CLAUDE.md「## 代码风格」section 约定 —— `var` 全替为 `const` 或 `let`，不加新逻辑、不改空白风格
+- subagent 主动识别 brief 错误而非机械执行，避免运行时 `TypeError: Assignment to constant variable`
+
+**影响**
+
+- 本次上下文清理后，`utils/` + `pages/` 内 `grep -rnE '\bvar\b'` 已无输出（仅历史 docs 与 tests/ 仍含）
+- `tests/` 内 ~222 处 `var` 仍待清理（r.8 候选）；不在本次 plan 范围
+- baseline = `1f59fba`；共 7 个 refactor commit + 1 个 handoff docs commit（前置 spec/plan 共 3 commit 计入实施准备）
+- pre-docs-commit HEAD = `39a2f8d`；handoff docs commit HEAD = `b629afb`
+- 不主动 `git push`：等待用户决定
+
+参见：`docs/plans/2026-07-11-var-cleanup.md` 实施计划 · `docs/superpowers/specs/2026-07-11-var-cleanup-design.md` design spec · `.superpowers/sdd/progress.md` var-cleanup 账本段
