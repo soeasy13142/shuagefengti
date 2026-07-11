@@ -108,17 +108,17 @@ function quickSort(arr) {
     return i + 1;
   }
 
-  function quickSort(low, high) {
+  function _quickSortRecursive(low, high) {
     if (low < high) {
       const pi = partition(low, high);
-      quickSort(low, pi - 1);
-      quickSort(pi + 1, high);
+      _quickSortRecursive(low, pi - 1);
+      _quickSortRecursive(pi + 1, high);
     } else if (low === high) {
       steps.push({ type: 'sorted', indices: [low], desc: '单元素 a[' + low + ']=' + a[low] + ' 已有序' });
     }
   }
 
-  quickSort(0, a.length - 1);
+  _quickSortRecursive(0, a.length - 1);
   steps.push({ type: 'done', indices: [], desc: '快速排序完成！共 ' + steps.length + ' 步' });
   return steps;
 }

@@ -10,6 +10,7 @@ function _get(key) {
     const data = wx.getStorageSync(key);
     return data ? JSON.parse(data) : [];
   } catch (e) {
+    console.warn('[storage] JSON.parse failed for key:', key, e);
     return [];
   }
 }
@@ -42,6 +43,7 @@ function getPaperById(id) {
 }
 
 function deletePaper(id) {
+  if (!id) return;
   const papers = getPapers().filter(p => p.id !== id);
   _set(KEYS.PAPERS, papers);
   // 级联删除关联的答题记录
@@ -94,12 +96,15 @@ function addWrongQuestion({ questionId, paperId, question }) {
 }
 
 function markMastered(questionId) {
+  if (!questionId) return false;
   const wrongs = getWrongQuestions();
   const item = wrongs.find(w => w.questionId === questionId);
   if (item) {
     item.mastered = true;
     _set(KEYS.WRONG_QUESTIONS, wrongs);
+    return true;
   }
+  return false;
 }
 
 // 临时存储：用于页面间传递大数据（避免 URL 长度限制）
