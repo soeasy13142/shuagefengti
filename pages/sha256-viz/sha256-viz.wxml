@@ -1,0 +1,132 @@
+<view class="page">
+
+  <!-- 顶部：输入区 -->
+  <view class="input-band">
+    <text class="band-label">SHA-256 哈希</text>
+    <textarea class="message-input"
+              value="{{message}}"
+              bindinput="onMessageInput"
+              maxlength="200"
+              placeholder="输入任意文本…"
+              auto-height="true" />
+    <view class="input-meta">
+      <text class="meta-label">编码：UTF-8</text>
+      <text class="meta-label">字节：{{byteLength}}</text>
+      <text class="meta-label">块数：{{numBlocks}}</text>
+    </view>
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onCompute" hover-class="btn-hover">🔢 计算</button>
+      <button class="btn-secondary" bindtap="onReset" hover-class="btn-hover">↻ 重置</button>
+    </view>
+  </view>
+
+  <!-- 雪崩效应卡 -->
+  <view wx:if="{{avalanche.bitDistance !== undefined}}" class="avalanche-band">
+    <text class="band-label">雪崩效应</text>
+    <view class="avalanche-row">
+      <text class="avalanche-text">原文本：</text>
+      <text class="avalanche-value" decode="true">"{{message}}"</text>
+    </view>
+    <view class="avalanche-row">
+      <text class="avalanche-text">改 1 bit：</text>
+      <text class="avalanche-value">"{{avalanche.flippedText}}"</text>
+    </view>
+    <view class="avalanche-diff">
+      <text class="diff-text">Hash 差异：256 位中 {{avalanche.bitDistance}} 位不同（{{avalanche.diffPercent}}%）</text>
+      <view class="diff-bar">
+        <view class="diff-bit"
+              wx:for="{{avalanche.diffBits}}"
+              wx:key="index"
+              style="background-color: {{item ? '#cc785c' : '#d4cfc2'}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步进控制器 -->
+  <view wx:if="{{rounds.length > 0}}" class="control-band">
+    <button class="btn-secondary btn-small" bindtap="onPrevRound" hover-class="btn-hover">◀</button>
+    <text class="round-counter">{{currentRound + 1}} / 64</text>
+    <button class="btn-secondary btn-small" bindtap="onNextRound" hover-class="btn-hover">▶</button>
+    <button class="btn-secondary btn-small" bindtap="onTogglePlay" hover-class="btn-hover">
+      {{isPlaying ? '⏸' : '⏯'}}
+    </button>
+    <view class="speed-row">
+      <text class="speed-label">{{speedLabel}}</text>
+      <picker mode="selector" range="{{speedOptions}}" value="{{speedIndex}}" bindchange="onSpeedChange">
+        <view class="speed-picker"><text>{{speedOptions[speedIndex]}}</text><text class="picker-arrow">▾</text></view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- W 网格（消息扩展） -->
+  <view wx:if="{{rounds.length > 0}}" class="w-band">
+    <text class="band-label">消息扩展 W[0..63]</text>
+    <view class="w-grid">
+      <view wx:for="{{wGrid}}"
+            wx:key="index"
+            class="w-cell {{item.highlight ? 'w-cell-active' : ''}}">
+        <text class="w-index">{{item.index}}</text>
+        <text class="w-value">{{item.value}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 压缩函数 a-h 寄存器 -->
+  <view wx:if="{{currentRoundData}}" class="compress-band">
+    <text class="band-label">压缩函数（轮 {{currentRound + 1}} / 64）</text>
+    <view class="register-row">
+      <text class="register-label">a</text>
+      <text class="register-value">0x{{currentRoundData.aHex}}</text>
+    </view>
+    <view class="register-row">
+      <text class="register-label">b</text>
+      <text class="register-value">0x{{currentRoundData.bHex}}</text>
+    </view>
+    <view class="register-row">
+      <text class="register-label">c</text>
+      <text class="register-value">0x{{currentRoundData.cHex}}</text>
+    </view>
+    <view class="register-row">
+      <text class="register-label">d</text>
+      <text class="register-value">0x{{currentRoundData.dHex}}</text>
+    </view>
+    <view class="register-row">
+      <text class="register-label">e</text>
+      <text class="register-value">0x{{currentRoundData.eHex}}</text>
+    </view>
+    <view class="register-row">
+      <text class="register-label">f</text>
+      <text class="register-value">0x{{currentRoundData.fHex}}</text>
+    </view>
+    <view class="register-row">
+      <text class="register-label">g</text>
+      <text class="register-value">0x{{currentRoundData.gHex}}</text>
+    </view>
+    <view class="register-row">
+      <text class="register-label">h</text>
+      <text class="register-value">0x{{currentRoundData.hHex}}</text>
+    </view>
+    <view class="formula-block">
+      <text class="formula-label">T1</text>
+      <text class="formula-text">h + Σ1(e) + Ch(e,f,g) + K[t] + W[t] = 0x{{currentRoundData.T1Hex}}</text>
+    </view>
+    <view class="formula-block">
+      <text class="formula-label">T2</text>
+      <text class="formula-text">Σ0(a) + Maj(a,b,c) = 0x{{currentRoundData.T2Hex}}</text>
+    </view>
+    <view class="formula-block">
+      <text class="formula-label">K[t]</text>
+      <text class="formula-text">0x{{currentRoundData.KHex}}</text>
+    </view>
+  </view>
+
+  <!-- 最终 hash -->
+  <view wx:if="{{rounds.length > 0}}" class="hash-band">
+    <text class="band-label">最终 hash</text>
+    <view class="hash-final">
+      <text class="hash-prefix">SHA-256("{{message}}")</text>
+      <text class="hash-value" decode="true">{{finalHash}}</text>
+    </view>
+  </view>
+
+</view>
