@@ -24,23 +24,23 @@
 
   <!-- 5 条泳道 -->
   <view class="lanes-band">
-    <view class="lane lane-client">
+    <view class="lane lane-client {{activeLane === 'client' ? 'active' : ''}}">
       <text class="lane-name">Client</text>
       <text class="lane-ip">192.168.1.1</text>
     </view>
-    <view class="lane lane-resolver">
+    <view class="lane lane-resolver {{activeLane === 'resolver' ? 'active' : ''}}">
       <text class="lane-name">Recursive Resolver</text>
       <text class="lane-ip">8.8.8.8</text>
     </view>
-    <view class="lane lane-root">
+    <view class="lane lane-root {{activeLane === 'root' ? 'active' : ''}}">
       <text class="lane-name">Root Server</text>
       <text class="lane-ip">a.root-servers.net · 198.41.0.4</text>
     </view>
-    <view class="lane lane-tld">
+    <view class="lane lane-tld {{activeLane === 'tld' ? 'active' : ''}}">
       <text class="lane-name">TLD Server (.com)</text>
       <text class="lane-ip">192.5.6.30</text>
     </view>
-    <view class="lane lane-auth">
+    <view class="lane lane-auth {{activeLane === 'auth' ? 'active' : ''}}">
       <text class="lane-name">Authoritative</text>
       <text class="lane-ip">{{authServerText}}</text>
     </view>

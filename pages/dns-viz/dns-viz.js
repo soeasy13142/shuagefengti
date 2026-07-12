@@ -16,7 +16,8 @@ Page({
     payloadText: '',
     progressPercent: 0,
     authServerText: '',
-    errorMessage: ''
+    errorMessage: '',
+    activeLane: ''
   },
 
   _cache: null,
@@ -48,11 +49,14 @@ Page({
         currentStep: 0,
         currentStepObj: null,
         payloadText: '',
-        progressPercent: 0
+        progressPercent: 0,
+        activeLane: ''
       });
       return;
     }
     this.setData({ errorMessage: '' });
+
+    this._refreshAuthServer();
 
     const scenario = ['first', 'cached', 'cname'][scenarioIndex];
     const steps = resolveSteps({
@@ -69,7 +73,8 @@ Page({
         currentStep: 0,
         currentStepObj: null,
         payloadText: '',
-        progressPercent: 0
+        progressPercent: 0,
+        activeLane: ''
       });
       return;
     }
@@ -88,7 +93,8 @@ Page({
       currentStepObj: null,
       payloadText: '',
       progressPercent: 0,
-      errorMessage: ''
+      errorMessage: '',
+      activeLane: ''
     });
     this._refreshAuthServer();
   },
@@ -134,7 +140,8 @@ Page({
       currentStep: idx,
       currentStepObj: step,
       payloadText,
-      progressPercent
+      progressPercent,
+      activeLane: step.from
     });
   },
 
