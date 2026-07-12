@@ -100,9 +100,7 @@ Page({
 
   onHeroTap() {
     const self = this;
-    this.setData({ heroTapped: true });
     setTimeout(function() {
-      self.setData({ heroTapped: false });
       wx.navigateTo({ url: '/pages/quiz-list/quiz-list' });
     }, 350);
   },

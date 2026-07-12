@@ -11,8 +11,8 @@ Page({
   },
 
   onLoad() {
-    var categories = registry.TOOL_CATEGORIES;
-    var allSections = this._buildAllSections(categories);
+    const categories = registry.TOOL_CATEGORIES;
+    const allSections = this._buildAllSections(categories);
     this.setData({
       categories: categories,
       allSections: allSections
@@ -21,7 +21,7 @@ Page({
 
   _buildAllSections(categories) {
     return categories.map(function(cat) {
-      var allTools = registry.getToolsByCategory(cat.id);
+      const allTools = registry.getToolsByCategory(cat.id);
       return {
         category: cat,
         tools: allTools
@@ -30,10 +30,10 @@ Page({
   },
 
   onCategoryTap(e) {
-    var categoryId = e.currentTarget.dataset.id;
-    var currentTools = [];
-    var availableTools = [];
-    var unavailableTools = [];
+    const categoryId = e.currentTarget.dataset.id;
+    let currentTools = [];
+    let availableTools = [];
+    let unavailableTools = [];
 
     if (categoryId !== 'all') {
       currentTools = registry.getToolsByCategory(categoryId);
@@ -50,15 +50,15 @@ Page({
   },
 
   onToolTap(e) {
-    var id = e.currentTarget.dataset.id;
-    var available = e.currentTarget.dataset.available;
+    const id = e.currentTarget.dataset.id;
+    const available = e.currentTarget.dataset.available;
 
     if (!available) {
       wx.showToast({ title: '功能开发中', icon: 'none' });
       return;
     }
 
-    var tool = registry.TOOLS.find(function(t) { return t.id === id; });
+    const tool = registry.TOOLS.find(function(t) { return t.id === id; });
     if (tool && tool.route) {
       wx.navigateTo({ url: tool.route });
     }

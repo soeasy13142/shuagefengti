@@ -139,7 +139,6 @@
 .empty-cat {
   padding: 64rpx 0;
   text-align: center;
-  padding: 64rpx 0;
 }
 
 .empty-cat-text {

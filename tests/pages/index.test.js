@@ -88,16 +88,16 @@ describe('首页数据处理', () => {
 
 describe('全部工具页数据', () => {
   test('全部 5 个分类都有对应的工具', () => {
-    var categories = registry.TOOL_CATEGORIES;
+    const categories = registry.TOOL_CATEGORIES;
     categories.forEach(function(cat) {
-      var tools = registry.getToolsByCategory(cat.id);
+      const tools = registry.getToolsByCategory(cat.id);
       expect(tools.length).toBeGreaterThan(0);
     });
   });
 
   test('全部 24 个工具分布在 5 个分类中', () => {
-    var categories = registry.TOOL_CATEGORIES;
-    var allTools = [];
+    const categories = registry.TOOL_CATEGORIES;
+    let allTools = [];
     categories.forEach(function(cat) {
       allTools = allTools.concat(registry.getToolsByCategory(cat.id));
     });
@@ -105,11 +105,11 @@ describe('全部工具页数据', () => {
   });
 
   test('每个分类的 tool-card 区分 available 和 unavailable', function() {
-    var categories = registry.TOOL_CATEGORIES;
+    const categories = registry.TOOL_CATEGORIES;
     categories.forEach(function(cat) {
-      var tools = registry.getToolsByCategory(cat.id);
-      var avail = tools.filter(function(t) { return t.available; });
-      var unavail = tools.filter(function(t) { return !t.available; });
+      const tools = registry.getToolsByCategory(cat.id);
+      const avail = tools.filter(function(t) { return t.available; });
+      const unavail = tools.filter(function(t) { return !t.available; });
       expect(avail.length + unavail.length).toBe(tools.length);
     });
   });
