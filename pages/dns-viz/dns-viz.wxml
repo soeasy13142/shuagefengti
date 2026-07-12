@@ -1,0 +1,77 @@
+<view class="page">
+
+  <!-- 输入区 -->
+  <view class="input-band">
+    <text class="band-label">DNS 解析可视化</text>
+    <view class="input-row">
+      <input class="domain-input"
+             placeholder="example.com"
+             value="{{domain}}"
+             bindinput="onDomainInput" />
+      <picker mode="selector" range="{{scenarios}}" value="{{scenarioIndex}}" bindchange="onScenarioChange">
+        <view class="scenario-picker">
+          <text>{{scenarios[scenarioIndex]}}</text>
+          <text class="picker-arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onStartTap" hover-class="btn-hover">▶ 开始</button>
+      <button class="btn-secondary" bindtap="onResetTap" hover-class="btn-hover">↻ 重置</button>
+    </view>
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 5 条泳道 -->
+  <view class="lanes-band">
+    <view class="lane lane-client">
+      <text class="lane-name">Client</text>
+      <text class="lane-ip">192.168.1.1</text>
+    </view>
+    <view class="lane lane-resolver">
+      <text class="lane-name">Recursive Resolver</text>
+      <text class="lane-ip">8.8.8.8</text>
+    </view>
+    <view class="lane lane-root">
+      <text class="lane-name">Root Server</text>
+      <text class="lane-ip">a.root-servers.net · 198.41.0.4</text>
+    </view>
+    <view class="lane lane-tld">
+      <text class="lane-name">TLD Server (.com)</text>
+      <text class="lane-ip">192.5.6.30</text>
+    </view>
+    <view class="lane lane-auth">
+      <text class="lane-name">Authoritative</text>
+      <text class="lane-ip">{{authServerText}}</text>
+    </view>
+  </view>
+
+  <!-- 步骤控制 -->
+  <view wx:if="{{steps.length > 0}}" class="control-band">
+    <button class="btn-secondary" bindtap="onPrevStep" hover-class="btn-hover">◀ 上一步</button>
+    <text class="step-counter">{{currentStep + 1}} / {{steps.length}}</text>
+    <button class="btn-secondary" bindtap="onNextStep" hover-class="btn-hover">下一步 ▶</button>
+    <button class="btn-secondary" bindtap="onTogglePlay" hover-class="btn-hover">
+      {{isPlaying ? '⏸ 暂停' : '⏯ 播放'}}
+    </button>
+  </view>
+
+  <!-- 当前步骤详情 -->
+  <view wx:if="{{currentStepObj}}" class="detail-band">
+    <text class="detail-title">{{currentStepObj.explanation}}</text>
+    <view class="payload-block">
+      <text class="payload-label">{{currentStepObj.type === 'query' ? 'Query' : (currentStepObj.type === 'cacheHit' ? 'Cache Hit' : 'Response')}}</text>
+      <text class="payload-text">{{payloadText}}</text>
+    </view>
+    <view wx:if="{{currentStepObj.examTip}}" class="exam-tip">
+      <text class="exam-tip-label">💡 面试考点</text>
+      <text class="exam-tip-text">{{currentStepObj.examTip}}</text>
+    </view>
+  </view>
+
+  <!-- 进度条 -->
+  <view wx:if="{{steps.length > 0}}" class="progress-band">
+    <progress percent="{{progressPercent}}" stroke-width="4" color="#cc785c" backgroundColor="#efe9de" />
+  </view>
+
+</view>
