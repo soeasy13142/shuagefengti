@@ -169,6 +169,126 @@ Project instructions and memory for Claude Code.
 - ✅ `refactor: 抽取 timeline 渲染为独立 utils`
 - ❌ `update`、`修复bug`、`tmp`、`asdfasdf`
 
+### 分支策略
+
+#### 原则
+
+新功能、Bug 修复、重构等涉及多文件的改动 → **必须从 master 开新分支开发**，禁止直接在 master 上提交。
+
+可以直接在 master 上提交的例外（仅限便捷修改）：
+- 单文件 ≤10 行的改动
+- typo / 文案修正
+- 纯文档或配置变更（.md / .json）
+- 纯测试代码添加
+
+#### 命名格式
+
+```
+<type>/<kebab-case-description>
+```
+
+| type | 用途 | 示例 |
+|---|---|---|
+| `feature` | 新功能 | `feature/dns-resolver` |
+| `fix` | Bug 修复 | `fix/sha256-crash` |
+| `refactor` | 重构 | `refactor/normalize-utils` |
+| `docs` | 文档 | `docs/readme-update` |
+| `test` | 测试 | `test/add-coverage` |
+
+- 描述用英文 kebab-case，简短精确
+- 用完即删：合并回 master 后删除本地和远程分支
+
+#### 生命周期
+
+```
+master ──┬── feature/my-thing ── ... ──┬── master (合并后)
+          │  (自由 commit)              │
+          └─────────────────────────────┘
+                                        ↓
+                                  git branch -d feature/my-thing
+```
+
+1. **创建**：从最新 master 开分支 `git checkout -b feature/xxx master`
+2. **开发**：在分支上自由 commit，**不限制频率和内容粒度**
+3. **合入准备**：
+   - `npm test` 全绿
+   - `git rebase -i master` 整理分支 commits（squash / 拆分 / 改写）
+   - 同步 `PROJECT_HANDOFF.md`（如有新约定 / 踩坑）
+4. **合并**：
+   - 切回 master：`git checkout master`
+   - 合并：`git merge --no-ff feature/xxx`
+   - 删除分支：`git branch -d feature/xxx`
+5. **推送**：按下方推送规范执行（需用户明确要求）
+
+#### 与 X5 红线的关系
+
+- 分支上的 commit **不受 X5 限制**，可随时本地提交
+- X5 的"未经要求不得 commit"仅约束 **master 分支**
+- X5 的"未经要求不得 push"适用于所有分支（推送至远程需用户确认）
+
+---
+
+## Subagent / Workflow 使用规范
+
+> **目的**：长任务用后台 subagent 不阻塞主会话 context；短任务不走子 agent 避免无谓开销。
+
+### 核心原则
+
+- **能不阻塞主会话的任务 → 默认派后台 subagent**
+- **只需一句话回答 / 一眼能确认的改动 → 留在主会话**
+
+### ✅ 建议用 subagent（`Agent` 工具）
+
+| 场景 | 本项目案例 | 原因 |
+|---|---|---|
+| 新功能纯逻辑开发（utils + 对应测试） | `utils/sha256.js` + `sha256-trace.js` + 测试 | 独立模块，读完 plan 就能干，返回摘要即可 |
+| 大规模批量化重构 | var→const/let 迁移（7 文件 · 283 var） | 改动量大但规律明确，一把梭完不占主 context |
+| 全库搜索 + 批量替换 | grep + sed 清理 console.log / sort 比较器修复 | 输出量大，后台跑完汇报结论 |
+| 跑全量测试 | `npm test`（jest --verbose 输出几百行） | 输出长，后台不阻塞 |
+| 代码审查 | `ecc:code-reviewer` | 独立审查，不占主会话上下文 |
+| 查文档 / API | `context7-mcp` resolve + query | 独立的信息获取，拿到结果回答即可 |
+| 多工具并行探索代码库 | 同时查某个 API 在哪些文件出现 | 各自独立搜索，汇总给我 |
+
+### ✅ 建议用 workflow（`Workflow` 工具）
+
+workflow 比 subagent 重，适合**脚本化编排大量 agent**的场景。
+
+| 场景 | 本项目案例 | 原因 |
+|---|---|---|
+| 全量代码审查·多维度并行 | 2026-07-11 安全 + 性能 + 正确性各一个 agent | 多个维度各一个 agent，汇总后出报告 |
+| 新功能全链路自动化 | DNS 可视化：plan→impl→test→review→handoff | 多阶段有先后依赖，拿脚本编排 |
+| 大范围多文件并行改动 + 工作树隔离 | 同时改 10 个文件的某个 pattern | 各干各的，互不干扰 |
+| 深度多源交叉验证研究 | 查某个 RFC 实现 + 对比各语言实现 | 多 agent 独立查源，汇总交叉验证 |
+
+### ❌ 不要用 subagent / workflow
+
+| 场景 | 理由 |
+|---|---|
+| 单文件 ≤10 行改动 | agent 启动开销 > 改文件本身 |
+| typo / 文案小修 | 直接改就行 |
+| 需要频繁来回确认的任务 | subagent **不能** `AskUserQuestion`，会卡住 |
+| CSS 微调、UI 微调（需看效果） | 需要迭代反馈，subagent 给不了 |
+| 用户刚说完一句话立刻跟进的连续小修改 | 不必要地打断工作流 |
+| 需要理解你完整意图才能决策的任务 | 主会话才有全部上下文 |
+
+### 默认行为与使用约定
+
+1. **subagent 默认后台执行** — 不阻塞主会话，除非我明确说"这个我在前台做"
+2. 你也可以主动要求：*"用 subagent 做 X"* 或 *"这个在前台做"*
+3. 如果某个 subagent 完成的结果有问题，我可以派新的 subagent 去修正，**不需要重跑整个任务**
+
+### 本项目特定适用说明
+
+| 任务类型 | 走 subagent？ | 原因 |
+|---|---|---|
+| **写 plans（`docs/plans/`）** | ❌ 主会话 | 需要跟你反复讨论确认，subagent 不能 AskUserQuestion |
+| **画 UI（WXML / WXSS）** | ❌ 主会话 | 需要视觉上的迭代调整 |
+| **并行写多个独立 utils + 测试** | ✅ 各一个 subagent | 互不依赖，可并发（需注意 worktree 隔离） |
+| **写一个工具的全部文件（utils→page→test）** | ⚠️ 看情况 | 如果方案已确定 → subagent；如果途中要确认命名/结构 → 主会话 |
+| **合并分支 + 推送** | ❌ 主会话 | 需要按 checklist 逐项确认 |
+| **同步 PROJECT_HANDOFF.md** | ❌ 主会话 | 需要你确认哪些决策值得记 |
+| **调研新技术 / 查文档** | ✅ subagent | 独立信息获取，回来告诉我结论即可 |
+
 ---
 
 ## 技能路由（强制 · 不可跳过 · UI/UX/设计任务专用）
