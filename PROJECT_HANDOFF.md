@@ -86,6 +86,30 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 
 ## 8. 最近重大变更（变更记录）
 
+### 2026-07-12 · DNS 解析可视化上线
+
+**变更内容**
+
+- 新增 `pages/dns-viz/` 页面（4 文件）
+- 新增 3 个 utils 纯函数模块：`dns-data.js` / `dns-cache.js` / `dns-resolver.js`
+- 新增 3 个测试文件（共 ~24 个测试）
+- `utils/tool-registry.js` 把 `dns-viz.available` 改为 `true`
+- `app.json` 注册新页面
+- 新增 `docs/handoff/modules/dns-viz.md` 模块文档
+
+**理由**
+
+- 承接 `tool-registry.js` 中网络协议族的占位
+- 完整递归 + 缓存 + CNAME 链 3 场景，参考 TCP-viz 风格
+- 纯前端 + 内置 DNS 数据，无网络请求
+
+**影响**
+
+- spec: `docs/superpowers/specs/2026-07-12-dns-resolver-design.md`
+- plan: `docs/plans/2026-07-12-dns-resolver.md`
+- baseline = `31d7f97`（specs commit）；实施 commit 数 = 7（T1: e3ae45b+96147b7 / T2: 2caaa1d / T3: 949e8b5 / T4: 35c3d57+1cb298e / T5: 2df813a — data + JSDoc + cache + resolver + page + page-fix + registry）
+- `npm test` 全绿
+
 ### 2026-07-12 · 4 个 lead tool 脑暴 + specs + plans（DNS · CPU 调度 · SHA-256 · B+ 树）
 
 **变更内容**

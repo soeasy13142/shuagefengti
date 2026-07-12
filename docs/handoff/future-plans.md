@@ -37,6 +37,15 @@
 - 拼写测试
 - 错词复习
 
+## P7 · 网络协议族 backlog（DNS 上线后）
+
+DNS 解析可视化已上线。其余网络协议族占位（tool-registry.js 内 `available: false`）待后续 plan：
+
+- TLS 1.3 握手动画（handshake + certificate + key exchange）
+- HTTP 报文解析器（真实请求/响应字段解析）
+- IP 分片计算器（MTU + 偏移量计算）
+- NAT 端口映射模拟器
+
 ## P4 · 增加测试覆盖
 
 - `utils/tcp-states.js` 纯函数 → 单元测试
