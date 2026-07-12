@@ -5,6 +5,7 @@
  * 第一版使用真实 IP（基于 IANA / Wikipedia 公开数据），但避免使用任何外部网络
  */
 
+/** @type {Array<{name: string, ipv4: string}>} 13 个根服务器（a.root-servers.net 至 m.root-servers.net） */
 const DNS_ROOT_SERVERS = [
   { name: 'a.root-servers.net', ipv4: '198.41.0.4' },
   { name: 'b.root-servers.net', ipv4: '170.247.170.2' },
@@ -21,6 +22,7 @@ const DNS_ROOT_SERVERS = [
   { name: 'm.root-servers.net', ipv4: '202.12.27.33' }
 ];
 
+/** @type {Record<string, Array<{name: string, ipv4: string}>>} 6 个 TLD（com / org / cn / io / net / edu），每个 key 至少 1 个 TLD 服务器 */
 const DNS_TLD_SERVERS = {
   com:  [{ name: 'a.gtld-servers.net',  ipv4: '192.5.6.30' }],
   org:  [{ name: 'a0.org.afilias-nst.info', ipv4: '199.19.56.1' }],
@@ -30,6 +32,7 @@ const DNS_TLD_SERVERS = {
   edu:  [{ name: 'a.edu-servers.net',   ipv4: '192.5.6.30' }]
 };
 
+/** @type {Record<string, {name: string, ipv4: string, cname?: string}>} 6 个示例权威域名（example.com / google.com / github.com / baidu.com / mit.edu / wikipedia.org） */
 const DNS_AUTHORITATIVE_SERVERS = {
   'example.com':    { name: 'a.iana-servers.net',   ipv4: '93.184.216.34' },
   'google.com':     { name: 'ns1.google.com',       ipv4: '216.239.32.10' },
