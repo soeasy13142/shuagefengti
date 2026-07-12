@@ -86,6 +86,33 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 
 ## 8. 最近重大变更（变更记录）
 
+### 2026-07-12 · 首页重设计——工具箱优先
+
+**变更内容**
+
+- 首页定位改为「工具箱优先」：紧凑品牌头 + 分类标签栏 + 2 列大网格卡片
+- 去掉 Hero 大标题区、学习概览统计卡片、底部快捷入口
+- 顶部模块：小号衬线品牌名「刷个冯题」+ 内联「开始刷题」按钮 + 答题记录/错题本链接
+- 「全部」视图：每分类最多 4 个可用工具 + 2 个精选预告（半透明）；底部「查看全部 N 个工具 →」链接
+- 单一分类视图：可用工具 + 即将上线工具两组展示
+- 新增 `pages/tools-all/tools-all` 二级页面，全量展示 24 个工具
+- 保留原入场动画体系（fadeSlideIn 0.4s / fadeSlideUp 0.5s）
+- 所有样式按 Claude Design 暖奶油画布规范
+
+**涉及文件**
+
+- 修改：`pages/index/index.js`、`pages/index/index.wxml`、`pages/index/index.wxss`、`app.json`
+- 新增：`pages/tools-all/tools-all.js`、`.wxml`、`.wxss`、`.json`
+- 新增：`tests/pages/index.test.js`
+
+**不改变**
+
+- 刷题流程、tool-registry 数据、存储层、app.json 其余配置
+
+参见：
+- spec: `docs/superpowers/specs/2026-07-12-homepage-redesign.md`
+- plan: `docs/plans/2026-07-12-homepage-redesign.md`
+
 ### 2026-07-12 · B+ 树可视化上线
 
 **变更内容**
