@@ -1,54 +1,25 @@
 <view class="page">
 
-  <!-- ═══ ZONE 1: HERO（保持） ═══ -->
-  <view class="hero-band {{show ? 'anim-in' : ''}}">
-    <text class="hero-title">刷个冯题</text>
-    <text class="hero-tagline">刷题千万道，考试不怕考</text>
-    <view class="hero-cta {{heroTapped ? 'tapped' : ''}}" bindtap="onHeroTap" hover-class="cta-hover" hover-stay-time="100">
-      <text class="cta-text">开始刷题</text>
+  <!-- ═══ TOP: 品牌 + 刷题入口 ═══ -->
+  <view class="top-brand {{show ? 'anim-in' : ''}}">
+    <text class="brand-title">刷个冯题</text>
+    <view class="brand-cta" bindtap="onHeroTap" hover-class="cta-hover" hover-stay-time="100">
+      <text class="cta-text">📝 开始刷题 ▸</text>
     </view>
-    <text class="hero-sub">导入试题 · 5 种题型 · 练习 / 考试</text>
-  </view>
-
-  <!-- ═══ ZONE 2: 学习状态条（新增） ═══ -->
-  <view class="stats-band {{show ? 'anim-up' : ''}}" bindtap="goDashboard">
-    <view class="stats-card">
-      <view class="stats-header">
-        <text class="stats-title">📊 学习概览</text>
-        <text class="stats-link">进入 ›</text>
-      </view>
-      <view class="stats-grid" wx:if="{{stats.hasData}}">
-        <view class="stats-item">
-          <text class="stats-value">{{stats.totalQuestions}}</text>
-          <text class="stats-label">累计刷题</text>
-        </view>
-        <view class="stats-item">
-          <text class="stats-value">{{stats.totalSessions}}</text>
-          <text class="stats-label">练习次数</text>
-        </view>
-        <view class="stats-item">
-          <text class="stats-value">{{stats.averageAccuracy}}%</text>
-          <text class="stats-label">正确率</text>
-        </view>
-        <view class="stats-item">
-          <text class="stats-value">{{stats.wrongCount}}</text>
-          <text class="stats-label">错题数</text>
-        </view>
-      </view>
-      <view class="stats-empty" wx:else>
-        <text class="stats-empty-text">完成一次练习后查看学习数据</text>
-      </view>
+    <view class="brand-links">
+      <text class="brand-link" bindtap="goToRecords">答题记录</text>
+      <text class="brand-dot">·</text>
+      <text class="brand-link" bindtap="goToWrongQuestions">错题本</text>
     </view>
   </view>
 
-  <!-- ═══ ZONE 3: 工具箱（重构核心） ═══ -->
-  <view class="tools-band {{show ? 'anim-up' : ''}}">
-    <text class="band-label">工具箱 Tools</text>
+  <!-- ═══ TOOLS: 分类标签栏 + 工具网格 ═══ -->
+  <view class="tools-area {{show ? 'anim-up' : ''}}">
 
     <!-- 分类标签栏（横向滚动） -->
     <scroll-view class="category-tabs" scroll-x show-scrollbar="{{false}}" enable-flex>
       <view class="category-tab {{activeCategory === 'all' ? 'active' : ''}}" data-id="all" bindtap="onCategoryTap">
-        <text>全部工具</text>
+        <text>全部</text>
       </view>
       <view
         class="category-tab {{activeCategory === item.id ? 'active' : ''}}"
@@ -61,10 +32,14 @@
       </view>
     </scroll-view>
 
-    <!-- 「全部工具」视图：按分类分组 -->
+    <!-- 「全部」视图：分类分组 + 精选预告 -->
     <block wx:if="{{activeCategory === 'all'}}">
       <view class="cat-section" wx:for="{{allViewData}}" wx:key="category.id" wx:for-item="section">
-        <text class="sub-label">{{section.category.name}}</text>
+
+        <!-- 分类标题 -->
+        <text class="cat-section-title">{{section.category.icon}} {{section.category.name}}</text>
+
+        <!-- 可用工具 -->
         <view class="tool-grid">
           <view
             class="tool-card"
@@ -72,7 +47,7 @@
             wx:key="id"
             wx:for-item="tool"
             data-id="{{tool.id}}"
-            data-available="{{tool.available}}"
+            data-available="true"
             bindtap="onToolTap"
             hover-class="tool-hover"
             hover-stay-time="100"
@@ -80,18 +55,37 @@
             <text class="tool-icon">{{tool.icon}}</text>
             <text class="tool-name">{{tool.name}}</text>
             <text class="tool-desc">{{tool.description}}</text>
-            <text class="tool-link" wx:if="{{tool.available}}">进入 ›</text>
-            <text class="tool-tag" wx:else>即将上线</text>
+            <text class="tool-link">进入 ▸</text>
+          </view>
+        </view>
+
+        <!-- 精选预告（即将上线） -->
+        <view class="preview-grid" wx:if="{{section.previews.length > 0}}">
+          <view
+            class="tool-card tool-card-preview"
+            wx:for="{{section.previews}}"
+            wx:key="id"
+            wx:for-item="preview"
+          >
+            <text class="tool-icon">{{preview.icon}}</text>
+            <text class="tool-name">{{preview.name}}</text>
+            <text class="tool-desc">{{preview.description}}</text>
+            <text class="tool-tag">即将上线</text>
           </view>
         </view>
       </view>
+
+      <!-- 查看全部 -->
+      <view class="view-all" bindtap="goToAllTools">
+        <text class="view-all-text">查看全部 {{toolsCount}} 个工具 →</text>
+      </view>
     </block>
 
-    <!-- 单一分类视图：可用 + 即将推出 分组 -->
+    <!-- 单一分类视图：可用 + 即将上线 -->
     <block wx:else>
       <!-- 可用工具 -->
       <block wx:if="{{availableTools.length > 0}}">
-        <view class="sub-label">可用工具</view>
+        <text class="cat-section-title">✨ 可用工具</text>
         <view class="tool-grid">
           <view
             class="tool-card"
@@ -106,26 +100,24 @@
             <text class="tool-icon">{{item.icon}}</text>
             <text class="tool-name">{{item.name}}</text>
             <text class="tool-desc">{{item.description}}</text>
-            <text class="tool-link">进入 ›</text>
+            <text class="tool-link">进入 ▸</text>
           </view>
         </view>
       </block>
 
-      <!-- 即将推出：紧凑列表 -->
+      <!-- 即将上线 -->
       <block wx:if="{{unavailableTools.length > 0}}">
-        <view class="sub-label">即将推出</view>
-        <view class="coming-soon-list">
+        <text class="cat-section-title">🔜 即将上线</text>
+        <view class="tool-grid">
           <view
-            class="coming-soon-item"
+            class="tool-card tool-card-preview"
             wx:for="{{unavailableTools}}"
             wx:key="id"
           >
-            <text class="cs-icon">{{item.icon}}</text>
-            <view class="cs-info">
-              <text class="cs-name">{{item.name}}</text>
-              <text class="cs-desc">{{item.description}}</text>
-            </view>
-            <text class="cs-tag">即将上线</text>
+            <text class="tool-icon">{{item.icon}}</text>
+            <text class="tool-name">{{item.name}}</text>
+            <text class="tool-desc">{{item.description}}</text>
+            <text class="tool-tag">即将上线</text>
           </view>
         </view>
       </block>
@@ -137,21 +129,8 @@
     </block>
   </view>
 
-  <!-- ═══ ZONE 4: 快捷入口（保持） ═══ -->
-  <view class="shortcuts-band {{show ? 'anim-up-delay' : ''}}">
-    <view class="shortcut-row" bindtap="goToRecords" hover-class="row-hover" hover-stay-time="100">
-      <text class="shortcut-label">答题记录</text>
-      <text class="shortcut-arrow">›</text>
-    </view>
-    <view class="row-divider"></view>
-    <view class="shortcut-row" bindtap="goToWrongQuestions" hover-class="row-hover" hover-stay-time="100">
-      <text class="shortcut-label">错题本</text>
-      <text class="shortcut-arrow">›</text>
-    </view>
-  </view>
-
-  <!-- ═══ ZONE 5: 备案号（保持） ═══ -->
-  <view class="footer">
+  <!-- ═══ FOOTER ═══ -->
+  <view class="footer {{show ? 'anim-up-delay' : ''}}">
     <text class="icp">苏ICP备2026036865号-1X</text>
   </view>
 
