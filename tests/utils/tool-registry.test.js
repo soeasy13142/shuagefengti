@@ -38,12 +38,13 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 4 个工具', () => {
+    test('返回当前已实现的 5 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(4);
+      expect(result.length).toBe(5);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');
+      expect(ids).toContain('dns-viz');
       expect(ids).toContain('sort-viz');
       expect(ids).toContain('ds-viz');
     });

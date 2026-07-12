@@ -80,7 +80,7 @@ const TOOLS = [
     icon: '🌍',
     description: '域名解析过程 · 递归/迭代查询',
     route: '/pages/dns-viz/dns-viz',
-    available: false,
+    available: true,
     featured: false,
     order: 4
   },

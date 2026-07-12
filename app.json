@@ -9,6 +9,7 @@
     "pages/record-detail/record-detail",
     "pages/wrong-questions/wrong-questions",
     "pages/dashboard/dashboard",
+    "pages/dns-viz/dns-viz",
     "pages/subnet-calc/subnet-calc",
     "pages/sort-viz/sort-viz",
     "pages/tcp-viz/tcp-viz",
