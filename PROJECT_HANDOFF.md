@@ -86,6 +86,30 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 
 ## 8. 最近重大变更（变更记录）
 
+### 2026-07-12 · SHA-256 演示上线
+
+**变更内容**
+
+- 新增 `pages/sha256-viz/` 页面（4 文件）
+- 新增 3 个 utils 纯函数模块：`sha256.js` / `sha256-trace.js` / `sha256-avalanche.js`
+- 新增 3 个测试文件（共 25 个测试，覆盖 FIPS 180-4 附录 B 已知向量）
+- `utils/tool-registry.js` 把 `sha256-viz.available` 改为 `true`
+- `app.json` 注册新页面
+- 新增 `docs/handoff/modules/sha256-viz.md` 模块文档
+
+**理由**
+
+- 承接 `tool-registry.js` 中密码学分类的占位（`sha256-viz`）
+- 完整 64 轮 trace + 雪崩效应可视化，参考 TCP-viz 风格
+- 纯前端、纯 JS 实现（无 BigInt，32-bit 无符号算术），无网络请求
+
+**影响**
+
+- spec: `docs/superpowers/specs/2026-07-12-sha256-design.md`
+- plan: `docs/plans/2026-07-12-sha256.md`
+- **修复 K[63] 常量错误**：原值为 0xC6719F08，正确值为 0xC67178F2（错位一个十六进制位）
+- `npm test` 全绿（596 tests, 37 suites）
+
 ### 2026-07-12 · 首页重设计——工具箱优先
 
 **变更内容**
