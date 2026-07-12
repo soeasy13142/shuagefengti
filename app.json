@@ -15,7 +15,8 @@
     "pages/sort-viz/sort-viz",
     "pages/tcp-viz/tcp-viz",
     "pages/ds-viz/ds-viz",
-    "pages/tools-all/tools-all"
+    "pages/tools-all/tools-all",
+    "pages/sha256-viz/sha256-viz"
   ],
   "window": {
     "navigationBarBackgroundColor": "#faf9f5",

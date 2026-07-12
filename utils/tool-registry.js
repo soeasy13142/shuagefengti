@@ -216,7 +216,7 @@ const TOOLS = [
     icon: '🔢',
     description: '哈希运算 · 压缩函数 · 雪崩效应',
     route: '/pages/sha256-viz/sha256-viz',
-    available: false,
+    available: true,
     featured: false,
     order: 4
   },
