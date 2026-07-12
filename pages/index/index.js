@@ -1,34 +1,23 @@
-const storage = require('../../utils/storage');
-const analytics = require('../../utils/analytics');
 const registry = require('../../utils/tool-registry');
 
 Page({
   data: {
-    // ── 动画 ──
+    // ── 入场动画 ──
     show: false,
-    heroTapped: false,
 
-    // ── Zone 2：学习状态条 ──
-    stats: {
-      totalQuestions: 0,
-      totalSessions: 0,
-      averageAccuracy: 0,
-      wrongCount: 0,
-      hasData: false
-    },
-
-    // ── Zone 3：工具箱 ──
+    // ── 分类 ──
     activeCategory: 'all',
     activeCategories: [],
     allViewData: [],
     currentTools: [],
     availableTools: [],
-    unavailableTools: []
+    unavailableTools: [],
+
+    // ── 工具总数 ──
+    toolsCount: 0
   },
 
   onShow() {
-    this.setData({ heroTapped: false });
-    this.loadStats();
     this.loadTools();
   },
 
@@ -39,23 +28,6 @@ Page({
     }, 100);
   },
 
-  loadStats() {
-    const records = storage.getRecords();
-    const wrongQuestions = storage.getWrongQuestions();
-    const papers = storage.getPapers();
-    const dashboard = analytics.buildDashboardData(records, wrongQuestions, papers, new Date());
-
-    this.setData({
-      stats: {
-        totalQuestions: dashboard.overview.totalQuestions,
-        totalSessions: dashboard.overview.totalSessions,
-        averageAccuracy: dashboard.overview.averageAccuracy,
-        wrongCount: dashboard.overview.wrongCount,
-        hasData: dashboard.overview.totalSessions > 0
-      }
-    });
-  },
-
   loadTools() {
     const activeCategories = registry.getActiveCategories();
     const allViewData = this._buildAllViewData(activeCategories);
@@ -63,19 +35,30 @@ Page({
     this.setData({
       activeCategories: activeCategories,
       allViewData: allViewData,
-      currentTools: []
+      currentTools: [],
+      toolsCount: registry.TOOLS.length
     });
   },
 
   _buildAllViewData(activeCategories) {
     return activeCategories.map(function(cat) {
-      let tools = registry.getFeaturedToolsByCategory(cat.id, 4);
-      if (tools.length === 0) {
+      const featured = registry.getFeaturedToolsByCategory(cat.id, 4);
+      let tools;
+      if (featured.length === 0) {
         tools = registry.getToolsByCategory(cat.id).filter(function(t) { return t.available; });
+      } else {
+        tools = featured;
       }
+
+      // 精选预告：从同分类取最多 2 个即将上线工具
+      const allInCat = registry.getToolsByCategory(cat.id);
+      const upcoming = allInCat.filter(function(t) { return !t.available; });
+      const previews = upcoming.slice(0, 2);
+
       return {
         category: cat,
-        tools: tools.slice(0, 4)
+        tools: tools.slice(0, 4),
+        previews: previews
       };
     });
   },
@@ -88,8 +71,8 @@ Page({
 
     if (categoryId !== 'all') {
       currentTools = registry.getToolsByCategory(categoryId);
-      availableTools = currentTools.filter(function (t) { return t.available; });
-      unavailableTools = currentTools.filter(function (t) { return !t.available; });
+      availableTools = currentTools.filter(function(t) { return t.available; });
+      unavailableTools = currentTools.filter(function(t) { return !t.available; });
     }
 
     this.setData({
@@ -124,15 +107,15 @@ Page({
     }, 350);
   },
 
-  goDashboard() {
-    wx.navigateTo({ url: '/pages/dashboard/dashboard' });
-  },
-
   goToRecords() {
     wx.navigateTo({ url: '/pages/records/records' });
   },
 
   goToWrongQuestions() {
     wx.navigateTo({ url: '/pages/wrong-questions/wrong-questions' });
+  },
+
+  goToAllTools() {
+    wx.navigateTo({ url: '/pages/tools-all/tools-all' });
   }
 });
