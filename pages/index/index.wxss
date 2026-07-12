@@ -29,6 +29,9 @@
    顶部品牌 + 刷题入口
    ═══════════════════════════════════════════ */
 .top-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 48rpx 32rpx 32rpx;
   background: #faf9f5;
   opacity: 0;
@@ -43,6 +46,7 @@
   line-height: 1.05;
   letter-spacing: -2rpx;
   margin-bottom: 28rpx;
+  text-align: center;
 }
 
 .brand-cta {
@@ -132,8 +136,7 @@
 }
 
 .tool-card {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 calc(50% - 10rpx);
   background: #efe9de;
   border-radius: 24rpx;
   padding: 32rpx 24rpx 24rpx;
