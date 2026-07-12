@@ -1,0 +1,125 @@
+<view class="page">
+  <view class="content">
+    <view class="title-band">
+      <text class="title-text">B+ 树可视化</text>
+      <text class="subtitle-text">阶数 m={{m}} · 节点数 {{nodeCount}} · 叶子数 {{leafCount}}</text>
+    </view>
+
+    <!-- 控制条 -->
+    <view class="control-band">
+      <view class="slider-row">
+        <text class="slider-label">阶数 m</text>
+        <slider class="m-slider" min="4" max="32" step="1" value="{{m}}"
+                activeColor="#cc785c" backgroundColor="#e6dfd8" block-size="20"
+                bindchange="onMChange" />
+        <text class="slider-value">{{m}}</text>
+      </view>
+
+      <view class="op-tabs">
+        <view class="op-tab {{operation === 'insert' ? 'op-active' : ''}}"
+              data-op="insert" bindtap="onOpChange">
+          <text>插入</text>
+        </view>
+        <view class="op-tab {{operation === 'search' ? 'op-active' : ''}}"
+              data-op="search" bindtap="onOpChange">
+          <text>查询</text>
+        </view>
+        <view class="op-tab {{operation === 'range' ? 'op-active' : ''}}"
+              data-op="range" bindtap="onOpChange">
+          <text>范围查询</text>
+        </view>
+      </view>
+
+      <view class="input-row">
+        <input wx:if="{{operation === 'range'}}"
+               class="input-field"
+               placeholder="lo"
+               value="{{loInput}}"
+               bindinput="onLoInput"
+               type="number" />
+        <input wx:if="{{operation === 'range'}}"
+               class="input-field"
+               placeholder="hi"
+               value="{{hiInput}}"
+               bindinput="onHiInput"
+               type="number" />
+        <input wx:if="{{operation !== 'range'}}"
+               class="input-field"
+               placeholder="输入 key（数字）"
+               value="{{keyInput}}"
+               bindinput="onKeyInput"
+               type="number" />
+        <view class="action-btn" bindtap="onExecute">
+          <text class="btn-text">▶ 执行</text>
+        </view>
+      </view>
+
+      <view class="quick-row">
+        <view class="quick-btn" bindtap="onReset">
+          <text>↻ 清空</text>
+        </view>
+        <view class="quick-btn" bindtap="onRandomInsert">
+          <text>🎲 随机插入</text>
+        </view>
+        <view class="quick-btn" bindtap="onBatchInsert">
+          <text>🎲 批量 5 个</text>
+        </view>
+      </view>
+
+      <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+    </view>
+
+    <!-- 树状视图 -->
+    <view class="tree-band">
+      <text class="band-label">树状结构</text>
+      <view class="tree-scroll">
+        <view class="tree-canvas" style="width: {{canvasWidth}}rpx; height: {{canvasHeight}}rpx;">
+          <view wx:if="{{levels.length > 0}}">
+            <view wx:for="{{levels}}" wx:key="y" wx:for-item="level" class="level-row" style="top: {{level.y}}rpx;">
+              <view wx:for="{{level.nodes}}" wx:key="id" wx:for-item="n"
+                    class="node {{n.type}} {{n.state}}"
+                    style="left: {{n.x}}rpx;">
+                <view wx:for="{{n.keys}}" wx:key="*this" wx:for-item="k" class="key-cell">
+                  <text class="key-text">{{k}}</text>
+                </view>
+              </view>
+            </view>
+            <view wx:for="{{edges}}" wx:key="*this" wx:for-item="e" class="edge"
+                  style="left: {{e.x1}}rpx; top: {{e.y1}}rpx; width: {{e.lenX}}rpx; height: {{e.lenY}}rpx; transform: rotate({{e.angle}}deg);"></view>
+          </view>
+          <view wx:if="{{levels.length === 0}}" class="empty-text">
+            <text>空树 — 输入 key 后点击「插入」</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 叶子链表视图 -->
+    <view class="leaf-band" wx:if="{{leaves.length > 0}}">
+      <text class="band-label">叶子链表（顺序遍历范围查询路径）</text>
+      <view class="leaf-scroll">
+        <view class="leaf-row">
+          <block wx:for="{{leaves}}" wx:key="id" wx:for-item="leaf" wx:for-index="li">
+            <view class="leaf {{leaf.state}}">
+              <view wx:for="{{leaf.keys}}" wx:key="*this" wx:for-item="k" class="leaf-key">
+                <text>{{k}}</text>
+              </view>
+            </view>
+            <text wx:if="{{li < leaves.length - 1}}" class="leaf-arrow">↔</text>
+          </block>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作日志 -->
+    <view class="log-band" wx:if="{{log.length > 0}}">
+      <text class="band-label">操作日志</text>
+      <view class="log-list">
+        <view wx:for="{{log}}" wx:key="time" wx:for-item="entry" class="log-entry">
+          <text class="log-time">{{entry.time}}</text>
+          <text class="log-text">{{entry.text}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
