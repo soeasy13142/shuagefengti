@@ -66,12 +66,13 @@
 .overview-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  justify-content: space-between;
   margin-bottom: 8rpx;
 }
 
 .metric-card {
-  width: calc(50% - 8rpx);
+  flex: 0 0 48%;
+  margin-bottom: 16rpx;
   background: #efe9de;
   border-radius: 24rpx;
   padding: 28rpx 24rpx;
