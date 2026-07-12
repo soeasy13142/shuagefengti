@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-11 · 全项目 code review 完成（6 维度并行 review + 修复落地）
+> 最后更新：2026-07-12 · 4 个 lead tool 脑暴 + 4 specs + 4 plans（DNS / CPU 调度 / SHA-256 / B+ 树）
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -85,6 +85,41 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 参见 `CLAUDE.md`。它是项目级事实表，所有 do/don't 与风格约束以它为准。
 
 ## 8. 最近重大变更（变更记录）
+
+### 2026-07-12 · 4 个 lead tool 脑暴 + specs + plans（DNS · CPU 调度 · SHA-256 · B+ 树）
+
+**变更内容**
+
+- 走完 superpowers:brainstorming → superpowers:writing-plans 全流程
+- 选定 4 个 lead tool 深入设计 + 实施：
+  1. **DNS 解析可视化**（`pages/dns-viz/`）：完整递归链 + LRU 缓存 + CNAME 链
+  2. **进程调度可视化**（`pages/cpu-sched/`）：FCFS / SJF / RR / MFQ 4 算法 + 甘特图 + 4 指标
+  3. **SHA-256 演示**（`pages/sha256-viz/`）：完整 64 轮 trace + 雪崩效应
+  4. **B+ 树可视化**（`pages/bplus-viz/`）：阶数可调 + 插入 / 查询 / 范围查询
+- 4 份 spec 落 `docs/superpowers/specs/2026-07-12-*.md`（commit `31d7f97`）
+- 4 份 plan 落 `docs/plans/2026-07-12-*.md`：
+  - DNS plan (1534 行) — commit `4f41935`
+  - CPU 调度 plan (2210 行) + SHA-256 plan (1791 行) — commit `d527074`
+  - B+ 树 plan (2218 行) — commit `00c5db2`
+- 3 份 plan 由 3 个并行 subagent 同时撰写，单 agent 平均 ~3 分钟完成
+
+**理由**
+
+- 用户主动开启脑暴流程（"利用superpowers来脑暴下可以增添的设计"），且主题不限
+- 4 个 lead tool 选取平衡了「低风险扩展已有占位」与「全新方向探索」
+- 其余 24 个 tool-registry 占位（TLS / HTTP / 内存分页 / 死锁 / 磁盘调度 / 同步互斥 / RSA / AES / DH / 密码工具箱 / 编译原理 4 个 / NAT / IP 分片等）继续作为 P7+ backlog
+
+**影响**
+
+- 4 个 lead tool 全部走「spec → plan → TDD 实施 → code-review → commit」标准流程
+- 4 份 plan 全部落地，共 **15 task**（DNS 6 / CPU 7 / SHA-256 6 / B+ 6），随时可启动 superpowers:subagent-driven-development
+- baseline spec commit = `31d7f97`；plan commits = `4f41935` + `d527074` + `00c5db2`
+- 4 份 plan 均通过 grep 自检：无 TODO / TBD / FIXME / "similar to Task" 占位；无 `var ` 顶层声明
+- 不主动 `git push`：等用户决定
+
+参见：
+- 4 份 spec：`docs/superpowers/specs/2026-07-12-{dns-resolver,cpu-scheduling,sha256,bplus-tree}-design.md`
+- 4 份 plan：`docs/plans/2026-07-12-{dns-resolver,cpu-scheduling,sha256,bplus-tree}.md`
 
 ### 2026-07-11 · CLAUDE.md D2 升级「极致版 + 三档场景清单」
 
