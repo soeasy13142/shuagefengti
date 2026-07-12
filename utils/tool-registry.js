@@ -255,6 +255,17 @@ const TOOLS = [
     featured: true,
     order: 2
   },
+  {
+    id: 'bplus-viz',
+    category: 'algo',
+    name: 'B+ 树可视化',
+    icon: '🌲',
+    description: '阶数 m 可调 · 节点分裂 · 范围查询',
+    route: '/pages/bplus-viz/bplus-viz',
+    available: true,
+    featured: false,
+    order: 3
+  },
 
   // ── 编译原理 ──
   {
