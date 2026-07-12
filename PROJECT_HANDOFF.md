@@ -86,6 +86,29 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 
 ## 8. 最近重大变更（变更记录）
 
+### 2026-07-12 · B+ 树可视化上线
+
+**变更内容**
+
+- 新增 `pages/bplus-viz/` 页面（4 文件）
+- 新增 3 个 utils 纯函数模块：`bplus-node.js` / `bplus-split.js` / `bplus-tree.js`
+- 新增 3 个测试文件（共 ~49 个测试）
+- `utils/tool-registry.js` 在 algo 分类下新增 `bplus-viz`（available: true，order: 3）
+- `app.json` 注册新页面
+- 新增 `docs/handoff/modules/bplus-viz.md` 模块文档
+
+**理由**
+
+- 数据库 / 数据结构教学需求：B+ 树是数据库索引的核心
+- 与 `ds-viz` (BST) 互补，覆盖两类经典树形结构
+- Convention A 提升规则（提升右叶首 key）匹配大多数数据库教材
+
+**影响**
+
+- spec: `docs/superpowers/specs/2026-07-12-bplus-tree-design.md`
+- plan: `docs/plans/2026-07-12-bplus-tree.md`
+- `npm test` 全绿
+
 ### 2026-07-12 · DNS 解析可视化上线
 
 **变更内容**
