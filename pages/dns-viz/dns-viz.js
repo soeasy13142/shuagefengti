@@ -42,7 +42,14 @@ Page({
   onStartTap() {
     const { domain, scenarioIndex } = this.data;
     if (!validateDomain(domain)) {
-      this.setData({ errorMessage: `域名格式非法：${domain}` });
+      this.setData({
+        errorMessage: `域名格式非法：${domain}`,
+        steps: [],
+        currentStep: 0,
+        currentStepObj: null,
+        payloadText: '',
+        progressPercent: 0
+      });
       return;
     }
     this.setData({ errorMessage: '' });
@@ -56,7 +63,14 @@ Page({
     });
 
     if (steps.length === 1 && steps[0].type === 'error') {
-      this.setData({ errorMessage: steps[0].payload.error });
+      this.setData({
+        errorMessage: steps[0].payload.error,
+        steps: [],
+        currentStep: 0,
+        currentStepObj: null,
+        payloadText: '',
+        progressPercent: 0
+      });
       return;
     }
 
