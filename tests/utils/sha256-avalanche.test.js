@@ -1,0 +1,53 @@
+const { sha256 } = require('../../utils/sha256');
+const {
+  flipFirstBit,
+  avalancheReport
+} = require('../../utils/sha256-avalanche');
+
+describe('flipFirstBit', () => {
+  test('ASCII string: flips bit 0 of byte 0', () => {
+    const result = flipFirstBit('A', 'utf-8');  // 0x41 = 0100 0001
+    expect(result.originalStr).toBe('A');
+    // Flip bit 0 -> 0x40 = '@'
+    expect(result.flipped[0]).toBe(0x40);
+    expect(result.flippedBitOffset).toBe(0);
+  });
+
+  test('first bit offset is reported', () => {
+    const result = flipFirstBit('hello', 'utf-8');
+    expect(result.flippedBitOffset).toBe(0);
+    // 'h' = 0x68 = 0110 1000, flip bit 0 -> 0x69 = 'i'
+    expect(result.flipped[0]).toBe(0x69);
+  });
+
+  test('rejects empty input (cannot flip bit when no bits)', () => {
+    expect(() => flipFirstBit('', 'utf-8')).toThrow();
+  });
+});
+
+describe('avalancheReport', () => {
+  test('1-bit input flip causes hamming distance around 50% (80-180 range)', () => {
+    const report = avalancheReport('hello', 'hellp');
+    expect(report.bitDistance).toBeGreaterThanOrEqual(80);
+    expect(report.bitDistance).toBeLessThanOrEqual(180);
+    expect(report.diffRatio).toBeGreaterThan(0.3);
+    expect(report.diffRatio).toBeLessThan(0.7);
+  });
+
+  test('reports both hashes', () => {
+    const report = avalancheReport('abc', 'abd');
+    expect(report.originalHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(report.flippedHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(report.originalHash).not.toBe(report.flippedHash);
+  });
+
+  test('identical inputs produce distance 0 (no avalanche)', () => {
+    const report = avalancheReport('abc', 'abc');
+    expect(report.bitDistance).toBe(0);
+  });
+
+  test('diffRatio is bitDistance / 256', () => {
+    const report = avalancheReport('hello', 'hellp');
+    expect(report.diffRatio).toBeCloseTo(report.bitDistance / 256, 5);
+  });
+});
