@@ -30,7 +30,6 @@
   </view>
 
   <view class="empty" wx:else>
-    <text class="empty-icon">🎉</text>
     <text class="empty-text">{{showMastered ? '暂无错题' : '没有未掌握的错题'}}</text>
   </view>
 

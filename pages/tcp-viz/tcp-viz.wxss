@@ -396,13 +396,14 @@
 }
 
 .ctrl-btn {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
+  min-width: 72rpx;
+  height: 60rpx;
+  border-radius: 999rpx;
   background: #faf9f5;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 16rpx;
   transition: background 0.2s ease;
 }
 
@@ -412,21 +413,30 @@
 
 .ctrl-play {
   background: #cc785c;
-  width: 88rpx;
-  height: 88rpx;
+  min-width: 88rpx;
+  height: 68rpx;
+  padding: 0 28rpx;
 }
 
 .ctrl-play:active {
   background: #a9583e;
 }
 
-.ctrl-play .ctrl-icon {
+.ctrl-play .ctrl-icon,
+.ctrl-play .ctrl-text {
   color: #fff;
 }
 
+.ctrl-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .ctrl-icon {
-  font-size: 28rpx;
+  font-size: 24rpx;
   color: #3d3d3a;
+  white-space: nowrap;
 }
 
 .speed-area {

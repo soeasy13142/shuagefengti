@@ -50,19 +50,19 @@
                bindinput="onKeyInput"
                type="number" />
         <view class="action-btn" bindtap="onExecute">
-          <text class="btn-text">▶ 执行</text>
+          <text class="btn-text">执行</text>
         </view>
       </view>
 
       <view class="quick-row">
         <view class="quick-btn" bindtap="onReset">
-          <text>↻ 清空</text>
+          <text>清空</text>
         </view>
         <view class="quick-btn" bindtap="onRandomInsert">
-          <text>🎲 随机插入</text>
+          <text>随机插入</text>
         </view>
         <view class="quick-btn" bindtap="onBatchInsert">
-          <text>🎲 批量 5 个</text>
+          <text>批量 5 个</text>
         </view>
       </view>
 

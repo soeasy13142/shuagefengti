@@ -22,7 +22,6 @@
   </view>
 
   <view class="empty" wx:else>
-    <text class="empty-icon">📋</text>
     <text class="empty-text">暂无答题记录</text>
   </view>
 </view>

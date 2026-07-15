@@ -1,6 +1,5 @@
 <view class="container" wx:if="{{paperDeleted}}">
   <view class="empty">
-    <text class="empty-icon">📭</text>
     <text class="empty-text">试卷已删除</text>
     <text class="empty-hint">该试卷已被删除，无法查看答题详情</text>
   </view>

@@ -37,7 +37,7 @@
           <view class="input-btn input-btn-danger" bindtap="onBstDelete"><text class="btn-text">删除</text></view>
         </view>
         <view class="input-row" style="margin-top: 12rpx;">
-          <view class="input-btn" bindtap="onBstRandom"><text class="btn-text">🎲 随机</text></view>
+          <view class="input-btn" bindtap="onBstRandom"><text class="btn-text">随机</text></view>
           <view class="input-btn input-btn-secondary" bindtap="onBstRandomBatch"><text class="btn-text">批量生成</text></view>
         </view>
         <view class="quick-row">
@@ -77,7 +77,7 @@
             </view>
             <view wx:if="{{sqElements.length === 0}}" class="sq-empty">空队列</view>
           </view>
-          <view class="queue-arrow" wx:if="{{sqElements.length > 1}}">→ 入队方向</view>
+          <view class="queue-arrow" wx:if="{{sqElements.length > 1}}">入队方向 →</view>
         </view>
       </view>
       <view class="input-area">
@@ -90,7 +90,7 @@
           <view wx:if="{{sqType === 'queue'}}" class="input-btn input-btn-secondary" bindtap="onSqDequeue"><text class="btn-text">Dequeue</text></view>
         </view>
         <view class="input-row" style="margin-top: 12rpx;">
-          <view class="input-btn" bindtap="onSqRandom"><text class="btn-text">🎲 随机入{{sqType === 'stack' ? '栈' : '队'}}</text></view>
+          <view class="input-btn" bindtap="onSqRandom"><text class="btn-text">随机入{{sqType === 'stack' ? '栈' : '队'}}</text></view>
           <view class="input-btn input-btn-secondary" bindtap="onSqRandomBatch"><text class="btn-text">批量生成</text></view>
         </view>
       </view>
@@ -123,7 +123,7 @@
           <view class="input-btn input-btn-secondary" bindtap="onHashSearch"><text class="btn-text">查找</text></view>
         </view>
         <view class="input-row" style="margin-top: 12rpx;">
-          <view class="input-btn" bindtap="onHashRandom"><text class="btn-text">🎲 随机 key</text></view>
+          <view class="input-btn" bindtap="onHashRandom"><text class="btn-text">随机 key</text></view>
           <view class="input-btn input-btn-secondary" bindtap="onHashRandomBatch"><text class="btn-text">批量插入</text></view>
         </view>
       </view>
@@ -165,12 +165,12 @@
     <!-- Playback Controls -->
     <view class="controls" wx:if="{{ready && steps.length > 0}}">
       <view class="control-row">
-        <view class="ctrl-btn" bindtap="onStepPrev"><text class="ctrl-icon">⏮</text></view>
+        <view class="ctrl-btn" bindtap="onStepPrev"><text class="ctrl-icon">← 上一步</text></view>
         <view class="ctrl-btn ctrl-play {{playing && !paused ? 'ctrl-active' : ''}}" bindtap="{{playing && !paused ? 'onPause' : 'onPlay'}}">
-          <text class="ctrl-icon">{{playing && !paused ? '⏸' : '▶'}}</text>
+          <text class="ctrl-text">{{playing && !paused ? '暂停' : '播放'}}</text>
         </view>
-        <view class="ctrl-btn" bindtap="onStepNext"><text class="ctrl-icon">⏭</text></view>
-        <view class="ctrl-btn" bindtap="onReset"><text class="ctrl-icon">↺</text></view>
+        <view class="ctrl-btn" bindtap="onStepNext"><text class="ctrl-icon">下一步 →</text></view>
+        <view class="ctrl-btn" bindtap="onReset"><text class="ctrl-icon">↻ 重置</text></view>
       </view>
       <view class="speed-row">
         <text class="speed-label">慢</text>

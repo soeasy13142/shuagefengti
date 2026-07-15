@@ -16,8 +16,8 @@
       </picker>
     </view>
     <view class="action-row">
-      <button class="btn-primary" bindtap="onStartTap" hover-class="btn-hover">▶ 开始</button>
-      <button class="btn-secondary" bindtap="onResetTap" hover-class="btn-hover">↻ 重置</button>
+      <button class="btn-primary" bindtap="onStartTap" hover-class="btn-hover">开始</button>
+      <button class="btn-secondary" bindtap="onResetTap" hover-class="btn-hover">重置</button>
     </view>
     <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
   </view>
@@ -48,11 +48,11 @@
 
   <!-- 步骤控制 -->
   <view wx:if="{{steps.length > 0}}" class="control-band">
-    <button class="btn-secondary" bindtap="onPrevStep" hover-class="btn-hover">◀ 上一步</button>
+    <button class="btn-secondary" bindtap="onPrevStep" hover-class="btn-hover">← 上一步</button>
     <text class="step-counter">{{currentStep + 1}} / {{steps.length}}</text>
-    <button class="btn-secondary" bindtap="onNextStep" hover-class="btn-hover">下一步 ▶</button>
+    <button class="btn-secondary" bindtap="onNextStep" hover-class="btn-hover">下一步 →</button>
     <button class="btn-secondary" bindtap="onTogglePlay" hover-class="btn-hover">
-      {{isPlaying ? '⏸ 暂停' : '⏯ 播放'}}
+      {{isPlaying ? '暂停' : '播放'}}
     </button>
   </view>
 
@@ -64,7 +64,7 @@
       <text class="payload-text">{{payloadText}}</text>
     </view>
     <view wx:if="{{currentStepObj.examTip}}" class="exam-tip">
-      <text class="exam-tip-label">💡 面试考点</text>
+      <text class="exam-tip-label">面试考点</text>
       <text class="exam-tip-text">{{currentStepObj.examTip}}</text>
     </view>
   </view>

@@ -46,7 +46,7 @@
 
       <!-- 空状态 -->
       <view class="arrows-empty" wx:if="{{visibleArrows.length === 0}}">
-        <text class="arrows-empty-text">点击 ▶ 开始演示</text>
+        <text class="arrows-empty-text">点击开始演示</text>
       </view>
     </view>
 
@@ -112,7 +112,6 @@
 
     <!-- 面试提示 -->
     <view class="exam-tip" wx:if="{{currentStep.examTip}}">
-      <text class="exam-tip-icon">💡</text>
       <text class="exam-tip-text">{{currentStep.examTip}}</text>
     </view>
   </view>
@@ -120,16 +119,16 @@
   <!-- 控制栏 -->
   <view class="control-bar">
     <view class="ctrl-btn" bindtap="onReset">
-      <text class="ctrl-icon">⏮</text>
+      <text class="ctrl-icon">↻ 重置</text>
     </view>
     <view class="ctrl-btn" bindtap="onStepPrev">
-      <text class="ctrl-icon">◀</text>
+      <text class="ctrl-icon">← 上一步</text>
     </view>
     <view class="ctrl-btn ctrl-play" bindtap="{{playing ? 'onPause' : 'onPlay'}}">
-      <text class="ctrl-icon">{{playing ? '⏸' : '▶'}}</text>
+      <text class="ctrl-text">{{playing ? '暂停' : '播放'}}</text>
     </view>
     <view class="ctrl-btn" bindtap="onStepNext">
-      <text class="ctrl-icon">▶</text>
+      <text class="ctrl-icon">下一步 →</text>
     </view>
     <view class="speed-area">
       <text class="speed-label">速度</text>
@@ -140,7 +139,6 @@
   <!-- 知识点 -->
   <view class="knowledge-section">
     <view class="knowledge-toggle" bindtap="onToggleKnowledge">
-      <text class="kt-icon">📚</text>
       <text class="kt-text">知识点</text>
       <text class="kt-arrow">{{showKnowledge ? '▲' : '▼'}}</text>
     </view>

@@ -19,7 +19,7 @@
   <!-- 全部视图：全量工具按分类分组 -->
   <block wx:if="{{activeCategory === 'all'}}">
     <view class="cat-section" wx:for="{{allSections}}" wx:key="category.id" wx:for-item="section">
-      <text class="cat-section-title">{{section.category.icon}} {{section.category.name}}</text>
+      <text class="cat-section-title">{{section.category.name}}</text>
       <view class="tool-grid">
         <view
           class="tool-card {{!tool.available ? 'tool-card-preview' : ''}}"
@@ -32,10 +32,9 @@
           hover-class="tool-hover"
           hover-stay-time="100"
         >
-          <text class="tool-icon">{{tool.icon}}</text>
           <text class="tool-name">{{tool.name}}</text>
           <text class="tool-desc">{{tool.description}}</text>
-          <text class="tool-link" wx:if="{{tool.available}}">进入 ▸</text>
+          <text class="tool-link" wx:if="{{tool.available}}">进入 →</text>
           <text class="tool-tag" wx:else>即将上线</text>
         </view>
       </view>
@@ -45,7 +44,7 @@
   <!-- 单一分类视图 -->
   <block wx:else>
     <block wx:if="{{availableTools.length > 0}}">
-      <text class="cat-section-title">✨ 可用工具</text>
+      <text class="cat-section-title">可用工具</text>
       <view class="tool-grid">
         <view
           class="tool-card"
@@ -57,23 +56,21 @@
           hover-class="tool-hover"
           hover-stay-time="100"
         >
-          <text class="tool-icon">{{item.icon}}</text>
           <text class="tool-name">{{item.name}}</text>
           <text class="tool-desc">{{item.description}}</text>
-          <text class="tool-link">进入 ▸</text>
+          <text class="tool-link">进入 →</text>
         </view>
       </view>
     </block>
 
     <block wx:if="{{unavailableTools.length > 0}}">
-      <text class="cat-section-title">🔜 即将上线</text>
+      <text class="cat-section-title">即将上线</text>
       <view class="tool-grid">
         <view
           class="tool-card tool-card-preview"
           wx:for="{{unavailableTools}}"
           wx:key="id"
         >
-          <text class="tool-icon">{{item.icon}}</text>
           <text class="tool-name">{{item.name}}</text>
           <text class="tool-desc">{{item.description}}</text>
           <text class="tool-tag">即将上线</text>

@@ -8,7 +8,7 @@
 
   <view wx:if="{{dashboard}}">
     <!-- 总览指标 -->
-    <view class="section-label">OVERVIEW</view>
+    <view class="section-label">概览</view>
     <view class="overview-grid">
       <view class="metric-card">
         <text class="metric-value">{{dashboard.overview.totalQuestions}}</text>

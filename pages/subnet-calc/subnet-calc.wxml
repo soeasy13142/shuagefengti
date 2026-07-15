@@ -177,9 +177,9 @@
     <!-- 控制栏 -->
     <view class="and-controls">
       <view class="and-ctrl-btn" bindtap="onAndReset">重置</view>
-      <view class="and-ctrl-btn" bindtap="onAndStepPrev">◀</view>
-      <view class="and-ctrl-btn and-play-btn" bindtap="{{andPlaying ? 'onAndPause' : 'onAndPlay'}}">{{andPlaying ? '⏸' : '▶'}}</view>
-      <view class="and-ctrl-btn" bindtap="onAndStepNext">▶</view>
+      <view class="and-ctrl-btn" bindtap="onAndStepPrev">← 上一步</view>
+      <view class="and-ctrl-btn and-play-btn" bindtap="{{andPlaying ? 'onAndPause' : 'onAndPlay'}}">{{andPlaying ? '暂停' : '播放'}}</view>
+      <view class="and-ctrl-btn" bindtap="onAndStepNext">下一步 →</view>
     </view>
   </view>
 

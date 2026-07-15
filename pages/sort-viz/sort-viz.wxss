@@ -163,13 +163,14 @@
 }
 
 .ctrl-btn {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
+  min-width: 72rpx;
+  height: 60rpx;
+  border-radius: 999rpx;
   background: #f5f0e8;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 16rpx;
 }
 
 .ctrl-btn:active {
@@ -177,8 +178,9 @@
 }
 
 .ctrl-play {
-  width: 88rpx;
-  height: 88rpx;
+  min-width: 88rpx;
+  height: 68rpx;
+  padding: 0 28rpx;
   background: #cc785c;
 }
 
@@ -191,13 +193,21 @@
 }
 
 .ctrl-icon {
-  font-size: 32rpx;
+  font-size: 24rpx;
   color: #6c6a64;
+  white-space: nowrap;
 }
 
-.ctrl-play .ctrl-icon {
-  font-size: 36rpx;
+.ctrl-play .ctrl-icon,
+.ctrl-play .ctrl-text {
+  font-size: 24rpx;
   color: #ffffff;
+}
+
+.ctrl-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .speed-row {

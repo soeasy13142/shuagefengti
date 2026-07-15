@@ -15,8 +15,8 @@
       <text class="meta-label">块数：{{numBlocks}}</text>
     </view>
     <view class="action-row">
-      <button class="btn-primary" bindtap="onCompute" hover-class="btn-hover">🔢 计算</button>
-      <button class="btn-secondary" bindtap="onReset" hover-class="btn-hover">↻ 重置</button>
+      <button class="btn-primary" bindtap="onCompute" hover-class="btn-hover">计算</button>
+      <button class="btn-secondary" bindtap="onReset" hover-class="btn-hover">重置</button>
     </view>
   </view>
 
@@ -44,11 +44,11 @@
 
   <!-- 步进控制器 -->
   <view wx:if="{{rounds.length > 0}}" class="control-band">
-    <button class="btn-secondary btn-small" bindtap="onPrevRound" hover-class="btn-hover">◀</button>
+    <button class="btn-secondary btn-small" bindtap="onPrevRound" hover-class="btn-hover">← 上一步</button>
     <text class="round-counter">{{currentRound + 1}} / 64</text>
-    <button class="btn-secondary btn-small" bindtap="onNextRound" hover-class="btn-hover">▶</button>
+    <button class="btn-secondary btn-small" bindtap="onNextRound" hover-class="btn-hover">下一步 →</button>
     <button class="btn-secondary btn-small" bindtap="onTogglePlay" hover-class="btn-hover">
-      {{isPlaying ? '⏸' : '⏯'}}
+      {{isPlaying ? '暂停' : '播放'}}
     </button>
     <view class="speed-row">
       <text class="speed-label">{{speedLabel}}</text>
