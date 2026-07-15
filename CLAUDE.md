@@ -108,6 +108,10 @@ Project instructions and memory for Claude Code.
 - 必要时 `superpowers:verification-before-completion` 端到端验证
 - 不能只看代码"像对"就宣称完成
 
+#### D6.尽可能保持主会话的上下文不被塞满
+
+- #### 如果遇到大量读写工作，就开SubAgent。
+
 ### ❌ DON'T —— 禁止
 
 #### X1. 不要替用户做决策
@@ -142,7 +146,7 @@ Project instructions and memory for Claude Code.
 > 总原则：**本地可以密，远程必须整**。
 
 ### 本地 commit
-- **频率可以尽量高**：每个 RED→GREEN 转换、小步重构、临时试验点都可以 commit
+- **频率、细粒度尽可能提高**：每个 RED→GREEN 转换、小步重构、临时试验点都可以 commit
 - 每个 commit **单一关注点**
 - 提交信息遵循 **Conventional Commits**：`feat: / fix: / refactor: / docs: / test: / chore: / perf: / ci:`
 - 例：✅ `feat: 实现 Markdown 解析器支持三级标题嵌套`；❌ `update`、`tmp`、`asdf`
