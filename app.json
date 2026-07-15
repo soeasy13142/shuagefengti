@@ -26,5 +26,8 @@
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "intro-modal": "/components/intro-modal/intro-modal"
+  }
 }
