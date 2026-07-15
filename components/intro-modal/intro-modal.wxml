@@ -1,0 +1,60 @@
+<view class="modal-mask {{animClass}}" wx:if="{{show}}" bindtap="onMaskTap">
+  <view class="modal-card {{animClass}}" catchtap="_noop">
+
+    <!-- 关闭按钮 -->
+    <view class="modal-close" bindtap="onClose">
+      <text class="close-icon">✕</text>
+    </view>
+
+    <!-- 内容区域（滚动） -->
+    <scroll-view class="modal-body" scroll-y>
+
+      <!-- 工具名称 -->
+      <text class="modal-tool-name">{{tool.name || ''}}</text>
+
+      <!-- tagline -->
+      <text class="modal-tagline" wx:if="{{tool.tagline}}">{{tool.tagline}}</text>
+
+      <!-- valueProp -->
+      <text class="modal-value-prop" wx:if="{{toolData.valueProp}}">{{toolData.valueProp}}</text>
+
+      <!-- 功能列表 -->
+      <view class="modal-section" wx:if="{{toolData.features && toolData.features.length > 0}}">
+        <text class="modal-section-title">功能</text>
+        <view class="modal-list">
+          <view class="modal-list-item" wx:for="{{toolData.features}}" wx:key="*this">
+            <text class="modal-bullet">•</text>
+            <text class="modal-item-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 前置知识 -->
+      <view class="modal-section" wx:if="{{toolData.prerequisites}}">
+        <text class="modal-section-title">前置知识</text>
+        <text class="modal-section-body">{{toolData.prerequisites}}</text>
+      </view>
+
+      <!-- 适合场景 -->
+      <view class="modal-section" wx:if="{{toolData.useCases && toolData.useCases.length > 0}}">
+        <text class="modal-section-title">适合场景</text>
+        <view class="modal-list">
+          <view class="modal-list-item" wx:for="{{toolData.useCases}}" wx:key="*this">
+            <text class="modal-bullet">•</text>
+            <text class="modal-item-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+    </scroll-view>
+
+    <!-- CTA 按钮 -->
+    <view class="modal-footer">
+      <view class="modal-btn" bindtap="onEnter" hover-class="modal-btn-hover">
+        <text class="modal-btn-text">开始体验 →</text>
+      </view>
+      <text class="modal-hint">下次进入将直接打开工具</text>
+    </view>
+
+  </view>
+</view>
