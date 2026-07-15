@@ -49,6 +49,23 @@ const TOOLS = [
     route: '/pages/subnet-calc/subnet-calc',
     available: true,
     featured: true,
+    tagline: 'IP 地址和子网掩码到底怎么算？一张图看明白',
+    tags: ['#可视化', '#交互式'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '子网划分是网络工程师的基本功，也是计网面试的必考题。',
+      features: [
+        '输入 IP 和前缀长度，实时计算网络号、广播地址、可用主机范围',
+        '逐位展示二进制与十进制转换，理解 CIDR 编址原理',
+        '完整显示子网掩码、通配符掩码、主机数量等关键信息'
+      ],
+      prerequisites: '了解 IP 地址和子网掩码的基本概念即可，无需深入二进制计算。',
+      useCases: [
+        '计网面试：子网划分、CIDR 相关题目练习',
+        '网络排障：快速确认 IP 配置是否正确',
+        '学习辅助：可视化位运算，理解「与」操作的含义'
+      ]
+    },
     order: 1
   },
   {
@@ -60,6 +77,23 @@ const TOOLS = [
     route: '/pages/tcp-viz/tcp-viz',
     available: true,
     featured: true,
+    tagline: '三次握手、四次挥手、丢包重传——TCP 的每个细节一看就懂',
+    tags: ['#可视化', '#交互式', '#面试必考'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: 'TCP 是互联网的基石协议，也是面试中的高频考点。',
+      features: [
+        '动画演示三次握手与四次挥手的完整交互过程',
+        '模拟数据传输与丢包重传机制',
+        '直观展示 SEQ/ACK 号变化与状态迁移'
+      ],
+      prerequisites: '了解 TCP 是"面向连接的可靠传输协议"即可。',
+      useCases: [
+        '计网面试：TCP 连接管理、可靠传输相关题目',
+        '学习辅助：直观理解状态机与序列号机制',
+        '教学演示：向他人解释 TCP 工作原理'
+      ]
+    },
     order: 2
   },
   {
@@ -82,6 +116,23 @@ const TOOLS = [
     route: '/pages/dns-viz/dns-viz',
     available: true,
     featured: false,
+    tagline: '输入一个域名，看 DNS 是怎么一步步找到它的服务器的',
+    tags: ['#可视化', '#交互式'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: 'DNS 是互联网的"电话本"，理解它的工作原理是网络工程师的基本素养。',
+      features: [
+        '模拟完整递归查询过程：根→顶级域→权威服务器',
+        '展示缓存机制如何加速域名解析',
+        '支持普通查询、缓存命中、CNAME 链三种场景'
+      ],
+      prerequisites: '了解域名层级结构（如 .com → example.com）即可。',
+      useCases: [
+        '计网面试：DNS 递归/迭代查询相关题目',
+        '排障辅助：理解 DNS 解析延迟的根源',
+        '学习辅助：直观对比递归与迭代查询的差异'
+      ]
+    },
     order: 4
   },
   {
@@ -218,6 +269,23 @@ const TOOLS = [
     route: '/pages/sha256-viz/sha256-viz',
     available: true,
     featured: false,
+    tagline: '输入任意文本，逐轮追踪 SHA-256 如何将它变成不可逆的摘要',
+    tags: ['#可视化', '#进阶'],
+    difficulty: 'advanced',
+    intro: {
+      valueProp: 'SHA-256 是比特币和 HTTPS 的基石，理解它的压缩函数是理解密码学哈希的关键。',
+      features: [
+        '展示完整的 64 轮压缩函数运算过程',
+        '雪崩效应对比：单 bit 差异如何扩散到整个摘要',
+        '逐字节显示消息填充、初始向量、轮常数的变化'
+      ],
+      prerequisites: '了解哈希函数的基本概念（输入→固定长度摘要），熟悉十六进制表示法。',
+      useCases: [
+        '密码学课程：哈希函数章节的配套学习工具',
+        '面试准备：理解 SHA-256 的内部工作机制',
+        '学习辅助：直观感受雪崩效应与压缩函数的迭代过程'
+      ]
+    },
     order: 4
   },
   {
@@ -242,6 +310,23 @@ const TOOLS = [
     route: '/pages/sort-viz/sort-viz',
     available: true,
     featured: true,
+    tagline: '选择排序、冒泡排序、快速排序——看动画理解每种算法的思路',
+    tags: ['#可视化', '#交互式'],
+    difficulty: 'easy',
+    intro: {
+      valueProp: '排序算法是数据结构与算法的入门必修课，理解它们的执行过程比背代码更重要。',
+      features: [
+        '三种排序算法的逐步骤动画演示',
+        '可调速播放，看清每一步的比较与交换',
+        '直观对比不同算法的时间复杂度与行为差异'
+      ],
+      prerequisites: '了解基本的数组概念即可，无需算法基础。',
+      useCases: [
+        '数据结构课程：排序算法章节的辅助学习工具',
+        '面试准备：理解算法的时间复杂度与稳定性',
+        '教学演示：向初学者解释排序的执行过程'
+      ]
+    },
     order: 1
   },
   {
@@ -253,6 +338,23 @@ const TOOLS = [
     route: '/pages/ds-viz/ds-viz',
     available: true,
     featured: true,
+    tagline: 'BST 增删、栈队列、哈希表、图搜索——交互式探索每种结构的运作方式',
+    tags: ['#可视化', '#交互式', '#面试必考'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '数据结构是程序的骨架，理解它们的内部机制能帮你写出更高效的代码。',
+      features: [
+        '交互式操作 BST、栈队列、哈希表、图四种数据结构',
+        '每一步操作后实时展示内部状态变化',
+        '图搜索支持 BFS 与 DFS 的可视化对比'
+      ],
+      prerequisites: '了解树、栈、队列、哈希表、图的基本概念即可。',
+      useCases: [
+        '数据结构课程：理论知识的配套实操练习',
+        '面试准备：复习各数据结构的核心操作',
+        '学习辅助：建立数据结构的空间直觉'
+      ]
+    },
     order: 2
   },
   {
@@ -264,6 +366,23 @@ const TOOLS = [
     route: '/pages/bplus-viz/bplus-viz',
     available: true,
     featured: false,
+    tagline: 'B+ 树是数据库索引的基石——调整阶数，观察节点如何分裂与合并',
+    tags: ['#可视化', '#进阶'],
+    difficulty: 'advanced',
+    intro: {
+      valueProp: 'B+ 树是关系型数据库索引的核心数据结构，理解它对掌握数据库性能调优至关重要。',
+      features: [
+        '支持 4~32 阶可调，观察不同阶数下的树形变化',
+        '插入操作时展示节点分裂的完整过程',
+        '支持单key查询与范围查询的路径高亮'
+      ],
+      prerequisites: '建议先了解二叉搜索树（BST）的基本概念，熟悉"阶数"的含义。',
+      useCases: [
+        '数据库课程：索引原理章节的配套学习工具',
+        '系统设计面试：加深对 B+ 树的理解',
+        '学习辅助：可视化树形结构的平衡机制'
+      ]
+    },
     order: 3
   },
 
@@ -349,11 +468,28 @@ function getFeaturedToolsByCategory(categoryId, maxCount) {
     .slice(0, maxCount);
 }
 
+// ── 难度等级映射 ──
+const DIFFICULTY_MAP = {
+  easy: { label: '简单', stars: '★☆☆' },
+  medium: { label: '中等', stars: '★★☆' },
+  advanced: { label: '进阶', stars: '★★★' }
+};
+
+/**
+ * 获取难度等级的中文标签和星级显示
+ * @param {'easy'|'medium'|'advanced'} code
+ * @returns {{ label: string, stars: string }}
+ */
+function getDifficultyInfo(code) {
+  return DIFFICULTY_MAP[code] || DIFFICULTY_MAP.medium;
+}
+
 module.exports = {
   TOOL_CATEGORIES,
   TOOLS,
   getAvailableTools,
   getToolsByCategory,
   getActiveCategories,
-  getFeaturedToolsByCategory
+  getFeaturedToolsByCategory,
+  getDifficultyInfo
 };
