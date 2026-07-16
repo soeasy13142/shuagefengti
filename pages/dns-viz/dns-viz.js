@@ -17,7 +17,10 @@ Page({
     progressPercent: 0,
     authServerText: '',
     errorMessage: '',
-    activeLane: ''
+    activeLane: '',
+    // ℹ︎ 介绍
+    toolId: 'dns-viz',
+    showIntro: false
   },
 
   _cache: null,
@@ -185,5 +188,16 @@ Page({
       this._playTimer = null;
     }
     this.setData({ isPlaying: false });
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter() {
+    this.setData({ showIntro: false });
   }
 });

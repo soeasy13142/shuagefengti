@@ -1,4 +1,17 @@
 <view class="page">
+  <!-- 工具介绍入口 -->
+  <view class="info-btn" bindtap="showIntro">
+    <text class="info-btn-icon">ℹ︎</text>
+  </view>
+
+  <!-- 模态弹窗 -->
+  <intro-modal
+    toolId="{{toolId}}"
+    show="{{showIntro}}"
+    bind:close="onIntroClose"
+    bind:enter="onIntroEnter"
+  />
+
   <!-- 输入区 -->
   <view class="section input-section">
     <text class="section-label">IP 地址</text>

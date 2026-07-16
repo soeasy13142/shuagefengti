@@ -45,7 +45,10 @@ Page({
     flagItems: [],
     showKnowledge: false,
     knowledgeItems: KNOWLEDGE_ITEMS,
-    dataScenarioDesc: ''
+    dataScenarioDesc: '',
+    // ℹ︎ 介绍
+    toolId: 'tcp-viz',
+    showIntro: false
   },
 
   onLoad: function() {
@@ -137,6 +140,17 @@ Page({
 
   onToggleKnowledge: function() {
     this.setData({ showKnowledge: !this.data.showKnowledge });
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro: function() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose: function() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter: function() {
+    this.setData({ showIntro: false });
   },
 
   _stopTimer: function() {

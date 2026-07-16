@@ -16,7 +16,10 @@ Page({
     nodeCount: 0,
     leafCount: 0,
     errorMessage: '',
-    log: []
+    log: [],
+    // ℹ︎ 介绍
+    toolId: 'bplus-viz',
+    showIntro: false
   },
 
   _tree: null,
@@ -242,5 +245,16 @@ Page({
   _summarizeSteps: function(steps) {
     var splitCount = steps.filter(function(s) { return s.type === 'split' || s.type === 'rootSplit'; }).length;
     return splitCount > 0 ? '触发 ' + splitCount + ' 次分裂' : '无分裂';
-  }
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro: function() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose: function() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter: function() {
+    this.setData({ showIntro: false });
+  },
 });

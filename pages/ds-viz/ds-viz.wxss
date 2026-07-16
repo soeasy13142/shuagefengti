@@ -213,3 +213,26 @@
   font-size: 20rpx; color: #6c6a64; flex-shrink: 0;
 }
 .speed-slider { flex: 1; }
+
+/* ── ℹ︎ 介绍按钮 ── */
+.info-btn {
+  position: fixed;
+  top: 16rpx;
+  right: 16rpx;
+  width: 56rpx;
+  height: 56rpx;
+  background: #efe9de;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0.8;
+}
+.info-btn:active {
+  opacity: 0.5;
+}
+.info-btn-icon {
+  font-size: 28rpx;
+  color: #6c6a64;
+}
