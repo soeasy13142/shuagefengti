@@ -29,6 +29,30 @@
 - **2026-06-09** 用户偏好：下一开发周期 ≈ 1 周
 - **2026-06-09** 收敛：下一开发周期做"学习数据驾驶舱 + 轻量 AI 学习建议"
 
+## 2026-07-16 · 分支拆分：工具介绍模态弹窗 vs 首页卡片重设计
+
+**决策**：将原混合分支 `feature/tool-intro-and-card` 拆解为两个独立分支 `feature/tool-intro-modal` 和 `feature/card-redesign`。
+
+**背景**：原计划两个功能各走独立分支，但误将全部改动堆在 `master` 上，补建分支时已是混合状态。两个关键 commit（`55282c8` 首页、`c0035f2` 工具大全页）的 .js 和 .wxml 文件中两功能代码交错，无法通过 cherry-pick 直接分离。
+
+**拆解方法**：
+1. 从 `master` 分叉两个新分支
+2. 纯属单一功能的 commit 直接 cherry-pick（intro-modal 组件、app.json 注册）
+3. 混合 commit 中的文件，用 Edit 手动提取仅属于该功能的代码段
+4. 共用数据（`utils/tool-registry.js` 扩展字段）各分支各持一份独立 commit
+5. `npm test` 全绿后删除旧分支
+
+**分支对照**：
+
+| 维度 | `feature/tool-intro-modal` | `feature/card-redesign` |
+|---|---|---|
+| 文件数 | 31 | 7 |
+| Commit 数 | 5 | 2 |
+| 核心改动 | intro-modal 组件 + 首次访问弹窗 + ℹ︎ 回看 | 卡片 tagline/tags/difficulty 展示 + 样式 |
+| 互不影响 | 卡片字体/样式不变 | 导航逻辑不变 |
+
+See also: PROJECT_HANDOFF.md §8 (2026-07-16 entry)
+
 ## 已修复的关键问题（迁移自 P.H. §9）
 
 1. Markdown 解析器不支持 `## 第1题` 格式 → 已通过 stem 提取逻辑修复

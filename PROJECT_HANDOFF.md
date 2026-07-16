@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-12 · 4 个 lead tool 脑暴 + 4 specs + 4 plans（DNS / CPU 调度 / SHA-256 / B+ 树）
+> 最后更新：2026-07-16 · 工具介绍模态弹窗 + 首页卡片重设计（已拆为两个独立分支）
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -85,6 +85,35 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 参见 `CLAUDE.md`。它是项目级事实表，所有 do/don't 与风格约束以它为准。
 
 ## 8. 最近重大变更（变更记录）
+
+### 2026-07-16 · 工具介绍模态弹窗 + 首页卡片重设计（分支拆分）
+
+**背景**：为 7 个硬核工具添加介绍模态弹窗，同时将首页/工具大全页卡片放大展示 tagline/tags/difficulty。原计划做两个独立分支，但误将全部改动堆在 `master` 后补建了单一 `feature/tool-intro-and-card` 分支，两个功能混合在一起。
+
+**分支拆分操作（2026-07-16）**
+
+将混合分支拆解为两个独立分支（从 `master` 分叉）：
+
+| 分支 | Commit 数 | 内容 |
+|---|---|---|
+| `feature/tool-intro-modal` | 5 | 共用数据 + intro-modal 组件 + app.json 注册 + 7 工具页 ℹ︎ 按钮 + index/tools-all 首次访问弹窗逻辑 |
+| `feature/card-redesign` | 2 | 共用数据 + index/tools-all 卡片 tagline/tags/difficulty 展示 + 新样式 |
+
+**涉及文件**
+
+- 共用（各分支各持一份）：`utils/tool-registry.js`（7 工具新增 tagline/tags/difficulty/intro 字段）
+- 分支一：`components/intro-modal/`（4 文件）、`app.json`、7 工具页 ℹ︎ 按钮（.js/.wxml/.wxss）、`pages/index/index.js`（模态逻辑）、`pages/index/index.wxml`（intro-modal 标签）、`pages/tools-all/tools-all.js`（模态逻辑）、`pages/tools-all/tools-all.wxml`（intro-modal 标签）
+- 分支二：`pages/index/index.js`（_enrichTool 富化）、`pages/index/index.wxml`（卡片模板改版）、`pages/index/index.wxss`（新样式）、`pages/tools-all/tools-all.js`（_enrichTool 富化）、`pages/tools-all/tools-all.wxml`（卡片模板改版）、`pages/tools-all/tools-all.wxss`（新样式）
+
+**状态**
+
+- 旧分支 `feature/tool-intro-and-card` 已删除
+- 两个新分支各持一份共用数据 commit，各自独立开发
+- 拆解方法详见 `docs/handoff/decisions.md`
+- `npm test` 全绿（596 tests, 37 suites）
+- 不主动 `git push`
+
+参见：`docs/superpowers/specs/2026-07-16-tool-intro-and-card-design.md` · `docs/superpowers/plans/2026-07-16-tool-intro-and-card.md`
 
 ### 2026-07-12 · SHA-256 演示上线
 
