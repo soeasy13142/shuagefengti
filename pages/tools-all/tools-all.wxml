@@ -83,4 +83,12 @@
     </view>
   </block>
 
+  <!-- ═══ 工具介绍模态弹窗 ═══ -->
+  <intro-modal
+    toolId="{{pendingToolId}}"
+    show="{{showIntro}}"
+    bind:close="onIntroClose"
+    bind:enter="onIntroEnter"
+  />
+
 </view>
