@@ -41,6 +41,7 @@ Page({
   },
 
   _buildAllViewData(activeCategories) {
+    const self = this;
     return activeCategories.map(function(cat) {
       const featured = registry.getFeaturedToolsByCategory(cat.id, 4);
       let tools;
@@ -55,15 +56,21 @@ Page({
       const upcoming = allInCat.filter(function(t) { return !t.available; });
       const previews = upcoming.slice(0, 2);
 
+      // 预处理难度显示字段
+      const enrichedTools = tools.map(function(t) {
+        return self._enrichTool(t);
+      });
+
       return {
         category: cat,
-        tools: tools.slice(0, 4),
+        tools: enrichedTools.slice(0, 4),
         previews: previews
       };
     });
   },
 
   onCategoryTap(e) {
+    const self = this;
     const categoryId = e.currentTarget.dataset.id;
     let currentTools = [];
     let availableTools = [];
@@ -73,6 +80,8 @@ Page({
       currentTools = registry.getToolsByCategory(categoryId);
       availableTools = currentTools.filter(function(t) { return t.available; });
       unavailableTools = currentTools.filter(function(t) { return !t.available; });
+      // 为可用工具补充难度显示字段
+      availableTools = availableTools.map(function(t) { return self._enrichTool(t); });
     }
 
     this.setData({
@@ -80,6 +89,16 @@ Page({
       currentTools: currentTools,
       availableTools: availableTools,
       unavailableTools: unavailableTools
+    });
+  },
+
+  // 为工具对象补充难度展示字段
+  _enrichTool(tool) {
+    if (!tool.difficulty) return tool;
+    const info = registry.getDifficultyInfo(tool.difficulty);
+    return Object.assign({}, tool, {
+      _diffStars: info.stars,
+      _diffLabel: info.label
     });
   },
 

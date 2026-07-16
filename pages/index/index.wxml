@@ -53,7 +53,15 @@
             hover-stay-time="100"
           >
             <text class="tool-name">{{tool.name}}</text>
-            <text class="tool-desc">{{tool.description}}</text>
+            <text class="tool-tagline">{{tool.tagline || tool.description}}</text>
+            <view class="tool-meta-row" wx:if="{{tool.tags && tool.tags.length > 0}}">
+              <view class="tool-tags">
+                <text class="tool-tag-item" wx:for="{{tool.tags}}" wx:key="*this">{{item}}</text>
+              </view>
+              <text class="tool-difficulty" wx:if="{{tool.difficulty}}">
+                {{tool._diffStars}} {{tool._diffLabel}}
+              </text>
+            </view>
             <text class="tool-link">进入 →</text>
           </view>
         </view>
@@ -67,7 +75,7 @@
             wx:for-item="preview"
           >
             <text class="tool-name">{{preview.name}}</text>
-            <text class="tool-desc">{{preview.description}}</text>
+            <text class="tool-tagline">{{preview.tagline || preview.description}}</text>
             <text class="tool-tag">即将上线</text>
           </view>
         </view>
@@ -96,7 +104,15 @@
             hover-stay-time="100"
           >
             <text class="tool-name">{{item.name}}</text>
-            <text class="tool-desc">{{item.description}}</text>
+            <text class="tool-tagline">{{item.tagline || item.description}}</text>
+            <view class="tool-meta-row" wx:if="{{item.tags && item.tags.length > 0}}">
+              <view class="tool-tags">
+                <text class="tool-tag-item" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+              </view>
+              <text class="tool-difficulty" wx:if="{{item.difficulty}}">
+                {{item._diffStars}} {{item._diffLabel}}
+              </text>
+            </view>
             <text class="tool-link">进入 →</text>
           </view>
         </view>

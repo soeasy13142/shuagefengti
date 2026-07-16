@@ -20,16 +20,29 @@ Page({
   },
 
   _buildAllSections(categories) {
+    const self = this;
     return categories.map(function(cat) {
       const allTools = registry.getToolsByCategory(cat.id);
+      const enrichedTools = allTools.map(function(t) { return self._enrichTool(t); });
       return {
         category: cat,
-        tools: allTools
+        tools: enrichedTools
       };
     });
   },
 
+  // 为工具对象补充难度展示字段
+  _enrichTool(tool) {
+    if (!tool.difficulty) return tool;
+    const info = registry.getDifficultyInfo(tool.difficulty);
+    return Object.assign({}, tool, {
+      _diffStars: info.stars,
+      _diffLabel: info.label
+    });
+  },
+
   onCategoryTap(e) {
+    const self = this;
     const categoryId = e.currentTarget.dataset.id;
     let currentTools = [];
     let availableTools = [];
@@ -37,7 +50,7 @@ Page({
 
     if (categoryId !== 'all') {
       currentTools = registry.getToolsByCategory(categoryId);
-      availableTools = currentTools.filter(function(t) { return t.available; });
+      availableTools = currentTools.filter(function(t) { return t.available; }).map(function(t) { return self._enrichTool(t); });
       unavailableTools = currentTools.filter(function(t) { return !t.available; });
     }
 
