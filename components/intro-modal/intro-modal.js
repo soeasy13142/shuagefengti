@@ -10,6 +10,8 @@ Component({
   },
 
   methods: {
+    noop() {},
+
     onMaskTap() {
       this._close();
     },
