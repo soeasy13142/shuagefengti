@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-19 · 17 个未上线工具 specs 全部补齐
+> 最后更新：2026-07-19 · 新增 WeChat DevTools MCP 服务器
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -24,7 +24,15 @@
 模块入口：根 README.md → docs/handoff/modules/<module>.md
 ```
 
-## 3. 当前进度
+## 3. 新能力：微信开发者工具调试
+
+项目配置了 `wechat-devtools` MCP 服务器，Claude 可以直接通过 miniprogram-automator 实时连接开发者工具进行调试：
+- 导航页面验证编译错误、读取控制台日志、获取页面数据、调用页面方法等
+- 详见 `CLAUDE.md` 中「微信开发者工具调试（MCP 服务器）」章节
+- MCP 服务脚本：`scripts/devtools-mcp.mjs`
+- 前置条件：服务端口开启 + 项目在开发者工具中打开
+
+## 4. 当前进度
 
 - **测试**：见 `docs/handoff/architecture.md` §7（每次开发前必跑 `npm test`）
 - **未提交变更**：`git status --short`
