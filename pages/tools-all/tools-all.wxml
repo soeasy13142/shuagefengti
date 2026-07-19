@@ -34,15 +34,13 @@
         >
           <text class="tool-name">{{tool.name}}</text>
           <text class="tool-tagline">{{tool.tagline || tool.description}}</text>
-          <view class="tool-meta-row" wx:if="{{tool.tags && tool.tags.length > 0}}">
-            <view class="tool-tags">
-              <text class="tool-tag-item" wx:for="{{tool.tags}}" wx:key="*this">{{item}}</text>
-            </view>
-            <text class="tool-difficulty" wx:if="{{tool.difficulty}}">
-              {{tool._diffStars}} {{tool._diffLabel}}
+          <!-- tags + 难度（详细模式） -->
+          <view class="tool-meta-row" wx:if="{{tool.tags && tool.tags.length > 0 || tool.difficulty}}">
+            <text class="tool-tags-inline" wx:if="{{tool.tags && tool.tags.length > 0}}">
+              <text wx:for="{{tool.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
             </text>
+            <text class="tool-difficulty-stars" wx:if="{{tool.difficulty}}">{{tool._diffStars}}</text>
           </view>
-          <text class="tool-link" wx:if="{{tool.available}}">进入 →</text>
           <text class="tool-tag" wx:else>即将上线</text>
         </view>
       </view>
@@ -66,15 +64,13 @@
         >
           <text class="tool-name">{{item.name}}</text>
           <text class="tool-tagline">{{item.tagline || item.description}}</text>
-          <view class="tool-meta-row" wx:if="{{item.tags && item.tags.length > 0}}">
-            <view class="tool-tags">
-              <text class="tool-tag-item" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
-            </view>
-            <text class="tool-difficulty" wx:if="{{item.difficulty}}">
-              {{item._diffStars}} {{item._diffLabel}}
+          <view class="tool-meta-row" wx:if="{{item.tags && item.tags.length > 0 || item.difficulty}}">
+            <text class="tool-tags-inline" wx:if="{{item.tags && item.tags.length > 0}}">
+              <text wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
             </text>
+            <text class="tool-difficulty-stars" wx:if="{{item.difficulty}}">{{item._diffStars}}</text>
           </view>
-          <text class="tool-link">进入 →</text>
+          <text class="tool-tag" wx:else>即将上线</text>
         </view>
       </view>
     </block>
