@@ -477,3 +477,16 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 - 当前 HEAD = `bfbddb3`
 - 687 测试通过，42 suites 全绿
 - 不主动 `git push`
+
+### 2026-07-19 · 修复 deadlock WXML 编译错误
+
+**问题**
+- 编译时报错 `177:69:unexpected character {`，导致预览失败
+- 根因：`pages/deadlock/deadlock.wxml` 第 177 行，内层 `wx:for` 循环中，`{{item}}` 放错了位置 —— 写在了标签属性区而非内容区
+
+**变更**
+- `pages/deadlock/deadlock.wxml` L177：`{{item}}</view>` 中的 `{{item}}` 从属性区移到 `<view>` 标签内容区
+
+**验证**
+- `cli preview` 编译通过 ✅
+- `npm test` 687 全绿 ✅

@@ -174,7 +174,7 @@
       <view class="matrix-label">Need 矩阵 (Max − Allocation)</view>
       <view class="matrix-table">
         <view class="matrix-row" wx:for="{{bankerNeed}}" wx:key="index">
-          <view class="matrix-cell" wx:for="{{item}}" wx:key="this" {{item}}</view>
+          <view class="matrix-cell" wx:for="{{item}}" wx:key="this">{{item}}</view>
         </view>
       </view>
     </view>
