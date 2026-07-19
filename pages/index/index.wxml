@@ -16,21 +16,30 @@
   <!-- ═══ TOOLS: 分类标签栏 + 工具网格 ═══ -->
   <view class="tools-area {{show ? 'anim-up' : ''}}">
 
-    <!-- 分类标签栏（横向滚动） -->
-    <scroll-view class="category-tabs" scroll-x show-scrollbar="{{false}}" enable-flex>
-      <view class="category-tab {{activeCategory === 'all' ? 'active' : ''}}" data-id="all" bindtap="onCategoryTap">
-        <text>全部</text>
+    <view class="tools-header">
+      <!-- 分类标签栏（横向滚动） -->
+      <scroll-view class="category-tabs" scroll-x show-scrollbar="{{false}}" enable-flex>
+        <view class="category-tab {{activeCategory === 'all' ? 'active' : ''}}" data-id="all" bindtap="onCategoryTap">
+          <text>全部</text>
+        </view>
+        <view
+          class="category-tab {{activeCategory === item.id ? 'active' : ''}}"
+          wx:for="{{activeCategories}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onCategoryTap"
+        >
+          <text>{{item.name}}</text>
+        </view>
+      </scroll-view>
+
+      <!-- 模式切换 -->
+      <view class="mode-toggle">
+        <text class="mode-toggle-item {{cardMode === 'simple' ? 'active' : ''}}" data-mode="simple" bindtap="onToggleCardMode">简洁</text>
+        <text class="mode-toggle-sep">·</text>
+        <text class="mode-toggle-item {{cardMode === 'detail' ? 'active' : ''}}" data-mode="detail" bindtap="onToggleCardMode">详细</text>
       </view>
-      <view
-        class="category-tab {{activeCategory === item.id ? 'active' : ''}}"
-        wx:for="{{activeCategories}}"
-        wx:key="id"
-        data-id="{{item.id}}"
-        bindtap="onCategoryTap"
-      >
-        <text>{{item.name}}</text>
-      </view>
-    </scroll-view>
+    </view>
 
     <!-- 「全部」视图：分类分组 + 精选预告 -->
     <block wx:if="{{activeCategory === 'all'}}">
@@ -54,15 +63,13 @@
           >
             <text class="tool-name">{{tool.name}}</text>
             <text class="tool-tagline">{{tool.tagline || tool.description}}</text>
-            <view class="tool-meta-row" wx:if="{{tool.tags && tool.tags.length > 0}}">
-              <view class="tool-tags">
-                <text class="tool-tag-item" wx:for="{{tool.tags}}" wx:key="*this">{{item}}</text>
-              </view>
-              <text class="tool-difficulty" wx:if="{{tool.difficulty}}">
-                {{tool._diffStars}} {{tool._diffLabel}}
+            <!-- 详细模式：tags + 难度 -->
+            <view class="tool-meta-row" wx:if="{{cardMode === 'detail' && (tool.tags && tool.tags.length > 0 || tool.difficulty)}}">
+              <text class="tool-tags-inline" wx:if="{{tool.tags && tool.tags.length > 0}}">
+                <text wx:for="{{tool.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
               </text>
+              <text class="tool-difficulty-stars" wx:if="{{tool.difficulty}}">{{tool._diffStars}}</text>
             </view>
-            <text class="tool-link">进入 →</text>
           </view>
         </view>
 
@@ -105,15 +112,13 @@
           >
             <text class="tool-name">{{item.name}}</text>
             <text class="tool-tagline">{{item.tagline || item.description}}</text>
-            <view class="tool-meta-row" wx:if="{{item.tags && item.tags.length > 0}}">
-              <view class="tool-tags">
-                <text class="tool-tag-item" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
-              </view>
-              <text class="tool-difficulty" wx:if="{{item.difficulty}}">
-                {{item._diffStars}} {{item._diffLabel}}
+            <!-- 详细模式：tags + 难度 -->
+            <view class="tool-meta-row" wx:if="{{cardMode === 'detail' && (item.tags && item.tags.length > 0 || item.difficulty)}}">
+              <text class="tool-tags-inline" wx:if="{{item.tags && item.tags.length > 0}}">
+                <text wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
               </text>
+              <text class="tool-difficulty-stars" wx:if="{{item.difficulty}}">{{item._diffStars}}</text>
             </view>
-            <text class="tool-link">进入 →</text>
           </view>
         </view>
       </block>
@@ -128,7 +133,7 @@
             wx:key="id"
           >
             <text class="tool-name">{{item.name}}</text>
-            <text class="tool-desc">{{item.description}}</text>
+            <text class="tool-tagline">{{item.tagline || item.description}}</text>
             <text class="tool-tag">即将上线</text>
           </view>
         </view>
