@@ -13,12 +13,16 @@ Page({
     availableTools: [],
     unavailableTools: [],
 
+    // ── 卡片模式 ──
+    cardMode: 'simple',   // 'simple' | 'detail'
+
     // ── 工具总数 ──
     toolsCount: 0
   },
 
   onShow() {
     this.loadTools();
+    this.loadCardMode();
   },
 
   onReady() {
@@ -69,6 +73,17 @@ Page({
     });
   },
 
+  loadCardMode() {
+    try {
+      const mode = wx.getStorageSync('cardDisplayMode');
+      if (mode === 'simple' || mode === 'detail') {
+        this.setData({ cardMode: mode });
+      }
+    } catch (e) {
+      // 默认 'simple'
+    }
+  },
+
   onCategoryTap(e) {
     const self = this;
     const categoryId = e.currentTarget.dataset.id;
@@ -90,6 +105,13 @@ Page({
       availableTools: availableTools,
       unavailableTools: unavailableTools
     });
+  },
+
+  onToggleCardMode(e) {
+    const newMode = e.currentTarget.dataset.mode;
+    if (newMode === this.data.cardMode) return;
+    this.setData({ cardMode: newMode });
+    wx.setStorageSync('cardDisplayMode', newMode);
   },
 
   // 为工具对象补充难度展示字段
