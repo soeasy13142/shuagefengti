@@ -489,4 +489,32 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 
 **验证**
 - `cli preview` 编译通过 ✅
+
+### 2026-07-19 · 死锁模拟器新增使用说明弹窗
+
+**变更内容**
+- 新增 `components/intro-modal/` 可复用使用说明弹窗组件（4 文件）
+- 全局注册于 `app.json` 的 `usingComponents`
+- 死锁模拟器页面：首次进入自动弹窗展示使用说明，关闭后标记已读
+- 页面右上角 ℹ︎ 浮动按钮支持手动回看
+
+**涉及文件**
+| 操作 | 文件 |
+|---|---|
+| 新增 | `components/intro-modal/intro-modal.{js,wxml,wxss,json}` |
+| 修改 | `app.json` |
+| 修改 | `pages/deadlock/deadlock.js` |
+| 修改 | `pages/deadlock/deadlock.wxml` |
+| 修改 | `pages/deadlock/deadlock.wxss` |
+
+**设计决策**
+- 与 `feature/tool-intro-modal` 分支不同：先进入页面再弹窗，而非首页拦截
+- 使用 `pre-line` 保持文本换行格式，用 ━━ 分段符代替多子字段
+- 正文 26rpx / 标题 32rpx 确保可读性（ref 分支正文仅 14rpx）
+- 关闭即标记已读，下次不重复弹出
+
+**验证**
+- `npm test` 687 全绿 ✅
+- spec: `docs/superpowers/specs/2026-07-19-tool-intro-modal-design.md`
+- plan: `docs/superpowers/plans/2026-07-19-tool-intro-modal.md`
 - `npm test` 687 全绿 ✅
