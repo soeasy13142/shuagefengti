@@ -92,6 +92,18 @@ describe('addEdge', () => {
     );
     expect(() => addEdge(rag, 'P1', 'R1', 'request', 1)).toThrow('Edge already exists');
   });
+
+  test('throws if request edge goes from resource to process', function() {
+    var rag = addResource(addProcess(createRag(), 'P1', 'P1'), 'R1', 'R1', 2);
+    expect(function() { addEdge(rag, 'R1', 'P1', 'request', 1); })
+      .toThrow('Request edge must go from process to resource');
+  });
+
+  test('throws if allocation edge goes from process to resource', function() {
+    var rag = addResource(addProcess(createRag(), 'P1', 'P1'), 'R1', 'R1', 2);
+    expect(function() { addEdge(rag, 'P1', 'R1', 'allocation', 1); })
+      .toThrow('Allocation edge must go from resource to process');
+  });
 });
 
 describe('removeNode', () => {

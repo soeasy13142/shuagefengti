@@ -71,6 +71,14 @@ function isSafeState(max, allocation, available) {
         }
       }
 
+      var stepRecord = {
+        process: 'P' + (i + 1),
+        need: need[i].slice(),
+        work: work.slice(),
+        needLEWork: needLEWork,
+        newWork: null
+      };
+
       if (needLEWork) {
         // Pretend the process finishes and releases its resources
         const newWork = work.slice();
@@ -78,18 +86,15 @@ function isSafeState(max, allocation, available) {
           newWork[k] += allocation[i][k];
         }
 
-        steps.push({
-          process: 'P' + (i + 1),
-          need: need[i].slice(),
-          work: work.slice(),
-          needLEWork: needLEWork,
-          newWork: newWork.slice()
-        });
+        stepRecord.newWork = newWork.slice();
+        steps.push(stepRecord);
 
         finish[i] = true;
         safeSequence.push('P' + (i + 1));
         work = newWork;
         progress = true;
+      } else {
+        steps.push(stepRecord);
       }
     }
   }

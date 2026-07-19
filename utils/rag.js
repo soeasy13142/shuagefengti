@@ -94,6 +94,21 @@ function addEdge(rag, from, to, type, count) {
     throw new Error('Edge already exists');
   }
 
+  // Validate edge direction semantics
+  if (type === 'request') {
+    var isFromProcess = rag.processes.some(function(p) { return p.id === from; });
+    var isToResource = rag.resources.some(function(r) { return r.id === to; });
+    if (!isFromProcess || !isToResource) {
+      throw new Error('Request edge must go from process to resource');
+    }
+  } else if (type === 'allocation') {
+    var isFromResource = rag.resources.some(function(r) { return r.id === from; });
+    var isToProcess = rag.processes.some(function(p) { return p.id === to; });
+    if (!isFromResource || !isToProcess) {
+      throw new Error('Allocation edge must go from resource to process');
+    }
+  }
+
   if (type === 'request' || (type === 'allocation' && rag.resources.some(function(r) { return r.id === from; }))) {
     const rid = (type === 'request') ? to : from;
     const total = _getResourceTotal(rag, rid);
@@ -266,13 +281,15 @@ function detectDeadlock(rag) {
   const wfg = toWaitForGraph(rag);
   const result = detectCycle(wfg);
   let deadlocked = [];
+  var processIdMap = {};
+  rag.processes.forEach(function(p) { processIdMap[p.id] = true; });
 
   if (result.hasCycle) {
     // Collect unique deadlocked process IDs from all cycles
     const seen = {};
     result.cycles.forEach(function(cycle) {
       cycle.forEach(function(n) {
-        if (n.startsWith('P')) seen[n] = true;
+        if (processIdMap[n]) seen[n] = true;
       });
     });
     deadlocked = Object.keys(seen).sort();

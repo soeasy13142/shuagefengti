@@ -80,7 +80,6 @@ Page({
     bankerAllocation: [[0,1,0],[2,0,0],[3,0,2]],
     bankerAvailable: [3,3,2],
     bankerNeed: [],
-    bankerNeedErrors: null,
     bankerResult: null,
     bankerPresets: BANKER_PRESETS
   },
@@ -377,9 +376,9 @@ Page({
   _computeNeed: function() {
     try {
       const need = calculateNeed(this.data.bankerMax, this.data.bankerAllocation);
-      this.setData({ bankerNeed: need, bankerNeedErrors: null });
+      this.setData({ bankerNeed: need });
     } catch (err) {
-      this.setData({ bankerNeed: [], bankerNeedErrors: null, bankerResult: null });
+      this.setData({ bankerNeed: [], bankerResult: null });
     }
   },
 
