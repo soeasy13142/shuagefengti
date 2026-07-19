@@ -137,6 +137,34 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 - spec: `docs/superpowers/specs/2026-07-12-homepage-redesign.md`
 - plan: `docs/plans/2026-07-12-homepage-redesign.md`
 
+### 2026-07-19 · 首页卡片简化（双模式切换）
+
+**变更内容**
+
+- 首页卡片简化为两档可切换模式：
+  - **简洁模式（默认）**：仅工具名称 + tagline，无 tags/难度/CTA
+  - **详细模式**：名称 + tagline + 纯文字 tags + 难度星级
+- 分类标签栏右侧添加「简洁·详细」文字切换开关
+- 偏好通过 `wx.setStorageSync('cardDisplayMode')` 持久化
+- `pages/tools-all/tools-all` 固定为详细模式，无切换开关
+- 去掉所有 chip 样式（`border` + `background`），tags 改为纯文字
+- 去掉 CTA "进入 →"（整卡可点）
+- 统一卡片内边距为 `24rpx`
+
+**涉及文件**
+- 修改：`pages/index/index.js`、`pages/index/index.wxml`、`pages/index/index.wxss`
+- 修改：`pages/tools-all/tools-all.wxml`、`pages/tools-all/tools-all.wxss`
+
+**修复**
+- Tools-all 页 `wx:else` 条件修复：改用 `tool.available` 判断而非元数据是否存在
+
+**不改变**
+- `utils/tool-registry.js` 数据模型、入场动画系统、工具详情页
+
+参见：
+- spec: `docs/superpowers/specs/2026-07-19-card-simplification-design.md`
+- plan: `docs/superpowers/plans/2026-07-19-card-simplification.md`
+
 ### 2026-07-12 · B+ 树可视化上线
 
 **变更内容**
