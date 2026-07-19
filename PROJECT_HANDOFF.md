@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-12 · 4 个 lead tool 脑暴 + 4 specs + 4 plans（DNS / CPU 调度 / SHA-256 / B+ 树）
+> 最后更新：2026-07-19 · 17 个未上线工具 specs 全部补齐
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -85,6 +85,29 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 参见 `CLAUDE.md`。它是项目级事实表，所有 do/don't 与风格约束以它为准。
 
 ## 8. 最近重大变更（变更记录）
+
+### 2026-07-19 · CPU 进程调度可视化上线
+
+**变更内容**
+
+- 新增 `pages/cpu-sched/` 页面（4 文件：json/wxml/wxss/js）
+- 新增 3 个 utils 纯函数模块：`process.js` / `scheduling.js`（4 算法）/ `scheduling-metrics.js`
+- 新增 3 个测试文件（共 43 个测试：process 16 + scheduling 21 + metrics 6）
+- `utils/tool-registry.js` 把 `cpu-sched.available` 改为 `true`，补齐 tagline/tags/difficulty/intro 元数据
+- `app.json` 注册新页面
+- 新增 `docs/handoff/modules/cpu-sched.md` 模块文档
+
+**理由**
+
+- 承接 `tool-registry.js` 中 OS 模块的第一个占位
+- 4 种调度算法 + 甘特图 + 4 指标 vs FCFS 对比，覆盖冯·诺依曼/OS 教学核心
+- 纯函数 + Jest 全测，与 TCP-viz / DNS-viz 一致风格
+
+**影响**
+
+- spec: `docs/superpowers/specs/2026-07-12-cpu-scheduling-design.md`
+- plan: `docs/plans/2026-07-12-cpu-scheduling.md`
+- `npm test` 全绿（639 tests, 40 suites）
 
 ### 2026-07-12 · SHA-256 演示上线
 
@@ -178,6 +201,30 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 参见：
 - spec: `docs/superpowers/specs/2026-07-19-card-simplification-design.md`
 - plan: `docs/superpowers/plans/2026-07-19-card-simplification.md`
+
+### 2026-07-19 · 17 个未上线工具 specs 全部补齐
+
+**变更内容**
+
+- 利用 `superpowers:brainstorming` + 4 个并行 subagent，为 `tool-registry.js` 中所有 `available: false` 的工具补齐 design spec
+- 16 份新 spec + 1 份已有 spec（cpu-sched，2026-07-12 脑暴产出）引用确认
+- 按分类并行产出：
+
+| 分类 | 工具 | spec |
+|---|---|---|
+| 计算机网络 | TLS / HTTP 解析 / IP 分片 / NAT | `2026-07-19-{tls-viz,http-parser,ip-fragment,nat-viz}-design.md` |
+| 操作系统 | 内存分页 / 死锁 / 磁盘调度 / 同步互斥 | `2026-07-19-{mem-paging,deadlock,disk-sched,sync-viz}-design.md` |
+| 密码学 | RSA / AES / DH / 密码工具箱 | `2026-07-19-{rsa-calc,aes-viz,dh-viz,crypto-tools}-design.md` |
+| 编译原理 | Regex→DFA / LL(1) / 词法分析 / AST | `2026-07-19-{regex-dfa,ll1-parser,lexer-viz,ast-builder}-design.md` |
+
+**影响**
+
+- 当前 tool-registry 中 24 个工具全部有 design spec（8 已上线 + 16 新 spec）
+- 每份 spec 含：目标/范围、文件清单、核心交互、数据模型、错误处理、测试方案
+- 风格统一：Claude Design 暖奶油画布 / 纯函数优先 / WXSS transition 动画
+
+参见：
+- 全部 spec 位于 `docs/superpowers/specs/2026-07-19-*.md`
 
 ### 2026-07-12 · B+ 树可视化上线
 
