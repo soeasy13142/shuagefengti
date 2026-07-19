@@ -1,5 +1,12 @@
 {
   "enabledPlugins": {
     "ecc@ecc": true
+  },
+  "mcpServers": {
+    "wechat-devtools": {
+      "command": "/opt/homebrew/bin/node",
+      "args": ["scripts/devtools-mcp.mjs"],
+      "env": {}
+    }
   }
 }

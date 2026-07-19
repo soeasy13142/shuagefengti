@@ -6,6 +6,7 @@
     "test": "jest --verbose"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "miniprogram-automator": "^0.12.1"
   }
 }

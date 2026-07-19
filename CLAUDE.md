@@ -103,6 +103,71 @@ cd /Users/charliepan/Downloads/my-miniapp && npm test
 
 ---
 
+## 微信开发者工具调试（MCP 服务器）
+
+项目配置了 `wechat-devtools` MCP 服务器，可通过 Claude 直接调用微信开发者工具进行调试。
+
+### 前置条件
+1. 打开 微信开发者工具 → 设置 → 安全设置 → **服务端口**（开启）
+2. 项目中已安装 `miniprogram-automator`（通过 `npm install --save-dev miniprogram-automator`）
+3. 目标项目已在开发者工具中打开
+
+### 可用工具
+
+| 工具名 | 用途 | 常用场景 |
+|--------|------|----------|
+| `devtools_connect` | 连接 DevTools（自动启动 WebSocket） | 最开始调用一次 |
+| `devtools_navigate` | 导航到指定页面 | 编译后验证页面加载无报错 |
+| `devtools_logs` | 读取控制台日志 | 检查编译错误、运行时异常 |
+| `devtools_get_data` | 获取页面 data 状态 | 验证 metrics、进程列表等 |
+| `devtools_call_method` | 调用页面方法 | 触发算法运行、增删进程等 |
+| `devtools_system_info` | 获取设备/系统信息 | 查看 SDK 版本、设备参数 |
+| `devtools_screenshot` | 截取模拟器截图 | 视觉验证 |
+| `devtools_disconnect` | 断开连接 | 调试完毕清理 |
+
+### 典型调试流程
+
+```
+1. 改完代码 → devtools_connect → 确认连接成功
+2. devtools_navigate({url: "/pages/cpu-sched/cpu-sched"}) → 验证编译无错
+3. devtools_logs → 看控制台有无报错
+4. devtools_call_method({method: "onRandomGenerate"}) → 触发操作
+5. devtools_get_data → 检查页面状态
+6. devtools_logs → 再看有没有运行时异常
+```
+
+### HTTP API（手动调用）
+
+当 MCP 服务器不可用时，也可通过 HTTP 接口操作：
+- `http://localhost:<port>/v2/islogin` — 检查登录
+- `http://localhost:<port>/v2/open?project=<path>` — 打开项目
+- `http://localhost:<port>/v2/close?project=<path>` — 关闭项目
+- `http://localhost:<port>/v2/auto?project=<path>&auto-port=9420` — 开启自动化
+- `http://localhost:<port>/v2/quit` — 退出工具
+
+端口存储在 `~/Library/Application Support/微信开发者工具/<MD5>/Default/.ide`
+
+### CLI 命令（终端直接使用）
+
+```
+# 工具路径
+/Applications/wechatwebdevtools.app/Contents/MacOS/cli <command>
+
+# 常用命令
+cli login                    # 登录（二维码）
+cli islogin                  # 检查登录状态
+cli open --project <path>    # 打开项目
+cli close --project <path>   # 关闭项目
+cli auto --project <path> --auto-port 9420  # 启动自动化接口
+cli preview --project <path> # 预览（生成二维码）
+cli upload --project <path> -v 1.0.0 -d "描述"  # 上传代码
+cli build-npm --project <path>  # 构建 npm
+cli cache --clean all --project <path>  # 清除全部缓存
+cli quit                     # 退出开发者工具
+```
+
+---
+
 ## 规则文件索引（详见各文件）
 
 | 文件 | 内容 |
