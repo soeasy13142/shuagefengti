@@ -61,7 +61,8 @@
             hover-stay-time="100"
           >
             <text class="tool-name">{{tool.name}}</text>
-            <text class="tool-tagline">{{tool.tagline || tool.description}}</text>
+            <text class="tool-tagline tool-tagline-detail" wx:if="{{cardMode === 'detail'}}">{{tool.taglineDetail || tool.tagline || tool.description}}</text>
+            <text class="tool-tagline" wx:else>{{tool.tagline || tool.description}}</text>
             <!-- 详细模式：tags + 难度 -->
             <view class="tool-meta-row" wx:if="{{cardMode === 'detail' && (tool.tags && tool.tags.length > 0 || tool.difficulty)}}">
               <text class="tool-tags-inline" wx:if="{{tool.tags && tool.tags.length > 0}}">
@@ -110,7 +111,8 @@
             hover-stay-time="100"
           >
             <text class="tool-name">{{item.name}}</text>
-            <text class="tool-tagline">{{item.tagline || item.description}}</text>
+            <text class="tool-tagline tool-tagline-detail" wx:if="{{cardMode === 'detail'}}">{{item.taglineDetail || item.tagline || item.description}}</text>
+            <text class="tool-tagline" wx:else>{{item.tagline || item.description}}</text>
             <!-- 详细模式：tags + 难度 -->
             <view class="tool-meta-row" wx:if="{{cardMode === 'detail' && (item.tags && item.tags.length > 0 || item.difficulty)}}">
               <text class="tool-tags-inline" wx:if="{{item.tags && item.tags.length > 0}}">

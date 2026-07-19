@@ -33,7 +33,7 @@
           hover-stay-time="100"
         >
           <text class="tool-name">{{tool.name}}</text>
-          <text class="tool-tagline">{{tool.tagline || tool.description}}</text>
+          <text class="tool-tagline tool-tagline-detail">{{tool.taglineDetail || tool.tagline || tool.description}}</text>
           <!-- tags + 难度（仅可用工具且有数据时） -->
           <view class="tool-meta-row" wx:if="{{tool.available && (tool.tags && tool.tags.length > 0 || tool.difficulty)}}">
             <text class="tool-tags-inline" wx:if="{{tool.tags && tool.tags.length > 0}}">
@@ -65,7 +65,7 @@
             hover-stay-time="100"
           >
             <text class="tool-name">{{item.name}}</text>
-            <text class="tool-tagline">{{item.tagline || item.description}}</text>
+            <text class="tool-tagline tool-tagline-detail">{{item.taglineDetail || item.tagline || item.description}}</text>
             <view class="tool-meta-row" wx:if="{{item.available && (item.tags && item.tags.length > 0 || item.difficulty)}}">
               <text class="tool-tags-inline" wx:if="{{item.tags && item.tags.length > 0}}">
                 <text wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>

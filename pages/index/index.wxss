@@ -230,6 +230,13 @@
   -webkit-box-orient: vertical;
 }
 
+/* 详细模式：tagline 较长，不截断 */
+.tool-tagline-detail {
+  overflow: visible;
+  display: block;
+  -webkit-line-clamp: unset;
+}
+
 /* ── 详细模式：tags 纯文字 ── */
 .tool-tags-inline {
   display: block;

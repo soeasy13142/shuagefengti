@@ -49,7 +49,8 @@ const TOOLS = [
     route: '/pages/subnet-calc/subnet-calc',
     available: true,
     featured: true,
-    tagline: 'IP 地址和子网掩码到底怎么算？一张图看明白',
+    tagline: 'IP 和掩码计算，可视化逐位拆解',
+    taglineDetail: '输入 IP 和前缀长度，网络号、广播地址、可用主机范围自动算好，二进制十进制逐位对照',
     tags: ['#可视化', '#交互式'],
     difficulty: 'medium',
     intro: {
@@ -77,7 +78,8 @@ const TOOLS = [
     route: '/pages/tcp-viz/tcp-viz',
     available: true,
     featured: true,
-    tagline: '三次握手、四次挥手、丢包重传——TCP 的每个细节一看就懂',
+    tagline: '三次握手、四次挥手、丢包重传，动效一步一步讲清楚',
+    taglineDetail: '从三次握手建立连接到四次挥手释放连接，中间模拟丢包重传，SEQ/ACK 号和状态变化每一步都标清楚',
     tags: ['#可视化', '#交互式', '#面试必考'],
     difficulty: 'medium',
     intro: {
@@ -116,7 +118,8 @@ const TOOLS = [
     route: '/pages/dns-viz/dns-viz',
     available: true,
     featured: false,
-    tagline: '输入一个域名，看 DNS 是怎么一步步找到它的服务器的',
+    tagline: '输入域名，追踪从根到权威服务器的完整路径',
+    taglineDetail: '从根域名服务器到权威服务器逐级查询，缓存命中与 CNAME 链也能模拟追踪',
     tags: ['#可视化', '#交互式'],
     difficulty: 'medium',
     intro: {
@@ -269,7 +272,8 @@ const TOOLS = [
     route: '/pages/sha256-viz/sha256-viz',
     available: true,
     featured: false,
-    tagline: '输入任意文本，逐轮追踪 SHA-256 如何将它变成不可逆的摘要',
+    tagline: '输入文本，跟踪 SHA-256 每轮压缩函数的运算过程',
+    taglineDetail: '输入任意消息，演示 64 轮压缩函数的完整运算——消息填充、轮常数应用、雪崩效应，逐步追踪',
     tags: ['#可视化', '#进阶'],
     difficulty: 'advanced',
     intro: {
@@ -310,7 +314,8 @@ const TOOLS = [
     route: '/pages/sort-viz/sort-viz',
     available: true,
     featured: true,
-    tagline: '选择排序、冒泡排序、快速排序——看动画理解每种算法的思路',
+    tagline: '选择、冒泡、快排——动画对比三种排序的执行过程',
+    taglineDetail: '选择排序、冒泡排序、快速排序逐步骤动画演示，看清每一步的比较和交换，播放速度可调节',
     tags: ['#可视化', '#交互式'],
     difficulty: 'easy',
     intro: {
@@ -338,7 +343,8 @@ const TOOLS = [
     route: '/pages/ds-viz/ds-viz',
     available: true,
     featured: true,
-    tagline: 'BST 增删、栈队列、哈希表、图搜索——交互式探索每种结构的运作方式',
+    tagline: 'BST 到图搜索，动手试每一步的内部状态变化',
+    taglineDetail: 'BST、栈队列、哈希表、图四种结构交互操作，插入删除后实时展示内部状态变化，BFS 与 DFS 可视化对比',
     tags: ['#可视化', '#交互式', '#面试必考'],
     difficulty: 'medium',
     intro: {
@@ -366,7 +372,8 @@ const TOOLS = [
     route: '/pages/bplus-viz/bplus-viz',
     available: true,
     featured: false,
-    tagline: 'B+ 树是数据库索引的基石——调整阶数，观察节点如何分裂与合并',
+    tagline: '调整阶数，看 B+ 树节点怎么分裂和合并',
+    taglineDetail: '4~32 阶可调，观察节点分裂与合并的完整过程，支持 Key 查询与范围查询的路径高亮',
     tags: ['#可视化', '#进阶'],
     difficulty: 'advanced',
     intro: {
