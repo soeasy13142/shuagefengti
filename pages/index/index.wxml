@@ -42,7 +42,7 @@
 
     <!-- 「全部」视图：分类分组 + 精选预告 -->
     <block wx:if="{{activeCategory === 'all'}}">
-      <view class="cat-section" wx:for="{{allViewData}}" wx:key="category.id" wx:for-item="section">
+      <view class="cat-section" wx:for="{{allViewData}}" wx:key="id" wx:for-item="section">
 
         <!-- 分类标题 -->
         <text class="cat-section-title">{{section.category.name}}</text>

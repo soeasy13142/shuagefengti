@@ -27,6 +27,8 @@
 
 **D6. 保持主会话轻量** — 大量读写 → 开 SubAgent。
 
+**D7. 调试/审查优先 wechatide-skill** — 调试小程序或 code review 时，优先使用 `wechatide-skill`（`.claude/skills/wechatide-skill/`），它提供模拟器截图、console/network 日志、自动化点击、页面导航、编译验证等能力，比手动操作更高效。
+
 ### ❌ 禁止
 
 **X1** 替用户决策 | **X2** 跳过 plans | **X3** 不经询问创建/删除文件 | **X4** 硬编码 secrets

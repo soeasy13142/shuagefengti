@@ -66,6 +66,7 @@ Page({
       });
 
       return {
+        id: cat.id,
         category: cat,
         tools: enrichedTools.slice(0, 4),
         previews: previews
