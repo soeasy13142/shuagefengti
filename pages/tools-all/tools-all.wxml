@@ -34,14 +34,15 @@
         >
           <text class="tool-name">{{tool.name}}</text>
           <text class="tool-tagline">{{tool.tagline || tool.description}}</text>
-          <!-- tags + 难度（详细模式） -->
-          <view class="tool-meta-row" wx:if="{{tool.tags && tool.tags.length > 0 || tool.difficulty}}">
+          <!-- tags + 难度（仅可用工具且有数据时） -->
+          <view class="tool-meta-row" wx:if="{{tool.available && (tool.tags && tool.tags.length > 0 || tool.difficulty)}}">
             <text class="tool-tags-inline" wx:if="{{tool.tags && tool.tags.length > 0}}">
               <text wx:for="{{tool.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
             </text>
             <text class="tool-difficulty-stars" wx:if="{{tool.difficulty}}">{{tool._diffStars}}</text>
           </view>
-          <text class="tool-tag" wx:else>即将上线</text>
+          <!-- 即将上线（仅不可用工具） -->
+          <text class="tool-tag" wx:if="{{!tool.available}}">即将上线</text>
         </view>
       </view>
     </view>
@@ -64,13 +65,13 @@
         >
           <text class="tool-name">{{item.name}}</text>
           <text class="tool-tagline">{{item.tagline || item.description}}</text>
-          <view class="tool-meta-row" wx:if="{{item.tags && item.tags.length > 0 || item.difficulty}}">
+          <view class="tool-meta-row" wx:if="{{item.available && (item.tags && item.tags.length > 0 || item.difficulty)}}">
             <text class="tool-tags-inline" wx:if="{{item.tags && item.tags.length > 0}}">
               <text wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
             </text>
             <text class="tool-difficulty-stars" wx:if="{{item.difficulty}}">{{item._diffStars}}</text>
           </view>
-          <text class="tool-tag" wx:else>即将上线</text>
+          <text class="tool-tag" wx:if="{{!item.available}}">即将上线</text>
         </view>
       </view>
     </block>
