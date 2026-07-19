@@ -35,6 +35,11 @@ describe('addResource', () => {
     expect(rag.resources).toEqual([{ id: 'R1', label: 'R1', total: 2 }]);
   });
 
+  test('throws if resource id already exists', () => {
+    const rag = addResource(createRag(), 'R1', 'R1', 2);
+    expect(() => addResource(rag, 'R1', 'R1', 3)).toThrow('Resource R1 already exists');
+  });
+
   test('throws if more than 5 resources', () => {
     let rag = createRag();
     for (let i = 1; i <= 5; i++) rag = addResource(rag, 'R' + i, 'R' + i, 1);

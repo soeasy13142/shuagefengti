@@ -65,12 +65,12 @@ function _findNode(rag, id) {
 }
 
 function _getResourceTotal(rag, rid) {
-  var res = rag.resources.find(function(r) { return r.id === rid; });
+  const res = rag.resources.find(function(r) { return r.id === rid; });
   return res ? res.total : 0;
 }
 
 function _sumAllocationsAndRequests(rag, rid) {
-  var sum = 0;
+  let sum = 0;
   rag.edges.forEach(function(e) {
     if (e.to === rid || e.from === rid) sum += e.count;
   });
@@ -94,10 +94,10 @@ function addEdge(rag, from, to, type, count) {
     throw new Error('Edge already exists');
   }
 
-  if (type === 'request' || (type === 'allocation' && from.startsWith('R'))) {
-    var rid = (type === 'request') ? to : from;
-    var total = _getResourceTotal(rag, rid);
-    var used = _sumAllocationsAndRequests(rag, rid) + count;
+  if (type === 'request' || (type === 'allocation' && rag.resources.some(function(r) { return r.id === from; }))) {
+    const rid = (type === 'request') ? to : from;
+    const total = _getResourceTotal(rag, rid);
+    const used = _sumAllocationsAndRequests(rag, rid) + count;
     if (used > total) {
       throw new Error('Request count ' + count + ' exceeds total ' + total + ' for ' + rid);
     }
@@ -134,7 +134,7 @@ function removeNode(rag, id) {
  * @returns {Rag}
  */
 function removeEdge(rag, from, to, type) {
-  var idx = rag.edges.findIndex(function(e) { return e.from === from && e.to === to && e.type === type; });
+  const idx = rag.edges.findIndex(function(e) { return e.from === from && e.to === to && e.type === type; });
   if (idx === -1) throw new Error('Edge not found');
   return {
     processes: rag.processes,
@@ -149,7 +149,7 @@ function removeEdge(rag, from, to, type) {
  * @returns {string[]}
  */
 function getRagErrors(rag) {
-  var errors = [];
+  const errors = [];
   if (rag.processes.length === 0) errors.push('请至少添加一个进程');
   if (rag.resources.length === 0) errors.push('请至少添加一个资源');
   return errors;
