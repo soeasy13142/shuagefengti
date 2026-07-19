@@ -12,3 +12,4 @@ design-previews/
 
 # macOS filesystem noise (覆盖子目录)
 .DS_Store
+progress.md
