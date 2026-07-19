@@ -448,3 +448,32 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 - 当前 HEAD=`a134be3`
 - 18 项 06-15 遗留未修中，已修 6 项（COR-01/03/05、BUS-10-01、QUAL-01-001/05-001），仍存 12 项
 - 不主动 `git push`
+
+---
+
+## 2026-07-19：死锁模拟器上线
+
+**新增文件**
+
+| 路径 | 说明 |
+|---|---|
+| `pages/deadlock/deadlock.{js,wxml,wxss,json}` | 死锁模拟器页面（双模式：RAG / 银行家算法） |
+| `utils/rag.js` | RAG 数据结构 + 死锁检测（纯函数） |
+| `utils/bankers.js` | 银行家算法（纯函数） |
+| `tests/utils/rag.test.js` | RAG CRUD + 死锁检测 33 测试 |
+| `tests/utils/bankers.test.js` | 银行家算法 12 测试 |
+| `docs/handoff/modules/deadlock.md` | 模块文档 |
+
+**关键决策**
+- RAG→Wait-For 图→DFS 三色标记法环检测
+- 请求边单次请求 ≤ 总量；分配边累计分配 ≤ 总量（不混算）
+- 边缘语义校验：request 必须 P→R，allocation 必须 R→P
+- JS 工具函数全部纯函数 + 不可变
+- 节点上限 5+5（进程 + 资源）
+
+**影响**
+- `tool-registry.js`：`deadlock.available = true`
+- `app.json`：注册 `pages/deadlock/deadlock`
+- 当前 HEAD = `bfbddb3`
+- 687 测试通过，42 suites 全绿
+- 不主动 `git push`
