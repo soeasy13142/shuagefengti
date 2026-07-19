@@ -1,0 +1,211 @@
+<!-- pages/deadlock/deadlock.wxml -->
+<view class="page">
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view class="tab-item {{mode === 'rag' ? 'active' : ''}}" bindtap="switchMode" data-mode="rag">资源分配图</view>
+    <view class="tab-item {{mode === 'bankers' ? 'active' : ''}}" bindtap="switchMode" data-mode="bankers">银行家算法</view>
+  </view>
+
+  <!-- ═══════════════════ RAG Mode ═══════════════════ -->
+  <block wx:if="{{mode === 'rag'}}">
+    <!-- Presets -->
+    <view class="presets-row">
+      <view class="preset-btn" wx:for="{{presets}}" wx:key="index" bindtap="loadPreset" data-index="{{index}}">{{item.name}}</view>
+    </view>
+
+    <!-- Controls -->
+    <view class="controls-row">
+      <view class="btn btn-primary btn-small" bindtap="onAddProcess">+ 进程</view>
+      <view class="btn btn-primary btn-small" bindtap="onAddResource">+ 资源</view>
+      <view class="btn btn-secondary btn-small" bindtap="onSetEdgeType">
+        {{edgeType === 'request' ? '边: 请求' : '边: 分配'}}
+      </view>
+      <view class="btn btn-secondary btn-small" bindtap="onClearSelection">清除选择</view>
+      <view class="btn btn-primary" bindtap="onDetectDeadlock">▶ 检测死锁</view>
+      <view class="btn btn-secondary" bindtap="onResetRag">↻ 重置</view>
+    </view>
+
+    <!-- Node Lists -->
+    <view class="node-list" wx:if="{{rag.processes.length > 0 || rag.resources.length > 0}}">
+      <view class="node-tag node-tag-process" wx:for="{{rag.processes}}" wx:key="id">
+        {{item.name}}
+        <view class="node-tag-remove" bindtap="onRemoveNode" data-id="{{item.id}}">✕</view>
+      </view>
+      <view class="node-tag node-tag-resource" wx:for="{{rag.resources}}" wx:key="id">
+        {{item.label}}({{item.total}})
+        <view class="node-tag-remove" bindtap="onRemoveNode" data-id="{{item.id}}">✕</view>
+      </view>
+    </view>
+
+    <!-- Canvas Area -->
+    <view class="canvas-area" id="canvasArea">
+      <view wx:if="{{rag.processes.length === 0 && rag.resources.length === 0}}" class="canvas-empty">
+        点击 [+ 进程] 和 [+ 资源] 开始构建资源分配图
+      </view>
+
+      <!-- Edge lines (SVG overlay) -->
+      <view wx:for="{{visualEdges}}" wx:key="index" class="edge-line {{item.type}}"
+        style="left:{{item.x1}}rpx; top:{{item.y1}}rpx; width:{{item.length}}rpx; transform:rotate({{item.angle}}deg);">
+      </view>
+
+      <!-- Process nodes -->
+      <view wx:for="{{rag.processes}}" wx:key="id"
+        class="node node-process {{deadlockSet.indexOf(item.id) !== -1 ? 'node-deadlock' : ''}} {{selectedNode === item.id ? 'node-selected' : ''}}"
+        style="left:{{nodePositions[item.id].x}}rpx; top:{{nodePositions[item.id].y}}rpx;"
+        bindtap="onNodeTap" data-id="{{item.id}}"
+        bindtouchmove="onNodeDrag" data-id="{{item.id}}">
+        {{item.name}}
+      </view>
+
+      <!-- Resource nodes -->
+      <view wx:for="{{rag.resources}}" wx:key="id"
+        class="node node-resource {{selectedNode === item.id ? 'node-selected' : ''}}"
+        style="left:{{nodePositions[item.id].x}}rpx; top:{{nodePositions[item.id].y}}rpx;"
+        bindtap="onNodeTap" data-id="{{item.id}}"
+        bindtouchmove="onNodeDrag" data-id="{{item.id}}">
+        {{item.label}}
+      </view>
+    </view>
+
+    <!-- Legend -->
+    <view class="legend">
+      <view class="legend-item">
+        <view class="legend-line allocation"></view>
+        <text>分配边</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-line request"></view>
+        <text>请求边</text>
+      </view>
+      <view class="legend-item">
+        <view class="node node-process" style="position:static; display:inline-flex; width:30rpx; height:30rpx; font-size:0;"></view>
+        <text>进程</text>
+      </view>
+      <view class="legend-item">
+        <view class="node node-resource" style="position:static; display:inline-flex; width:36rpx; height:36rpx; font-size:0;"></view>
+        <text>资源</text>
+      </view>
+    </view>
+
+    <!-- Result Panel -->
+    <view class="result-panel" wx:if="{{ragResult !== null}}">
+      <view class="result-title">检测结果</view>
+      <view class="{{ragResult.hasDeadlock ? 'result-unsafe' : 'result-safe'}}">
+        {{ragResult.hasDeadlock ? '❌ 检测到死锁!' : '✅ 未检测到死锁'}}
+      </view>
+      <view class="result-detail" wx:if="{{ragResult.hasDeadlock}}">
+        死锁进程: {{ragResult.deadlockedProcesses.join(', ')}}
+      </view>
+      <view class="result-detail" wx:if="{{ragResult.cycle && ragResult.cycle.length > 0}}">
+        循环路径: {{ragResult.cycle.join(' → ')}}
+      </view>
+      <view class="result-detail" wx:if="{{ragError}}">
+        {{ragError}}
+      </view>
+    </view>
+  </block>
+
+  <!-- ═══════════════════ Banker's Mode ═══════════════════ -->
+  <block wx:elif="{{mode === 'bankers'}}">
+    <!-- Presets -->
+    <view class="presets-row">
+      <view class="preset-btn" wx:for="{{bankerPresets}}" wx:key="index" bindtap="loadBankerPreset" data-index="{{index}}">{{item.name}}</view>
+    </view>
+
+    <!-- Matrix Inputs -->
+    <view class="matrix-section">
+      <view class="matrix-label">进程数</view>
+      <view class="controls-row">
+        <view class="btn btn-secondary btn-small" bindtap="adjustProcessCount" data-delta="-1">−</view>
+        <text style="font-size:28rpx; padding:0 20rpx; line-height:60rpx;">{{processCount}}</text>
+        <view class="btn btn-secondary btn-small" bindtap="adjustProcessCount" data-delta="1">+</view>
+      </view>
+    </view>
+
+    <view class="matrix-section">
+      <view class="matrix-label">资源类型数</view>
+      <view class="controls-row">
+        <view class="btn btn-secondary btn-small" bindtap="adjustResourceCount" data-delta="-1">−</view>
+        <text style="font-size:28rpx; padding:0 20rpx; line-height:60rpx;">{{resourceCount}}</text>
+        <view class="btn btn-secondary btn-small" bindtap="adjustResourceCount" data-delta="1">+</view>
+      </view>
+    </view>
+
+    <view class="matrix-section">
+      <view class="matrix-label">Max 矩阵</view>
+      <view class="matrix-table">
+        <view class="matrix-row" wx:for="{{bankerMax}}" wx:key="index">
+          <view class="matrix-cell input" wx:for="{{item}}" wx:key="this">
+            <input type="text" value="{{item}}" data-row="{{index}}" data-col="{{index2}}"
+              bindinput="onBankerInput" data-matrix="max" style="width:100%;text-align:center;" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="matrix-section">
+      <view class="matrix-label">Allocation 矩阵</view>
+      <view class="matrix-table">
+        <view class="matrix-row" wx:for="{{bankerAllocation}}" wx:key="index">
+          <view class="matrix-cell input" wx:for="{{item}}" wx:key="this">
+            <input type="text" value="{{item}}" data-row="{{index}}" data-col="{{index2}}"
+              bindinput="onBankerInput" data-matrix="allocation" style="width:100%;text-align:center;" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="matrix-section">
+      <view class="matrix-label">Available</view>
+      <view class="matrix-row" style="gap:8rpx; padding-left:0;">
+        <view class="matrix-cell input" wx:for="{{bankerAvailable}}" wx:key="index">
+          <input type="text" value="{{item}}" data-col="{{index}}"
+            bindinput="onBankerAvailableInput" style="width:100%;text-align:center;" />
+        </view>
+      </view>
+    </view>
+
+    <!-- Need Matrix (auto computed) -->
+    <view class="matrix-section" wx:if="{{bankerNeed.length > 0}}">
+      <view class="matrix-label">Need 矩阵 (Max − Allocation)</view>
+      <view class="matrix-table">
+        <view class="matrix-row" wx:for="{{bankerNeed}}" wx:key="index">
+          <view class="matrix-cell" wx:for="{{item}}" wx:key="this" style="{{bankerNeedErrors && bankerNeedErrors[index] && bankerNeedErrors[index][index2] ? 'color:#e74c3c;' : ''}}">{{item}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Run Button -->
+    <view class="controls-row">
+      <view class="btn btn-primary" bindtap="onRunBankers">▶ 检查安全状态</view>
+      <view class="btn btn-secondary" bindtap="onResetBankers">↻ 重置</view>
+    </view>
+
+    <!-- Banker's Result -->
+    <view class="result-panel" wx:if="{{bankerResult !== null}}">
+      <view class="result-title">检查结果</view>
+      <view class="{{bankerResult.safe ? 'result-safe' : 'result-unsafe'}}">
+        {{bankerResult.safe ? '✅ 系统处于安全状态' : '❌ 系统处于不安全状态'}}
+      </view>
+      <view class="result-detail" wx:if="{{bankerResult.safe}}">
+        安全序列: {{bankerResult.safeSequence.join(' → ')}}
+      </view>
+      <view class="step-trace" wx:if="{{bankerResult.steps.length > 0}}">
+        <view class="result-title" style="font-size:28rpx; margin-top:16rpx;">检查过程</view>
+        <view class="step-item {{step.needLEWork ? 'step-pass' : 'step-fail'}}"
+          wx:for="{{bankerResult.steps}}" wx:for-index="stepIdx" wx:key="stepIdx">
+          <view class="step-process">步骤 {{stepIdx + 1}}: {{step.process}}</view>
+          <view class="step-detail">
+            Need: [{{step.need.join(', ')}}] &nbsp; Work: [{{step.work.join(', ')}}]
+          </view>
+          <view class="step-detail">
+            {{step.needLEWork ? '✓ Need ≤ Work → 可执行' : '✗ Need > Work → 跳过'}}
+          </view>
+          <view class="step-detail" wx:if="{{step.newWork}}">
+            执行后 Work: [{{step.newWork.join(', ')}}]
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

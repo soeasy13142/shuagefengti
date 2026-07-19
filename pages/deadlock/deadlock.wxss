@@ -1,0 +1,361 @@
+/* pages/deadlock/deadlock.wxss */
+.page {
+  background-color: #faf9f5;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* ── Tab Bar ── */
+.tab-bar {
+  display: flex;
+  background: #efe9de;
+  border-radius: 24rpx;
+  margin: 24rpx;
+  padding: 8rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #6c6a64;
+  border-radius: 20rpx;
+  transition: all 0.2s;
+}
+
+.tab-item.active {
+  background: #cc785c;
+  color: #faf9f5;
+  font-weight: 600;
+}
+
+/* ── Controls ── */
+.controls-row {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 16rpx 32rpx;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #cc785c;
+  color: #faf9f5;
+}
+
+.btn-primary:active {
+  background: #a9583e;
+}
+
+.btn-secondary {
+  background: #efe9de;
+  color: #141413;
+}
+
+.btn-secondary:active {
+  background: #ddd7cc;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: #faf9f5;
+}
+
+.btn-small {
+  padding: 10rpx 20rpx;
+  font-size: 24rpx;
+}
+
+/* ── Canvas Area ── */
+.canvas-area {
+  background: #efe9de;
+  border-radius: 24rpx;
+  margin: 0 24rpx 24rpx;
+  padding: 32rpx;
+  min-height: 400rpx;
+  position: relative;
+}
+
+.canvas-empty {
+  text-align: center;
+  color: #6c6a64;
+  font-size: 28rpx;
+  padding: 60rpx 0;
+}
+
+/* ── Nodes ── */
+.node {
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #faf9f5;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+.node-process {
+  width: 80rpx;
+  height: 80rpx;
+  background: #181715;
+  border-radius: 50%;
+}
+
+.node-resource {
+  width: 100rpx;
+  height: 100rpx;
+  background: #cc785c;
+  border-radius: 16rpx;
+}
+
+.node-deadlock {
+  background: #e74c3c;
+  box-shadow: 0 0 20rpx rgba(231, 76, 60, 0.5);
+}
+
+.node-selected {
+  box-shadow: 0 0 0 6rpx #cc785c;
+}
+
+/* ── Edge Lines ── */
+.edge-line {
+  position: absolute;
+  height: 4rpx;
+  background: #6c6a64;
+  transform-origin: left center;
+}
+
+.edge-line.request {
+  background: #e74c3c;
+  border-top: 4rpx dashed #e74c3c;
+  height: 0;
+}
+
+.edge-line.allocation {
+  background: #4a90d9;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 30rpx;
+  padding: 0 24rpx;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.legend-line {
+  width: 40rpx;
+  height: 4rpx;
+}
+
+.legend-line.allocation {
+  background: #4a90d9;
+}
+
+.legend-line.request {
+  background: #e74c3c;
+  border-top: 4rpx dashed #e74c3c;
+  height: 0;
+}
+
+/* ── Result Panel ── */
+.result-panel {
+  background: #efe9de;
+  border-radius: 24rpx;
+  margin: 0 24rpx 24rpx;
+  padding: 24rpx;
+}
+
+.result-title {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  font-size: 32rpx;
+  color: #141413;
+  margin-bottom: 16rpx;
+}
+
+.result-safe {
+  color: #27ae60;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.result-unsafe {
+  color: #e74c3c;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.result-detail {
+  font-size: 26rpx;
+  color: #6c6a64;
+  margin-top: 12rpx;
+}
+
+/* ── Bankers Table ── */
+.matrix-section {
+  margin-bottom: 24rpx;
+}
+
+.matrix-label {
+  font-family: Georgia, serif;
+  font-size: 28rpx;
+  color: #141413;
+  margin-bottom: 12rpx;
+}
+
+.matrix-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.matrix-row {
+  display: flex;
+  gap: 8rpx;
+}
+
+.matrix-cell {
+  width: 80rpx;
+  height: 60rpx;
+  background: #faf9f5;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #141413;
+}
+
+.matrix-cell.input {
+  border: 2rpx solid #ddd7cc;
+}
+
+.matrix-cell.input:focus {
+  border-color: #cc785c;
+}
+
+.matrix-cell.error {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+/* ── Step Trace ── */
+.step-trace {
+  margin-top: 16rpx;
+}
+
+.step-item {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 16rpx;
+  margin-bottom: 8rpx;
+  font-size: 24rpx;
+  color: #141413;
+}
+
+.step-pass {
+  border-left: 6rpx solid #27ae60;
+}
+
+.step-fail {
+  border-left: 6rpx solid #e74c3c;
+}
+
+.step-process {
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.step-detail {
+  color: #6c6a64;
+  font-size: 22rpx;
+}
+
+/* ── Preset Buttons ── */
+.presets-row {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  padding: 12rpx 24rpx;
+  background: #faf9f5;
+  border: 2rpx solid #efe9de;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.preset-btn:active {
+  border-color: #cc785c;
+  color: #cc785c;
+}
+
+/* ── Process/Resource Lists ── */
+.node-list {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+}
+
+.node-tag {
+  padding: 12rpx 24rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.node-tag-process {
+  background: #181715;
+  color: #faf9f5;
+}
+
+.node-tag-resource {
+  background: #cc785c;
+  color: #faf9f5;
+}
+
+.node-tag-deadlock {
+  background: #e74c3c;
+  color: #faf9f5;
+}
+
+.node-tag-remove {
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+}

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "死锁模拟器",
+  "navigationBarBackgroundColor": "#faf9f5",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#faf9f5",
+  "usingComponents": {}
+}

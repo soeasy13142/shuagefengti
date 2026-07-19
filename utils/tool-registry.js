@@ -220,8 +220,26 @@ const TOOLS = [
     icon: '',
     description: '资源分配图 · 银行家算法',
     route: '/pages/deadlock/deadlock',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '构建资源分配图，检测死锁；输入矩阵，运行银行家算法',
+    taglineDetail: '添加进程和资源节点，拖拽建立分配边和请求边，一键检测死锁；切换到银行家算法模式，输入 Max/Allocation/Available 矩阵，自动计算 Need 并检查安全状态',
+    tags: ['#可视化', '#交互式', '#操作系统'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '死锁是操作系统课程的核心考点，也是面试中避不开的硬骨头。',
+      features: [
+        '可视化资源分配图（RAG），直观编辑节点与边',
+        '一键运行死锁检测，高亮显示死锁进程与循环路径',
+        '银行家算法模式：矩阵输入 → Need 自动计算 → 安全状态判断'
+      ],
+      prerequisites: '了解进程和资源的基本概念即可。',
+      useCases: [
+        'OS 课程：死锁章节的配套学习工具',
+        '面试准备：理解死锁检测与银行家算法的工作流程',
+        '教学演示：用 RAG 图直观展示循环等待条件'
+      ]
+    },
     order: 3
   },
   {

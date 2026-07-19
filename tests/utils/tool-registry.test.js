@@ -30,6 +30,13 @@ describe('tool-registry', () => {
     });
   });
 
+  describe('deadlock', () => {
+    test('deadlock tool is now available', () => {
+      const deadlock = TOOLS.find(function(t) { return t.id === 'deadlock'; });
+      expect(deadlock.available).toBe(true);
+    });
+  });
+
   describe('getAvailableTools', () => {
     test('只返回 available: true 的工具', () => {
       let result = getAvailableTools();
@@ -38,9 +45,9 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 8 个工具', () => {
+    test('返回当前已实现的 9 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(8);
+      expect(result.length).toBe(9);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');
