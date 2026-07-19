@@ -158,9 +158,16 @@ Page({
     const fcfsMetrics = calculate(fcfsGantt, validPs);
     const fcfsComparison = this._compareWithFcfs(metrics, fcfsMetrics);
 
+    const metricsWithDisplay = Object.assign({}, metrics, {
+      avgTATDisplay: metrics.avgTAT.toFixed(2),
+      avgWTDisplay: metrics.avgWT.toFixed(2),
+      cpuUtilDisplay: (metrics.cpuUtil * 100).toFixed(1) + '%',
+      throughputDisplay: metrics.throughput.toFixed(3)
+    });
+
     this.setData({
       gantt,
-      metrics,
+      metrics: metricsWithDisplay,
       fcfsComparison,
       simTime: 0,
       playing: true

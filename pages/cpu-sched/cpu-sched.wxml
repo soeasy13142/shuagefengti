@@ -76,28 +76,28 @@
     <view class="metric-card">
       <text class="metric-label">平均周转时间</text>
       <view class="metric-value-row">
-        <text class="metric-value">{{metrics.avgTAT.toFixed(2)}}</text>
+        <text class="metric-value">{{metrics.avgTATDisplay}}</text>
         <text class="metric-unit">{{fcfsComparison.tatArrow}} {{fcfsComparison.tatText}}</text>
       </view>
     </view>
     <view class="metric-card">
       <text class="metric-label">平均等待时间</text>
       <view class="metric-value-row">
-        <text class="metric-value">{{metrics.avgWT.toFixed(2)}}</text>
+        <text class="metric-value">{{metrics.avgWTDisplay}}</text>
         <text class="metric-unit">{{fcfsComparison.wtArrow}} {{fcfsComparison.wtText}}</text>
       </view>
     </view>
     <view class="metric-card">
       <text class="metric-label">CPU 利用率</text>
       <view class="metric-value-row">
-        <text class="metric-value">{{(metrics.cpuUtil * 100).toFixed(1)}}</text>
+        <text class="metric-value">{{metrics.cpuUtilDisplay}}</text>
         <text class="metric-unit">% {{fcfsComparison.utilArrow}} {{fcfsComparison.utilText}}</text>
       </view>
     </view>
     <view class="metric-card">
       <text class="metric-label">吞吐量</text>
       <view class="metric-value-row">
-        <text class="metric-value">{{metrics.throughput.toFixed(3)}}</text>
+        <text class="metric-value">{{metrics.throughputDisplay}}</text>
         <text class="metric-unit">/s {{fcfsComparison.tpArrow}} {{fcfsComparison.tpText}}</text>
       </view>
     </view>
