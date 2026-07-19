@@ -78,3 +78,12 @@ SHA-256 演示已上线（2026-07-12）。其余密码学占位（tool-registry.
 - DH 密钥交换：Diffie-Hellman 握手 + 中间人攻击演示
 - 密码工具箱：凯撒 / 维吉尼亚 / 栅栏密码
 - HMAC-SHA256：在 SHA-256 之上增加 keyed-hash
+
+## P9 · OS 模块 backlog（cpu-sched 上线后）
+
+CPU 进程调度可视化已上线（2026-07-19）。其余 OS 占位（`tool-registry.js` 中 `available: false`）待后续 plan：
+
+- 内存分页可视化（页表 + 缺页中断 + LRU/FIFO 替换算法）
+- 死锁模拟器（资源分配图 + 银行家算法）
+- 磁盘调度可视化（FCFS / SSTF / SCAN / C-SCAN）
+- 同步互斥演示（生产者/消费者 + 信号量 + PV 操作）

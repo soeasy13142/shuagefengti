@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-16 · 工具介绍模态弹窗 + 首页卡片重设计（已拆为两个独立分支）
+> 最后更新：2026-07-19 · 合并 feature/card-redesign → master；新增 WeChat DevTools MCP 服务器
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -24,7 +24,15 @@
 模块入口：根 README.md → docs/handoff/modules/<module>.md
 ```
 
-## 3. 当前进度
+## 3. 新能力：微信开发者工具调试
+
+项目配置了 `wechat-devtools` MCP 服务器，Claude 可以直接通过 miniprogram-automator 实时连接开发者工具进行调试：
+- 导航页面验证编译错误、读取控制台日志、获取页面数据、调用页面方法等
+- 详见 `CLAUDE.md` 中「微信开发者工具调试（MCP 服务器）」章节
+- MCP 服务脚本：`scripts/devtools-mcp.mjs`
+- 前置条件：服务端口开启 + 项目在开发者工具中打开
+
+## 4. 当前进度
 
 - **测试**：见 `docs/handoff/architecture.md` §7（每次开发前必跑 `npm test`）
 - **未提交变更**：`git status --short`
@@ -86,34 +94,35 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 
 ## 8. 最近重大变更（变更记录）
 
-### 2026-07-16 · 工具介绍模态弹窗 + 首页卡片重设计（分支拆分）
+### 2026-07-19 · 合并 feature/card-redesign → master
 
-**背景**：为 7 个硬核工具添加介绍模态弹窗，同时将首页/工具大全页卡片放大展示 tagline/tags/difficulty。原计划做两个独立分支，但误将全部改动堆在 `master` 后补建了单一 `feature/tool-intro-and-card` 分支，两个功能混合在一起。
+**变更内容**
 
-**分支拆分操作（2026-07-16）**
+- 将 `feature/card-redesign` 分支（首页/工具大全页卡片 tagline/tags/difficulty 展示 + 新样式）合并入 `master`
+- `feature/tool-intro-modal` 分支保留不动，作为另一版设计方案
 
-将混合分支拆解为两个独立分支（从 `master` 分叉）：
+### 2026-07-19 · CPU 进程调度可视化上线
 
-| 分支 | Commit 数 | 内容 |
-|---|---|---|
-| `feature/tool-intro-modal` | 5 | 共用数据 + intro-modal 组件 + app.json 注册 + 7 工具页 ℹ︎ 按钮 + index/tools-all 首次访问弹窗逻辑 |
-| `feature/card-redesign` | 2 | 共用数据 + index/tools-all 卡片 tagline/tags/difficulty 展示 + 新样式 |
+**变更内容**
 
-**涉及文件**
+- 新增 `pages/cpu-sched/` 页面（4 文件：json/wxml/wxss/js）
+- 新增 3 个 utils 纯函数模块：`process.js` / `scheduling.js`（4 算法）/ `scheduling-metrics.js`
+- 新增 3 个测试文件（共 43 个测试：process 16 + scheduling 21 + metrics 6）
+- `utils/tool-registry.js` 把 `cpu-sched.available` 改为 `true`，补齐 tagline/tags/difficulty/intro 元数据
+- `app.json` 注册新页面
+- 新增 `docs/handoff/modules/cpu-sched.md` 模块文档
 
-- 共用（各分支各持一份）：`utils/tool-registry.js`（7 工具新增 tagline/tags/difficulty/intro 字段）
-- 分支一：`components/intro-modal/`（4 文件）、`app.json`、7 工具页 ℹ︎ 按钮（.js/.wxml/.wxss）、`pages/index/index.js`（模态逻辑）、`pages/index/index.wxml`（intro-modal 标签）、`pages/tools-all/tools-all.js`（模态逻辑）、`pages/tools-all/tools-all.wxml`（intro-modal 标签）
-- 分支二：`pages/index/index.js`（_enrichTool 富化）、`pages/index/index.wxml`（卡片模板改版）、`pages/index/index.wxss`（新样式）、`pages/tools-all/tools-all.js`（_enrichTool 富化）、`pages/tools-all/tools-all.wxml`（卡片模板改版）、`pages/tools-all/tools-all.wxss`（新样式）
+**理由**
 
-**状态**
+- 承接 `tool-registry.js` 中 OS 模块的第一个占位
+- 4 种调度算法 + 甘特图 + 4 指标 vs FCFS 对比，覆盖冯·诺依曼/OS 教学核心
+- 纯函数 + Jest 全测，与 TCP-viz / DNS-viz 一致风格
 
-- 旧分支 `feature/tool-intro-and-card` 已删除
-- 两个新分支各持一份共用数据 commit，各自独立开发
-- 拆解方法详见 `docs/handoff/decisions.md`
-- `npm test` 全绿（596 tests, 37 suites）
-- 不主动 `git push`
+**影响**
 
-参见：`docs/superpowers/specs/2026-07-16-tool-intro-and-card-design.md` · `docs/superpowers/plans/2026-07-16-tool-intro-and-card.md`
+- spec: `docs/superpowers/specs/2026-07-12-cpu-scheduling-design.md`
+- plan: `docs/plans/2026-07-12-cpu-scheduling.md`
+- `npm test` 全绿（639 tests, 40 suites）
 
 ### 2026-07-12 · SHA-256 演示上线
 
@@ -165,6 +174,72 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 参见：
 - spec: `docs/superpowers/specs/2026-07-12-homepage-redesign.md`
 - plan: `docs/plans/2026-07-12-homepage-redesign.md`
+
+### 2026-07-19 · 首页卡片简化（双模式切换）
+
+**变更内容**
+
+- 首页卡片简化为两档可切换模式：
+  - **简洁模式（默认）**：仅工具名称 + tagline，无 tags/难度/CTA
+  - **详细模式**：名称 + tagline + 纯文字 tags + 难度星级
+- 分类标签栏右侧添加「简洁·详细」文字切换开关
+- 偏好通过 `wx.setStorageSync('cardDisplayMode')` 持久化
+- `pages/tools-all/tools-all` 固定为详细模式，无切换开关
+- 去掉所有 chip 样式（`border` + `background`），tags 改为纯文字
+- 去掉 CTA "进入 →"（整卡可点）
+- 统一卡片内边距为 `24rpx`
+
+**涉及文件**
+- 修改：`pages/index/index.js`、`pages/index/index.wxml`、`pages/index/index.wxss`
+- 修改：`pages/tools-all/tools-all.wxml`、`pages/tools-all/tools-all.wxss`
+
+**修复**
+- Tools-all 页 `wx:else` 条件修复：改用 `tool.available` 判断而非元数据是否存在
+
+### 2026-07-19 · 双模式描述差异化 + tagline Humanize
+
+**变更内容**
+- 简洁模式 tagline 全部 Humanize：剪短、去 AI 味（促销收尾/夸大/填充词）
+- 新增 `taglineDetail` 字段（完整的描述句），仅详细模式使用
+- 首页详细模式改用 `taglineDetail`，简洁模式保持 `tagline`
+- `pages/tools-all/tools-all` 固定使用 `taglineDetail`
+- 新增 `.tool-tagline-detail` 样式，移除 `-webkit-line-clamp: 2` 防止长文截断
+
+**涉及文件**
+- 修改：`utils/tool-registry.js`（7 条 tagline humanize + 7 条 taglineDetail 新增）
+- 修改：`pages/index/index.wxml`、`pages/index/index.wxss`
+- 修改：`pages/tools-all/tools-all.wxml`、`pages/tools-all/tools-all.wxss`
+
+**不改变**
+- `utils/tool-registry.js` 数据模型、入场动画系统、工具详情页
+
+参见：
+- spec: `docs/superpowers/specs/2026-07-19-card-simplification-design.md`
+- plan: `docs/superpowers/plans/2026-07-19-card-simplification.md`
+
+### 2026-07-19 · 17 个未上线工具 specs 全部补齐
+
+**变更内容**
+
+- 利用 `superpowers:brainstorming` + 4 个并行 subagent，为 `tool-registry.js` 中所有 `available: false` 的工具补齐 design spec
+- 16 份新 spec + 1 份已有 spec（cpu-sched，2026-07-12 脑暴产出）引用确认
+- 按分类并行产出：
+
+| 分类 | 工具 | spec |
+|---|---|---|
+| 计算机网络 | TLS / HTTP 解析 / IP 分片 / NAT | `2026-07-19-{tls-viz,http-parser,ip-fragment,nat-viz}-design.md` |
+| 操作系统 | 内存分页 / 死锁 / 磁盘调度 / 同步互斥 | `2026-07-19-{mem-paging,deadlock,disk-sched,sync-viz}-design.md` |
+| 密码学 | RSA / AES / DH / 密码工具箱 | `2026-07-19-{rsa-calc,aes-viz,dh-viz,crypto-tools}-design.md` |
+| 编译原理 | Regex→DFA / LL(1) / 词法分析 / AST | `2026-07-19-{regex-dfa,ll1-parser,lexer-viz,ast-builder}-design.md` |
+
+**影响**
+
+- 当前 tool-registry 中 24 个工具全部有 design spec（8 已上线 + 16 新 spec）
+- 每份 spec 含：目标/范围、文件清单、核心交互、数据模型、错误处理、测试方案
+- 风格统一：Claude Design 暖奶油画布 / 纯函数优先 / WXSS transition 动画
+
+参见：
+- 全部 spec 位于 `docs/superpowers/specs/2026-07-19-*.md`
 
 ### 2026-07-12 · B+ 树可视化上线
 

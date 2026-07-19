@@ -33,9 +33,16 @@
           hover-stay-time="100"
         >
           <text class="tool-name">{{tool.name}}</text>
-          <text class="tool-desc">{{tool.description}}</text>
-          <text class="tool-link" wx:if="{{tool.available}}">进入 →</text>
-          <text class="tool-tag" wx:else>即将上线</text>
+          <text class="tool-tagline tool-tagline-detail">{{tool.taglineDetail || tool.tagline || tool.description}}</text>
+          <!-- tags + 难度（仅可用工具且有数据时） -->
+          <view class="tool-meta-row" wx:if="{{tool.available && (tool.tags && tool.tags.length > 0 || tool.difficulty)}}">
+            <text class="tool-tags-inline" wx:if="{{tool.tags && tool.tags.length > 0}}">
+              <text wx:for="{{tool.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
+            </text>
+            <text class="tool-difficulty-stars" wx:if="{{tool.difficulty}}">{{tool._diffStars}}</text>
+          </view>
+          <!-- 即将上线（仅不可用工具） -->
+          <text class="tool-tag" wx:if="{{!tool.available}}">即将上线</text>
         </view>
       </view>
     </view>
@@ -44,36 +51,46 @@
   <!-- 单一分类视图 -->
   <block wx:else>
     <block wx:if="{{availableTools.length > 0}}">
-      <text class="cat-section-title">可用工具</text>
-      <view class="tool-grid">
-        <view
-          class="tool-card"
-          wx:for="{{availableTools}}"
-          wx:key="id"
-          data-id="{{item.id}}"
-          data-available="true"
-          bindtap="onToolTap"
-          hover-class="tool-hover"
-          hover-stay-time="100"
-        >
-          <text class="tool-name">{{item.name}}</text>
-          <text class="tool-desc">{{item.description}}</text>
-          <text class="tool-link">进入 →</text>
+      <view class="cat-section">
+        <text class="cat-section-title">可用工具</text>
+        <view class="tool-grid">
+          <view
+            class="tool-card"
+            wx:for="{{availableTools}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            data-available="true"
+            bindtap="onToolTap"
+            hover-class="tool-hover"
+            hover-stay-time="100"
+          >
+            <text class="tool-name">{{item.name}}</text>
+            <text class="tool-tagline tool-tagline-detail">{{item.taglineDetail || item.tagline || item.description}}</text>
+            <view class="tool-meta-row" wx:if="{{item.available && (item.tags && item.tags.length > 0 || item.difficulty)}}">
+              <text class="tool-tags-inline" wx:if="{{item.tags && item.tags.length > 0}}">
+                <text wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
+              </text>
+              <text class="tool-difficulty-stars" wx:if="{{item.difficulty}}">{{item._diffStars}}</text>
+            </view>
+            <text class="tool-tag" wx:if="{{!item.available}}">即将上线</text>
+          </view>
         </view>
       </view>
     </block>
 
     <block wx:if="{{unavailableTools.length > 0}}">
-      <text class="cat-section-title">即将上线</text>
-      <view class="tool-grid">
-        <view
-          class="tool-card tool-card-preview"
-          wx:for="{{unavailableTools}}"
-          wx:key="id"
-        >
-          <text class="tool-name">{{item.name}}</text>
-          <text class="tool-desc">{{item.description}}</text>
-          <text class="tool-tag">即将上线</text>
+      <view class="cat-section">
+        <text class="cat-section-title">即将上线</text>
+        <view class="tool-grid">
+          <view
+            class="tool-card tool-card-preview"
+            wx:for="{{unavailableTools}}"
+            wx:key="id"
+          >
+            <text class="tool-name">{{item.name}}</text>
+            <text class="tool-tagline">{{item.tagline || item.description}}</text>
+            <text class="tool-tag">即将上线</text>
+          </view>
         </view>
       </view>
     </block>

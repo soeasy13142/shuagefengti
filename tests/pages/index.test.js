@@ -42,8 +42,8 @@ describe('首页数据处理', () => {
       const result = buildAllViewData(activeCats);
       const ids = result.map(function(s) { return s.category.id; });
       expect(ids).toContain('network');
+      expect(ids).toContain('os');
       expect(ids).toContain('algo');
-      expect(ids).not.toContain('os');
     });
 
     test('每个分类 tools 最多 4 个', () => {

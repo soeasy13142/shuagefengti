@@ -64,7 +64,7 @@
   margin-bottom: 20rpx;
   background: #efe9de;
   border-radius: 24rpx;
-  padding: 32rpx 24rpx 24rpx;
+  padding: 28rpx 24rpx 20rpx;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -86,11 +86,6 @@
   background: #efe9de;
 }
 
-.tool-icon {
-  font-size: 48rpx;
-  margin-bottom: 20rpx;
-}
-
 .tool-name {
   display: block;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
@@ -101,12 +96,13 @@
   margin-bottom: 6rpx;
 }
 
-.tool-desc {
+/* ── tagline（替换原 description） ── */
+.tool-tagline {
   display: block;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   font-size: 20rpx;
   font-weight: 400;
-  color: #8e8b82;
+  color: #6c6a64;
   line-height: 1.4;
   margin-bottom: 12rpx;
   overflow: hidden;
@@ -116,13 +112,38 @@
   -webkit-box-orient: vertical;
 }
 
-.tool-link {
+/* 详细模式：tagline 较长，不截断 */
+.tool-tagline-detail {
+  overflow: visible;
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
-  font-size: 24rpx;
-  font-weight: 500;
-  color: #cc785c;
-  margin-top: auto;
+  -webkit-line-clamp: unset;
+}
+
+/* ── 详细模式：tags 纯文字 ── */
+.tool-tags-inline {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 18rpx;
+  font-weight: 400;
+  color: #6c6a64;
+  line-height: 1.4;
+}
+
+.tool-difficulty-stars {
+  display: inline-block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 18rpx;
+  font-weight: 400;
+  color: #8e8b82;
+  line-height: 1.4;
+  margin-left: 8rpx;
+}
+
+.tool-meta-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 8rpx;
 }
 
 .tool-tag {

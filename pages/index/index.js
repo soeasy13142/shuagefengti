@@ -13,12 +13,16 @@ Page({
     availableTools: [],
     unavailableTools: [],
 
+    // ── 卡片模式 ──
+    cardMode: 'simple',   // 'simple' | 'detail'
+
     // ── 工具总数 ──
     toolsCount: 0
   },
 
   onShow() {
     this.loadTools();
+    this.loadCardMode();
   },
 
   onReady() {
@@ -41,6 +45,7 @@ Page({
   },
 
   _buildAllViewData(activeCategories) {
+    const self = this;
     return activeCategories.map(function(cat) {
       const featured = registry.getFeaturedToolsByCategory(cat.id, 4);
       let tools;
@@ -55,15 +60,32 @@ Page({
       const upcoming = allInCat.filter(function(t) { return !t.available; });
       const previews = upcoming.slice(0, 2);
 
+      // 预处理难度显示字段
+      const enrichedTools = tools.map(function(t) {
+        return self._enrichTool(t);
+      });
+
       return {
         category: cat,
-        tools: tools.slice(0, 4),
+        tools: enrichedTools.slice(0, 4),
         previews: previews
       };
     });
   },
 
+  loadCardMode() {
+    try {
+      const mode = wx.getStorageSync('cardDisplayMode');
+      if (mode === 'simple' || mode === 'detail') {
+        this.setData({ cardMode: mode });
+      }
+    } catch (e) {
+      // 默认 'simple'
+    }
+  },
+
   onCategoryTap(e) {
+    const self = this;
     const categoryId = e.currentTarget.dataset.id;
     let currentTools = [];
     let availableTools = [];
@@ -73,6 +95,8 @@ Page({
       currentTools = registry.getToolsByCategory(categoryId);
       availableTools = currentTools.filter(function(t) { return t.available; });
       unavailableTools = currentTools.filter(function(t) { return !t.available; });
+      // 为可用工具补充难度显示字段
+      availableTools = availableTools.map(function(t) { return self._enrichTool(t); });
     }
 
     this.setData({
@@ -80,6 +104,23 @@ Page({
       currentTools: currentTools,
       availableTools: availableTools,
       unavailableTools: unavailableTools
+    });
+  },
+
+  onToggleCardMode(e) {
+    const newMode = e.currentTarget.dataset.mode;
+    if (newMode === this.data.cardMode) return;
+    this.setData({ cardMode: newMode });
+    wx.setStorageSync('cardDisplayMode', newMode);
+  },
+
+  // 为工具对象补充难度展示字段
+  _enrichTool(tool) {
+    if (!tool.difficulty) return tool;
+    const info = registry.getDifficultyInfo(tool.difficulty);
+    return Object.assign({}, tool, {
+      _diffStars: info.stars,
+      _diffLabel: info.label
     });
   },
 
