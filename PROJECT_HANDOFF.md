@@ -158,6 +158,20 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 **修复**
 - Tools-all 页 `wx:else` 条件修复：改用 `tool.available` 判断而非元数据是否存在
 
+### 2026-07-19 · 双模式描述差异化 + tagline Humanize
+
+**变更内容**
+- 简洁模式 tagline 全部 Humanize：剪短、去 AI 味（促销收尾/夸大/填充词）
+- 新增 `taglineDetail` 字段（完整的描述句），仅详细模式使用
+- 首页详细模式改用 `taglineDetail`，简洁模式保持 `tagline`
+- `pages/tools-all/tools-all` 固定使用 `taglineDetail`
+- 新增 `.tool-tagline-detail` 样式，移除 `-webkit-line-clamp: 2` 防止长文截断
+
+**涉及文件**
+- 修改：`utils/tool-registry.js`（7 条 tagline humanize + 7 条 taglineDetail 新增）
+- 修改：`pages/index/index.wxml`、`pages/index/index.wxss`
+- 修改：`pages/tools-all/tools-all.wxml`、`pages/tools-all/tools-all.wxss`
+
 **不改变**
 - `utils/tool-registry.js` 数据模型、入场动画系统、工具详情页
 
