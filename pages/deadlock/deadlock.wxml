@@ -116,22 +116,26 @@
       <view class="preset-btn" wx:for="{{bankerPresets}}" wx:key="index" bindtap="loadBankerPreset" data-index="{{index}}">{{item.name}}</view>
     </view>
 
-    <!-- Matrix Inputs -->
+    <!-- Process & Resource Counts -->
     <view class="matrix-section">
-      <view class="matrix-label">进程数</view>
-      <view class="controls-row">
-        <view class="btn btn-secondary btn-small" bindtap="adjustProcessCount" data-delta="-1">−</view>
-        <text style="font-size:28rpx; padding:0 20rpx; line-height:60rpx;">{{processCount}}</text>
-        <view class="btn btn-secondary btn-small" bindtap="adjustProcessCount" data-delta="1">+</view>
-      </view>
-    </view>
-
-    <view class="matrix-section">
-      <view class="matrix-label">资源类型数</view>
-      <view class="controls-row">
-        <view class="btn btn-secondary btn-small" bindtap="adjustResourceCount" data-delta="-1">−</view>
-        <text style="font-size:28rpx; padding:0 20rpx; line-height:60rpx;">{{resourceCount}}</text>
-        <view class="btn btn-secondary btn-small" bindtap="adjustResourceCount" data-delta="1">+</view>
+      <view class="matrix-label">进程与资源配置</view>
+      <view class="matrix-inline-row">
+        <view class="matrix-count-group">
+          <view class="matrix-count-label">进程数</view>
+          <view class="controls-row" style="margin-bottom:0;">
+            <view class="btn btn-secondary btn-small" bindtap="adjustProcessCount" data-delta="-1">−</view>
+            <text style="font-size:28rpx; padding:0 20rpx; line-height:60rpx;">{{processCount}}</text>
+            <view class="btn btn-secondary btn-small" bindtap="adjustProcessCount" data-delta="1">+</view>
+          </view>
+        </view>
+        <view class="matrix-count-group">
+          <view class="matrix-count-label">资源类型数</view>
+          <view class="controls-row" style="margin-bottom:0;">
+            <view class="btn btn-secondary btn-small" bindtap="adjustResourceCount" data-delta="-1">−</view>
+            <text style="font-size:28rpx; padding:0 20rpx; line-height:60rpx;">{{resourceCount}}</text>
+            <view class="btn btn-secondary btn-small" bindtap="adjustResourceCount" data-delta="1">+</view>
+          </view>
+        </view>
       </view>
     </view>
 
@@ -161,10 +165,12 @@
 
     <view class="matrix-section">
       <view class="matrix-label">Available</view>
-      <view class="matrix-row" style="gap:8rpx; padding-left:0;">
-        <view class="matrix-cell input" wx:for="{{bankerAvailable}}" wx:key="index">
-          <input type="text" value="{{item}}" data-col="{{index}}"
-            bindinput="onBankerAvailableInput" style="width:100%;text-align:center;" />
+      <view class="matrix-table">
+        <view class="matrix-row">
+          <view class="matrix-cell input" wx:for="{{bankerAvailable}}" wx:key="index">
+            <input type="text" value="{{item}}" data-col="{{index}}"
+              bindinput="onBankerAvailableInput" style="width:100%;text-align:center;" />
+          </view>
         </view>
       </view>
     </view>
