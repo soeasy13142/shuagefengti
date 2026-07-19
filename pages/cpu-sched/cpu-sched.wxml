@@ -1,0 +1,127 @@
+<view class="page">
+
+  <!-- 算法切换 -->
+  <view class="algo-band">
+    <text class="band-label">进程调度可视化</text>
+    <view class="algo-tabs">
+      <view class="algo-tab {{algorithm === 'FCFS' ? 'algo-active' : ''}}" bindtap="onAlgorithmChange" data-algo="FCFS">FCFS</view>
+      <view class="algo-tab {{algorithm === 'SJF' ? 'algo-active' : ''}}" bindtap="onAlgorithmChange" data-algo="SJF">SJF</view>
+      <view class="algo-tab {{algorithm === 'RR' ? 'algo-active' : ''}}" bindtap="onAlgorithmChange" data-algo="RR">RR</view>
+      <view class="algo-tab {{algorithm === 'MFQ' ? 'algo-active' : ''}}" bindtap="onAlgorithmChange" data-algo="MFQ">MFQ</view>
+    </view>
+    <view class="algo-options" wx:if="{{algorithm === 'RR'}}">
+      <text class="option-label">RR 量子</text>
+      <slider class="option-slider" min="1" max="4" step="1" value="{{quantum}}" activeColor="#cc785c" backgroundColor="#e6dfd8" bindchange="onQuantumChange" />
+      <text class="option-value">{{quantum}}</text>
+    </view>
+    <view class="algo-options" wx:elif="{{algorithm === 'MFQ'}}">
+      <text class="option-label">MFQ 量子 (固定)</text>
+      <text class="option-static">q0=2 / q1=4 / q2=8</text>
+    </view>
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 进程列表 -->
+  <view class="proc-band">
+    <view class="proc-header">
+      <text class="proc-title">进程列表</text>
+      <view class="proc-actions">
+        <view class="icon-btn" bindtap="onAddProcess"><text class="icon-btn-text">+</text></view>
+        <view class="icon-btn" bindtap="onRandomGenerate"><text class="icon-btn-text">🎲</text></view>
+      </view>
+    </view>
+    <view class="proc-table">
+      <view class="proc-row proc-row-head">
+        <text class="proc-cell proc-pid">pid</text>
+        <text class="proc-cell proc-arr">arrival</text>
+        <text class="proc-cell proc-bur">burst</text>
+        <text class="proc-cell proc-del">×</text>
+      </view>
+      <view wx:for="{{processes}}" wx:key="pid" class="proc-row {{item.invalid ? 'proc-row-invalid' : ''}}">
+        <input class="proc-cell-input proc-pid" value="{{item.pid}}" data-index="{{index}}" data-field="pid" bindinput="onProcessInput" />
+        <input class="proc-cell-input proc-arr" type="number" value="{{item.arrival}}" data-index="{{index}}" data-field="arrival" bindinput="onProcessInput" />
+        <input class="proc-cell-input proc-bur" type="number" value="{{item.burst}}" data-index="{{index}}" data-field="burst" bindinput="onProcessInput" />
+        <view class="proc-del-btn" bindtap="onDeleteProcess" data-index="{{index}}"><text>×</text></view>
+      </view>
+    </view>
+    <text class="proc-hint">最多 {{maxProcesses}} 个进程。点击单元格编辑。</text>
+  </view>
+
+  <!-- 甘特图 -->
+  <view class="gantt-band">
+    <view class="gantt-ticks">
+      <text wx:for="{{ticks}}" wx:key="t" class="gantt-tick-text" style="left: {{item.leftPx}}px;">{{item.t}}</text>
+    </view>
+    <view wx:for="{{ganttRows}}" wx:key="pid" class="gantt-row">
+      <view class="gantt-pid-tag" style="background: {{item.color}};">
+        <text class="gantt-pid-text">{{item.pid}}</text>
+      </view>
+      <view class="gantt-track">
+        <view wx:for="{{item.segments}}" wx:key="start" wx:for-item="seg"
+              class="gantt-bar"
+              style="left: {{seg.leftPx}}px; width: {{seg.widthPx}}px; background: {{item.color}};"
+              data-start="{{seg.start}}"
+              data-end="{{seg.end}}">
+          <text wx:if="{{seg.widthPx >= 40}}" class="gantt-bar-label">{{item.pid}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{gantt.length === 0}}" class="gantt-empty">
+      <text class="gantt-empty-text">选择算法后点击 ▶ 开始</text>
+    </view>
+  </view>
+
+  <!-- 性能指标 -->
+  <view class="metric-band" wx:if="{{metrics.avgTAT !== undefined}}">
+    <view class="metric-card">
+      <text class="metric-label">平均周转时间</text>
+      <view class="metric-value-row">
+        <text class="metric-value">{{metrics.avgTAT.toFixed(2)}}</text>
+        <text class="metric-unit">{{fcfsComparison.tatArrow}} {{fcfsComparison.tatText}}</text>
+      </view>
+    </view>
+    <view class="metric-card">
+      <text class="metric-label">平均等待时间</text>
+      <view class="metric-value-row">
+        <text class="metric-value">{{metrics.avgWT.toFixed(2)}}</text>
+        <text class="metric-unit">{{fcfsComparison.wtArrow}} {{fcfsComparison.wtText}}</text>
+      </view>
+    </view>
+    <view class="metric-card">
+      <text class="metric-label">CPU 利用率</text>
+      <view class="metric-value-row">
+        <text class="metric-value">{{(metrics.cpuUtil * 100).toFixed(1)}}</text>
+        <text class="metric-unit">% {{fcfsComparison.utilArrow}} {{fcfsComparison.utilText}}</text>
+      </view>
+    </view>
+    <view class="metric-card">
+      <text class="metric-label">吞吐量</text>
+      <view class="metric-value-row">
+        <text class="metric-value">{{metrics.throughput.toFixed(3)}}</text>
+        <text class="metric-unit">/s {{fcfsComparison.tpArrow}} {{fcfsComparison.tpText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 控制栏 -->
+  <view class="ctrl-band">
+    <view class="ctrl-btn ctrl-reset" bindtap="onReset">
+      <text class="ctrl-icon">↻</text>
+    </view>
+    <view class="ctrl-btn ctrl-play" bindtap="onTogglePlay">
+      <text class="ctrl-icon">{{playing ? '⏸' : '▶'}}</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStepNext">
+      <text class="ctrl-icon">▶</text>
+    </view>
+    <view class="speed-area">
+      <text class="speed-label">速度</text>
+      <view class="speed-buttons">
+        <view class="speed-btn {{speedIndex === 0 ? 'speed-active' : ''}}" bindtap="onSpeedChange" data-index="0">0.5x</view>
+        <view class="speed-btn {{speedIndex === 1 ? 'speed-active' : ''}}" bindtap="onSpeedChange" data-index="1">1x</view>
+        <view class="speed-btn {{speedIndex === 2 ? 'speed-active' : ''}}" bindtap="onSpeedChange" data-index="2">2x</view>
+      </view>
+    </view>
+  </view>
+
+</view>
