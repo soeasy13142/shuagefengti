@@ -33,11 +33,10 @@
         </view>
       </scroll-view>
 
-      <!-- 模式切换 -->
-      <view class="mode-toggle">
-        <text class="mode-toggle-item {{cardMode === 'simple' ? 'active' : ''}}" data-mode="simple" bindtap="onToggleCardMode">简洁</text>
-        <text class="mode-toggle-sep">·</text>
-        <text class="mode-toggle-item {{cardMode === 'detail' ? 'active' : ''}}" data-mode="detail" bindtap="onToggleCardMode">详细</text>
+      <!-- 胶囊式模式切换 -->
+      <view class="mode-capsule">
+        <text class="mode-capsule-item {{cardMode === 'simple' ? 'active' : ''}}" data-mode="simple" bindtap="onToggleCardMode">简洁</text>
+        <text class="mode-capsule-item {{cardMode === 'detail' ? 'active' : ''}}" data-mode="detail" bindtap="onToggleCardMode">详细</text>
       </view>
     </view>
 

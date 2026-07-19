@@ -112,43 +112,44 @@
   margin-bottom: 16rpx;
 }
 
-.mode-toggle {
+/* ── 胶囊式模式切换 ── */
+.mode-capsule {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  border: 2rpx solid #d0ccc0;
+  border-radius: 14rpx;
+  overflow: hidden;
   flex-shrink: 0;
   margin-left: 12rpx;
 }
 
-.mode-toggle-item {
+.mode-capsule-item {
+  display: block;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   font-size: 22rpx;
   font-weight: 500;
   color: #6c6a64;
+  padding: 8rpx 20rpx;
   line-height: 1.4;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
 }
 
-.mode-toggle-item.active {
-  color: #cc785c;
+.mode-capsule-item.active {
+  background: #cc785c;
+  color: #ffffff;
 }
 
-.mode-toggle-item:active {
-  opacity: 0.6;
-}
-
-.mode-toggle-sep {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-  font-size: 22rpx;
-  color: #6c6a64;
-  margin: 0 6rpx;
+.mode-capsule-item:not(.active):active {
+  background: #e8e0d2;
 }
 
 /* ── 分类标签栏 ── */
 .category-tabs {
-  width: 100%;
   white-space: nowrap;
   margin-bottom: 0;
   flex: 1;
+  min-width: 0;       /* 防止 flex 溢出 */
 }
 
 .category-tab {
