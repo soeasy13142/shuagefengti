@@ -1,4 +1,4 @@
-const { createRag, addProcess, addResource, addEdge, removeNode, removeEdge, getRagErrors } = require('../../utils/rag');
+const { createRag, addProcess, addResource, addEdge, removeNode, removeEdge, getRagErrors, toWaitForGraph, detectCycle, detectDeadlock } = require('../../utils/rag');
 
 describe('createRag', () => {
   test('returns empty RAG with no processes, resources, or edges', () => {
@@ -155,5 +155,146 @@ describe('getRagErrors', () => {
       'P1', 'R1', 'request', 1
     );
     expect(getRagErrors(rag)).toEqual([]);
+  });
+});
+
+// ── Deadlock Detection ──
+
+describe('toWaitForGraph', () => {
+  test('converts simple RAG to wait-for graph: P1→R1←P2, R1→P1', () => {
+    // P1 requests R1, R1 allocated to P2 → P1 waits for P2
+    let rag = createRag();
+    rag = addProcess(rag, 'P1', 'P1');
+    rag = addProcess(rag, 'P2', 'P2');
+    rag = addResource(rag, 'R1', 'R1', 1);
+    rag = addEdge(rag, 'P1', 'R1', 'request', 1);
+    rag = addEdge(rag, 'R1', 'P2', 'allocation', 1);
+
+    const wfg = toWaitForGraph(rag);
+    expect(wfg.nodes).toEqual(['P1', 'P2']);
+    expect(wfg.edges).toEqual([{ from: 'P1', to: 'P2' }]);
+  });
+
+  test('multiple resources: P1→R1→P2 and P2→R2→P1 → cycle', () => {
+    let rag = createRag();
+    rag = addProcess(rag, 'P1', 'P1');
+    rag = addProcess(rag, 'P2', 'P2');
+    rag = addResource(rag, 'R1', 'R1', 1);
+    rag = addResource(rag, 'R2', 'R2', 1);
+    rag = addEdge(rag, 'P1', 'R1', 'request', 1);
+    rag = addEdge(rag, 'R1', 'P2', 'allocation', 1);
+    rag = addEdge(rag, 'P2', 'R2', 'request', 1);
+    rag = addEdge(rag, 'R2', 'P1', 'allocation', 1);
+
+    const wfg = toWaitForGraph(rag);
+    expect(wfg.edges).toContainEqual({ from: 'P1', to: 'P2' });
+    expect(wfg.edges).toContainEqual({ from: 'P2', to: 'P1' });
+  });
+
+  test('no edges when no resource contention', () => {
+    let rag = createRag();
+    rag = addProcess(rag, 'P1', 'P1');
+    rag = addProcess(rag, 'P2', 'P2');
+    rag = addResource(rag, 'R1', 'R1', 2);
+    rag = addEdge(rag, 'R1', 'P1', 'allocation', 1);
+    rag = addEdge(rag, 'R1', 'P2', 'allocation', 1);
+
+    const wfg = toWaitForGraph(rag);
+    expect(wfg.edges).toEqual([]);
+  });
+});
+
+describe('detectCycle', () => {
+  test('detects simple cycle: P1→P2→P1', () => {
+    const result = detectCycle({
+      nodes: ['P1', 'P2'],
+      edges: [{ from: 'P1', to: 'P2' }, { from: 'P2', to: 'P1' }]
+    });
+    expect(result.hasCycle).toBe(true);
+    expect(result.cycles[0]).toContain('P1');
+    expect(result.cycles[0]).toContain('P2');
+  });
+
+  test('no cycle in linear graph: P1→P2→P3', () => {
+    const result = detectCycle({
+      nodes: ['P1', 'P2', 'P3'],
+      edges: [{ from: 'P1', to: 'P2' }, { from: 'P2', to: 'P3' }]
+    });
+    expect(result.hasCycle).toBe(false);
+    expect(result.cycles).toEqual([]);
+  });
+
+  test('single node self-loop is a cycle', () => {
+    const result = detectCycle({
+      nodes: ['P1'],
+      edges: [{ from: 'P1', to: 'P1' }]
+    });
+    expect(result.hasCycle).toBe(true);
+  });
+
+  test('no nodes returns no cycle', () => {
+    const result = detectCycle({ nodes: [], edges: [] });
+    expect(result.hasCycle).toBe(false);
+  });
+});
+
+describe('detectDeadlock', () => {
+  test('detects deadlock: P1→R1→P2→R2→P1', () => {
+    // Single resource of each type, circular wait
+    let rag = createRag();
+    rag = addProcess(rag, 'P1', 'P1');
+    rag = addProcess(rag, 'P2', 'P2');
+    rag = addResource(rag, 'R1', 'R1', 1);
+    rag = addResource(rag, 'R2', 'R2', 1);
+    rag = addEdge(rag, 'P1', 'R1', 'request', 1);
+    rag = addEdge(rag, 'R1', 'P2', 'allocation', 1);
+    rag = addEdge(rag, 'P2', 'R2', 'request', 1);
+    rag = addEdge(rag, 'R2', 'P1', 'allocation', 1);
+
+    const result = detectDeadlock(rag);
+    expect(result.hasDeadlock).toBe(true);
+    expect(result.deadlockedProcesses).toContain('P1');
+    expect(result.deadlockedProcesses).toContain('P2');
+    expect(result.cycle).toBeDefined();
+    expect(result.cycle.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test('no deadlock when all processes can proceed', () => {
+    let rag = createRag();
+    rag = addProcess(rag, 'P1', 'P1');
+    rag = addProcess(rag, 'P2', 'P2');
+    rag = addResource(rag, 'R1', 'R1', 2);
+    rag = addEdge(rag, 'R1', 'P1', 'allocation', 1);
+    rag = addEdge(rag, 'R1', 'P2', 'allocation', 1);
+
+    const result = detectDeadlock(rag);
+    expect(result.hasDeadlock).toBe(false);
+    expect(result.deadlockedProcesses).toEqual([]);
+  });
+
+  test('no deadlock with no edges', () => {
+    let rag = createRag();
+    rag = addProcess(rag, 'P1', 'P1');
+    rag = addResource(rag, 'R1', 'R1', 1);
+
+    const result = detectDeadlock(rag);
+    expect(result.hasDeadlock).toBe(false);
+  });
+
+  test('deadlock with 3 processes circular wait', () => {
+    // Classic: P1→R1→P2→R2→P3→R3→P1
+    let rag = createRag();
+    for (let i = 1; i <= 3; i++) rag = addProcess(rag, 'P' + i, 'P' + i);
+    for (let i = 1; i <= 3; i++) rag = addResource(rag, 'R' + i, 'R' + i, 1);
+    rag = addEdge(rag, 'P1', 'R1', 'request', 1);
+    rag = addEdge(rag, 'R1', 'P2', 'allocation', 1);
+    rag = addEdge(rag, 'P2', 'R2', 'request', 1);
+    rag = addEdge(rag, 'R2', 'P3', 'allocation', 1);
+    rag = addEdge(rag, 'P3', 'R3', 'request', 1);
+    rag = addEdge(rag, 'R3', 'P1', 'allocation', 1);
+
+    const result = detectDeadlock(rag);
+    expect(result.hasDeadlock).toBe(true);
+    expect(result.deadlockedProcesses).toEqual(['P1', 'P2', 'P3']);
   });
 });

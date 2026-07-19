@@ -69,10 +69,10 @@ function _getResourceTotal(rag, rid) {
   return res ? res.total : 0;
 }
 
-function _sumAllocationsAndRequests(rag, rid) {
+function _sumAllocations(rag, rid) {
   let sum = 0;
   rag.edges.forEach(function(e) {
-    if (e.to === rid || e.from === rid) sum += e.count;
+    if (e.from === rid && e.type === 'allocation') sum += e.count;
   });
   return sum;
 }
@@ -97,9 +97,17 @@ function addEdge(rag, from, to, type, count) {
   if (type === 'request' || (type === 'allocation' && rag.resources.some(function(r) { return r.id === from; }))) {
     const rid = (type === 'request') ? to : from;
     const total = _getResourceTotal(rag, rid);
-    const used = _sumAllocationsAndRequests(rag, rid) + count;
-    if (used > total) {
-      throw new Error('Request count ' + count + ' exceeds total ' + total + ' for ' + rid);
+
+    if (type === 'allocation') {
+      const used = _sumAllocations(rag, rid) + count;
+      if (used > total) {
+        throw new Error('Allocation count ' + count + ' exceeds total ' + total + ' for ' + rid);
+      }
+    } else {
+      // For requests, only check that the request count itself does not exceed the resource total
+      if (count > total) {
+        throw new Error('Request count ' + count + ' exceeds total ' + total + ' for ' + rid);
+      }
     }
   }
 
@@ -155,6 +163,128 @@ function getRagErrors(rag) {
   return errors;
 }
 
+/**
+ * Convert RAG to wait-for graph (process-to-process edges)
+ * Pi waits for Pj if Pi requests Rk AND Rk is allocated to Pj
+ * @param {Rag} rag
+ * @returns {{ nodes: string[], edges: { from: string, to: string }[] }}
+ */
+function toWaitForGraph(rag) {
+  const pids = rag.processes.map(function(p) { return p.id; });
+  const edges = [];
+
+  rag.processes.forEach(function(pi) {
+    rag.processes.forEach(function(pj) {
+      if (pi.id === pj.id) return;
+      // Does Pi request any resource that is allocated to Pj?
+      const piRequests = rag.edges.filter(function(e) {
+        return e.from === pi.id && e.type === 'request';
+      });
+      const pjAllocated = rag.edges.filter(function(e) {
+        return e.to === pj.id && e.type === 'allocation';
+      });
+
+      piRequests.forEach(function(req) {
+        pjAllocated.forEach(function(alloc) {
+          if (req.to === alloc.from) {
+            edges.push({ from: pi.id, to: pj.id });
+          }
+        });
+      });
+    });
+  });
+
+  // Deduplicate edges
+  const uniqueEdges = [];
+  edges.forEach(function(e) {
+    if (!uniqueEdges.some(function(u) { return u.from === e.from && u.to === e.to; })) {
+      uniqueEdges.push(e);
+    }
+  });
+
+  return { nodes: pids, edges: uniqueEdges };
+}
+
+/**
+ * Detect cycles in a directed graph using DFS with coloring
+ * @param {{ nodes: string[], edges: { from: string, to: string }[] }} graph
+ * @returns {{ hasCycle: boolean, cycles: string[][] }}
+ */
+function detectCycle(graph) {
+  const adjList = {};
+  graph.nodes.forEach(function(n) { adjList[n] = []; });
+  graph.edges.forEach(function(e) {
+    if (adjList[e.from]) adjList[e.from].push(e.to);
+  });
+
+  const WHITE = 0, GRAY = 1, BLACK = 2;
+  const color = {};
+  const parent = {};
+  graph.nodes.forEach(function(n) {
+    color[n] = WHITE;
+    parent[n] = null;
+  });
+
+  const cycles = [];
+
+  function dfs(node) {
+    color[node] = GRAY;
+    (adjList[node] || []).forEach(function(neighbor) {
+      if (color[neighbor] === GRAY) {
+        // Found a cycle, reconstruct it
+        const cycle = [neighbor, node];
+        let cur = node;
+        while (cur !== neighbor && parent[cur] !== null) {
+          cur = parent[cur];
+          cycle.push(cur);
+        }
+        cycles.push(cycle.reverse());
+      } else if (color[neighbor] === WHITE) {
+        parent[neighbor] = node;
+        dfs(neighbor);
+      }
+    });
+    color[node] = BLACK;
+  }
+
+  graph.nodes.forEach(function(n) {
+    if (color[n] === WHITE) dfs(n);
+  });
+
+  return {
+    hasCycle: cycles.length > 0,
+    cycles: cycles
+  };
+}
+
+/**
+ * Detect deadlock in a RAG
+ * @param {Rag} rag
+ * @returns {{ hasDeadlock: boolean, cycle: string[]|null, deadlockedProcesses: string[] }}
+ */
+function detectDeadlock(rag) {
+  const wfg = toWaitForGraph(rag);
+  const result = detectCycle(wfg);
+  let deadlocked = [];
+
+  if (result.hasCycle) {
+    // Collect unique deadlocked process IDs from all cycles
+    const seen = {};
+    result.cycles.forEach(function(cycle) {
+      cycle.forEach(function(n) {
+        if (n.startsWith('P')) seen[n] = true;
+      });
+    });
+    deadlocked = Object.keys(seen).sort();
+  }
+
+  return {
+    hasDeadlock: result.hasCycle,
+    cycle: result.cycles.length > 0 ? result.cycles[0] : null,
+    deadlockedProcesses: deadlocked
+  };
+}
+
 module.exports = {
   createRag,
   addProcess,
@@ -163,6 +293,9 @@ module.exports = {
   removeNode,
   removeEdge,
   getRagErrors,
+  toWaitForGraph,
+  detectCycle,
+  detectDeadlock,
   MAX_PROCESSES,
   MAX_RESOURCES
 };
