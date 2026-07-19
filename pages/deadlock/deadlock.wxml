@@ -53,7 +53,9 @@
         class="node node-process {{deadlockSet.indexOf(item.id) !== -1 ? 'node-deadlock' : ''}} {{selectedNode === item.id ? 'node-selected' : ''}}"
         style="left:{{nodePositions[item.id].x}}rpx; top:{{nodePositions[item.id].y}}rpx;"
         bindtap="onNodeTap" data-id="{{item.id}}"
-        bindtouchmove="onNodeDrag" data-id="{{item.id}}">
+        bindtouchstart="onNodeTouchStart" data-id="{{item.id}}"
+        bindtouchmove="onNodeTouchMove" data-id="{{item.id}}"
+        bindtouchend="onNodeTouchEnd">
         {{item.name}}
       </view>
 
@@ -62,7 +64,9 @@
         class="node node-resource {{selectedNode === item.id ? 'node-selected' : ''}}"
         style="left:{{nodePositions[item.id].x}}rpx; top:{{nodePositions[item.id].y}}rpx;"
         bindtap="onNodeTap" data-id="{{item.id}}"
-        bindtouchmove="onNodeDrag" data-id="{{item.id}}">
+        bindtouchstart="onNodeTouchStart" data-id="{{item.id}}"
+        bindtouchmove="onNodeTouchMove" data-id="{{item.id}}"
+        bindtouchend="onNodeTouchEnd">
         {{item.label}}
       </view>
     </view>

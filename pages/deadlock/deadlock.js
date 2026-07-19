@@ -202,18 +202,40 @@ Page({
     this._updateVisualEdges();
   },
 
-  onNodeDrag: function(e) {
-    // Touch-based drag for node repositioning
+  onNodeTouchStart: function(e) {
     const id = e.currentTarget.dataset.id;
-    const touch = e.touches[0];
-    // Convert touch coordinates to canvas-relative position
-    // Note: In production, use wx.createSelectorQuery to get canvas offset
-    // For simplicity, we update position directly
-    if (!touch) return;
-    const canvasPos = { x: touch.clientX, y: touch.clientY };
-    // Store in component and update on drag end
     this._dragTarget = id;
-    this._dragPos = canvasPos;
+    const touch = e.touches[0];
+    if (touch) {
+      this._dragStartX = touch.clientX;
+      this._dragStartY = touch.clientY;
+      const pos = this.data.nodePositions[id];
+      this._dragOrigX = pos ? pos.x : 0;
+      this._dragOrigY = pos ? pos.y : 0;
+    }
+  },
+
+  onNodeTouchMove: function(e) {
+    if (!this._dragTarget) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    const id = this._dragTarget;
+    const dx = touch.clientX - this._dragStartX;
+    const dy = touch.clientY - this._dragStartY;
+
+    // Convert px to rpx (roughly 2x)
+    const newX = Math.max(10, Math.min(600, this._dragOrigX + dx * 2));
+    const newY = Math.max(10, Math.min(500, this._dragOrigY + dy * 2));
+
+    const positions = JSON.parse(JSON.stringify(this.data.nodePositions));
+    positions[id] = { x: newX, y: newY };
+    this.setData({ nodePositions: positions });
+    this._updateVisualEdges();
+  },
+
+  onNodeTouchEnd: function() {
+    this._dragTarget = null;
   },
 
   _computeNodePositions: function() {
