@@ -180,8 +180,26 @@ const TOOLS = [
     icon: '',
     description: 'FCFS/SJF/RR · 甘特图 · 周转时间',
     route: '/pages/cpu-sched/cpu-sched',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '4 种调度算法，Gantt 图对比周转时间和等待时间',
+    taglineDetail: 'FCFS、SJF、RR、MFQ 四种算法切换，Gantt 图逐步动画回放，平均周转时间、平均等待时间、CPU 利用率、吞吐量四维指标 vs FCFS 对比',
+    tags: ['#可视化', '#交互式', '#操作系统'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: 'CPU 调度是操作系统的核心概念，也是面试中避不开的硬骨头。',
+      features: [
+        '四种调度算法切换：FCFS、SJF（非抢占）、RR（量子可配）、MFQ（三层降级）',
+        '甘特图逐单位动画回放，播放速度可调',
+        '计算四项指标（avg TAT / avg WT / CPU 利用率 / 吞吐量），实时对比 FCFS 基准'
+      ],
+      prerequisites: '了解进程的基本概念（pid、到达时间、CPU 突发时间）即可。',
+      useCases: [
+        'OS 课程：调度算法章节的配套交互工具',
+        '面试准备：对比各算法的平均周转时间与等待时间',
+        '教学演示：用甘特图直观展示 FCFS 与 SJF/RR/MFQ 的行为差异'
+      ]
+    },
     order: 1
   },
   {

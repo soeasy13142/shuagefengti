@@ -10,6 +10,7 @@
     "pages/wrong-questions/wrong-questions",
     "pages/bplus-viz/bplus-viz",
     "pages/dashboard/dashboard",
+    "pages/cpu-sched/cpu-sched",
     "pages/dns-viz/dns-viz",
     "pages/subnet-calc/subnet-calc",
     "pages/sort-viz/sort-viz",
