@@ -1,5 +1,17 @@
 <!-- pages/deadlock/deadlock.wxml -->
 <view class="page">
+  <!-- ℹ︎ 使用说明入口 -->
+  <view class="info-btn" bindtap="showIntro">
+    <text class="info-btn-icon">ℹ︎</text>
+  </view>
+
+  <!-- 使用说明弹窗 -->
+  <intro-modal
+    show="{{showIntro}}"
+    introContent="{{introContent}}"
+    bind:close="onIntroClose"
+  />
+
   <!-- Tab Bar -->
   <view class="tab-bar">
     <view class="tab-item {{mode === 'rag' ? 'active' : ''}}" bindtap="switchMode" data-mode="rag">资源分配图</view>
