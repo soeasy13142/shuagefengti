@@ -81,7 +81,7 @@ git status --short              # 检查未提交变更
 
 | 用途 | 位置 |
 |---|---|
-| **完整交接** | `PROJECT_HANDOFF.md`（根目录，精简索引） |
+| **交接索引** | `PROJECT_HANDOFF.md`（根目录，精简索引） |
 | **变更记录** | `docs/changelog.md` |
 | **模块文档** | `docs/handoff/modules/<name>.md` |
 | **设计规范** | `docs/DESIGN.md` |

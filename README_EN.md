@@ -42,7 +42,7 @@ Open the project root in WeChat DevTools. To import questions: tap "Start Quiz" 
 
 | Document | Purpose |
 |---|---|
-| [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) | 30-second context recovery |
+| [.claude/HANDOFF.md](.claude/HANDOFF.md) | 30-second context recovery |
 | [docs/handoff/](docs/handoff/) | Module deep-dives, architecture, decisions, risks |
 | [docs/DESIGN.md](docs/DESIGN.md) | Claude Design spec |
 | [docs/superpowers/specs/](docs/superpowers/specs/) | Original design |

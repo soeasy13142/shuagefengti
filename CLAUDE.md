@@ -1,11 +1,12 @@
 # CLAUDE.md
 
-> **任何开始**：先读本文 → 再读 `PROJECT_HANDOFF.md` 相关章节 → 再动手。
-> **任何结束**：追加 `PROJECT_HANDOFF.md`（决策 / 新约定 / 踩过的坑）。
+> **任何开始**：先读本文 → 再读 `.claude/HANDOFF.md` 相关章节 → 再动手。
+> **任何结束**：追加 `.claude/HANDOFF.md`（决策 / 新约定 / 踩过的坑）。
 
 ## 项目交接文档
 
-`/Users/charliepan/Downloads/my-miniapp/PROJECT_HANDOFF.md` — **每次改前必读，改后必追加**。
+`.claude/HANDOFF.md` — **每次改前必读，改后必追加**。
+变更历史见 `docs/changelog.md`。
 
 ---
 
@@ -19,7 +20,7 @@
 
 **D2. 必问原则** — 任何不确定 → 立即 `AskUserQuestion`。禁止替用户决策。详见 D2 三档触发清单（DO/DON'T 内）。
 
-**D3. 改前读 / 改后写** — 每次修改前后都查 `PROJECT_HANDOFF.md`，新约定回写。
+**D3. 改前读 / 改后写** — 每次修改前后都查 `.claude/HANDOFF.md`，新约定回写。
 
 **D4. TDD** — 先测试（RED）→ 最小实现（GREEN）→ 重构（IMPROVE），覆盖率 ≥ 80%。
 
@@ -40,7 +41,7 @@
 ### D2 三档触发（必读）
 
 **🔴 必须问**：库/框架选型、UI 风格/配色/字体/文案、命名约定、方案 A vs B、CSS 数值、改动程度/边界、看似细枝末节的偏好。
-**🟡 可问可不问**：用户/CLAUDE.md/PROJECT_HANDOFF.md 中已明文约定的，直接执行。
+**🟡 可问可不问**：用户/CLAUDE.md/.claude/HANDOFF.md 中已明文约定的，直接执行。
 **🟢 不问**：刻意空置。觉得属于此档 → 回到 🔴。
 
 > 错误成本：问 10 次多问的损失 << 擅自拍板一次的重做代价。
@@ -81,7 +82,7 @@ cd /Users/charliepan/Downloads/my-miniapp && npm test
 ## 开发工作流
 
 ```
-读 PROJECT_HANDOFF.md
+读 .claude/HANDOFF.md
 → 判断任务类型（UI/UX → 技能路由；一般代码 → 直接实现）
 → 复杂任务？写 plans（docs/plans/）
 → 等用户确认 → 按 plan 逐步骤实现（每步结尾: git commit → npm test）

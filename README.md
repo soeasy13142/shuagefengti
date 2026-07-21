@@ -47,7 +47,7 @@ npm test
 
 | 文档 | 用途 |
 |---|---|
-| [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) | 30 秒恢复上下文 |
+| [.claude/HANDOFF.md](.claude/HANDOFF.md) | 30 秒恢复上下文 |
 | [docs/handoff/](docs/handoff/) | 各模块详解、架构、决策、风险、未来计划 |
 | [docs/DESIGN.md](docs/DESIGN.md) | Claude Design 设计规范 |
 | [docs/superpowers/specs/](docs/superpowers/specs/) | 原始设计 |
