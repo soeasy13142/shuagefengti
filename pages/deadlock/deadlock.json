@@ -3,5 +3,7 @@
   "navigationBarBackgroundColor": "#faf9f5",
   "navigationBarTextStyle": "black",
   "backgroundColor": "#faf9f5",
-  "usingComponents": {}
+  "usingComponents": {
+    "tool-help-panel": "../../components/tool-help-panel/tool-help-panel"
+  }
 }

@@ -2,22 +2,43 @@
 const { createRag, addProcess, addResource, addEdge, removeNode, removeEdge, getRagErrors, detectDeadlock } = require('../../utils/rag');
 const { calculateNeed, isSafeState } = require('../../utils/bankers');
 
-// ── 使用说明内容（分步数据） ──
-const DEADLOCK_STEPS = [
+// ── 帮助面板内容 ──
+const HELP_CONTENT = [
   {
-    icon: '📖',
-    title: '使用说明 · 概述',
-    body: '死锁模拟器是一个交互式教学工具，帮助你直观理解死锁的两种经典分析手段。通过资源分配图和银行家算法，你可以亲手构建死锁场景并观察检测过程。'
+    mode: 'rag',
+    title: 'RAG 操作速查',
+    summary: [
+      '▸ 添加节点：点击 [+进程] 或 [+资源]（各上限 5 个）',
+      '▸ 建立连线：选择边类型 → 点起点 → 点终点',
+      '▸ 切换边类型：「边: 请求」↔「边: 分配」交替切换',
+      '▸ 检测死锁：点击「检测死锁」按钮',
+      '▸ 重置/预设：使用「↻ 重置」或内置预设场景'
+    ],
+    details: [
+      '• 请求边需 P→R 方向，分配边需 R→P 方向',
+      '• 点击选中节点（高亮环），再次点击取消选中',
+      '• 死锁进程会标红 + 红色脉冲光晕',
+      '• 检测结果会显示死锁进程名和环路路径',
+      '• 图例说明：红虚线=请求边 / 蓝实线=分配边 / 圆=进程 / 方=资源'
+    ]
   },
   {
-    icon: '🔧',
-    title: '使用说明 · 操作指南',
-    body: '资源分配图（RAG）：点击「+进程」「+资源」添加节点（上限各 5 个）。先选择连线类型，再依次点击两个节点建立连线。点击「检测死锁」自动判断当前状态。支持拖拽节点调整布局。内置 3 种预设场景。\n\n银行家算法：调整进程数和资源类型数，自动生成输入矩阵。在 Max 和 Allocation 单元格中输入数值，Need 矩阵自动计算。点击「检测安全性」运行算法，查看安全序列和步骤追踪。内置 3 种预设场景。'
-  },
-  {
-    icon: '📊',
-    title: '使用说明 · 结果解读',
-    body: '安全状态：显示安全序列，所有进程可顺利完成。\n\n死锁 / 不安全：红色标记死锁进程，显示环路路径。\n\n步骤追踪：[满足] 表示条件成立，[不满足] 表示条件不成立。'
+    mode: 'bankers',
+    title: '银行家算法操作速查',
+    summary: [
+      '▸ 调整进程数 / 资源类型数用 ± 按钮',
+      '▸ Max / Allocation 矩阵：点击单元格输入数值',
+      '▸ Available 向量：点击输入各类型可用实例数',
+      '▸ Need 矩阵自动计算（Max − Allocation）',
+      '▸ 点击「检查安全状态」运行算法'
+    ],
+    details: [
+      '• 安全状态 = 存在"安全序列"使所有进程可完成',
+      '• 不安全 ≠ 死锁 —— 只是可能在未来导致死锁',
+      '• 检查过程：逐进程比对 Need ≤ Work',
+      '• 步骤追踪：[满足]=绿色边框，[不满足]=红色边框',
+      '• 预设场景提供 3 种经典案例'
+    ]
   }
 ];
 
@@ -25,6 +46,7 @@ const DEADLOCK_STEPS = [
 const RAG_PRESETS = [
   {
     name: '安全状态',
+    hint: '无环路',
     processes: ['P1', 'P2', 'P3'],
     resources: [{ id: 'R1', total: 2 }],
     edges: [
@@ -34,6 +56,7 @@ const RAG_PRESETS = [
   },
   {
     name: '死锁示例',
+    hint: '2 进程环路',
     processes: ['P1', 'P2'],
     resources: [{ id: 'R1', total: 1 }, { id: 'R2', total: 1 }],
     edges: [
@@ -45,6 +68,7 @@ const RAG_PRESETS = [
   },
   {
     name: '三进程循环',
+    hint: '3 进程环路',
     processes: ['P1', 'P2', 'P3'],
     resources: [{ id: 'R1', total: 1 }, { id: 'R2', total: 1 }, { id: 'R3', total: 1 }],
     edges: [
@@ -82,8 +106,8 @@ const BANKER_PRESETS = [
 Page({
   data: {
     mode: 'rag',
-    showIntro: false,
-    introContent: [],
+    helpVisible: false,
+    helpContent: HELP_CONTENT,
     // ── RAG ──
     rag: createRag(),
     selectedNode: null,
@@ -109,32 +133,28 @@ Page({
 
   _checkFirstVisit: function() {
     try {
-      const seen = wx.getStorageSync('intro_seen_deadlock');
+      const seen = wx.getStorageSync('help_seen_deadlock');
       if (!seen) {
-        this.setData({
-          introContent: DEADLOCK_STEPS,
-          showIntro: true
-        });
+        this.setData({ helpVisible: true });
+        const timer = setTimeout(() => {
+          this.setData({ helpVisible: false });
+          try {
+            wx.setStorageSync('help_seen_deadlock', true);
+          } catch (e) { /* 静默降级 */ }
+          clearTimeout(timer);
+        }, 5000);
       }
-    } catch (e) {
-      // storage 异常时静默降级，不弹窗
-    }
-  },
-
-  showIntro: function() {
-    if (!this.data.introContent || this.data.introContent.length === 0) {
-      this.setData({ introContent: DEADLOCK_STEPS });
-    }
-    this.setData({ showIntro: true });
-  },
-
-  onIntroClose: function() {
-    try {
-      wx.setStorageSync('intro_seen_deadlock', true);
     } catch (e) {
       // storage 异常静默降级
     }
-    this.setData({ showIntro: false });
+  },
+
+  onHelpTrigger: function() {
+    this.setData({ helpVisible: !this.data.helpVisible });
+  },
+
+  onHelpToggle: function(e) {
+    this.setData({ helpVisible: e.detail.visible });
   },
 
   onLoad: function() {
