@@ -29,6 +29,8 @@
 
 **D7. 调试/审查优先 wechatide-skill** — 调试小程序或 code review 时，优先使用 `wechatide-skill`（`.claude/skills/wechatide-skill/`），它提供模拟器截图、console/network 日志、自动化点击、页面导航、编译验证等能力，比手动操作更高效。
 
+**D8. 默认用 SubAgent，不问** — 凡能派 SubAgent 处理的（`.claude/rules/subagent-usage.md` 中列出的场景），**直接派，不询问用户**。包括但不限于：独立 utils + 测试开发、批量化重构、全库搜索替换、全量测试、代码审查、查文档/API。主会话保持轻量。仅当任务需要频繁来回确认/视觉迭代/用户决策时才留在主会话。
+
 ### ❌ 禁止
 
 **X1** 替用户决策 | **X2** 跳过 plans | **X3** 不经询问创建/删除文件 | **X4** 硬编码 secrets
