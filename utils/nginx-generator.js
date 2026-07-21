@@ -45,7 +45,7 @@ function _listenLine(inputs, ipv6) {
   const port = inputs.listenPort;
   let line = prefix + port;
 
-  if (inputs.enableSSL) {
+  if (inputs.enableSSL && port === '443') {
     line += ' ssl';
     if (inputs.http2Enabled && inputs.nginxVersion === 'legacy') {
       line += ' http2';
@@ -154,7 +154,7 @@ function _serverBlock(inputs) {
     lines.push('    ssl_certificate ' + inputs.sslCertPath + ';');
     lines.push('    ssl_certificate_key ' + inputs.sslKeyPath + ';');
     lines.push('    ssl_protocols ' + inputs.sslProtocols + ';');
-    const ciphers = inputs.sslCiphers || 'CIPHER_PROFILES.' + (inputs.sslCipherProfile || 'intermediate');
+    const ciphers = inputs.sslCiphers || CIPHER_PROFILES[inputs.sslCipherProfile] || CIPHER_PROFILES.intermediate;
     lines.push('    ssl_ciphers ' + ciphers + ';');
     lines.push('    ssl_prefer_server_ciphers off;');
     lines.push('    ssl_session_cache shared:SSL:10m;');
@@ -304,6 +304,11 @@ function validateInputs(inputs) {
     errors.push({ field: 'listenPort', message: '端口范围 1-65535' });
   }
 
+  // SSL port check
+  if (inputs.enableSSL && inputs.listenPort !== '443') {
+    errors.push({ field: 'listenPort', message: 'SSL 只能在 443 端口启用' });
+  }
+
   // SSL paths
   if (inputs.enableSSL) {
     if (!inputs.sslCertPath || !inputs.sslCertPath.trim()) {
@@ -321,11 +326,6 @@ function validateInputs(inputs) {
   // rootDir
   if (inputs.rootDir && inputs.rootDir.charAt(0) !== '/') {
     errors.push({ field: 'rootDir', message: '请输入绝对路径，如 /var/www/html' });
-  }
-
-  // proxyPass
-  if (inputs.proxyPass && !/^https?:\/\//.test(inputs.proxyPass)) {
-    errors.push({ field: 'proxyPass', message: '请输入有效 URL，如 http://localhost:3000' });
   }
 
   // clientMaxBodySize

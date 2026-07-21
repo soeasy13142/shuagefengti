@@ -39,7 +39,7 @@ describe('generateConfig', () => {
     expect(config).toContain('ssl_certificate /etc/ssl/certs/example.crt;');
     expect(config).toContain('ssl_certificate_key /etc/ssl/private/example.key;');
     expect(config).toContain('ssl_protocols TLSv1.2 TLSv1.3;');
-    expect(config).toContain('CIPHER_PROFILES.intermediate');
+    expect(config).toContain('ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256');
     expect(config).toContain('ssl_session_cache shared:SSL:10m;');
     expect(config).toContain('http2 on;');
     expect(config).toContain('add_header X-Content-Type-Options');
@@ -260,6 +260,20 @@ describe('validateInputs', () => {
     expect(errors.some(e => e.field === 'listenPort')).toBe(true);
   });
 
+  test('returns error when SSL enabled on non-443 port', () => {
+    const errors = validateInputs({
+      serverName: 'example.com',
+      listenPort: '80',
+      enableSSL: true,
+      sslCertPath: '',
+      sslKeyPath: '',
+      rootDir: '',
+      proxyPass: '',
+      clientMaxBodySize: '',
+    });
+    expect(errors.some(e => e.field === 'listenPort')).toBe(true);
+  });
+
   test('returns error for missing SSL paths when enableSSL is true', () => {
     const errors = validateInputs({
       serverName: 'example.com',
@@ -289,7 +303,7 @@ describe('validateInputs', () => {
     expect(errors.some(e => e.field === 'sslCertPath')).toBe(true);
   });
 
-  test('returns error for proxyPass without protocol', () => {
+  test('accepts proxyPass without protocol (auto-prefixed in page JS)', () => {
     const errors = validateInputs({
       serverName: 'example.com',
       listenPort: '80',
@@ -300,7 +314,7 @@ describe('validateInputs', () => {
       proxyPass: 'localhost:3000',
       clientMaxBodySize: '',
     });
-    expect(errors.some(e => e.field === 'proxyPass')).toBe(true);
+    expect(errors.some(e => e.field === 'proxyPass')).toBe(false);
   });
 
   test('returns error for invalid clientMaxBodySize format', () => {

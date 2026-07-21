@@ -1,27 +1,38 @@
-# Task 4 Report: Deadlock Simulator Page
+# Task 4 Report — Nginx Config Generator Page Logic (JS)
 
-## Summary
+## Status
 
-Created the full deadlock simulator page with RAG (Resource Allocation Graph) mode and Banker's Algorithm mode, and registered it in the tool registry.
+**DONE**
 
-## Files Created
+## Commit
 
-- `pages/deadlock/deadlock.json` — Page configuration
-- `pages/deadlock/deadlock.wxss` — Claude Design styling (tab bar, canvas, nodes, legends, matrix tables)
-- `pages/deadlock/deadlock.wxml` — WXML template with RAG and Banker's tab panels
-- `pages/deadlock/deadlock.js` — Full page logic (all `var` converted to `const`/`let`)
-
-## Files Modified
-
-- `app.json` — Registered `pages/deadlock/deadlock`
-- `utils/tool-registry.js` — Changed `deadlock.available` from `false` to `true`, added full metadata (tagline, taglineDetail, tags, difficulty, intro)
-- `tests/utils/tool-registry.test.js` — Added deadlock availability test; updated expected count from 8 to 9
+```
+24ea587 feat: add nginx-gen page logic (form handling, generate, copy)
+```
 
 ## Test Results
 
-- Full suite: **685 tests passed**, 42 suites, 0 failures
-- No existing tests broken
+- **Test suites:** 43 passed, 43 total
+- **Tests:** 701 passed, 701 total
+- **Time:** 0.714 s
 
-## Commits
+## var → const/let Replacements
 
-- `feat: create deadlock simulator page with RAG and Banker's modes`
+All variables in the brief code were never reassigned (objects/arrays only had property assignments), so all were replaced with `const`:
+
+| Function | Variables | Declared As |
+|----------|-----------|-------------|
+| `onInputChange` | `field`, `value`, `form` | `const` |
+| `onToggleSwitch` | `field`, `form` | `const` |
+| `onPortChange` | `index`, `form`, `isSSL` | `const` |
+| `onVersionChange` | `index`, `form` | `const` |
+| `onCipherChange` | `index`, `form` | `const` |
+| `onApplyCustomPort` | `form` | `const` |
+| `onGenerate` | `form`, `inputs`, `validationErrors`, `errorsMap`, `config` | `const` |
+| `_updatePortLabel` | `labels`, `portLabel` | `const` |
+
+Total: 20 replacements, all `const`, 0 `let`, 0 `var`.
+
+## Files Changed
+
+- **Created:** `pages/nginx-gen/nginx-gen.js` (233 lines)

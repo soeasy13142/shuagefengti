@@ -22,6 +22,11 @@
         <view class="field-picker">{{portLabel}}</view>
       </picker>
     </view>
+    <view class="field-group" wx:if="{{portIndex === 2}}">
+      <text class="field-label">自定义端口</text>
+      <input class="field-input" placeholder="8080" value="{{customPort}}" bindinput="onCustomPortInput" />
+      <view class="btn-small" bindtap="onApplyCustomPort" style="margin-top:10rpx;background:#cc785c;color:#faf9f5;padding:16rpx 24rpx;border-radius:16rpx;text-align:center;font-size:26rpx;display:inline-block;">应用</view>
+    </view>
     <view class="field-group" wx:if="{{form.enableSSL}}">
       <text class="field-label">SSL 证书路径<text class="field-required">*</text></text>
       <input class="field-input {{errors.sslCertPath ? 'error' : ''}}"

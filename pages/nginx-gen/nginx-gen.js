@@ -174,6 +174,11 @@ Page({
       enableCatchAll: form.enableCatchAll,
     };
 
+    // Auto-prefix proxyPass if missing protocol
+    if (inputs.proxyPass && !/^https?:\/\//.test(inputs.proxyPass)) {
+      inputs.proxyPass = 'http://' + inputs.proxyPass;
+    }
+
     // Validate
     const validationErrors = validateInputs(inputs);
     const errorsMap = {};
