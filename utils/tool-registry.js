@@ -275,10 +275,14 @@ const TOOLS = [
     category: 'os',
     name: '磁盘调度可视化',
     icon: '',
-    description: 'SCAN/C-SCAN/LOOK · 磁头移动',
-    route: '/pages/disk-sched/disk-sched',
-    available: false,
+    description: 'SCAN/C-SCAN/LOOK/C-LOOK · 磁头移动路径',
+    route: '/package-tools/disk-sched/disk-sched',
+    available: true,
     featured: false,
+    tagline: '4 种磁盘调度算法，可视化磁头移动',
+    taglineDetail: 'SCAN、C-SCAN、LOOK、C-LOOK 四种算法切换，磁头移动动画回放，总寻道长度/平均寻道长度实时计算，多算法一键对比',
+    tags: ['#可视化', '#交互式', '#操作系统'],
+    difficulty: 'medium',
     order: 4
   },
   {

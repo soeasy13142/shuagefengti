@@ -24,7 +24,7 @@
 
 ## 二、工具级设计文档（20 份）
 
-### ✅ 已实现（6 份）
+### ✅ 已实现（7 份）
 
 对应 spec 已完成、页面已上线、`tool-registry.js` 中 `available: true`。
 
@@ -34,10 +34,11 @@
 | `2026-07-12-sha256-design.md` | SHA-256 演示 | 密码学 |
 | `2026-07-12-bplus-tree-design.md` | B+ 树可视化 | 算法 & 数据结构 |
 | `2026-07-19-deadlock-design.md` | 死锁模拟器 | 操作系统 |
+| `2026-07-19-disk-sched-design.md` | 磁盘调度可视化 | 操作系统 |
 
 另外 4 个已上线工具（subnet-calc、tcp-viz、sort-viz、ds-viz）在本目录没有独立的 spec 文件——它们是在 brainstroming 工作流建立之前开发的。
 
-### 📋 待实现（16 份）
+### 📋 待实现（15 份）
 
 对应 spec 已就绪、但软件尚未开发、`tool-registry.js` 中 `available: false`。
 
@@ -56,7 +57,6 @@
 |---|---|---|
 | `2026-07-12-cpu-scheduling-design.md` | 进程调度可视化 | FCFS/SJF/RR/MFQ + 甘特图，**已有完整实施 plan** |
 | `2026-07-19-mem-paging-design.md` | 内存分页可视化 | 页表查询 + LRU/FIFO 置换 |
-| `2026-07-19-disk-sched-design.md` | 磁盘调度可视化 | SCAN/C-SCAN/LOOK/C-LOOK |
 | `2026-07-19-sync-viz-design.md` | 同步互斥演示 | 生产者-消费者 + PV 操作 |
 
 #### 密码学
