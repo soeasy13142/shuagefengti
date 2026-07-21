@@ -24,6 +24,7 @@
       "sha256-viz/sha256-viz",
       "deadlock/deadlock",
       "disk-sched/disk-sched",
+      "mem-paging/mem-paging",
       "nginx-gen/nginx-gen"
     ]
   }],

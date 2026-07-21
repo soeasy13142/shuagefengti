@@ -236,9 +236,13 @@ const TOOLS = [
     name: '内存分页可视化',
     icon: '',
     description: '页表 · 缺页中断 · LRU/FIFO',
-    route: '/pages/mem-paging/mem-paging',
-    available: false,
+    route: '/package-tools/mem-paging/mem-paging',
+    available: true,
     featured: false,
+    tagline: '逻辑地址到物理地址转换，缺页中断与置换算法动画',
+    taglineDetail: '配置页大小/帧数，输入逻辑地址序列，逐步骤动画展示地址分解、页表查询、缺页中断、LRU/FIFO 置换过程，实时计算缺页率',
+    tags: ['#可视化', '#交互式', '#操作系统'],
+    difficulty: 'medium',
     order: 2
   },
   {
