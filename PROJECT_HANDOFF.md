@@ -241,6 +241,23 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 参见：
 - 全部 spec 位于 `docs/superpowers/specs/2026-07-19-*.md`
 
+### 2026-07-21 · Nginx 最小配置生成器上线
+
+**变更内容**
+- 新增 `pages/nginx-gen/` 页面（4 文件）
+- 新增 `utils/nginx-generator.js` 纯函数模块（generateConfig + validateInputs）
+- 新增 2 个测试文件（generator 单元 + 页面集成）
+- `utils/tool-registry.js` 在 network 分类下新增 `nginx-gen`（available: true, featured: true）
+- `app.json` 注册新页面
+- 新增 `docs/handoff/modules/nginx-gen.md` 模块文档
+
+**功能**
+- 3 段折叠式表单：必填→常用→高级
+- 支持 HTTPS 站点 / HTTP 站点 / 反向代理 / HTTP→HTTPS 跳转
+- 条件输出 SSL / root / proxy / redirect / catch-all 各区块
+- Mozilla Intermediate SSL 默认配置 + OCSP / HSTS / 安全头
+- 一键复制到剪贴板 + 部署检查清单
+
 ### 2026-07-12 · B+ 树可视化上线
 
 **变更内容**
