@@ -1,0 +1,279 @@
+/* ── Page ── */
+page {
+  background-color: #faf9f5;
+  padding-bottom: 40rpx;
+}
+
+.page-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 40rpx;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  color: #141413;
+  padding: 32rpx 32rpx 24rpx;
+}
+
+/* ── Sections ── */
+.section {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin: 0 24rpx 20rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.section-label {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #6c6a64;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+}
+
+.section-toggle {
+  font-size: 24rpx;
+  color: #cc785c;
+  font-weight: 500;
+}
+
+.section-body {
+  margin-top: 20rpx;
+  border-top: 1rpx solid #e6dfd8;
+  padding-top: 20rpx;
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: 24rpx;
+}
+
+.field-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #141413;
+  margin-bottom: 10rpx;
+}
+
+.field-required {
+  color: #e74c3c;
+  margin-left: 4rpx;
+}
+
+.field-input {
+  width: 100%;
+  height: 80rpx;
+  background: #faf9f5;
+  border: 2rpx solid #ddd7cc;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #141413;
+  box-sizing: border-box;
+}
+
+.field-input::placeholder {
+  color: #b0aba0;
+  font-size: 26rpx;
+}
+
+.field-input.error {
+  border-color: #e74c3c;
+}
+
+.field-input:focus {
+  border-color: #cc785c;
+}
+
+.field-error {
+  font-size: 22rpx;
+  color: #e74c3c;
+  margin-top: 6rpx;
+  padding-left: 4rpx;
+}
+
+/* ── Picker ── */
+.field-picker {
+  width: 100%;
+  height: 80rpx;
+  background: #faf9f5;
+  border: 2rpx solid #ddd7cc;
+  border-radius: 16rpx;
+  line-height: 80rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #141413;
+  box-sizing: border-box;
+}
+
+/* ── Toggle Switch ── */
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.toggle-label {
+  font-size: 26rpx;
+  color: #141413;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 88rpx;
+  height: 48rpx;
+}
+
+.toggle-track {
+  width: 88rpx;
+  height: 48rpx;
+  background: #ddd7cc;
+  border-radius: 24rpx;
+  transition: background 0.2s;
+}
+
+.toggle-track.active {
+  background: #cc785c;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.toggle-thumb.active {
+  transform: translateX(40rpx);
+}
+
+/* ── Buttons ── */
+.btn-row {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.btn-primary {
+  flex: 1;
+  background: #cc785c;
+  color: #faf9f5;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.btn-primary:active {
+  background: #a9583e;
+}
+
+.btn-secondary {
+  flex: 0 0 120rpx;
+  background: #efe9de;
+  color: #141413;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+}
+
+.btn-secondary:active {
+  background: #ddd7cc;
+}
+
+/* ── Config Preview ── */
+.preview-section {
+  margin: 0 24rpx 20rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: #181715;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: #222120;
+}
+
+.preview-title {
+  font-size: 24rpx;
+  color: #faf9f5;
+  font-weight: 500;
+}
+
+.preview-badge {
+  font-size: 20rpx;
+  color: #6c6a64;
+  background: #2a2928;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.preview-body {
+  padding: 24rpx;
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.preview-code {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 22rpx;
+  line-height: 1.8;
+  color: #e8e0d2;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.preview-empty {
+  padding: 60rpx 0;
+  text-align: center;
+  color: #6c6a64;
+  font-size: 26rpx;
+}
+
+/* ── Tips ── */
+.tips-box {
+  margin: 0 24rpx 20rpx;
+  padding: 20rpx 24rpx;
+  background: #efe9de;
+  border-radius: 16rpx;
+}
+
+.tips-title {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #141413;
+  margin-bottom: 10rpx;
+}
+
+.tips-item {
+  font-size: 22rpx;
+  color: #6c6a64;
+  line-height: 1.6;
+  padding-left: 16rpx;
+  margin-bottom: 4rpx;
+}
+
+/* ── Other ── */
+.hidden {
+  display: none;
+}
