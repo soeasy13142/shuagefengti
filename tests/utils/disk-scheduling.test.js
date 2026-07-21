@@ -37,6 +37,13 @@ describe('scan', () => {
     expect(result.totalSeek).toBe(25 + 124);
   });
 
+  test('SCAN request at start position is not visited twice', () => {
+    const result = scan([50, 98], 50, 'up');
+    // 50 is the start position — should not appear again in path
+    expect(result.path).toEqual([50, 98, 199]);
+    expect(result.totalSeek).toBe(48 + 101);
+  });
+
   test('SCAN empty requests returns path with start only', () => {
     const result = scan([], 50, 'up');
     expect(result.path).toEqual([50]);
@@ -80,6 +87,12 @@ describe('cScan', () => {
     expect(result.path).toEqual([50]);
     expect(result.totalSeek).toBe(0);
   });
+
+  test('C-SCAN request at start position is not visited twice', () => {
+    const result = cScan([50, 98], 50, 'up');
+    expect(result.path).toEqual([50, 98, 199, 0]);
+    expect(result.totalSeek).toBe(48 + 101 + 199);
+  });
 });
 
 describe('look', () => {
@@ -115,6 +128,12 @@ describe('look', () => {
     const result = look([], 50, 'up');
     expect(result.path).toEqual([50]);
     expect(result.totalSeek).toBe(0);
+  });
+
+  test('LOOK request at start position is not visited twice', () => {
+    const result = look([50, 98], 50, 'up');
+    expect(result.path).toEqual([50, 98]);
+    expect(result.totalSeek).toBe(48);
   });
 });
 
@@ -165,6 +184,12 @@ describe('cLook', () => {
     const result = cLook([], 50, 'up');
     expect(result.path).toEqual([50]);
     expect(result.totalSeek).toBe(0);
+  });
+
+  test('C-LOOK request at start position is not visited twice', () => {
+    const result = cLook([50, 98], 50, 'up');
+    expect(result.path).toEqual([50, 98]);
+    expect(result.totalSeek).toBe(48);
   });
 });
 

@@ -25,7 +25,7 @@ function scan(requests, start, direction) {
   }
 
   const sorted = [...requests].sort((a, b) => a - b);
-  const up = sorted.filter(r => r >= start);
+  const up = sorted.filter(r => r > start);
   const down = [...sorted.filter(r => r < start)].reverse();
 
   const path = [start];
@@ -66,7 +66,7 @@ function cScan(requests, start, direction) {
   }
 
   const sorted = [...requests].sort((a, b) => a - b);
-  const up = sorted.filter(r => r >= start);
+  const up = sorted.filter(r => r > start);
   const down = sorted.filter(r => r < start);
 
   const path = [start];
@@ -106,7 +106,7 @@ function look(requests, start, direction) {
   }
 
   const sorted = [...requests].sort((a, b) => a - b);
-  const up = sorted.filter(r => r >= start);
+  const up = sorted.filter(r => r > start);
   const down = [...sorted.filter(r => r < start)].reverse();
 
   const path = [start];
@@ -142,7 +142,7 @@ function cLook(requests, start, direction) {
   }
 
   const sorted = [...requests].sort((a, b) => a - b);
-  const up = sorted.filter(r => r >= start);
+  const up = sorted.filter(r => r > start);
   const down = sorted.filter(r => r < start);
 
   const path = [start];
@@ -181,14 +181,16 @@ const _ALGO_MAP = { scan, cScan, look, cLook };
  * @param {number[]} requests
  * @param {number} start
  * @param {string[]} algorithms - ['scan', 'cScan', 'look', 'cLook']
+ * @param {'up'|'down'} [direction='up'] - 方向
  * @returns {Object<string, { totalSeek: number, path: number[] }>}
  */
-function compareAlgorithms(requests, start, algorithms) {
+function compareAlgorithms(requests, start, algorithms, direction) {
+  const dir = direction || 'up';
   const result = {};
   for (const name of algorithms) {
     const fn = _ALGO_MAP[name];
     if (fn) {
-      const r = fn(requests, start, 'up');
+      const r = fn(requests, start, dir);
       result[name] = { totalSeek: r.totalSeek, path: r.path };
     }
   }

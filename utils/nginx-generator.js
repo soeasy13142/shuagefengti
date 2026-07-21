@@ -45,7 +45,7 @@ function _listenLine(inputs, ipv6) {
   const port = inputs.listenPort;
   let line = prefix + port;
 
-  if (inputs.enableSSL && port === '443') {
+  if (inputs.enableSSL) {
     line += ' ssl';
     if (inputs.http2Enabled && inputs.nginxVersion === 'legacy') {
       line += ' http2';
@@ -302,11 +302,6 @@ function validateInputs(inputs) {
   const port = parseInt(inputs.listenPort, 10);
   if (isNaN(port) || port < 1 || port > 65535) {
     errors.push({ field: 'listenPort', message: '端口范围 1-65535' });
-  }
-
-  // SSL port check
-  if (inputs.enableSSL && inputs.listenPort !== '443') {
-    errors.push({ field: 'listenPort', message: 'SSL 只能在 443 端口启用' });
   }
 
   // SSL paths

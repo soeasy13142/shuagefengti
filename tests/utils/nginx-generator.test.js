@@ -260,7 +260,7 @@ describe('validateInputs', () => {
     expect(errors.some(e => e.field === 'listenPort')).toBe(true);
   });
 
-  test('returns error when SSL enabled on non-443 port', () => {
+  test('ssl cert/key errors are reported regardless of port', () => {
     const errors = validateInputs({
       serverName: 'example.com',
       listenPort: '80',
@@ -271,7 +271,8 @@ describe('validateInputs', () => {
       proxyPass: '',
       clientMaxBodySize: '',
     });
-    expect(errors.some(e => e.field === 'listenPort')).toBe(true);
+    expect(errors.some(e => e.field === 'sslCertPath')).toBe(true);
+    expect(errors.some(e => e.field === 'sslKeyPath')).toBe(true);
   });
 
   test('returns error for missing SSL paths when enableSSL is true', () => {

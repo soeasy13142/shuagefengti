@@ -135,12 +135,13 @@ Page({
       const seen = wx.getStorageSync('help_seen_deadlock');
       if (!seen) {
         this.setData({ helpVisible: true });
-        const timer = setTimeout(() => {
+        this._helpCloseTimer = setTimeout(() => {
+          // 只在用户未主动关闭时才自动关闭
+          if (!this.data.helpVisible) return;
           this.setData({ helpVisible: false });
           try {
             wx.setStorageSync('help_seen_deadlock', true);
           } catch (e) { /* 静默降级 */ }
-          clearTimeout(timer);
         }, 5000);
       }
     } catch (e) {
@@ -149,6 +150,11 @@ Page({
   },
 
   onHelpToggle: function(e) {
+    // 用户主动操作时取消自动关闭计时器
+    if (this._helpCloseTimer) {
+      clearTimeout(this._helpCloseTimer);
+      this._helpCloseTimer = null;
+    }
     this.setData({ helpVisible: e.detail.visible });
   },
 

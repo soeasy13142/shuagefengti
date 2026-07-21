@@ -159,7 +159,7 @@ Page({
     if (!requests) return;
 
     const results = compareAlgorithms(requests, parseInt(this.data.startPos, 10) || 0,
-      ['scan', 'cScan', 'look', 'cLook']);
+      ['scan', 'cScan', 'look', 'cLook'], this.data.direction);
     const comparison = Object.entries(results).map(([name, r]) => ({
       name,
       displayName: ALGO_DISPLAY[name] || name,
