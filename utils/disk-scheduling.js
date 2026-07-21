@@ -26,7 +26,7 @@ function scan(requests, start, direction) {
 
   const sorted = [...requests].sort((a, b) => a - b);
   const up = sorted.filter(r => r >= start);
-  const down = sorted.filter(r => r < start).reverse();
+  const down = [...sorted.filter(r => r < start)].reverse();
 
   const path = [start];
   const steps = [];
@@ -107,7 +107,7 @@ function look(requests, start, direction) {
 
   const sorted = [...requests].sort((a, b) => a - b);
   const up = sorted.filter(r => r >= start);
-  const down = sorted.filter(r => r < start).reverse();
+  const down = [...sorted.filter(r => r < start)].reverse();
 
   const path = [start];
   const steps = [];

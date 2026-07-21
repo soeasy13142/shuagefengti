@@ -1,6 +1,5 @@
 const { scan, cScan, look, cLook, compareAlgorithms } = require('../../utils/disk-scheduling');
 
-const ALGOS = ['scan', 'cScan', 'look', 'cLook'];
 const ALGO_DISPLAY = {
   scan: 'SCAN',
   cScan: 'C-SCAN',
