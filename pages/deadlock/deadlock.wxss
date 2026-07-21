@@ -92,6 +92,13 @@
   padding: 60rpx 0;
 }
 
+.empty-step {
+  display: block;
+  font-size: 26rpx;
+  color: #6c6a64;
+  line-height: 1.8;
+}
+
 /* ── Nodes ── */
 .node {
   position: absolute;
@@ -338,6 +345,19 @@
   color: #cc785c;
 }
 
+.preset-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.preset-hint {
+  font-size: 20rpx;
+  color: #6c6a64;
+  opacity: 0.7;
+}
+
 /* ── Process/Resource Lists ── */
 .node-list {
   display: flex;
@@ -382,33 +402,3 @@
   font-size: 20rpx;
 }
 
-/* ── 底部帮助栏 ── */
-.bottom-help-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 88rpx;
-  background: #efe9de;
-  border-top: 2rpx solid #ddd7cc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10rpx;
-  z-index: 100;
-}
-
-.bottom-help-bar:active {
-  opacity: 0.6;
-}
-
-.help-bar-icon {
-  font-size: 30rpx;
-  color: #6c6a64;
-  font-weight: 600;
-}
-
-.help-bar-text {
-  font-size: 24rpx;
-  color: #6c6a64;
-}

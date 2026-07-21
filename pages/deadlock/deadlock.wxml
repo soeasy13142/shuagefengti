@@ -1,10 +1,11 @@
 <!-- pages/deadlock/deadlock.wxml -->
 <view class="page">
-  <!-- 使用说明弹窗 -->
-  <intro-modal
-    show="{{showIntro}}"
-    introContent="{{introContent}}"
-    bind:close="onIntroClose"
+  <!-- 帮助面板 -->
+  <tool-help-panel
+    content="{{helpContent}}"
+    activeMode="{{mode}}"
+    visible="{{helpVisible}}"
+    bind:toggle="onHelpToggle"
   />
 
   <!-- Tab Bar -->
@@ -17,7 +18,10 @@
   <block wx:if="{{mode === 'rag'}}">
     <!-- Presets -->
     <view class="presets-row">
-      <view class="preset-btn" wx:for="{{presets}}" wx:key="index" bindtap="loadPreset" data-index="{{index}}">{{item.name}}</view>
+      <view class="preset-wrapper" wx:for="{{presets}}" wx:key="index" bindtap="loadPreset" data-index="{{index}}">
+        <view class="preset-btn">{{item.name}}</view>
+        <text class="preset-hint">{{item.hint}}</text>
+      </view>
     </view>
 
     <!-- Controls -->
@@ -47,7 +51,9 @@
     <!-- Canvas Area -->
     <view class="canvas-area" id="canvasArea">
       <view wx:if="{{rag.processes.length === 0 && rag.resources.length === 0}}" class="canvas-empty">
-        点击 [+ 进程] 和 [+ 资源] 开始构建资源分配图
+        <text class="empty-step">① 点击 [+进程] 添加进程节点</text>
+        <text class="empty-step">② 点击 [+资源] 添加资源节点</text>
+        <text class="empty-step">③ 选择边类型 → 依次点两个节点建立连线</text>
       </view>
 
       <!-- Edge lines (SVG overlay) -->
@@ -225,10 +231,4 @@
       </view>
     </view>
   </block>
-</view>
-
-<!-- 底部帮助栏 -->
-<view class="bottom-help-bar" bindtap="showIntro">
-  <text class="help-bar-icon">?</text>
-  <text class="help-bar-text">使用说明</text>
 </view>
