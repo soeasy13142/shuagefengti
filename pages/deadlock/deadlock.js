@@ -149,10 +149,6 @@ Page({
     }
   },
 
-  onHelpTrigger: function() {
-    this.setData({ helpVisible: !this.data.helpVisible });
-  },
-
   onHelpToggle: function(e) {
     this.setData({ helpVisible: e.detail.visible });
   },
