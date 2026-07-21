@@ -1,4 +1,4 @@
-const { scan, cScan } = require('../../utils/disk-scheduling');
+const { scan, cScan, look } = require('../../utils/disk-scheduling');
 
 describe('scan', () => {
   test('SCAN(up) from 50 with requests [98,37,183,14,122]', () => {
@@ -67,6 +67,42 @@ describe('cScan', () => {
 
   test('C-SCAN empty requests returns path with start only', () => {
     const result = cScan([], 50, 'up');
+    expect(result.path).toEqual([50]);
+    expect(result.totalSeek).toBe(0);
+  });
+});
+
+describe('look', () => {
+  test('LOOK(up) from 50 with requests [98,37,183,14,122]', () => {
+    const result = look([98, 37, 183, 14, 122], 50, 'up');
+    // path: 50→98→122→183→(转向)→37→14
+    // 注意：不到 199
+    expect(result.path).toEqual([50, 98, 122, 183, 37, 14]);
+    expect(result.totalSeek).toBe(48 + 24 + 61 + 146 + 23);
+  });
+
+  test('LOOK(down) from 50 with same requests', () => {
+    const result = look([98, 37, 183, 14, 122], 50, 'down');
+    // path: 50→37→14→(转向)→98→122→183
+    // 注意：不到 0
+    expect(result.path).toEqual([50, 37, 14, 98, 122, 183]);
+  });
+
+  test('LOOK(up) single request above start', () => {
+    const result = look([120], 50, 'up');
+    expect(result.path).toEqual([50, 120]);
+    expect(result.totalSeek).toBe(70);
+  });
+
+  test('LOOK(up) single request below start', () => {
+    const result = look([20], 50, 'up');
+    // go up first but nothing above → still go find below
+    expect(result.path).toEqual([50, 20]);
+    expect(result.totalSeek).toBe(30);
+  });
+
+  test('LOOK empty requests returns path with start only', () => {
+    const result = look([], 50, 'up');
     expect(result.path).toEqual([50]);
     expect(result.totalSeek).toBe(0);
   });

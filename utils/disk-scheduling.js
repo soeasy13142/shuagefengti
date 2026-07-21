@@ -96,4 +96,40 @@ function cScan(requests, start, direction) {
   return { path, totalSeek, steps };
 }
 
-module.exports = { scan, cScan };
+/**
+ * LOOK 算法
+ * 扫描到最远请求即转向，不扫到底
+ */
+function look(requests, start, direction) {
+  if (!Array.isArray(requests) || requests.length === 0) {
+    return { path: [start], totalSeek: 0, steps: [] };
+  }
+
+  const sorted = [...requests].sort((a, b) => a - b);
+  const up = sorted.filter(r => r >= start);
+  const down = sorted.filter(r => r < start).reverse();
+
+  const path = [start];
+  const steps = [];
+  let current = start;
+
+  function moveTo(target) {
+    const seek = Math.abs(target - current);
+    steps.push({ from: current, to: target, seek });
+    path.push(target);
+    current = target;
+  }
+
+  if (direction === 'up') {
+    for (const r of up) moveTo(r);
+    for (const r of down) moveTo(r);
+  } else {
+    for (const r of down) moveTo(r);
+    for (const r of up) moveTo(r);
+  }
+
+  const totalSeek = steps.reduce((sum, s) => sum + s.seek, 0);
+  return { path, totalSeek, steps };
+}
+
+module.exports = { scan, cScan, look };
