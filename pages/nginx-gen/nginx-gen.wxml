@@ -1,0 +1,245 @@
+<view class="page-title">🔒 Nginx 配置生成器</view>
+
+<!-- ── Section: 必填 ── -->
+<view class="section">
+  <view class="section-header" bindtap="onToggleBasic">
+    <text class="section-label">必填</text>
+    <text class="section-toggle">{{showBasic ? '收起' : '展开'}}</text>
+  </view>
+  <view class="section-body" wx:if="{{showBasic}}">
+    <view class="field-group">
+      <text class="field-label">域名<text class="field-required">*</text></text>
+      <input class="field-input {{errors.serverName ? 'error' : ''}}"
+        placeholder="example.com"
+        value="{{form.serverName}}"
+        data-field="serverName"
+        bindinput="onInputChange" />
+      <text class="field-error" wx:if="{{errors.serverName}}">{{errors.serverName}}</text>
+    </view>
+    <view class="field-group">
+      <text class="field-label">端口</text>
+      <picker mode="selector" range="{{portOptions}}" value="{{portIndex}}" bindchange="onPortChange">
+        <view class="field-picker">{{portLabel}}</view>
+      </picker>
+    </view>
+    <view class="field-group" wx:if="{{form.enableSSL}}">
+      <text class="field-label">SSL 证书路径<text class="field-required">*</text></text>
+      <input class="field-input {{errors.sslCertPath ? 'error' : ''}}"
+        placeholder="/etc/letsencrypt/live/example.com/fullchain.pem"
+        value="{{form.sslCertPath}}"
+        data-field="sslCertPath"
+        bindinput="onInputChange" />
+      <text class="field-error" wx:if="{{errors.sslCertPath}}">{{errors.sslCertPath}}</text>
+    </view>
+    <view class="field-group" wx:if="{{form.enableSSL}}">
+      <text class="field-label">SSL 密钥路径<text class="field-required">*</text></text>
+      <input class="field-input {{errors.sslKeyPath ? 'error' : ''}}"
+        placeholder="/etc/letsencrypt/live/example.com/privkey.pem"
+        value="{{form.sslKeyPath}}"
+        data-field="sslKeyPath"
+        bindinput="onInputChange" />
+      <text class="field-error" wx:if="{{errors.sslKeyPath}}">{{errors.sslKeyPath}}</text>
+    </view>
+  </view>
+</view>
+
+<!-- ── Section: 常用 ── -->
+<view class="section">
+  <view class="section-header" bindtap="onToggleCommon">
+    <text class="section-label">常用</text>
+    <text class="section-toggle">{{showCommon ? '收起' : '展开'}}</text>
+  </view>
+  <view class="section-body" wx:if="{{showCommon}}">
+    <view class="field-group">
+      <text class="field-label">Root 目录</text>
+      <input class="field-input {{errors.rootDir ? 'error' : ''}}"
+        placeholder="/var/www/html"
+        value="{{form.rootDir}}"
+        data-field="rootDir"
+        bindinput="onInputChange" />
+      <text class="field-error" wx:if="{{errors.rootDir}}">{{errors.rootDir}}</text>
+    </view>
+    <view class="field-group">
+      <text class="field-label">索引文件</text>
+      <input class="field-input"
+        placeholder="index.html index.htm"
+        value="{{form.indexFiles}}"
+        data-field="indexFiles"
+        bindinput="onInputChange" />
+    </view>
+    <view class="field-group">
+      <text class="field-label">反向代理 URL</text>
+      <input class="field-input {{errors.proxyPass ? 'error' : ''}}"
+        placeholder="http://localhost:3000"
+        value="{{form.proxyPass}}"
+        data-field="proxyPass"
+        bindinput="onInputChange" />
+      <text class="field-error" wx:if="{{errors.proxyPass}}">{{errors.proxyPass}}</text>
+    </view>
+    <view class="toggle-row">
+      <text class="toggle-label">自动 HTTP→HTTPS 跳转</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="enableRedirect">
+        <view class="toggle-track {{form.enableRedirect ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.enableRedirect ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- ── Section: 高级 ── -->
+<view class="section">
+  <view class="section-header" bindtap="onToggleAdvanced">
+    <text class="section-label">高级</text>
+    <text class="section-toggle">{{showAdvanced ? '收起' : '展开'}}</text>
+  </view>
+  <view class="section-body" wx:if="{{showAdvanced}}">
+    <view class="field-group">
+      <text class="field-label">Nginx 版本</text>
+      <picker mode="selector" range="{{versionOptions}}" value="{{versionIndex}}" bindchange="onVersionChange">
+        <view class="field-picker">{{versionLabel}}</view>
+      </picker>
+    </view>
+    <view class="field-group" wx:if="{{form.enableSSL}}">
+      <text class="field-label">SSL 配置预设</text>
+      <picker mode="selector" range="{{cipherOptions}}" value="{{cipherIndex}}" bindchange="onCipherChange">
+        <view class="field-picker">{{cipherLabel}}</view>
+      </picker>
+    </view>
+    <view class="field-group" wx:if="{{form.enableSSL}}">
+      <text class="field-label">SSL 协议</text>
+      <input class="field-input"
+        placeholder="TLSv1.2 TLSv1.3"
+        value="{{form.sslProtocols}}"
+        data-field="sslProtocols"
+        bindinput="onInputChange" />
+    </view>
+    <view class="field-group" wx:if="{{form.enableSSL}}">
+      <text class="field-label">SSL Ciphers（留空=使用预设）</text>
+      <input class="field-input"
+        placeholder="留空自动"
+        value="{{form.sslCiphers}}"
+        data-field="sslCiphers"
+        bindinput="onInputChange" />
+    </view>
+    <view class="toggle-row" wx:if="{{form.enableSSL}}">
+      <text class="toggle-label">OCSP Stapling</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="enableOCSPStapling">
+        <view class="toggle-track {{form.enableOCSPStapling ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.enableOCSPStapling ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="toggle-row" wx:if="{{form.enableSSL}}">
+      <text class="toggle-label">HTTP/2</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="http2Enabled">
+        <view class="toggle-track {{form.http2Enabled ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.http2Enabled ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="field-group">
+      <text class="field-label">Client Max Body Size</text>
+      <input class="field-input {{errors.clientMaxBodySize ? 'error' : ''}}"
+        placeholder="10m"
+        value="{{form.clientMaxBodySize}}"
+        data-field="clientMaxBodySize"
+        bindinput="onInputChange" />
+      <text class="field-error" wx:if="{{errors.clientMaxBodySize}}">{{errors.clientMaxBodySize}}</text>
+    </view>
+    <view class="toggle-row">
+      <text class="toggle-label">HSTS</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="enableHSTS">
+        <view class="toggle-track {{form.enableHSTS ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.enableHSTS ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="toggle-row" wx:if="{{form.enableHSTS}}">
+      <text class="toggle-label">HSTS Preload（不可逆！）</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="hstsPreload">
+        <view class="toggle-track {{form.hstsPreload ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.hstsPreload ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="toggle-row">
+      <text class="toggle-label">X-Content-Type-Options</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="enableXContentTypeOptions">
+        <view class="toggle-track {{form.enableXContentTypeOptions ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.enableXContentTypeOptions ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="toggle-row">
+      <text class="toggle-label">X-Frame-Options</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="enableXFrameOptions">
+        <view class="toggle-track {{form.enableXFrameOptions ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.enableXFrameOptions ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="toggle-row">
+      <text class="toggle-label">Referrer-Policy</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="enableReferrerPolicy">
+        <view class="toggle-track {{form.enableReferrerPolicy ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.enableReferrerPolicy ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="field-group">
+      <text class="field-label">Access Log 路径</text>
+      <input class="field-input"
+        placeholder="留空=不输出"
+        value="{{form.accessLogPath}}"
+        data-field="accessLogPath"
+        bindinput="onInputChange" />
+    </view>
+    <view class="field-group">
+      <text class="field-label">Error Log 路径</text>
+      <input class="field-input"
+        placeholder="留空=不输出"
+        value="{{form.errorLogPath}}"
+        data-field="errorLogPath"
+        bindinput="onInputChange" />
+    </view>
+    <view class="toggle-row">
+      <text class="toggle-label">生成 Catch-All 默认拦截</text>
+      <view class="toggle-switch" bindtap="onToggleSwitch" data-field="enableCatchAll">
+        <view class="toggle-track {{form.enableCatchAll ? 'active' : ''}}">
+          <view class="toggle-thumb {{form.enableCatchAll ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- ── Buttons ── -->
+<view class="btn-row">
+  <view class="btn-primary" bindtap="onGenerate">🔄 生成配置</view>
+  <view class="btn-secondary" bindtap="onCopy">📋</view>
+</view>
+
+<!-- ── Config Preview ── -->
+<view class="preview-section" wx:if="{{generatedConfig}}">
+  <view class="preview-header">
+    <text class="preview-title">nginx server block</text>
+    <text class="preview-badge">复制即用</text>
+  </view>
+  <view class="preview-body">
+    <text class="preview-code">{{generatedConfig}}</text>
+  </view>
+</view>
+
+<!-- ── Tips ── -->
+<view class="tips-box" wx:if="{{generatedConfig}}">
+  <text class="tips-title">部署前检查</text>
+  <text class="tips-item">• 私钥文件权限应为 600 或 640</text>
+  <text class="tips-item">• 确认 nginx -t 测试通过后再 reload</text>
+  <text class="tips-item">• 证书路径建议用 Let's Encrypt live/ 目录</text>
+  <text class="tips-item">• 端口 < 1024 需要 root 权限启动</text>
+</view>
+
+<view class="preview-empty" wx:if="{{!generatedConfig && !errors._hasErrors}}">
+  填写表单后点击「生成配置」
+</view>
