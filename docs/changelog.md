@@ -4,6 +4,36 @@
 
 ---
 
+### 2026-07-21 · 页面加载性能优化三阶段
+
+**变更内容**
+
+- **P1: 异步 Storage API** — storage.js 新增 13 个 `*Async` 方法（Promise），保留同步 API
+- **P1: loading-skeleton 组件** — 新增 `components/loading-skeleton/`（card/line/circle 三种骨架）
+- **P2: 6 页面异步加载** — dashboard/records/wrong-questions/record-detail/quiz/import-preview 改为异步读 Storage + loading 骨架屏
+- **P2: 3 页面动态 require** — ds-viz/deadlock/bplus-viz 重 utils 延迟到 onLoad 内加载
+- **P3: 分包** — 10 个工具页从主包移入 `package-tools/` 分包，首包从 20 页降至 10 页
+
+**涉及文件**
+| 文件 | 变更 |
+|------|------|
+| `utils/storage.js` | +13 异步 API 方法 |
+| `components/loading-skeleton/*` | 新增 4 文件 |
+| `pages/dashboard/*` | 异步加载 + 骨架屏 |
+| `pages/records/*` | 同上 |
+| `pages/wrong-questions/*` | 同上 |
+| `pages/record-detail/*` | 同上 |
+| `pages/quiz/*` | 同上 |
+| `pages/import-preview/*` | 同上 |
+| `pages/ds-viz/ds-viz.js` | 动态 require |
+| `pages/deadlock/deadlock.js` | 动态 require |
+| `pages/bplus-viz/bplus-viz.js` | 动态 require |
+| `app.json` | subPackages 配置 |
+| `utils/tool-registry.js` | 路由路径更新 |
+| `package-tools/*/` | 10 页面目录迁入分包 |
+
+---
+
 ### 2026-07-21 · CLAUDE.md 新增 D8：默认用 SubAgent，不问
 
 **变更内容**

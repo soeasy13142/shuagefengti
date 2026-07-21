@@ -36,6 +36,9 @@
 | **Broken** | 无已知问题 |
 | **Blocked** | 无 |
 | **待上线** | 13 个已设计未实现（`tool-registry.js` 中 `available: false`）：TLS/AES/RSA/DH/密码工具箱/HTTP 解析/IP 分片/NAT/内存分页/磁盘调度/同步互斥/编译原理 4 个 |
+| **分包** | 10 个工具页已移入 `package-tools/` 分包，首包从 20 页降到 10 页 |
+| **Storage** | 6 个页面已改为异步读取 + loading-skeleton 骨架屏 |
+| **require** | 3 个可视化页面（ds-viz, deadlock, bplus-viz）改为动态 require |
 
 ---
 
