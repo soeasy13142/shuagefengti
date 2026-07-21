@@ -6,20 +6,39 @@
       <text class="close-icon">✕</text>
     </view>
 
-    <!-- 大标题 -->
-    <view class="modal-header">
-      <text class="modal-title">此工具较为复杂，请阅读使用说明</text>
+    <!-- 步骤图标 -->
+    <view class="step-icon" wx:if="{{introContent.length > 0}}">{{introContent[currentStep].icon}}</view>
+
+    <!-- 步骤标题 -->
+    <view class="step-title" wx:if="{{introContent.length > 0}}">{{introContent[currentStep].title}}</view>
+
+    <!-- 内容轮播 -->
+    <view class="content-carousel">
+      <view class="content-track" style="transform: translateX(-{{currentStep * 100}}%);">
+        <view class="step-panel" wx:for="{{introContent}}" wx:key="index">
+          <text class="step-body">{{item.body}}</text>
+        </view>
+      </view>
     </view>
 
-    <!-- 可滚动内容区 -->
-    <scroll-view class="modal-body" scroll-y>
-      <text class="modal-content">{{introContent}}</text>
-    </scroll-view>
+    <!-- 进度指示 -->
+    <view class="step-progress" wx:if="{{introContent.length > 0}}">
+      <view class="step-dot {{index === currentStep ? 'dot-active' : ''}}"
+        wx:for="{{introContent}}" wx:key="index">
+        <text class="dot-inner">{{index === currentStep ? '●' : '○'}}</text>
+      </view>
+      <text class="step-counter">第 {{currentStep + 1}}/{{totalSteps}} 步</text>
+    </view>
 
-    <!-- 按钮 -->
-    <view class="modal-footer">
-      <view class="modal-btn" bindtap="onEnter">
-        <text class="modal-btn-text">我知道了，开始使用 →</text>
+    <!-- 底部导航 -->
+    <view class="step-nav">
+      <view class="nav-btn nav-prev {{currentStep === 0 ? 'nav-disabled' : ''}}" bindtap="onPrev">
+        <text class="nav-btn-text">上一步</text>
+      </view>
+      <view class="nav-btn nav-next" bindtap="onNext">
+        <text class="nav-btn-text nav-next-text">
+          {{currentStep + 1 >= totalSteps ? '开始使用 ✓' : '下一步 →'}}
+        </text>
       </view>
     </view>
   </view>

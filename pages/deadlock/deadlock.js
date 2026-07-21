@@ -2,29 +2,24 @@
 const { createRag, addProcess, addResource, addEdge, removeNode, removeEdge, getRagErrors, detectDeadlock } = require('../../utils/rag');
 const { calculateNeed, isSafeState } = require('../../utils/bankers');
 
-// ── 使用说明内容 ──
-const DEADLOCK_INTRO = `死锁模拟器是一个交互式教学工具，帮助你直观理解死锁的两种经典分析手段。
-
-━━ 资源分配图（RAG）模式 ━━
-• 点击「+进程」「+资源」添加节点（上限各 5 个）
-• 先选择连线类型（请求边 / 分配边），再依次点击两个节点建立连线
-• 进程→资源 为请求边；资源→进程 为分配边
-• 点击「检测死锁」自动判断当前状态
-• 支持拖拽节点调整布局
-• 内置 3 种预设场景快速体验
-
-━━ 银行家算法模式 ━━
-• 调整进程数和资源类型数，自动生成输入矩阵
-• 在 Max 和 Allocation 单元格中输入数值
-• Need 矩阵自动计算（Max − Allocation）
-• 点击「检测安全性」运行算法
-• 查看安全序列和每步的 Work / Need / Allocation 追踪
-• 内置 3 种预设场景
-
-━━ 结果解读 ━━
-• ✅ 安全状态：显示安全序列，所有进程可顺利完成
-• ❌ 死锁 / 不安全：红色标记死锁进程，显示环路路径
-• 步骤追踪中 ✓ 表示满足条件，✗ 表示不满足`;
+// ── 使用说明内容（分步数据） ──
+const DEADLOCK_STEPS = [
+  {
+    icon: '📖',
+    title: '使用说明 · 概述',
+    body: '死锁模拟器是一个交互式教学工具，帮助你直观理解死锁的两种经典分析手段。通过资源分配图和银行家算法，你可以亲手构建死锁场景并观察检测过程。'
+  },
+  {
+    icon: '🔧',
+    title: '使用说明 · 操作指南',
+    body: '资源分配图（RAG）：点击「+进程」「+资源」添加节点（上限各 5 个）。先选择连线类型，再依次点击两个节点建立连线。点击「检测死锁」自动判断当前状态。支持拖拽节点调整布局。内置 3 种预设场景。\n\n银行家算法：调整进程数和资源类型数，自动生成输入矩阵。在 Max 和 Allocation 单元格中输入数值，Need 矩阵自动计算。点击「检测安全性」运行算法，查看安全序列和步骤追踪。内置 3 种预设场景。'
+  },
+  {
+    icon: '📊',
+    title: '使用说明 · 结果解读',
+    body: '安全状态：显示安全序列，所有进程可顺利完成。\n\n死锁 / 不安全：红色标记死锁进程，显示环路路径。\n\n步骤追踪：[满足] 表示条件成立，[不满足] 表示条件不成立。'
+  }
+];
 
 // ── Presets ──
 const RAG_PRESETS = [
@@ -88,7 +83,7 @@ Page({
   data: {
     mode: 'rag',
     showIntro: false,
-    introContent: '',
+    introContent: [],
     // ── RAG ──
     rag: createRag(),
     selectedNode: null,
@@ -117,7 +112,7 @@ Page({
       const seen = wx.getStorageSync('intro_seen_deadlock');
       if (!seen) {
         this.setData({
-          introContent: DEADLOCK_INTRO,
+          introContent: DEADLOCK_STEPS,
           showIntro: true
         });
       }
@@ -127,8 +122,8 @@ Page({
   },
 
   showIntro: function() {
-    if (!this.data.introContent) {
-      this.setData({ introContent: DEADLOCK_INTRO });
+    if (!this.data.introContent || this.data.introContent.length === 0) {
+      this.setData({ introContent: DEADLOCK_STEPS });
     }
     this.setData({ showIntro: true });
   },
