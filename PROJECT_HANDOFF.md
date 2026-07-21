@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-21 · 死锁模拟器帮助按钮改为底部固定栏
+> 最后更新：2026-07-21 · 使用说明弹窗重设计（向导式分步）
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -93,6 +93,40 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 参见 `CLAUDE.md`。它是项目级事实表，所有 do/don't 与风格约束以它为准。
 
 ## 8. 最近重大变更（变更记录）
+
+### 2026-07-21 · 使用说明弹窗重设计（向导式分步）
+
+**变更内容**
+
+- `intro-modal` 组件从纯文字弹窗改为 3 步向导式分步引导：
+  - 步骤 1 📖 概述 — 工具定位说明
+  - 步骤 2 🔧 操作指南 — RAG + 银行家算法操作要点
+  - 步骤 3 📊 结果解读 — 安全/不安全/步骤追踪怎么看
+- 轮播式内容切换：水平滑动过渡动画（`transform: translateX()`）
+- 底部圆点进度指示 `● ○ ○` + `第 N/3 步` 计数
+- 双按钮导航：第 1 步「上一步」置灰、第 3 步「下一步」变为「开始使用 ✓」
+- 标题/图标/内容卡片分层布局，告别纯文字 `━━` 分隔线
+
+**涉及文件**
+
+| 文件 | 变更 |
+|------|------|
+| `components/intro-modal/intro-modal.js` | property `introContent` 从 String 改为 Array；新增 currentStep/slideClass/totalSteps data；新增 onPrev/onNext/\_goToStep 方法 |
+| `components/intro-modal/intro-modal.wxml` | 改为分步布局：图标 → 标题 → 内容轮播 → 进度点 → 底部导航 |
+| `components/intro-modal/intro-modal.wxss` | 全量重写，新增轮播/进度点/导航按钮/动画等样式 |
+| `pages/deadlock/deadlock.js` | `DEADLOCK_INTRO` → `DEADLOCK_STEPS` 对象数组；introContent 默认值 `''` → `[]` |
+
+**理由**
+
+- 原有纯文字弹窗（`━━` 分隔线 + 全文堆叠）看起来不正式
+- 向导式分步参考成熟 onboarding 模式：一次只看一段，减少认知负担
+- 类型化数据（数组+对象）为后续其他工具复用组件打下基础
+
+**验证**
+
+- `npm test` 705 全绿，44 suites 通过
+- spec: `docs/superpowers/specs/2026-07-21-intro-modal-redesign.md`
+- commit: `4c909ac`
 
 ### 2026-07-21 · 死锁模拟器帮助按钮改为底部固定栏
 
