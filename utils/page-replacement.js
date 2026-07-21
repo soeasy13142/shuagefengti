@@ -3,6 +3,21 @@
  */
 
 /**
+ * 找空闲帧号（0..frameCount-1 中第一个未被占用的）
+ * @param {PageTableEntry[]} pageTable - 页表
+ * @param {number} frameCount - 总帧数
+ * @returns {number|null} 空闲帧号，无空闲时返回 null
+ */
+function _findFreeFrame(pageTable, frameCount) {
+  for (let f = 0; f < frameCount; f++) {
+    if (!pageTable.some(entry => entry.valid && entry.frameNumber === f)) {
+      return f;
+    }
+  }
+  return null;
+}
+
+/**
  * LRU 页面置换：置换最久未访问的页面
  * @param {PageTableEntry[]} pageTable - 当前页表
  * @param {number[]} accessHistory - 已访问的页号序列（按时间顺序，最新在末尾）
@@ -10,21 +25,13 @@
  * @returns {{ evictedPage: number|null, frameNumber: number }}
  */
 function lruReplacement(pageTable, accessHistory, frameCount) {
-  // 找空帧（valid=false 或 frameNumber=null）
-  const emptySlot = pageTable.findIndex(e => !e.valid || e.frameNumber === null);
-  if (emptySlot !== -1) {
-    return { evictedPage: null, frameNumber: emptySlot };
-  }
-
   const validPages = pageTable.filter(e => e.valid && e.frameNumber !== null);
 
-  // 如果有效页数少于总帧数，说明有空闲帧
+  // 如果有效页数少于总帧数，找空闲帧号
   if (validPages.length < frameCount) {
-    const usedFrames = new Set(validPages.map(e => e.frameNumber));
-    for (let f = 0; f < frameCount; f++) {
-      if (!usedFrames.has(f)) {
-        return { evictedPage: null, frameNumber: f };
-      }
+    const freeFrame = _findFreeFrame(pageTable, frameCount);
+    if (freeFrame !== null) {
+      return { evictedPage: null, frameNumber: freeFrame };
     }
   }
 
@@ -67,21 +74,13 @@ function lruReplacement(pageTable, accessHistory, frameCount) {
  * @returns {{ evictedPage: number|null, frameNumber: number }}
  */
 function fifoReplacement(pageTable, loadOrder, frameCount) {
-  // 找空帧
-  const emptySlot = pageTable.findIndex(e => !e.valid || e.frameNumber === null);
-  if (emptySlot !== -1) {
-    return { evictedPage: null, frameNumber: emptySlot };
-  }
-
   const validPages = pageTable.filter(e => e.valid && e.frameNumber !== null);
 
-  // 如果有效页数少于总帧数，说明有空闲帧
+  // 如果有效页数少于总帧数，找空闲帧号
   if (validPages.length < frameCount) {
-    const usedFrames = new Set(validPages.map(e => e.frameNumber));
-    for (let f = 0; f < frameCount; f++) {
-      if (!usedFrames.has(f)) {
-        return { evictedPage: null, frameNumber: f };
-      }
+    const freeFrame = _findFreeFrame(pageTable, frameCount);
+    if (freeFrame !== null) {
+      return { evictedPage: null, frameNumber: freeFrame };
     }
   }
 

@@ -110,7 +110,7 @@ function pagingTransform(addresses, pageSize, initialPageTable, algorithm, frame
       // 命中：已有帧号
       frameNumber = entry.frameNumber;
       physicalAddress = frameNumber * pageSize + offset;
-      entry.accessed = true;
+      pageTable = pageTable.map(e => e === entry ? { ...e, accessed: true } : e);
     } else {
       // 缺页
       totalFaults++;

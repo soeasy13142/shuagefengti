@@ -8,17 +8,9 @@ describe('lruReplacement', () => {
       { pageNumber: 1, frameNumber: 6, valid: true, accessed: true, loaded: 2 },
       { pageNumber: 2, frameNumber: 7, valid: true, accessed: false, loaded: 3 }
     ];
-    // Access history: [0, 1, 2] — page 0 was accessed most recently, page 1 least recently
+    // Access history [0,1,2]: last element is most recent. page0 last seen at index 0 → LRU
     const accessHistory = [0, 1, 2];
     const result = lruReplacement(table, accessHistory, 3);
-    // Access history [0,1,2] means: page 0 was accessed, then page 1, then page 2
-    // So page 0 was most recently used (last access was latest), page 2 was also recently used
-    // Wait: [0,1,2] the LAST element is the most recent access. So 2 is most recent, 0 is least recent
-    // Actually for LRU we look at the last occurrence of each page in accessHistory
-    // page 0: last seen at index 0 → least recent = 0
-    // page 1: last seen at index 1 → 1
-    // page 2: last seen at index 2 → most recent
-    // So page 0 should be evicted as LRU
     expect(result.evictedPage).toBe(0);
     expect(typeof result.frameNumber).toBe('number');
   });
