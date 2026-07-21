@@ -1,6 +1,3 @@
-const bst = require('../../utils/bst');
-const hashTable = require('../../utils/hash-table');
-const graph = require('../../utils/graph');
 
 const NODE_R = 20;
 const CANVAS_W = 600;
@@ -60,6 +57,9 @@ Page({
 
   onLoad: function() {
     const self = this;
+    if (!this._bst) { this._bst = require('../../utils/bst'); }
+    if (!this._graph) { this._graph = require('../../utils/graph'); }
+    if (!this._hashTable) { this._hashTable = require('../../utils/hash-table'); }
     this._ctx = wx.createCanvasContext('vizCanvas', this);
     setTimeout(function() { self._canvasReady = true; }, 200);
   },
@@ -72,7 +72,7 @@ Page({
     this._stopTimer();
     this.setData({ currentMode: mode, ready: false, playing: false, paused: false, steps: [], stepIndex: -1, stepDesc: '', dragX: 0, dragY: 0 });
     if (mode === 'hash' && !this.data.hashTable) {
-      this.setData({ hashTable: hashTable.createHashTable(this.data.hashTableSize) });
+      this.setData({ hashTable: this._hashTable.createHashTable(this.data.hashTableSize) });
     }
     if (mode === 'graph' && !this.data.graphData) {
       this._initGraph();
@@ -155,7 +155,7 @@ Page({
       this._drawCanvas();
       return;
     }
-    const layout = bst.layoutTree(root);
+    const layout = this._bst.layoutTree(root);
     this.setData({
       bstNodes: layout.nodes,
       bstEdges: layout.edges,
@@ -285,7 +285,7 @@ Page({
       return;
     }
     this._stopTimer();
-    const result = bst.insertNode(this.data.bstRoot, num);
+    const result = this._bst.insertNode(this.data.bstRoot, num);
     this.setData({ bstRoot: result.root, bstInput: '' });
     this._syncBstRender(result.root);
     this.setData({ steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '插入 ' + num + '，点击 ▶ 播放', playing: false, paused: false });
@@ -296,7 +296,7 @@ Page({
     if (isNaN(num)) { wx.showToast({ title: '请输入数字', icon: 'none' }); return; }
     if (!this.data.bstRoot) { wx.showToast({ title: '树为空', icon: 'none' }); return; }
     this._stopTimer();
-    const steps = bst.searchNode(this.data.bstRoot, num);
+    const steps = this._bst.searchNode(this.data.bstRoot, num);
     this._resetHighlights();
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: '查找 ' + num + '，点击 ▶ 播放', playing: false, paused: false });
   },
@@ -306,7 +306,7 @@ Page({
     if (isNaN(num)) { wx.showToast({ title: '请输入数字', icon: 'none' }); return; }
     if (!this.data.bstRoot) { wx.showToast({ title: '树为空', icon: 'none' }); return; }
     this._stopTimer();
-    const result = bst.deleteNode(this.data.bstRoot, num);
+    const result = this._bst.deleteNode(this.data.bstRoot, num);
     this.setData({ bstRoot: result.root, bstInput: '' });
     this._syncBstRender(result.root);
     this.setData({ steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '删除 ' + num + '，点击 ▶ 播放', playing: false, paused: false });
@@ -316,7 +316,7 @@ Page({
     if (!this.data.bstRoot) { wx.showToast({ title: '树为空', icon: 'none' }); return; }
     this._stopTimer();
     const order = e.currentTarget.dataset.order;
-    const steps = bst.traverseTree(this.data.bstRoot, order);
+    const steps = this._bst.traverseTree(this.data.bstRoot, order);
     this._resetHighlights();
     const names = { pre: '前序', in: '中序', post: '后序', level: '层序' };
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: names[order] + '遍历，点击 ▶ 播放', playing: false, paused: false });
@@ -351,7 +351,7 @@ Page({
     const inserted = [];
     for (let i = 0; i < count; i++) {
       const num = this._bstRandomNum();
-      const result = bst.insertNode(this.data.bstRoot, num);
+      const result = this._bst.insertNode(this.data.bstRoot, num);
       this.setData({ bstRoot: result.root });
       inserted.push(num);
     }
@@ -485,11 +485,11 @@ Page({
 
   onHashRandomBatch: function() {
     const count = 5;
-    let table = this.data.hashTable || hashTable.createHashTable(this.data.hashTableSize);
+    let table = this.data.hashTable || this._hashTable.createHashTable(this.data.hashTableSize);
     const inserted = [];
     for (let i = 0; i < count; i++) {
       const key = this._hashRandomKey();
-      const result = hashTable.htInsert(table, key, key);
+      const result = this._hashTable.htInsert(table, key, key);
       table = result.table;
       inserted.push(key);
     }
@@ -516,8 +516,8 @@ Page({
     const key = this.data.hashInput.trim();
     if (!key) { wx.showToast({ title: '请输入 key', icon: 'none' }); return; }
     this._stopTimer();
-    const table = this.data.hashTable || hashTable.createHashTable(this.data.hashTableSize);
-    const result = hashTable.htInsert(table, key, key);
+    const table = this.data.hashTable || this._hashTable.createHashTable(this.data.hashTableSize);
+    const result = this._hashTable.htInsert(table, key, key);
     this.setData({ hashTable: result.table, hashBuckets: result.table.buckets, hashInput: '', steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '插入 "' + key + '"，点击 ▶ 播放', ready: true, playing: false, paused: false });
   },
 
@@ -527,7 +527,7 @@ Page({
     const table = this.data.hashTable;
     if (!table || table.count === 0) { wx.showToast({ title: '表为空', icon: 'none' }); return; }
     this._stopTimer();
-    const result = hashTable.htSearch(table, key);
+    const result = this._hashTable.htSearch(table, key);
     this.setData({ hashInput: '', steps: result.steps, totalSteps: result.steps.length, stepIndex: -1, stepDesc: '查找 "' + key + '"，点击 ▶ 播放', playing: false, paused: false });
   },
 
@@ -541,7 +541,7 @@ Page({
 
   _initGraph: function(type) {
     const t = type || this.data.graphType;
-    const g = graph.createSampleGraph(t);
+    const g = this._graph.createSampleGraph(t);
     this.setData({ graphData: g, graphType: t, graphNodes: g.nodes, graphEdges: g.edges, ready: true });
     this._drawCanvas();
   },
@@ -556,14 +556,14 @@ Page({
   onGraphBfs: function() {
     if (!this.data.graphData) return;
     this._stopTimer();
-    const steps = graph.bfs(this.data.graphData, this.data.graphData.nodes[0].id);
+    const steps = this._graph.bfs(this.data.graphData, this.data.graphData.nodes[0].id);
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: 'BFS 从 ' + this.data.graphData.nodes[0].id + ' 开始，点击 ▶ 播放', playing: false, paused: false });
   },
 
   onGraphDfs: function() {
     if (!this.data.graphData) return;
     this._stopTimer();
-    const steps = graph.dfs(this.data.graphData, this.data.graphData.nodes[0].id);
+    const steps = this._graph.dfs(this.data.graphData, this.data.graphData.nodes[0].id);
     this.setData({ steps: steps, totalSteps: steps.length, stepIndex: -1, stepDesc: 'DFS 从 ' + this.data.graphData.nodes[0].id + ' 开始，点击 ▶ 播放', playing: false, paused: false });
   },
 
@@ -734,7 +734,7 @@ Page({
     } else if (mode === 'stack-queue') {
       this.setData({ sqElements: [], ready: false });
     } else if (mode === 'hash') {
-      const table = hashTable.createHashTable(this.data.hashTableSize);
+      const table = this._hashTable.createHashTable(this.data.hashTableSize);
       this.setData({ hashTable: table, hashBuckets: table.buckets, ready: false });
     } else if (mode === 'graph') {
       this._initGraph();

@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "错题本",
-  "usingComponents": {}
+  "usingComponents": {
+    "loading-skeleton": "/components/loading-skeleton/loading-skeleton"
+  }
 }

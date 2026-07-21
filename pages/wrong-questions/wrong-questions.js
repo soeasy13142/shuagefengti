@@ -5,7 +5,8 @@ Page({
     wrongQuestions: [],
     displayList: [],
     sortBy: 'time',
-    showMastered: false
+    showMastered: false,
+    loading: true
   },
 
   onShow() {
@@ -13,10 +14,15 @@ Page({
   },
 
   loadWrongQuestions() {
-    const all = storage.getWrongQuestions();
-    const wrongQuestions = this.data.showMastered ? all : all.filter(q => !q.mastered);
-    this.setData({ wrongQuestions });
-    this.updateDisplayList();
+    this.setData({ loading: true });
+    storage.getWrongQuestionsAsync().then(all => {
+      const wrongQuestions = this.data.showMastered ? all : all.filter(q => !q.mastered);
+      this.setData({ loading: false, wrongQuestions });
+      this.updateDisplayList();
+    }).catch(() => {
+      this.setData({ loading: false, wrongQuestions: [] });
+      this.updateDisplayList();
+    });
   },
 
   updateDisplayList() {

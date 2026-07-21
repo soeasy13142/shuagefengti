@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "答题记录",
-  "usingComponents": {}
+  "usingComponents": {
+    "loading-skeleton": "../../components/loading-skeleton/loading-skeleton"
+  }
 }

@@ -1,5 +1,4 @@
 // pages/deadlock/deadlock.js
-const { createRag, addProcess, addResource, addEdge, removeNode, removeEdge, getRagErrors, detectDeadlock } = require('../../utils/rag');
 const { calculateNeed, isSafeState } = require('../../utils/bankers');
 
 // ── 帮助面板内容 ──
@@ -109,7 +108,7 @@ Page({
     helpVisible: false,
     helpContent: HELP_CONTENT,
     // ── RAG ──
-    rag: createRag(),
+    rag: null,
     selectedNode: null,
     edgeType: 'request',
     nodePositions: {},
@@ -154,6 +153,9 @@ Page({
   },
 
   onLoad: function() {
+    var rag = require('../../utils/rag');
+    this._rag = rag;
+    this.setData({ rag: this._rag.createRag() });
     this._computeNodePositions();
     this._updateVisualEdges();
     this._computeNeed();
@@ -174,7 +176,7 @@ Page({
     }
     this._nodeCounter.p++;
     const pid = 'P' + this._nodeCounter.p;
-    const newRag = addProcess(this.data.rag, pid, pid);
+    const newRag = this._rag.addProcess(this.data.rag, pid, pid);
     this.setData({ rag: newRag, ragResult: null, ragError: '' });
     this._computeNodePositions();
     this._updateVisualEdges();
@@ -187,7 +189,7 @@ Page({
     }
     this._nodeCounter.r++;
     const rid = 'R' + this._nodeCounter.r;
-    const newRag = addResource(this.data.rag, rid, rid, 1);
+    const newRag = this._rag.addResource(this.data.rag, rid, rid, 1);
     this.setData({ rag: newRag, ragResult: null, ragError: '' });
     this._computeNodePositions();
     this._updateVisualEdges();
@@ -217,7 +219,7 @@ Page({
 
   _createEdge: function(from, to) {
     try {
-      const newRag = addEdge(this.data.rag, from, to, this.data.edgeType, 1);
+      const newRag = this._rag.addEdge(this.data.rag, from, to, this.data.edgeType, 1);
       this.setData({ rag: newRag, ragResult: null, ragError: '' });
       this._updateVisualEdges();
     } catch (err) {
@@ -227,7 +229,7 @@ Page({
 
   onRemoveNode: function(e) {
     const id = e.currentTarget.dataset.id;
-    const newRag = removeNode(this.data.rag, id);
+    const newRag = this._rag.removeNode(this.data.rag, id);
     this.setData({ rag: newRag, selectedNode: null, ragResult: null, ragError: '' });
     this._computeNodePositions();
     this._updateVisualEdges();
@@ -238,20 +240,20 @@ Page({
   },
 
   onDetectDeadlock: function() {
-    const errors = getRagErrors(this.data.rag);
+    const errors = this._rag.getRagErrors(this.data.rag);
     if (errors.length > 0) {
       this.setData({ ragError: errors.join('；'), ragResult: null });
       return;
     }
 
-    const result = detectDeadlock(this.data.rag);
+    const result = this._rag.detectDeadlock(this.data.rag);
     const deadlockSet = result.hasDeadlock ? result.deadlockedProcesses : [];
     this.setData({ ragResult: result, ragError: '', deadlockSet: deadlockSet });
   },
 
   onResetRag: function() {
     this._nodeCounter = { p: 0, r: 0 };
-    this.setData({ rag: createRag(), selectedNode: null, ragResult: null, ragError: '', deadlockSet: [], nodePositions: {}, visualEdges: [] });
+    this.setData({ rag: this._rag.createRag(), selectedNode: null, ragResult: null, ragError: '', deadlockSet: [], nodePositions: {}, visualEdges: [] });
   },
 
   loadPreset: function(e) {
@@ -259,10 +261,10 @@ Page({
     this._nodeCounter.p = preset.processes.length;
     this._nodeCounter.r = preset.resources.length;
 
-    let rag = createRag();
-    preset.processes.forEach(function(pid) { rag = addProcess(rag, pid, pid); });
-    preset.resources.forEach(function(r) { rag = addResource(rag, r.id, r.id, r.total); });
-    preset.edges.forEach(function(ed) { rag = addEdge(rag, ed.from, ed.to, ed.type, ed.count); });
+    let rag = this._rag.createRag();
+    preset.processes.forEach(function(pid) { rag = this._rag.addProcess(rag, pid, pid); }.bind(this));
+    preset.resources.forEach(function(r) { rag = this._rag.addResource(rag, r.id, r.id, r.total); }.bind(this));
+    preset.edges.forEach(function(ed) { rag = this._rag.addEdge(rag, ed.from, ed.to, ed.type, ed.count); }.bind(this));
 
     this.setData({ rag: rag, selectedNode: null, ragResult: null, ragError: '', deadlockSet: [] });
     this._computeNodePositions();

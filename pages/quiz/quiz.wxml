@@ -1,5 +1,9 @@
 <view class="container">
-  <view class="mode-overlay" wx:if="{{!modeSelected}}">
+  <block wx:if="{{loading}}">
+    <loading-skeleton type="card" count="3" />
+  </block>
+
+  <view class="mode-overlay" wx:elif="{{!modeSelected}}">
     <view class="mode-dialog">
       <text class="mode-title">选择刷题模式</text>
       <view class="mode-option" data-mode="practice" bindtap="selectMode">
@@ -13,7 +17,7 @@
     </view>
   </view>
 
-  <block wx:if="{{modeSelected && currentQuestion}}">
+  <block wx:elif="{{modeSelected && currentQuestion}}">
     <view class="top-bar">
       <text class="question-num">第 {{currentIdx + 1}} / {{totalQuestions}} 题</text>
       <text class="type-tag tag {{currentQuestion.type === 'single' ? 'tag-blue' : currentQuestion.type === 'multi' ? 'tag-purple' : currentQuestion.type === 'judge' ? 'tag-orange' : currentQuestion.type === 'fill' ? 'tag-green' : 'tag-gray'}}">

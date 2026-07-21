@@ -2,6 +2,7 @@ const storage = require('../../utils/storage');
 
 Page({
   data: {
+    loading: true,
     record: null,
     paper: null,
     questions: [],
@@ -39,24 +40,32 @@ Page({
       setTimeout(() => wx.navigateBack(), 1500);
       return;
     }
-    const records = storage.getRecords();
-    const record = records.find(function(r) { return r.id === options.recordId; });
-    if (!record) {
-      wx.showToast({ title: '记录不存在', icon: 'none' });
-      return;
-    }
-    const paper = storage.getPaperById(record.paperId);
-    const questions = paper ? paper.questions : [];
-    const paperDeleted = !paper;
-    this.setData({
-      record: record,
-      paper: paper,
-      questions: questions,
-      paperDeleted: paperDeleted
+
+    Promise.all([storage.getRecordsAsync()]).then(([records]) => {
+      const record = records.find(function(r) { return r.id === options.recordId; });
+      if (!record) {
+        wx.showToast({ title: '记录不存在', icon: 'none' });
+        this.setData({ loading: false });
+        return;
+      }
+      return storage.getPaperByIdAsync(record.paperId).then(paper => {
+        const questions = paper ? paper.questions : [];
+        const paperDeleted = !paper;
+        this.setData({
+          loading: false,
+          record: record,
+          paper: paper,
+          questions: questions,
+          paperDeleted: paperDeleted
+        });
+        if (questions.length > 0) {
+          this._updateCurrent(0);
+        }
+      });
+    }).catch(e => {
+      console.error('[record-detail] load failed', e);
+      this.setData({ loading: false });
     });
-    if (questions.length > 0) {
-      this._updateCurrent(0);
-    }
   },
 
   goNext() {

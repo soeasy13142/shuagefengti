@@ -1,6 +1,3 @@
-var { BPlusTree } = require('../../utils/bplus-tree');
-var { buildLayout, leafCount } = require('../../utils/bplus-node');
-
 Page({
   data: {
     m: 4,
@@ -22,14 +19,19 @@ Page({
   _tree: null,
 
   onLoad: function() {
-    this._tree = new BPlusTree(4);
+    var bpt = require('../../utils/bplus-tree');
+    var bpn = require('../../utils/bplus-node');
+    this._BPlusTree = bpt.BPlusTree;
+    this._buildLayout = bpn.buildLayout;
+    this._leafCount = bpn.leafCount;
+    this._tree = new this._BPlusTree(4);
     this._refreshRender();
   },
 
   onMChange: function(e) {
     var newM = Number(e.detail.value);
     if (newM === this.data.m) return;
-    this._tree = new BPlusTree(newM);
+    this._tree = new this._BPlusTree(newM);
     this.setData({
       m: newM,
       keyInput: '',
@@ -112,7 +114,7 @@ Page({
   },
 
   onReset: function() {
-    this._tree = new BPlusTree(this.data.m);
+    this._tree = new this._BPlusTree(this.data.m);
     this.setData({
       keyInput: '',
       loInput: '',
@@ -146,7 +148,7 @@ Page({
 
   _refreshRender: function(opts) {
     opts = opts || {};
-    var layout = buildLayout(this._tree.root);
+    var layout = this._buildLayout(this._tree.root);
     var levels = layout.levels.map(function(level) {
       return {
         y: level.y,
@@ -178,7 +180,7 @@ Page({
       canvasWidth: canvasWidth,
       canvasHeight: canvasHeight,
       nodeCount: this._countNodes(this._tree.root),
-      leafCount: leafCount(this._tree.root)
+      leafCount: this._leafCount(this._tree.root)
     });
   },
 

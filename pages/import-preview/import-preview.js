@@ -3,24 +3,31 @@ const { generateId, formatTime } = require('../../utils/util');
 
 Page({
   data: {
+    loading: true,
     name: '',
     questions: [],
     typeStats: {}
   },
 
-  onLoad() {
-    const paperData = storage.getTempImportData();
-    if (!paperData || !paperData.questions) {
+  async onLoad() {
+    try {
+      const paperData = await storage.getTempImportDataAsync();
+      if (!paperData || !paperData.questions) {
+        wx.showToast({ title: '数据加载失败', icon: 'none' });
+        setTimeout(() => wx.navigateBack(), 1500);
+        return;
+      }
+      const typeStats = this.calcTypeStats(paperData.questions);
+      this.setData({
+        loading: false,
+        name: paperData.name,
+        questions: paperData.questions,
+        typeStats
+      });
+    } catch (e) {
       wx.showToast({ title: '数据加载失败', icon: 'none' });
       setTimeout(() => wx.navigateBack(), 1500);
-      return;
     }
-    const typeStats = this.calcTypeStats(paperData.questions);
-    this.setData({
-      name: paperData.name,
-      questions: paperData.questions,
-      typeStats
-    });
   },
 
   calcTypeStats(questions) {

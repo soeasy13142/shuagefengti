@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "导入预览",
-  "usingComponents": {}
+  "usingComponents": {
+  "loading-skeleton": "/components/loading-skeleton/loading-skeleton"
+}
 }

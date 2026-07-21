@@ -3,6 +3,7 @@ const { generateId, formatTime } = require('../../utils/util');
 
 Page({
   data: {
+    loading: true,
     paper: null,
     questions: [],
     currentIdx: 0,
@@ -24,16 +25,18 @@ Page({
       setTimeout(() => wx.navigateBack(), 1500);
       return;
     }
-    const paper = storage.getPaperById(options.paperId);
-    if (!paper) {
-      wx.showToast({ title: '试卷不存在', icon: 'none' });
-      setTimeout(() => wx.navigateBack(), 1500);
-      return;
-    }
-    this.setData({
-      paper,
-      questions: paper.questions,
-      totalQuestions: paper.questions.length
+    storage.getPaperByIdAsync(options.paperId).then(paper => {
+      if (!paper) {
+        wx.showToast({ title: '试卷不存在', icon: 'none' });
+        setTimeout(() => wx.navigateBack(), 1500);
+        return;
+      }
+      this.setData({
+        loading: false,
+        paper,
+        questions: paper.questions,
+        totalQuestions: paper.questions.length
+      });
     });
   },
 

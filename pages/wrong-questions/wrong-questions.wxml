@@ -11,6 +11,11 @@
     </view>
   </view>
 
+  <block wx:if="{{loading}}">
+    <loading-skeleton type="card" count="5" />
+  </block>
+
+  <block wx:else>
   <view class="wrong-list" wx:if="{{displayList.length > 0}}">
     <view class="wrong-item {{item.mastered ? 'mastered' : ''}}" wx:for="{{displayList}}" wx:key="questionId">
       <view class="wrong-info">
@@ -36,4 +41,5 @@
   <view class="redo-btn" wx:if="{{wrongQuestions.length > 0}}" bindtap="onRedoWrong">
     <text class="redo-text">重做错题</text>
   </view>
+  </block>
 </view>

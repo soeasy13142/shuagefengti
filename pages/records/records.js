@@ -2,16 +2,20 @@ const storage = require('../../utils/storage');
 
 Page({
   data: {
-    records: []
+    records: [],
+    loading: true
   },
 
   onShow() {
-    const records = storage.getRecords().sort((a, b) => {
-      if (b.endTime > a.endTime) return 1;
-      if (b.endTime < a.endTime) return -1;
-      return 0;
+    this.setData({ loading: true });
+    storage.getRecordsAsync().then(data => {
+      const records = data.sort((a, b) => {
+        if (b.endTime > a.endTime) return 1;
+        if (b.endTime < a.endTime) return -1;
+        return 0;
+      });
+      this.setData({ records, loading: false });
     });
-    this.setData({ records });
   },
 
   onTapRecord(e) {

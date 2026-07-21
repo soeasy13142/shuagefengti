@@ -1,4 +1,8 @@
 <view class="page">
+  <block wx:if="{{loading}}">
+    <loading-skeleton type="card" count="3" />
+  </block>
+  <block wx:else>
   <!-- 空状态 -->
   <view class="empty-hint" wx:if="{{!hasData}}">
     <text class="empty-title">还没有学习数据</text>
@@ -101,4 +105,5 @@
       </view>
     </view>
   </view>
+  </block>
 </view>

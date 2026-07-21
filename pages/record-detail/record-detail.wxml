@@ -1,59 +1,65 @@
-<view class="container" wx:if="{{paperDeleted}}">
-  <view class="empty">
-    <text class="empty-text">试卷已删除</text>
-    <text class="empty-hint">该试卷已被删除，无法查看答题详情</text>
-  </view>
-</view>
+<block wx:if="{{loading}}">
+  <loading-skeleton type="card" count="3" />
+</block>
 
-<view class="container" wx:elif="{{currentQuestion}}">
-  <view class="top-bar">
-    <text class="question-num">第 {{currentIdx + 1}} / {{questions.length}} 题</text>
-    <text class="result-tag {{currentAnswer.correct ? 'tag-correct' : 'tag-wrong'}}">
-      {{currentAnswer.correct ? '正确' : '错误'}}
-    </text>
-  </view>
-
-  <view class="stem-area">
-    <text class="stem-text">{{currentQuestion.stem}}</text>
-  </view>
-
-  <view class="options-area" wx:if="{{currentQuestion.type === 'single' || currentQuestion.type === 'multi'}}">
-    <view
-      class="option-item {{selectedMap[item.letter] ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}"
-      wx:for="{{currentQuestion.options}}"
-      wx:key="letter"
-    >
-      <text class="option-text">{{item.text}}</text>
+<block wx:else>
+  <view class="container" wx:if="{{paperDeleted}}">
+    <view class="empty">
+      <text class="empty-text">试卷已删除</text>
+      <text class="empty-hint">该试卷已被删除，无法查看答题详情</text>
     </view>
   </view>
 
-  <view class="judge-area" wx:if="{{currentQuestion.type === 'judge'}}">
-    <view class="judge-item {{currentAnswer.userAnswer === 'A' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}">
-      <text>对</text>
+  <view class="container" wx:elif="{{currentQuestion}}">
+    <view class="top-bar">
+      <text class="question-num">第 {{currentIdx + 1}} / {{questions.length}} 题</text>
+      <text class="result-tag {{currentAnswer.correct ? 'tag-correct' : 'tag-wrong'}}">
+        {{currentAnswer.correct ? '正确' : '错误'}}
+      </text>
     </view>
-    <view class="judge-item {{currentAnswer.userAnswer === 'B' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}">
-      <text>错</text>
-    </view>
-  </view>
 
-  <view class="answer-compare" wx:if="{{currentQuestion.type === 'fill' || currentQuestion.type === 'essay'}}">
-    <view class="compare-row">
-      <text class="compare-label">你的答案：</text>
-      <text class="compare-value {{currentAnswer.correct ? 'text-green' : 'text-red'}}">{{currentAnswer.userAnswer || '未作答'}}</text>
+    <view class="stem-area">
+      <text class="stem-text">{{currentQuestion.stem}}</text>
     </view>
-    <view class="compare-row">
-      <text class="compare-label">正确答案：</text>
-      <text class="compare-value text-green">{{currentQuestion.answer}}</text>
+
+    <view class="options-area" wx:if="{{currentQuestion.type === 'single' || currentQuestion.type === 'multi'}}">
+      <view
+        class="option-item {{selectedMap[item.letter] ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}"
+        wx:for="{{currentQuestion.options}}"
+        wx:key="letter"
+      >
+        <text class="option-text">{{item.text}}</text>
+      </view>
+    </view>
+
+    <view class="judge-area" wx:if="{{currentQuestion.type === 'judge'}}">
+      <view class="judge-item {{currentAnswer.userAnswer === 'A' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}">
+        <text>对</text>
+      </view>
+      <view class="judge-item {{currentAnswer.userAnswer === 'B' ? (currentAnswer.correct ? 'option-correct' : 'option-wrong') : ''}}">
+        <text>错</text>
+      </view>
+    </view>
+
+    <view class="answer-compare" wx:if="{{currentQuestion.type === 'fill' || currentQuestion.type === 'essay'}}">
+      <view class="compare-row">
+        <text class="compare-label">你的答案：</text>
+        <text class="compare-value {{currentAnswer.correct ? 'text-green' : 'text-red'}}">{{currentAnswer.userAnswer || '未作答'}}</text>
+      </view>
+      <view class="compare-row">
+        <text class="compare-label">正确答案：</text>
+        <text class="compare-value text-green">{{currentQuestion.answer}}</text>
+      </view>
+    </view>
+
+    <view class="explanation-area" wx:if="{{currentQuestion.explanation}}">
+      <text class="explanation-label">解析</text>
+      <text class="explanation-text">{{currentQuestion.explanation}}</text>
+    </view>
+
+    <view class="bottom-bar">
+      <button class="btn-nav" disabled="{{currentIdx === 0}}" bindtap="goPrev">上一题</button>
+      <button class="btn-nav" disabled="{{currentIdx >= questions.length - 1}}" bindtap="goNext">下一题</button>
     </view>
   </view>
-
-  <view class="explanation-area" wx:if="{{currentQuestion.explanation}}">
-    <text class="explanation-label">解析</text>
-    <text class="explanation-text">{{currentQuestion.explanation}}</text>
-  </view>
-
-  <view class="bottom-bar">
-    <button class="btn-nav" disabled="{{currentIdx === 0}}" bindtap="goPrev">上一题</button>
-    <button class="btn-nav" disabled="{{currentIdx >= questions.length - 1}}" bindtap="goNext">下一题</button>
-  </view>
-</view>
+</block>

@@ -1,42 +1,47 @@
 <view class="container">
-  <view class="preview-card">
-    <text class="preview-title">确认导入</text>
+  <block wx:if="{{loading}}">
+    <loading-skeleton type="card" count="3" />
+  </block>
+  <block wx:else>
+    <view class="preview-card">
+      <text class="preview-title">确认导入</text>
 
-    <view class="stat-row">
-      <text class="stat-label">试卷名称</text>
-      <text class="stat-value">{{name}}</text>
-    </view>
-    <view class="stat-row">
-      <text class="stat-label">题目总数</text>
-      <text class="stat-value highlight">{{questions.length}} 题</text>
+      <view class="stat-row">
+        <text class="stat-label">试卷名称</text>
+        <text class="stat-value">{{name}}</text>
+      </view>
+      <view class="stat-row">
+        <text class="stat-label">题目总数</text>
+        <text class="stat-value highlight">{{questions.length}} 题</text>
+      </view>
+
+      <view class="type-breakdown">
+        <view class="type-item" wx:if="{{typeStats.single > 0}}">
+          <text class="type-dot dot-blue"></text>
+          <text>单选 {{typeStats.single}} 题</text>
+        </view>
+        <view class="type-item" wx:if="{{typeStats.multi > 0}}">
+          <text class="type-dot dot-purple"></text>
+          <text>多选 {{typeStats.multi}} 题</text>
+        </view>
+        <view class="type-item" wx:if="{{typeStats.judge > 0}}">
+          <text class="type-dot dot-orange"></text>
+          <text>判断 {{typeStats.judge}} 题</text>
+        </view>
+        <view class="type-item" wx:if="{{typeStats.fill > 0}}">
+          <text class="type-dot dot-green"></text>
+          <text>填空 {{typeStats.fill}} 题</text>
+        </view>
+        <view class="type-item" wx:if="{{typeStats.essay > 0}}">
+          <text class="type-dot dot-gray"></text>
+          <text>简答 {{typeStats.essay}} 题</text>
+        </view>
+      </view>
     </view>
 
-    <view class="type-breakdown">
-      <view class="type-item" wx:if="{{typeStats.single > 0}}">
-        <text class="type-dot dot-blue"></text>
-        <text>单选 {{typeStats.single}} 题</text>
-      </view>
-      <view class="type-item" wx:if="{{typeStats.multi > 0}}">
-        <text class="type-dot dot-purple"></text>
-        <text>多选 {{typeStats.multi}} 题</text>
-      </view>
-      <view class="type-item" wx:if="{{typeStats.judge > 0}}">
-        <text class="type-dot dot-orange"></text>
-        <text>判断 {{typeStats.judge}} 题</text>
-      </view>
-      <view class="type-item" wx:if="{{typeStats.fill > 0}}">
-        <text class="type-dot dot-green"></text>
-        <text>填空 {{typeStats.fill}} 题</text>
-      </view>
-      <view class="type-item" wx:if="{{typeStats.essay > 0}}">
-        <text class="type-dot dot-gray"></text>
-        <text>简答 {{typeStats.essay}} 题</text>
-      </view>
+    <view class="actions">
+      <button class="btn-secondary" bindtap="onCancel">取消</button>
+      <button class="btn-primary" bindtap="onConfirm">确认导入</button>
     </view>
-  </view>
-
-  <view class="actions">
-    <button class="btn-secondary" bindtap="onCancel">取消</button>
-    <button class="btn-primary" bindtap="onConfirm">确认导入</button>
-  </view>
+  </block>
 </view>
