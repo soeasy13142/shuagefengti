@@ -1,38 +1,24 @@
-# Task 4 Report — Nginx Config Generator Page Logic (JS)
+# Task 4 Report: 注册组件 + 跑测试验证
 
-## Status
+**Status:** Complete
 
-**DONE**
+## Steps Done
 
-## Commit
+1. **app.json**: Added `"tool-help-panel": "/components/tool-help-panel/tool-help-panel"` to `usingComponents`
+2. **Tests**: `npm test` — 44 suites, 705 tests, all green
+3. **PROJECT_HANDOFF.md**: Appended 2026-07-21 entry for help panel redesign
+4. **Commit**: `feat: 注册 tool-help-panel 组件 + 同步 handoff`
+
+## Commits
+
+- `4452ac3` — 组件创建
+- `944744e` — JS 替换
+- `4a8df7e` — WXML/WXSS 替换
+- `<current>` — 注册组件 + 同步 handoff
+
+## Test Summary
 
 ```
-24ea587 feat: add nginx-gen page logic (form handling, generate, copy)
+Test Suites: 44 passed, 44 total
+Tests:       705 passed, 705 total
 ```
-
-## Test Results
-
-- **Test suites:** 43 passed, 43 total
-- **Tests:** 701 passed, 701 total
-- **Time:** 0.714 s
-
-## var → const/let Replacements
-
-All variables in the brief code were never reassigned (objects/arrays only had property assignments), so all were replaced with `const`:
-
-| Function | Variables | Declared As |
-|----------|-----------|-------------|
-| `onInputChange` | `field`, `value`, `form` | `const` |
-| `onToggleSwitch` | `field`, `form` | `const` |
-| `onPortChange` | `index`, `form`, `isSSL` | `const` |
-| `onVersionChange` | `index`, `form` | `const` |
-| `onCipherChange` | `index`, `form` | `const` |
-| `onApplyCustomPort` | `form` | `const` |
-| `onGenerate` | `form`, `inputs`, `validationErrors`, `errorsMap`, `config` | `const` |
-| `_updatePortLabel` | `labels`, `portLabel` | `const` |
-
-Total: 20 replacements, all `const`, 0 `let`, 0 `var`.
-
-## Files Changed
-
-- **Created:** `pages/nginx-gen/nginx-gen.js` (233 lines)
