@@ -1,0 +1,131 @@
+<view class="page">
+  <!-- 配置区 -->
+  <view class="config-band">
+    <text class="band-label">磁盘调度可视化</text>
+
+    <view class="config-row">
+      <text class="config-label">磁头起点</text>
+      <input class="config-input" type="number" value="{{startPos}}" bindinput="onStartInput" />
+      <view class="dir-buttons">
+        <view class="dir-btn {{direction === 'down' ? 'dir-active' : ''}}" bindtap="onDirectionChange" data-dir="down">← 小号</view>
+        <view class="dir-btn {{direction === 'up' ? 'dir-active' : ''}}" bindtap="onDirectionChange" data-dir="up">大号 →</view>
+      </view>
+    </view>
+
+    <view class="config-row">
+      <text class="config-label">柱面序列</text>
+      <input class="config-input-wide" placeholder="逗号分隔，如 98,183,37,122" value="{{requestInput}}" bindinput="onRequestInput" />
+      <view class="icon-btn" bindtap="onRandomGenerate"><text class="icon-btn-text">🎲</text></view>
+    </view>
+
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 算法选择 -->
+  <view class="algo-band">
+    <view class="algo-tabs">
+      <view class="algo-tab {{selectedAlgo === 'scan' ? 'algo-active' : ''}}" bindtap="onAlgoSelect" data-algo="scan">SCAN</view>
+      <view class="algo-tab {{selectedAlgo === 'cScan' ? 'algo-active' : ''}}" bindtap="onAlgoSelect" data-algo="cScan">C-SCAN</view>
+      <view class="algo-tab {{selectedAlgo === 'look' ? 'algo-active' : ''}}" bindtap="onAlgoSelect" data-algo="look">LOOK</view>
+      <view class="algo-tab {{selectedAlgo === 'cLook' ? 'algo-active' : ''}}" bindtap="onAlgoSelect" data-algo="cLook">C-LOOK</view>
+    </view>
+  </view>
+
+  <!-- 磁道轴可视化 -->
+  <view class="track-band" wx:if="{{steps.length > 0 || path.length > 0}}">
+    <view class="track-container">
+      <!-- 时间轴刻度 -->
+      <view class="track-scale">
+        <view class="scale-mark" style="left: 0%;"><text class="scale-label">0</text></view>
+        <view class="scale-mark" style="left: 25%;"><text class="scale-label">50</text></view>
+        <view class="scale-mark" style="left: 50%;"><text class="scale-label">100</text></view>
+        <view class="scale-mark" style="left: 75%;"><text class="scale-label">150</text></view>
+        <view class="scale-mark" style="left: 100%;"><text class="scale-label">199</text></view>
+      </view>
+
+      <!-- 磁道轴 -->
+      <view class="track-axis">
+        <!-- 请求标记点 -->
+        <view wx:for="{{requestMarkers}}" wx:key="track" class="track-dot" style="left: {{item.leftPct}}%;">
+          <text class="track-dot-val">{{item.track}}</text>
+        </view>
+
+        <!-- 磁头 -->
+        <view class="track-head" style="left: {{headLeftPct}}%;">
+          <text class="track-head-text">▼</text>
+        </view>
+
+        <!-- 已访问路径 -->
+        <view wx:for="{{pathSegments}}" wx:key="index" class="path-segment" style="left: {{item.fromLeft}}%; width: {{item.widthPct}}%; top: {{item.topOffset}}px;">
+          <view class="path-segment-fill" style="background: {{item.color}};"></view>
+        </view>
+      </view>
+
+      <!-- 访问顺序标签 -->
+      <view class="track-order">
+        <view wx:for="{{visitedLabels}}" wx:key="index" class="order-label" style="left: {{item.leftPct}}%;">
+          <text class="order-num">{{item.order}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-band" wx:if="{{steps.length === 0}}">
+    <text class="empty-text">配置参数后点击 ▶ 运行</text>
+  </view>
+
+  <!-- 步进信息 -->
+  <view class="step-info" wx:if="{{currentStep !== null && steps.length > 0}}">
+    <view class="step-detail">
+      <text class="step-from-to">{{steps[currentStep].from}} → {{steps[currentStep].to}}</text>
+      <text class="step-seek">寻道长度: {{steps[currentStep].seek}}</text>
+    </view>
+    <view class="step-progress">
+      <text class="step-progress-text">{{currentStep + 1}} / {{steps.length}}</text>
+    </view>
+  </view>
+
+  <!-- 性能指标 -->
+  <view class="metric-band" wx:if="{{totalSeek > 0}}">
+    <view class="metric-card">
+      <text class="metric-label">总寻道长度</text>
+      <text class="metric-value">{{totalSeek}}</text>
+    </view>
+    <view class="metric-card">
+      <text class="metric-label">平均寻道长度</text>
+      <text class="metric-value">{{avgSeek}}</text>
+    </view>
+    <view class="metric-card metric-span-2">
+      <text class="metric-label">移动路径</text>
+      <view class="path-pills">
+        <text wx:for="{{steps}}" wx:key="index" class="path-pill">→ {{item.to}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 算法对比 -->
+  <view class="compare-band" wx:if="{{comparison.length > 0}}">
+    <text class="band-label">算法对比</text>
+    <view class="compare-grid">
+      <view wx:for="{{comparison}}" wx:key="name" class="compare-card">
+        <text class="compare-algo-name">{{item.displayName}}</text>
+        <text class="compare-seek-num">{{item.totalSeek}}</text>
+        <text class="compare-seek-label">寻道长度</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 控制栏 -->
+  <view class="ctrl-band">
+    <view class="ctrl-btn ctrl-reset" bindtap="onReset">
+      <text class="ctrl-icon">重置</text>
+    </view>
+    <view class="ctrl-btn ctrl-play" bindtap="onTogglePlay">
+      <text class="ctrl-icon">{{playing ? '暂停' : '▶'}}</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStepNext">
+      <text class="ctrl-icon">步进</text>
+    </view>
+  </view>
+</view>
