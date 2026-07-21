@@ -1,10 +1,5 @@
 <!-- pages/deadlock/deadlock.wxml -->
 <view class="page">
-  <!-- ℹ︎ 使用说明入口 -->
-  <view class="info-btn" bindtap="showIntro">
-    <text class="info-btn-icon">ℹ︎</text>
-  </view>
-
   <!-- 使用说明弹窗 -->
   <intro-modal
     show="{{showIntro}}"
@@ -107,7 +102,7 @@
     <view class="result-panel" wx:if="{{ragResult !== null}}">
       <view class="result-title">检测结果</view>
       <view class="{{ragResult.hasDeadlock ? 'result-unsafe' : 'result-safe'}}">
-        {{ragResult.hasDeadlock ? '❌ 检测到死锁!' : '✅ 未检测到死锁'}}
+        {{ragResult.hasDeadlock ? '检测到死锁!' : '未检测到死锁'}}
       </view>
       <view class="result-detail" wx:if="{{ragResult.hasDeadlock}}">
         死锁进程: {{ragResult.deadlockedProcesses.join(', ')}}
@@ -207,7 +202,7 @@
     <view class="result-panel" wx:if="{{bankerResult !== null}}">
       <view class="result-title">检查结果</view>
       <view class="{{bankerResult.safe ? 'result-safe' : 'result-unsafe'}}">
-        {{bankerResult.safe ? '✅ 系统处于安全状态' : '❌ 系统处于不安全状态'}}
+        {{bankerResult.safe ? '系统处于安全状态' : '系统处于不安全状态'}}
       </view>
       <view class="result-detail" wx:if="{{bankerResult.safe}}">
         安全序列: {{bankerResult.safeSequence.join(' → ')}}
@@ -221,7 +216,7 @@
             Need: [{{step.need.join(', ')}}] &nbsp; Work: [{{step.work.join(', ')}}]
           </view>
           <view class="step-detail">
-            {{step.needLEWork ? '✓ Need ≤ Work → 可执行' : '✗ Need > Work → 跳过'}}
+            {{step.needLEWork ? '[满足] Need ≤ Work → 可执行' : '[不满足] Need > Work → 跳过'}}
           </view>
           <view class="step-detail" wx:if="{{step.newWork}}">
             执行后 Work: [{{step.newWork.join(', ')}}]
@@ -230,4 +225,10 @@
       </view>
     </view>
   </block>
+</view>
+
+<!-- 底部帮助栏 -->
+<view class="bottom-help-bar" bindtap="showIntro">
+  <text class="help-bar-icon">?</text>
+  <text class="help-bar-text">使用说明</text>
 </view>

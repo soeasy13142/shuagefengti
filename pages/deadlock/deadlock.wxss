@@ -2,7 +2,7 @@
 .page {
   background-color: #faf9f5;
   min-height: 100vh;
-  padding-bottom: 40rpx;
+  padding-bottom: 88rpx;
 }
 
 /* ── Tab Bar ── */
@@ -382,27 +382,33 @@
   font-size: 20rpx;
 }
 
-/* ── ℹ︎ 使用说明按钮 ── */
-.info-btn {
+/* ── 底部帮助栏 ── */
+.bottom-help-bar {
   position: fixed;
-  top: 16rpx;
-  right: 16rpx;
-  width: 56rpx;
-  height: 56rpx;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 88rpx;
   background: #efe9de;
-  border-radius: 50%;
+  border-top: 2rpx solid #ddd7cc;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10rpx;
   z-index: 100;
-  opacity: 0.8;
 }
 
-.info-btn:active {
-  opacity: 0.5;
+.bottom-help-bar:active {
+  opacity: 0.6;
 }
 
-.info-btn-icon {
-  font-size: 28rpx;
+.help-bar-icon {
+  font-size: 30rpx;
+  color: #6c6a64;
+  font-weight: 600;
+}
+
+.help-bar-text {
+  font-size: 24rpx;
   color: #6c6a64;
 }
