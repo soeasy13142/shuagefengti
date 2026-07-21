@@ -13,6 +13,8 @@ description: >-
 
 直接编辑项目配置文件管理本地/编译设置。**不调用** `wechatide`。
 
+进入本 scene 时跳过根 SKILL 的安装兼容、登录和 skill 版本门禁。只有后续移交到调用 `wechatide` 的 scene 时才执行门禁。
+
 字段与写入规则以本 scene 及 [project-config-fields.md](../../references/project-config-fields.md) 为准；官方文档仅作补充：[项目配置文件](https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html)。
 
 ## 文件与生效规则
@@ -48,6 +50,7 @@ description: >-
 ## 约定
 
 - 不为此调用 `wechatide ...`
+- 不为此检查或启动微信开发者工具，不要求登录
 - 优先使用本 skill / 字段速查中的字段；勿编造未出现过的字段名
 - 不适合：开/关窗口、预览、上传、自动化；也不改 WechatIDE 全局偏好
 

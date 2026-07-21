@@ -27,7 +27,7 @@
       <text class="proc-title">进程列表</text>
       <view class="proc-actions">
         <view class="icon-btn" bindtap="onAddProcess"><text class="icon-btn-text">+</text></view>
-        <view class="icon-btn" bindtap="onRandomGenerate"><text class="icon-btn-text">🎲</text></view>
+        <view class="icon-btn" bindtap="onRandomGenerate"><text class="icon-btn-text">随机</text></view>
       </view>
     </view>
     <view class="proc-table">
@@ -106,13 +106,13 @@
   <!-- 控制栏 -->
   <view class="ctrl-band">
     <view class="ctrl-btn ctrl-reset" bindtap="onReset">
-      <text class="ctrl-icon">↻</text>
+      <text class="ctrl-icon">重置</text>
     </view>
     <view class="ctrl-btn ctrl-play" bindtap="onTogglePlay">
-      <text class="ctrl-icon">{{playing ? '⏸' : '▶'}}</text>
+      <text class="ctrl-icon">{{playing ? '暂停' : '播放'}}</text>
     </view>
     <view class="ctrl-btn" bindtap="onStepNext">
-      <text class="ctrl-icon">▶</text>
+      <text class="ctrl-icon">步进</text>
     </view>
     <view class="speed-area">
       <text class="speed-label">速度</text>

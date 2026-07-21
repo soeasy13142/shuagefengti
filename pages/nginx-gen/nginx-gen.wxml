@@ -1,4 +1,4 @@
-<view class="page-title">🔒 Nginx 配置生成器</view>
+<view class="page-title">Nginx 配置生成器</view>
 
 <!-- ── Section: 必填 ── -->
 <view class="section">
@@ -221,8 +221,8 @@
 
 <!-- ── Buttons ── -->
 <view class="btn-row">
-  <view class="btn-primary" bindtap="onGenerate">🔄 生成配置</view>
-  <view class="btn-secondary" bindtap="onCopy">📋</view>
+  <view class="btn-primary" bindtap="onGenerate">生成配置</view>
+  <view class="btn-secondary" bindtap="onCopy">复制</view>
 </view>
 
 <!-- ── Config Preview ── -->
@@ -242,7 +242,7 @@
   <text class="tips-item">• 私钥文件权限应为 600 或 640</text>
   <text class="tips-item">• 确认 nginx -t 测试通过后再 reload</text>
   <text class="tips-item">• 证书路径建议用 Let's Encrypt live/ 目录</text>
-  <text class="tips-item">• 端口 < 1024 需要 root 权限启动</text>
+  <text class="tips-item">• 端口 &lt; 1024 需要 root 权限启动</text>
 </view>
 
 <view class="preview-empty" wx:if="{{!generatedConfig && !errors._hasErrors}}">

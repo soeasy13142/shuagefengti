@@ -16,7 +16,7 @@ description: >-
 | 意图 | 工具 |
 |------|------|
 | 查登录/版本 | `check_wechatide_status`（会话已在根入口查过则跳过） |
-| 扫码登录 | `login`（勿把「已展示二维码」说成已登录） |
+| 登录 | `login --type window`（打开登录窗口，如果 agent 能处理图片返回，可以改为 `image`） |
 | 打开项目窗口 | `open_project_window` |
 | 关闭项目窗口 | `close_project_window` |
 | 退出 WechatIDE | `quit` |
@@ -29,11 +29,17 @@ description: >-
 
 带 `--project` 的配置/appid 错误 → [project-tool-error-guide.md](../../wechatide-tools/references/project-tool-error-guide.md)。
 
+### login
+
+`login` 只表示二维码已就绪，不代表已登录。仅当异步任务最终为 `success` 才继续后续操作；其他终态均应停止并如实告知用户。
+
 ### open_project_window
 
 ```bash
-wechatide -c <clientName> open_project_window --project <project>
+wechatide -c <clientName> open_project_window --project <project> [--window-mode liteMode|fullMode]
 ```
+
+默认 `liteMode` 仅打开模拟器；需要编辑器和调试器时显式使用 `fullMode`。
 
 ## 使用边界
 

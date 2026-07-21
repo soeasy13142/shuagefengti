@@ -17,7 +17,7 @@ description: >-
 
 1. `project_list`（默认 `miniprogram`；可用 `--scope other|all`）
 2. 纳入列表：`project_import --project <absPath>`
-3. 移除列表：`project_remove --project <absPath>`（会弹确认；只删列表项，不删磁盘；窗口开着会一并关）
+3. 移除列表：`project_remove --project <absPath>`（需用户确认；只删列表项，不删磁盘；窗口开着会一并关）
 4. 要编译/调试 → `initializer` 的 `open_project_window`
 
 ```bash
@@ -37,7 +37,7 @@ wechatide -c <clientName> project_remove --project <absPath>
 | 情况 | 处理 |
 |------|------|
 | `PROJECT_*` / `APPID_ERROR`（import） | [project-tool-error-guide.md](../../wechatide-tools/references/project-tool-error-guide.md) |
-| `project_remove` User denied | 停等；勿自动再删 |
+| 用户拒绝移除 | 勿自动再删 |
 | 列表为空 | 说明未导入；创建流程走 create-project-guide |
 
 ## 移交

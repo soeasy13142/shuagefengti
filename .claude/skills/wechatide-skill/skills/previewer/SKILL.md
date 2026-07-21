@@ -40,7 +40,7 @@ wechatide -c <clientName> upload --project <project> --upload-version 1.0.0 [--d
 | 情况 | 处理 |
 |------|------|
 | `PROJECT_*` / `APPID_ERROR` | [project-tool-error-guide.md](../../wechatide-tools/references/project-tool-error-guide.md) |
-| 上传需确认 / User denied | 停等用户；拒绝后**不要**自动再 `upload` |
+| 用户拒绝上传 | **不要**自动再 `upload` |
 | 预览/上传权限或账号问题 | 说明需开发者权限或重新 `login`；勿死循环重试 |
 | 超时 | 原样报告；可问用户是否重试一次，勿静默连打 |
 

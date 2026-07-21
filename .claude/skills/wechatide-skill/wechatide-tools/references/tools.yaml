@@ -6,7 +6,7 @@
     {
       "id": "check_wechatide_status",
       "name": "读取微信开发者工具状态",
-      "summary": "读取微信开发者工具登录态（loginExpired）、当前登录用户（loginUser）和 skill 版本号；始终返回 versionRelation；未传 agent skill 版本时为 skip_check；落后则按 skillPath 同步内置 skill，超前则提示更新开发者工具或同步；连接失败时会用当前 clientName 自动 auth 一次并重试。",
+      "summary": "只读获取登录态（loginExpired）、当前用户（loginUser）和 skill 版本关系（versionRelation）；不触发登录。",
       "group": "ide",
       "source": {
         "type": "wechatide"
@@ -18,7 +18,7 @@
         "version": {
           "type": "string",
           "required": false,
-          "description": "当前调用侧 agent 加载的 wechatide-skill/skill.yaml 文件中的 version 字段值。skill 约定会话首次检查必须传；不传则 versionRelation 为 skip_check 并返回 warning，且不得当作就绪。传入时返回 versionRelation（equal | agent_behind | agent_ahead），不一致时附带 warning 与 skillPath。"
+          "description": "调用侧加载的 wechatide-skill 版本；会话首次必须传，不传时 versionRelation 为 skip_check"
         }
       },
       "execution": {
@@ -65,6 +65,15 @@
           "type": "string",
           "required": true,
           "description": "项目本地绝对路径；根目录必须包含 project.config.json"
+        },
+        "windowMode": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "liteMode",
+            "fullMode"
+          ],
+          "description": "窗口模式：默认 liteMode（仅模拟器）；fullMode 包含编辑器、模拟器和调试器"
         }
       },
       "execution": {
@@ -92,7 +101,7 @@
     {
       "id": "login",
       "name": "触发扫码登录",
-      "summary": "打开微信开发者工具并显示扫码登录二维码，等待用户扫码完成登录。",
+      "summary": "触发扫码登录并返回 taskId；可打开独立置顶窗口，或直接向 agent 返回二维码图片。",
       "group": "ide",
       "source": {
         "type": "wechatide"
@@ -100,10 +109,49 @@
       "scenes": [
         "initializer"
       ],
-      "inputSchema": {},
+      "inputSchema": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "window",
+            "image"
+          ],
+          "default": "window",
+          "description": "二维码展示方式：window（默认）打开独立置顶窗口；image 直接返回二维码图片给 agent，且不切换开发者工具当前界面"
+        }
+      },
       "execution": {
         "transport": "skill_call",
         "toolName": "login"
+      }
+    },
+    {
+      "id": "polling_task_result",
+      "name": "查询异步任务结果",
+      "summary": "通用异步结果查询：任何需要用户授权、扫码或操作确认的 toolCall 都会返回 taskId。",
+      "group": "ide",
+      "source": {
+        "type": "wechatide"
+      },
+      "scenes": [
+        "initializer",
+        "project-manager",
+        "compiler",
+        "previewer",
+        "debugger",
+        "automator",
+        "cloudbase-operator"
+      ],
+      "inputSchema": {
+        "taskId": {
+          "type": "string",
+          "required": true,
+          "description": "异步工具返回的 taskId"
+        }
+      },
+      "execution": {
+        "transport": "skill_call",
+        "toolName": "polling_task_result"
       }
     },
     {
@@ -144,6 +192,11 @@
         "scope": {
           "type": "string",
           "required": false,
+          "enum": [
+            "miniprogram",
+            "other",
+            "all"
+          ],
           "description": "列表范围：miniprogram（默认）、other、all"
         }
       },
@@ -155,7 +208,7 @@
     {
       "id": "project_remove",
       "name": "从列表删除项目",
-      "summary": "从微信开发者工具项目列表移除项目，不删除磁盘文件，不等于 close_project_window；执行前会弹出 MCP 操作确认。",
+      "summary": "从项目列表移除项目，不删除磁盘文件，不等于关闭整个微信开发者工具。",
       "group": "project-manager",
       "source": {
         "type": "wechatide"
@@ -178,7 +231,7 @@
     {
       "id": "auto_preview",
       "name": "推送手机预览",
-      "summary": "把预览直接推送到开发者微信，无需生成二维码文件。适合”直接发到手机看”场景。只需传 project 参数，可选传 page-path、scene、query 参数，不要传额外的本地输出路径参数。",
+      "summary": "把预览直接推送到开发者微信，无需生成二维码文件。",
       "group": "project-action",
       "source": {
         "type": "wechatide"
@@ -199,7 +252,7 @@
         "query": {
           "type": "string",
           "required": false,
-          "description": "指定的预览页面的参数参数，如 a=b，多个参数用 & 连接，如 a=b&c=d"
+          "description": "指定的预览页面参数，如 a=b，多个参数用 & 连接，如 a=b&c=d"
         },
         "scene": {
           "type": "string",
@@ -230,7 +283,11 @@
         },
         "compile-type": {
           "type": "string",
-          "required": false
+          "required": false,
+          "enum": [
+            "miniprogram",
+            "plugin"
+          ]
         }
       },
       "execution": {
@@ -276,7 +333,7 @@
         "query": {
           "type": "string",
           "required": false,
-          "description": "指定的预览页面的参数参数，如 a=b，多个参数用 & 连接，如 a=b&c=d"
+          "description": "指定的预览页面参数，如 a=b，多个参数用 & 连接，如 a=b&c=d"
         },
         "scene": {
           "type": "string",
@@ -292,7 +349,7 @@
     {
       "id": "upload",
       "name": "发布体验版",
-      "summary": "上传代码包(发布体验版)。仅在用户明确要求「上传代码」或者「发布体验版」时调用。如果该用户的代码包已经被选为体验版，会需要用户手动确认才能上传。",
+      "summary": "上传代码包(发布体验版)。仅在用户明确要求「上传代码」或者「发布体验版」时调用。",
       "group": "project-action",
       "source": {
         "type": "wechatide"
@@ -486,7 +543,7 @@
     {
       "id": "simulator_screenshot",
       "name": "截取模拟器画面",
-      "summary": "截取已打开项目窗口中的模拟器画面（完整 SimulatorUI，含 StatusBar / Cover / Toast 等）。项目窗口需已打开；可选 wait / waitForSelector 截图前等待；可选 path 保存为本地 png。",
+      "summary": "截图；支持 wait / waitForSelector 和本地 path。",
       "group": "runtime",
       "source": {
         "type": "wechatide"
@@ -624,7 +681,7 @@
     {
       "id": "automation_element_action",
       "name": "元素级操作",
-      "summary": "执行元素点击、输入、文本读取、样式读取和触摸操作。",
+      "summary": "读取或操作 selector 命中的元素；交互 action 会真实触发点击、输入、滚动或触摸事件，支持操作前等待。",
       "group": "automation",
       "source": {
         "type": "wechatide"
@@ -639,7 +696,28 @@
         },
         "action": {
           "type": "string",
-          "required": true
+          "required": true,
+          "enum": [
+            "tap",
+            "longpress",
+            "trigger",
+            "input",
+            "size",
+            "offset",
+            "text",
+            "attribute",
+            "value",
+            "property",
+            "wxml",
+            "outerWxml",
+            "style",
+            "scrollWidth",
+            "scrollHeight",
+            "scrollTo",
+            "touchstart",
+            "touchmove",
+            "touchend"
+          ]
         },
         "selector": {
           "type": "string",
@@ -757,7 +835,7 @@
     {
       "id": "automation_navigate",
       "name": "页面导航",
-      "summary": "执行小程序页面导航。可选 waitForSelector/wait 在导航前等待。",
+      "summary": "在当前小程序运行时执行页面导航，不负责页面断言；支持 waitForSelector / wait 在导航前等待。",
       "group": "automation",
       "source": {
         "type": "wechatide"
@@ -772,7 +850,14 @@
         },
         "action": {
           "type": "string",
-          "required": true
+          "required": true,
+          "enum": [
+            "navigateTo",
+            "redirectTo",
+            "navigateBack",
+            "reLaunch",
+            "switchTab"
+          ]
         },
         "url": {
           "type": "string",
@@ -873,7 +958,7 @@
     {
       "id": "automation_runtime_info",
       "name": "运行时信息",
-      "summary": "读取 WechatIDE 当前项目窗口和运行时信息，包括 pageStack、currentPage 或 systemInfo。",
+      "summary": "读取当前小程序运行时信息。",
       "group": "automation",
       "source": {
         "type": "wechatide"
@@ -890,7 +975,12 @@
         },
         "action": {
           "type": "string",
-          "required": true
+          "required": true,
+          "enum": [
+            "pageStack",
+            "currentPage",
+            "systemInfo"
+          ]
         }
       },
       "execution": {
@@ -939,7 +1029,7 @@
     {
       "id": "automation_viewport_action",
       "name": "页面操作",
-      "summary": "执行滚动、截图、真机调试等操作。可选 waitForSelector/wait 在操作前等待。screenshot 走 automator 截图，可被 automation_generate_script 收入测试脚本。",
+      "summary": "执行滚动、截图、真机调试或关闭工具；支持操作前等待。screenshot 可被 automation_generate_script 记录。",
       "group": "automation",
       "source": {
         "type": "wechatide"
@@ -1013,7 +1103,12 @@
         },
         "action": {
           "type": "string",
-          "required": true
+          "required": true,
+          "enum": [
+            "call",
+            "mock",
+            "restore"
+          ]
         },
         "method": {
           "type": "string",
@@ -1040,7 +1135,7 @@
     {
       "id": "debug_clear_cache",
       "name": "清理缓存",
-      "summary": "清理项目缓存，支持细粒度操作。",
+      "summary": "清理当前项目的本地调试缓存，会影响当前调试上下文；清除的缓存类型由 action 指定。",
       "group": "debug",
       "source": {
         "type": "wechatide"
@@ -1055,7 +1150,18 @@
         },
         "action": {
           "type": "string",
-          "required": true
+          "required": true,
+          "enum": [
+            "cleanFileCache",
+            "cleanStorageCache",
+            "clearAuth",
+            "cleanWebViewCache",
+            "clearSession",
+            "cleanCompileCache",
+            "cleanProjectFileListCache",
+            "cleanAllSimulatorCache",
+            "cleanAll"
+          ]
         }
       },
       "execution": {
@@ -1066,7 +1172,7 @@
     {
       "id": "cloud_db_read_doc",
       "name": "读取云数据库内容",
-      "summary": "只读查询 NoSQL 集合文档，支持条件、投影、排序和分页。env 请先用 cloud_env_list 获取。",
+      "summary": "只读查询云数据库集合文档，支持条件、投影、排序和分页。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1124,7 +1230,7 @@
     {
       "id": "cloud_db_read_struct",
       "name": "读取云数据库结构",
-      "summary": "只读查询 NoSQL 集合与索引结构。env 请先用 cloud_env_list 获取。",
+      "summary": "只读查询云数据库集合与索引结构。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1177,7 +1283,7 @@
     {
       "id": "cloud_db_write_doc",
       "name": "修改云数据库内容",
-      "summary": "修改云数据库集合文档（插入/更新/删除），属于写操作，需用户确认。env 请先用 cloud_env_list 获取。",
+      "summary": "修改云数据库集合文档（插入/更新/删除），属于写操作。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1240,7 +1346,7 @@
     {
       "id": "cloud_db_write_struct",
       "name": "修改云数据库结构",
-      "summary": "修改云数据库集合结构（创建/删除集合、管理索引），属于写操作，需用户确认。env 请先用 cloud_env_list 获取。",
+      "summary": "修改云数据库集合结构（创建/删除集合、管理索引），属于写操作。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1311,7 +1417,7 @@
     {
       "id": "cloud_fn_deploy",
       "name": "部署云函数",
-      "summary": "按云函数目录路径完整部署单个云函数到指定云环境，属于写操作。一次只允许部署一个云函数目录，目录名即函数名称",
+      "summary": "按云函数目录路径完整部署单个云函数到指定云环境，属于写操作；一次只允许部署一个云函数目录，目录名即函数名称。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1349,7 +1455,7 @@
     {
       "id": "cloud_fn_inc_deploy",
       "name": "增量部署云函数",
-      "summary": "按云函数目录路径增量部署变更文件或目录到指定云环境，属于写操作。固定使用 path + appid 链路，函数目录名即函数名称",
+      "summary": "按云函数目录路径增量部署变更文件或目录到指定云环境，属于写操作；函数目录名即函数名称。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1458,7 +1564,7 @@
     {
       "id": "cloud_query_storage",
       "name": "读取云存储",
-      "summary": "只读查询云存储文件列表、文件信息、临时下载链接或文本内容。env 请先用 cloud_env_list 获取。",
+      "summary": "只读查询云存储文件列表、文件信息、临时下载链接或文本内容。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1501,7 +1607,7 @@
     {
       "id": "cloud_manage_storage",
       "name": "修改云存储",
-      "summary": "管理云存储文件（上传/下载/删除）；upload/delete 属于写操作，需用户确认。env 请先用 cloud_env_list 获取。",
+      "summary": "管理云存储文件（上传/下载/删除）；upload/delete 属于写操作。",
       "group": "cloud",
       "source": {
         "type": "wechatide"
@@ -1534,11 +1640,6 @@
           "type": "string",
           "required": false,
           "description": "本地文件路径，upload/download 时使用"
-        },
-        "force": {
-          "type": "boolean",
-          "required": false,
-          "description": "delete 时建议设为 true 以确认删除"
         },
         "isDirectory": {
           "type": "boolean",

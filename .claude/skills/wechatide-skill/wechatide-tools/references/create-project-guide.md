@@ -6,10 +6,7 @@
 
 ## 前置条件
 
-须已由根入口完成（本流程内不要重复「当次会话首次」以外的登录/版本检查）：
-
-- `check_wechatide_status --skill-version <skill.yaml version>` 返回 `loginExpired: false` 且 `versionRelation: equal`
-- `wechatide` CLI 可用
+进入本流程前，须已由根入口完成环境就绪检查；本流程不重复登录、版本或 CLI 检查。
 
 ## 第一步：获取 AppID
 
@@ -107,7 +104,7 @@ project/
 
 | 情况 | 处理 |
 |------|------|
-| `loginExpired: true` / `versionRelation` 为 `skip_check` / `versionRelation` 非 `equal` | 回到根入口，勿在本指南内继续创建 |
+| `loginExpired: true` / `versionRelation` 为 `skip_check` 或 `agent_behind` | 回到根入口；完成登录或单向导入前勿继续创建 |
 | `PROJECT_*` / `APPID_ERROR` | [project-tool-error-guide.md](project-tool-error-guide.md) |
 | AppID 无效 / 无权限 | 换有权限的 AppID 或重新 `login`；勿死循环 |
 | 缺入口文件 | 补齐小程序 `app.json` 或小游戏 `game.json` / `game.js` 后再导入或开窗 |
