@@ -1,6 +1,6 @@
 # 刷个冯题 · 交接文档（INDEX）
 
-> 最后更新：2026-07-19 · 合并 feature/card-redesign → master；新增 WeChat DevTools MCP 服务器
+> 最后更新：2026-07-21 · 死锁模拟器帮助按钮改为底部固定栏
 > 完整备份见 `docs/archive/PROJECT_HANDOFF.full-archive.md`（已归档；保留 ≥ 1 周承诺已于 2026-07-11 转入 docs/archive/）。
 > 详情见 `docs/handoff/` 专题文档。
 
@@ -94,11 +94,35 @@ PROJECT_HANDOFF.md                       ← 本文件（INDEX）
 
 ## 8. 最近重大变更（变更记录）
 
-### 2026-07-19 · 合并 feature/card-redesign → master
+### 2026-07-21 · 死锁模拟器帮助按钮改为底部固定栏
 
 **变更内容**
 
-- 将 `feature/card-redesign` 分支（首页/工具大全页卡片 tagline/tags/difficulty 展示 + 新样式）合并入 `master`
+- 移除右上角 `ℹ︎` 浮动圆形按钮（`.info-btn`）
+- 新增底部固定栏 `? 使用说明`（88rpx，`#efe9de` 底色，`2rpx #ddd7cc` 顶部分割线）
+- 将帮助入口从浮动位置改为页面底部边界，视觉上融入页面结构而非覆盖在内容上
+
+**涉及文件**
+
+| 文件 | 变更 |
+|------|------|
+| `pages/deadlock/deadlock.wxml` | 删除 info-btn 块，新增 .bottom-help-bar |
+| `pages/deadlock/deadlock.wxss` | 删除 info-btn/info-btn-icon 样式，新增 bottom-help-bar 系列样式，.page padding-bottom 调整为 88rpx |
+
+**理由**
+
+- 右上角 `ℹ︎` 按钮视觉突兀，像后贴的补丁
+- 底部固定栏参考 iOS Settings / macOS 偏好设置的设计模式，帮助入口与页面结构融为一体
+- 底栏固定在页面底部，拇指操作更自然（vs 右上角需要手指上移）
+
+**验证**
+
+- `npm test` 705 全绿，44 suites 通过
+- spec: `docs/superpowers/specs/2026-07-21-deadlock-help-button-redesign.md`
+- commit: `c3e00c9`
+- 不主动 `git push`
+
+### 2026-07-19 · 合并 feature/card-redesign → master（首页/工具大全页卡片 tagline/tags/difficulty 展示 + 新样式）合并入 `master`
 - `feature/tool-intro-modal` 分支保留不动，作为另一版设计方案
 
 ### 2026-07-19 · CPU 进程调度可视化上线
