@@ -42,7 +42,7 @@ function _cleanServerName(name) {
  */
 function _listenLine(inputs, ipv6) {
   const prefix = ipv6 ? 'listen [::]:' : 'listen ';
-  const port = inputs.listenPort === '443' ? '443' : inputs.listenPort;
+  const port = inputs.listenPort;
   let line = prefix + port;
 
   if (inputs.enableSSL) {
