@@ -1,4 +1,4 @@
-const { scan } = require('../../utils/disk-scheduling');
+const { scan, cScan } = require('../../utils/disk-scheduling');
 
 describe('scan', () => {
   test('SCAN(up) from 50 with requests [98,37,183,14,122]', () => {
@@ -48,5 +48,26 @@ describe('scan', () => {
     // no request above 50 → go to 199, then back to 10
     expect(result.path).toEqual([50, 199, 10]);
     expect(result.totalSeek).toBe(149 + 189);
+  });
+});
+
+describe('cScan', () => {
+  test('C-SCAN(up) from 50 with requests [98,37,183,14,122]', () => {
+    const result = cScan([98, 37, 183, 14, 122], 50, 'up');
+    // path: 50→98→122→183→(到199)→(跳回0)→14→37
+    expect(result.path).toEqual([50, 98, 122, 183, 199, 0, 14, 37]);
+    expect(result.totalSeek).toBe(385);
+  });
+
+  test('C-SCAN(down) from 50 with same requests', () => {
+    const result = cScan([98, 37, 183, 14, 122], 50, 'down');
+    // path: 50→37→14→(到0)→(跳回199)→98→122→183
+    expect(result.path).toEqual([50, 37, 14, 0, 199, 98, 122, 183]);
+  });
+
+  test('C-SCAN empty requests returns path with start only', () => {
+    const result = cScan([], 50, 'up');
+    expect(result.path).toEqual([50]);
+    expect(result.totalSeek).toBe(0);
   });
 });

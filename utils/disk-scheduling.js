@@ -56,4 +56,44 @@ function scan(requests, start, direction) {
   return { path, totalSeek, steps };
 }
 
-module.exports = { scan };
+/**
+ * 循环扫描算法（C-SCAN）
+ * 向指定方向扫描到底，跳回起点对侧再扫描
+ */
+function cScan(requests, start, direction) {
+  if (!Array.isArray(requests) || requests.length === 0) {
+    return { path: [start], totalSeek: 0, steps: [] };
+  }
+
+  const sorted = [...requests].sort((a, b) => a - b);
+  const up = sorted.filter(r => r >= start);
+  const down = sorted.filter(r => r < start);
+
+  const path = [start];
+  const steps = [];
+  let current = start;
+
+  function moveTo(target) {
+    const seek = Math.abs(target - current);
+    steps.push({ from: current, to: target, seek });
+    path.push(target);
+    current = target;
+  }
+
+  if (direction === 'up') {
+    for (const r of up) moveTo(r);
+    moveTo(199);
+    moveTo(0);
+    for (const r of down) moveTo(r);
+  } else {
+    for (const r of down.reverse()) moveTo(r);
+    moveTo(0);
+    moveTo(199);
+    for (const r of up) moveTo(r);
+  }
+
+  const totalSeek = steps.reduce((sum, s) => sum + s.seek, 0);
+  return { path, totalSeek, steps };
+}
+
+module.exports = { scan, cScan };
