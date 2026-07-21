@@ -1,0 +1,145 @@
+<view class="page">
+  <!-- 配置区 -->
+  <view class="config-band">
+    <text class="band-label">内存分页可视化</text>
+
+    <view class="config-row">
+      <text class="config-label">页大小</text>
+      <picker class="config-picker" mode="selector" range="{{pageSizes}}" bindchange="onPageSizeChange">
+        <view class="picker-text">{{pageSize}} B</view>
+      </picker>
+      <text class="config-label">帧数</text>
+      <picker class="config-picker" mode="selector" range="{{frameCounts}}" bindchange="onFrameCountChange">
+        <view class="picker-text">{{frameCount}} 帧</view>
+      </picker>
+    </view>
+
+    <view class="config-row">
+      <text class="config-label">置换算法</text>
+      <view class="algo-buttons">
+        <view class="algo-btn {{algorithm === 'lru' ? 'algo-active' : ''}}" bindtap="onAlgoChange" data-algo="lru">LRU</view>
+        <view class="algo-btn {{algorithm === 'fifo' ? 'algo-active' : ''}}" bindtap="onAlgoChange" data-algo="fifo">FIFO</view>
+      </view>
+    </view>
+
+    <view class="config-row">
+      <text class="config-label">地址序列</text>
+      <input class="config-input-wide" placeholder="十六进制，空格分隔，如 0x003F 0x00A2" value="{{addressInput}}" bindinput="onAddressInput" />
+      <view class="icon-btn" bindtap="onRandomGenerate"><text class="icon-btn-text">🎲</text></view>
+    </view>
+
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 地址分解展示（地址号 → 页号 + 偏移量） -->
+  <view class="decode-band" wx:if="{{currentStep !== null && steps.length > 0}}">
+    <text class="band-label">地址分解</text>
+    <view class="decode-row">
+      <view class="decode-segment">
+        <text class="decode-label">逻辑地址</text>
+        <text class="decode-value mono">0x{{currentLogicalHex}}</text>
+      </view>
+      <view class="decode-arrow">→</view>
+      <view class="decode-segment">
+        <text class="decode-label">页号</text>
+        <text class="decode-value mono highlight-page">{{currentPageNumber}}</text>
+      </view>
+      <view class="decode-segment">
+        <text class="decode-label">偏移</text>
+        <text class="decode-value mono highlight-offset">0x{{currentOffsetHex}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 页表可视化 -->
+  <view class="table-band">
+    <text class="band-label">页表</text>
+    <view class="table-grid">
+      <view class="table-header">
+        <text class="table-header-cell">页号</text>
+        <text class="table-header-cell">帧号</text>
+        <text class="table-header-cell">有效位</text>
+        <text class="table-header-cell">访问位</text>
+      </view>
+      <view wx:for="{{pageTableDisplay}}" wx:key="pageNumber" class="table-row {{item.highlight ? 'row-highlight' : ''}} {{item.fault ? 'row-fault' : ''}}">
+        <text class="table-cell mono">{{item.pageNumber}}</text>
+        <text class="table-cell mono">{{item.frameDisplay}}</text>
+        <text class="table-cell">{{item.validDisplay}}</text>
+        <text class="table-cell">{{item.accessedDisplay}}</text>
+        <view wx:if="{{item.evicted}}" class="evicted-badge">置换</view>
+      </view>
+      <view wx:if="{{pageTableDisplay.length === 0}}" class="table-empty">
+        <text class="empty-text-small">页表为空，运行地址转换后显示</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 当前步进详情 -->
+  <view class="detail-band" wx:if="{{currentStep !== null && steps.length > 0}}">
+    <view class="detail-row {{currentStepHit ? 'detail-hit' : 'detail-fault'}}">
+      <text class="detail-status">{{currentStepHit ? '✓ 页表命中' : '✗ 缺页中断'}}</text>
+      <text wx:if="{{!currentStepHit && currentStepEvicted !== null}}" class="detail-evicted">
+        置换页 {{currentStepEvicted}}
+      </text>
+    </view>
+    <view class="detail-row">
+      <text class="detail-label">物理地址</text>
+      <text class="detail-value mono">0x{{currentPhysicalHex}}</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-band" wx:if="{{steps.length === 0}}">
+    <text class="empty-text">配置参数后点击 ▶ 运行</text>
+  </view>
+
+  <!-- 性能指标 -->
+  <view class="metric-band" wx:if="{{totalFaults > 0 || steps.length > 0}}">
+    <view class="metric-card">
+      <text class="metric-label">地址总数</text>
+      <text class="metric-value">{{addressCount}}</text>
+    </view>
+    <view class="metric-card">
+      <text class="metric-label">缺页次数</text>
+      <text class="metric-value">{{totalFaults}}</text>
+    </view>
+    <view class="metric-card">
+      <text class="metric-label">缺页率</text>
+      <text class="metric-value">{{faultRatePct}}</text>
+    </view>
+    <view class="metric-card">
+      <text class="metric-label">算法</text>
+      <text class="metric-value">{{algorithm.toUpperCase()}}</text>
+    </view>
+  </view>
+
+  <!-- 步进标签页 → 地址序列 Timeline -->
+  <view class="timeline-band" wx:if="{{steps.length > 0}}">
+    <text class="band-label">地址序列</text>
+    <view class="timeline-strip">
+      <view wx:for="{{addressLabels}}" wx:key="index"
+        class="timeline-dot {{item.isCurrent ? 'dot-current' : ''}} {{item.hit ? 'dot-hit' : 'dot-fault'}}"
+        data-index="{{item.index}}" bindtap="onJumpToStep">
+        <text class="timeline-label">{{item.label}}</text>
+      </view>
+    </view>
+    <view class="timeline-legend">
+      <view class="legend-item"><view class="legend-dot dot-hit"></view><text class="legend-text">命中</text></view>
+      <view class="legend-item"><view class="legend-dot dot-fault"></view><text class="legend-text">缺页</text></view>
+      <view class="legend-item"><view class="legend-dot dot-current"></view><text class="legend-text">当前位置</text></view>
+    </view>
+  </view>
+
+  <!-- 控制栏 -->
+  <view class="ctrl-band">
+    <view class="ctrl-btn ctrl-reset" bindtap="onReset">
+      <text class="ctrl-icon">↻ 重置</text>
+    </view>
+    <view class="ctrl-btn ctrl-play" bindtap="onTogglePlay">
+      <text class="ctrl-icon">{{playing ? '⏸ 暂停' : '▶ 播放'}}</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStepNext">
+      <text class="ctrl-icon">步进</text>
+    </view>
+  </view>
+</view>
