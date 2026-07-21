@@ -72,6 +72,10 @@ Page({
       this.setData({ errorMessage: '柱面号不能为负' });
       return null;
     }
+    if (nums.some(n => n > CYLINDER_MAX)) {
+      this.setData({ errorMessage: '柱面号不能超过 ' + CYLINDER_MAX });
+      return null;
+    }
     if (nums.length > MAX_REQUESTS) {
       this.setData({ errorMessage: '最多 ' + MAX_REQUESTS + ' 个请求' });
       return null;
@@ -176,7 +180,8 @@ Page({
   // ── Event Handlers ──
 
   onStartInput(e) {
-    this.setData({ startPos: parseInt(e.detail.value, 10) || 0 });
+    const val = parseInt(e.detail.value, 10);
+    this.setData({ startPos: (isNaN(val) || val < 0) ? 0 : Math.min(val, CYLINDER_MAX) });
   },
 
   onDirectionChange(e) {
