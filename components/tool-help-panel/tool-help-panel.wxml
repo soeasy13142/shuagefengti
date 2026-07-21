@@ -1,0 +1,44 @@
+<!-- components/tool-help-panel/tool-help-panel.wxml -->
+<!-- 遮罩层 -->
+<view class="help-mask {{visible ? 'mask-visible' : ''}}" bindtap="onMaskTap"></view>
+
+<!-- 面板容器 -->
+<view class="help-container {{visible ? 'panel-open' : 'panel-closed'}}" catchtap="noop">
+  <!-- Trigger 栏 -->
+  <view class="help-trigger" bindtap="onTriggerTap">
+    <text class="trigger-title">{{currentContent ? currentContent.title : '使用说明'}}</text>
+    <text class="trigger-arrow {{visible ? 'arrow-up' : 'arrow-down'}}">▸</text>
+  </view>
+
+  <!-- 面板内容 -->
+  <view class="help-body {{visible ? 'body-visible' : ''}}">
+    <view class="help-content {{animClass}}">
+      <!-- 没有内容时的兜底 -->
+      <block wx:if="{{!currentContent}}">
+        <view class="help-empty">暂无使用说明</view>
+      </block>
+
+      <block wx:else>
+        <!-- 速查条目 -->
+        <view class="help-summary">
+          <view class="summary-item" wx:for="{{currentContent.summary}}" wx:key="index" wx:for-item="item">
+            <text class="summary-text">{{item}}</text>
+          </view>
+        </view>
+
+        <!-- 展开/收起切换 -->
+        <view class="expansion-toggle" bindtap="onToggleExpansion">
+          <view class="expansion-divider"></view>
+          <text class="expansion-cta">{{expansionOpen ? '收起完整说明 ▴' : '查看完整说明 →'}}</text>
+        </view>
+
+        <!-- 完整说明 -->
+        <view class="help-details {{expansionOpen ? 'details-open' : 'details-closed'}}">
+          <view class="details-item" wx:for="{{currentContent.details}}" wx:key="index" wx:for-item="item">
+            <text class="details-text">{{item}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

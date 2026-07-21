@@ -1,0 +1,188 @@
+/* components/tool-help-panel/tool-help-panel.wxss */
+
+/* ── 遮罩 ── */
+.help-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 99;
+  pointer-events: none;
+  transition: background 0.25s ease;
+}
+
+.help-mask.mask-visible {
+  background: rgba(0, 0, 0, 0.08);
+  pointer-events: auto;
+}
+
+/* ── 面板容器 ── */
+.help-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #efe9de;
+  border-radius: 24rpx 24rpx 0 0;
+  transition: transform 0.3s ease-out;
+}
+
+.help-container.panel-closed {
+  transform: translateY(calc(100% - 88rpx));
+}
+
+.help-container.panel-open {
+  transform: translateY(0);
+}
+
+/* ── Trigger 栏 ── */
+.help-trigger {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  border-top: 2rpx solid #ddd7cc;
+  cursor: pointer;
+}
+
+.help-trigger:active {
+  opacity: 0.6;
+}
+
+.trigger-title {
+  font-size: 26rpx;
+  color: #6c6a64;
+}
+
+.trigger-arrow {
+  font-size: 20rpx;
+  color: #cc785c;
+  transition: transform 0.2s ease;
+}
+
+.trigger-arrow.arrow-down {
+  transform: rotate(90deg);
+}
+
+.trigger-arrow.arrow-up {
+  transform: rotate(-90deg);
+}
+
+/* ── 面板体 ── */
+.help-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-out;
+}
+
+.help-body.body-visible {
+  max-height: 800rpx;
+}
+
+.help-content {
+  padding: 16rpx 24rpx 32rpx;
+  transition: opacity 0.15s ease;
+}
+
+.help-content.fade-out {
+  opacity: 0;
+}
+
+.help-content.fade-in {
+  opacity: 1;
+}
+
+/* ── 空态 ── */
+.help-empty {
+  text-align: center;
+  color: #6c6a64;
+  font-size: 26rpx;
+  padding: 20rpx 0;
+}
+
+/* ── 速查条目 ── */
+.help-summary {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.summary-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+}
+
+.summary-item:last-child {
+  margin-bottom: 0;
+}
+
+.summary-text {
+  font-size: 26rpx;
+  color: #6c6a64;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+/* ── 展开/收起 ── */
+.expansion-toggle {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  cursor: pointer;
+}
+
+.expansion-toggle:active {
+  opacity: 0.6;
+}
+
+.expansion-divider {
+  flex: 1;
+  height: 2rpx;
+  background: #ddd7cc;
+}
+
+.expansion-cta {
+  font-size: 24rpx;
+  color: #cc785c;
+  white-space: nowrap;
+}
+
+/* ── 完整说明 ── */
+.help-details {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  overflow: hidden;
+  transition: max-height 0.25s ease, padding 0.25s ease;
+}
+
+.help-details.details-closed {
+  max-height: 0;
+  padding: 0 24rpx;
+}
+
+.help-details.details-open {
+  max-height: 600rpx;
+  padding: 24rpx;
+}
+
+.details-item {
+  margin-bottom: 10rpx;
+}
+
+.details-item:last-child {
+  margin-bottom: 0;
+}
+
+.details-text {
+  font-size: 24rpx;
+  color: #6c6a64;
+  line-height: 1.6;
+  white-space: pre-line;
+}
