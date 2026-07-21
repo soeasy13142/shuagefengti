@@ -1,0 +1,76 @@
+/* components/loading-skeleton/loading-skeleton.wxss */
+
+/* ── 脉冲动画 ── */
+@keyframes sk-pulse {
+  0%   { opacity: 0.3; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+/* ── 外层包裹 ── */
+.skeleton-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* ── Card ── */
+.skeleton-card {
+  animation: sk-pulse 1.5s ease-in-out infinite;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+}
+
+.sk-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.sk-card-block {
+  background: #ddd7cc;
+  border-radius: 16rpx;
+  height: 28rpx;
+  width: 100%;
+}
+
+.sk-card-block-lg {
+  width: 70%;
+}
+
+.sk-card-block-sm {
+  width: 45%;
+}
+
+/* ── Line ── */
+.skeleton-line {
+  animation: sk-pulse 1.5s ease-in-out infinite;
+  background: #efe9de;
+  border-radius: 24rpx;
+  height: 28rpx;
+  width: 100%;
+}
+
+/* ── Circle ── */
+.skeleton-circle-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.skeleton-circle {
+  animation: sk-pulse 1.5s ease-in-out infinite;
+  background: #efe9de;
+  border-radius: 50%;
+  width: 80rpx;
+  height: 80rpx;
+  flex-shrink: 0;
+}
+
+.sk-circle-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}

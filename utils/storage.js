@@ -23,6 +23,41 @@ function _set(key, data) {
   }
 }
 
+// ---------- Async internal helpers ----------
+
+function _getAsync(key) {
+  return new Promise((resolve, reject) => {
+    wx.getStorage({
+      key,
+      success(res) {
+        try {
+          resolve(res.data ? JSON.parse(res.data) : null);
+        } catch (e) {
+          console.warn('[storage] JSON.parse failed for key:', key, e);
+          resolve(null);
+        }
+      },
+      fail(err) {
+        reject(err);
+      }
+    });
+  });
+}
+
+function _setAsync(key, data) {
+  return new Promise((resolve, reject) => {
+    wx.setStorage({
+      key,
+      data: JSON.stringify(data),
+      success: resolve,
+      fail(err) {
+        wx.showToast({ title: '存储空间不足', icon: 'none' });
+        reject(err);
+      }
+    });
+  });
+}
+
 function getPapers() {
   return _get(KEYS.PAPERS);
 }
@@ -135,9 +170,133 @@ function clearTempImportData() {
   } catch (e) {}
 }
 
+// ---------- Async public methods ----------
+
+async function getPapersAsync() {
+  try {
+    return (await _getAsync(KEYS.PAPERS)) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+async function getPaperByIdAsync(id) {
+  const papers = await getPapersAsync();
+  return papers.find(p => p.id === id) || null;
+}
+
+async function savePaperAsync(paper) {
+  if (!paper || !paper.id) {
+    console.warn('[storage] savePaperAsync: invalid paper (missing id)', paper);
+    return;
+  }
+  const papers = await getPapersAsync();
+  const idx = papers.findIndex(p => p.id === paper.id);
+  const newPapers = idx >= 0
+    ? [...papers.slice(0, idx), paper, ...papers.slice(idx + 1)]
+    : [...papers, paper];
+  await _setAsync(KEYS.PAPERS, newPapers);
+}
+
+async function getRecordsAsync() {
+  try {
+    return (await _getAsync(KEYS.RECORDS)) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+async function saveRecordAsync(record) {
+  const records = await getRecordsAsync();
+  const newRecords = [...records, record];
+  await _setAsync(KEYS.RECORDS, newRecords);
+}
+
+async function getRecordsByPaperIdAsync(paperId) {
+  const records = await getRecordsAsync();
+  return records.filter(r => r.paperId === paperId);
+}
+
+async function getWrongQuestionsAsync() {
+  try {
+    return (await _getAsync(KEYS.WRONG_QUESTIONS)) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+async function getUnmasteredWrongQuestionsAsync() {
+  const wrongs = await getWrongQuestionsAsync();
+  return wrongs.filter(q => !q.mastered);
+}
+
+async function addWrongQuestionAsync({ questionId, paperId, question }) {
+  if (!questionId) {
+    console.warn('[storage] addWrongQuestionAsync: invalid questionId');
+    return;
+  }
+  const wrongs = await getWrongQuestionsAsync();
+  const existing = wrongs.find(w => w.questionId === questionId);
+  let newWrongs;
+  if (existing) {
+    newWrongs = wrongs.map(w =>
+      w.questionId === questionId
+        ? { ...w, wrongCount: w.wrongCount + 1, lastWrongTime: new Date().toISOString() }
+        : w
+    );
+  } else {
+    newWrongs = [...wrongs, {
+      questionId,
+      paperId,
+      question,
+      wrongCount: 1,
+      mastered: false,
+      lastWrongTime: new Date().toISOString()
+    }];
+  }
+  await _setAsync(KEYS.WRONG_QUESTIONS, newWrongs);
+}
+
+async function markMasteredAsync(questionId) {
+  if (!questionId) return false;
+  const wrongs = await getWrongQuestionsAsync();
+  const item = wrongs.find(w => w.questionId === questionId);
+  if (item) {
+    const newWrongs = wrongs.map(w =>
+      w.questionId === questionId ? { ...w, mastered: true } : w
+    );
+    await _setAsync(KEYS.WRONG_QUESTIONS, newWrongs);
+    return true;
+  }
+  return false;
+}
+
+async function setTempImportDataAsync(data) {
+  await _setAsync(KEYS.TEMP_IMPORT, data);
+}
+
+async function getTempImportDataAsync() {
+  try {
+    return await _getAsync(KEYS.TEMP_IMPORT);
+  } catch {
+    return null;
+  }
+}
+
+async function clearTempImportDataAsync() {
+  try {
+    await _setAsync(KEYS.TEMP_IMPORT, null);
+  } catch {}
+}
+
 module.exports = {
   getPapers, savePaper, getPaperById, deletePaper,
   getRecords, saveRecord, getRecordsByPaperId,
   getWrongQuestions, getUnmasteredWrongQuestions, addWrongQuestion, markMastered,
-  setTempImportData, getTempImportData, clearTempImportData
+  setTempImportData, getTempImportData, clearTempImportData,
+  // Async versions
+  getPapersAsync, getPaperByIdAsync, savePaperAsync,
+  getRecordsAsync, saveRecordAsync, getRecordsByPaperIdAsync,
+  getWrongQuestionsAsync, getUnmasteredWrongQuestionsAsync, addWrongQuestionAsync, markMasteredAsync,
+  setTempImportDataAsync, getTempImportDataAsync, clearTempImportDataAsync
 };

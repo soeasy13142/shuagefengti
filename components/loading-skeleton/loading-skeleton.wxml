@@ -1,0 +1,24 @@
+<!-- components/loading-skeleton/loading-skeleton.wxml -->
+<view class="skeleton-wrapper">
+  <block wx:for="{{skeletonList}}" wx:key="id" wx:for-item="item">
+    <!-- card 型 -->
+    <view wx:if="{{type === 'card'}}" class="skeleton-card">
+      <view class="sk-card-body">
+        <view class="sk-card-block sk-card-block-lg"></view>
+        <view class="sk-card-block sk-card-block-sm"></view>
+      </view>
+    </view>
+
+    <!-- line 型 -->
+    <view wx:elif="{{type === 'line'}}" class="skeleton-line"></view>
+
+    <!-- circle 型 -->
+    <view wx:elif="{{type === 'circle'}}" class="skeleton-circle-row">
+      <view class="skeleton-circle"></view>
+      <view class="sk-circle-text">
+        <view class="sk-card-block sk-card-block-lg"></view>
+        <view class="sk-card-block sk-card-block-sm"></view>
+      </view>
+    </view>
+  </block>
+</view>
