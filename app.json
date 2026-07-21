@@ -8,19 +8,24 @@
     "pages/records/records",
     "pages/record-detail/record-detail",
     "pages/wrong-questions/wrong-questions",
-    "pages/bplus-viz/bplus-viz",
     "pages/dashboard/dashboard",
-    "pages/cpu-sched/cpu-sched",
-    "pages/dns-viz/dns-viz",
-    "pages/subnet-calc/subnet-calc",
-    "pages/sort-viz/sort-viz",
-    "pages/tcp-viz/tcp-viz",
-    "pages/ds-viz/ds-viz",
-    "pages/tools-all/tools-all",
-    "pages/sha256-viz/sha256-viz",
-    "pages/deadlock/deadlock",
-    "pages/nginx-gen/nginx-gen"
+    "pages/tools-all/tools-all"
   ],
+  "subPackages": [{
+    "root": "package-tools",
+    "pages": [
+      "bplus-viz/bplus-viz",
+      "cpu-sched/cpu-sched",
+      "dns-viz/dns-viz",
+      "subnet-calc/subnet-calc",
+      "sort-viz/sort-viz",
+      "tcp-viz/tcp-viz",
+      "ds-viz/ds-viz",
+      "sha256-viz/sha256-viz",
+      "deadlock/deadlock",
+      "nginx-gen/nginx-gen"
+    ]
+  }],
   "window": {
     "navigationBarBackgroundColor": "#faf9f5",
     "navigationBarTitleText": "刷个冯题",
