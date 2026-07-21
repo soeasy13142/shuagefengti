@@ -132,4 +132,67 @@ function look(requests, start, direction) {
   return { path, totalSeek, steps };
 }
 
-module.exports = { scan, cScan, look };
+/**
+ * C-LOOK 算法
+ * 向指定方向到最远请求，跳回对侧最远请求继续
+ */
+function cLook(requests, start, direction) {
+  if (!Array.isArray(requests) || requests.length === 0) {
+    return { path: [start], totalSeek: 0, steps: [] };
+  }
+
+  const sorted = [...requests].sort((a, b) => a - b);
+  const up = sorted.filter(r => r >= start);
+  const down = sorted.filter(r => r < start);
+
+  const path = [start];
+  const steps = [];
+  let current = start;
+
+  function moveTo(target) {
+    const seek = Math.abs(target - current);
+    steps.push({ from: current, to: target, seek });
+    path.push(target);
+    current = target;
+  }
+
+  if (direction === 'up') {
+    for (const r of up) moveTo(r);
+    if (down.length > 0) {
+      moveTo(down[0]); // jump to smallest
+      for (let i = 1; i < down.length; i++) moveTo(down[i]);
+    }
+  } else {
+    for (const r of down.reverse()) moveTo(r);
+    if (up.length > 0) {
+      moveTo(up[up.length - 1]); // jump to biggest
+      for (let i = up.length - 2; i >= 0; i--) moveTo(up[i]);
+    }
+  }
+
+  const totalSeek = steps.reduce((sum, s) => sum + s.seek, 0);
+  return { path, totalSeek, steps };
+}
+
+const _ALGO_MAP = { scan, cScan, look, cLook };
+
+/**
+ * 对比多个算法的性能
+ * @param {number[]} requests
+ * @param {number} start
+ * @param {string[]} algorithms - ['scan', 'cScan', 'look', 'cLook']
+ * @returns {Object<string, { totalSeek: number, path: number[] }>}
+ */
+function compareAlgorithms(requests, start, algorithms) {
+  const result = {};
+  for (const name of algorithms) {
+    const fn = _ALGO_MAP[name];
+    if (fn) {
+      const r = fn(requests, start, 'up');
+      result[name] = { totalSeek: r.totalSeek, path: r.path };
+    }
+  }
+  return result;
+}
+
+module.exports = { scan, cScan, look, cLook, compareAlgorithms };

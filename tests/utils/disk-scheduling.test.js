@@ -1,4 +1,4 @@
-const { scan, cScan, look } = require('../../utils/disk-scheduling');
+const { scan, cScan, look, cLook, compareAlgorithms } = require('../../utils/disk-scheduling');
 
 describe('scan', () => {
   test('SCAN(up) from 50 with requests [98,37,183,14,122]', () => {
@@ -105,5 +105,56 @@ describe('look', () => {
     const result = look([], 50, 'up');
     expect(result.path).toEqual([50]);
     expect(result.totalSeek).toBe(0);
+  });
+});
+
+describe('cLook', () => {
+  test('C-LOOK(up) from 50 with requests [98,37,183,14,122]', () => {
+    const result = cLook([98, 37, 183, 14, 122], 50, 'up');
+    // path: 50→98→122→183→(跳回14)→37
+    // 注意：不到 199 也不到 0
+    expect(result.path).toEqual([50, 98, 122, 183, 14, 37]);
+  });
+
+  test('C-LOOK(down) from 50 with same requests', () => {
+    const result = cLook([98, 37, 183, 14, 122], 50, 'down');
+    // path: 50→37→14→(跳回183)→122→98
+    // Wait: going down → touch 37, 14 → jump to biggest request below start?
+    // Actually C-LOOK: serve direction → jump to opposite FARTHEST and serve opposite direction
+    // down: visit 14, 37 (in descending order), then jump to 183 (far end), serve 122, 98
+    expect(result.path).toEqual([50, 37, 14, 183, 122, 98]);
+  });
+
+  test('C-LOOK(up) single request below start', () => {
+    const result = cLook([20], 50, 'up');
+    // go up → nothing above → jump to 20
+    expect(result.path).toEqual([50, 20]);
+  });
+
+  test('C-LOOK empty requests returns path with start only', () => {
+    const result = cLook([], 50, 'up');
+    expect(result.path).toEqual([50]);
+    expect(result.totalSeek).toBe(0);
+  });
+});
+
+describe('compareAlgorithms', () => {
+  test('returns result for all 4 algorithms with same input', () => {
+    const result = compareAlgorithms([98, 37, 183, 14, 122], 50, ['scan', 'cScan', 'look', 'cLook']);
+    expect(Object.keys(result)).toEqual(['scan', 'cScan', 'look', 'cLook']);
+    expect(typeof result.scan.totalSeek).toBe('number');
+    expect(typeof result.cScan.totalSeek).toBe('number');
+    expect(typeof result.look.totalSeek).toBe('number');
+    expect(typeof result.cLook.totalSeek).toBe('number');
+  });
+
+  test('returns only requested algorithms', () => {
+    const result = compareAlgorithms([98, 37], 50, ['scan', 'look']);
+    expect(Object.keys(result)).toEqual(['scan', 'look']);
+  });
+
+  test('returns empty object for empty algorithms list', () => {
+    const result = compareAlgorithms([98, 37], 50, []);
+    expect(result).toEqual({});
   });
 });
