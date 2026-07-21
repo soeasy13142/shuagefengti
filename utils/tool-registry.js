@@ -171,6 +171,35 @@ const TOOLS = [
     featured: false,
     order: 7
   },
+  {
+    id: 'nginx-gen',
+    category: 'network',
+    name: 'Nginx 配置生成器',
+    icon: '',
+    description: '填表即出 nginx 配置',
+    route: '/pages/nginx-gen/nginx-gen',
+    available: true,
+    featured: true,
+    tagline: '填表即出 nginx 配置，复制就能用',
+    taglineDetail: '输入域名、端口、SSL 证书路径等必要信息，自动生成格式化 nginx server block 配置，支持 HTTPS 站点、反向代理、HTTP→HTTPS 跳转等场景，一键复制部署',
+    tags: ['#实用工具'],
+    difficulty: 'easy',
+    intro: {
+      valueProp: '配 nginx 不用查文档手写，填表即出。',
+      features: [
+        '输入域名、端口、证书路径等基本信息，自动生成完整 server block',
+        '支持 HTTPS 站点、HTTP 站点、反向代理、HTTP→HTTPS 跳转四种场景',
+        '一键复制配置，粘贴即用'
+      ],
+      prerequisites: '了解 nginx 的基本概念（server block、SSL 配置）即可使用。',
+      useCases: [
+        '快速配置新站点的 nginx 和 SSL',
+        '为后端服务快速生成反向代理配置',
+        '学习 nginx server block 的常用指令结构'
+      ]
+    },
+    order: 8
+  },
 
   // ── 操作系统 ──
   {

@@ -79,9 +79,9 @@ describe('首页数据处理', () => {
   });
 
   describe('toolsCount', () => {
-    test('返回 TOOLS 总数 24', () => {
+    test('返回 TOOLS 总数 25', () => {
       const count = registry.TOOLS.length;
-      expect(count).toBe(24);
+      expect(count).toBe(25);
     });
   });
 });
@@ -95,13 +95,13 @@ describe('全部工具页数据', () => {
     });
   });
 
-  test('全部 24 个工具分布在 5 个分类中', () => {
+  test('全部 25 个工具分布在 5 个分类中', () => {
     const categories = registry.TOOL_CATEGORIES;
     let allTools = [];
     categories.forEach(function(cat) {
       allTools = allTools.concat(registry.getToolsByCategory(cat.id));
     });
-    expect(allTools.length).toBe(24);
+    expect(allTools.length).toBe(25);
   });
 
   test('每个分类的 tool-card 区分 available 和 unavailable', function() {

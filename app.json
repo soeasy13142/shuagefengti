@@ -18,7 +18,8 @@
     "pages/ds-viz/ds-viz",
     "pages/tools-all/tools-all",
     "pages/sha256-viz/sha256-viz",
-    "pages/deadlock/deadlock"
+    "pages/deadlock/deadlock",
+    "pages/nginx-gen/nginx-gen"
   ],
   "window": {
     "navigationBarBackgroundColor": "#faf9f5",
