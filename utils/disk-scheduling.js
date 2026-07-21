@@ -86,7 +86,7 @@ function cScan(requests, start, direction) {
     moveTo(0);
     for (const r of down) moveTo(r);
   } else {
-    for (const r of down.reverse()) moveTo(r);
+    for (const r of [...down].reverse()) moveTo(r);
     moveTo(0);
     moveTo(199);
     for (const r of up) moveTo(r);
@@ -163,7 +163,7 @@ function cLook(requests, start, direction) {
       for (let i = 1; i < down.length; i++) moveTo(down[i]);
     }
   } else {
-    for (const r of down.reverse()) moveTo(r);
+    for (const r of [...down].reverse()) moveTo(r);
     if (up.length > 0) {
       moveTo(up[up.length - 1]); // jump to biggest
       for (let i = up.length - 2; i >= 0; i--) moveTo(up[i]);
