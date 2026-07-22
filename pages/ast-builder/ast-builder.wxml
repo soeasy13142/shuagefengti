@@ -1,0 +1,103 @@
+<view class="page">
+  <!-- ── 标题 & 输入区 ── -->
+  <view class="card input-band">
+    <text class="card-title">AST 构建器</text>
+    <text class="card-desc">输入算术表达式，查看抽象语法树的构建过程和语法制导翻译求值</text>
+
+    <view class="preset-row">
+      <text class="field-label">预置示例</text>
+      <picker mode="selector" range="{{presetLabels}}" value="{{presetIndex}}" bindchange="onPresetChange">
+        <view class="preset-picker">
+          <text class="preset-picker-text">{{presetLabels[presetIndex] || '选择示例...'}}</text>
+          <text class="picker-arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="input-row">
+      <input class="expr-input" placeholder="例如：3 + 4 * 2" value="{{exprInput}}" bindinput="onExprInput" />
+    </view>
+
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onBuild" hover-class="btn-hover">▶ 构建 AST</button>
+      <button class="btn-secondary" bindtap="onStepForward" hover-class="btn-hover">▶ 单步</button>
+      <button class="btn-secondary" bindtap="onStepBackward" hover-class="btn-hover">◀ 后退</button>
+      <button class="btn-secondary" bindtap="onReset" hover-class="btn-hover">↻ 重置</button>
+    </view>
+
+    <text wx:if="{{errorText}}" class="error-text">{{errorText}}</text>
+  </view>
+
+  <!-- ── Token 流 ── -->
+  <view wx:if="{{tokens.length > 0}}" class="card">
+    <text class="card-title">Token 流</text>
+    <view class="token-stream">
+      <view wx:for="{{tokens}}" wx:key="index" class="token-item {{index <= highlightedToken ? 'token-active' : ''}}">
+        <text class="token-type">{{item.type}}</text>
+        <text class="token-lexeme">{{item.lexeme}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── 解析步骤 ── -->
+  <view wx:if="{{steps.length > 0 && parsePhase === 'ast'}}" class="card">
+    <text class="card-title">解析步骤</text>
+    <view class="step-list">
+      <view wx:for="{{steps}}" wx:for-index="idx" wx:key="index" class="step-item {{idx <= currentStep ? 'step-done' : 'step-pending'}}">
+        <text class="step-num">{{idx + 1}}</text>
+        <text class="step-desc">{{item.description}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── AST 树视图 ── -->
+  <view wx:if="{{astData && astData.length > 0}}" class="card">
+    <view class="title-row">
+      <text class="card-title">AST 树视图</text>
+      <view class="toggle-row">
+        <text class="toggle-label" bindtap="onToggleAttributes">属性：{{showAttributes ? '显示' : '隐藏'}}</text>
+      </view>
+    </view>
+
+    <scroll-view class="tree-scroll" scroll-x="{{true}}" scroll-y="{{true}}" enhanced="{{true}}" bounces="{{false}}">
+      <view class="tree-wrap" style="width: {{treeWidth}}rpx; height: {{treeHeight + 60}}rpx;">
+        <!-- 连线 + 节点 -->
+        <view wx:for="{{astData}}" wx:key="id" class="tree-node-wrap" style="left: {{item.x - item.w / 2}}rpx; top: {{item.y}}rpx; width: {{item.w}}rpx; height: {{item.h}}rpx;">
+          <!-- 父节点到子节点的连线通过 CSS 绘制 -->
+          <view class="node-card"
+                style="background: {{item.color}};"
+                data-node-id="{{item.id}}" bindtap="onToggleFold">
+            <text class="node-type">{{item.type}}</text>
+            <text wx:if="{{item.lexeme}}" class="node-lexeme">{{item.lexeme}}</text>
+            <text wx:if="{{showAttributes && item.val !== undefined}}" class="node-val">= {{item.val}}</text>
+            <text wx:if="{{showAttributes && item.typeAttr}}" class="node-typeattr">{{item.typeAttr}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── SDT 规则 ── -->
+  <view wx:if="{{sdtRules.length > 0 && parsePhase !== 'input'}}" class="card">
+    <text class="card-title">语法制导翻译（SDT）规则</text>
+    <view class="sdt-list">
+      <view wx:for="{{sdtRules}}" wx:key="index" class="sdt-rule">
+        <text class="sdt-lhs">{{item.lhs}}</text>
+        <text class="sdt-arrow">→</text>
+        <text class="sdt-rhs">{{item.rhs}}</text>
+        <text class="sdt-action">{{item.action}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── 求值结果 ── -->
+  <view wx:if="{{evalResult !== null}}" class="card result-card">
+    <text class="card-title">求值结果</text>
+    <text class="result-value {{typeof evalResult === 'string' ? 'result-error' : ''}}">
+      {{evalResult}}
+    </text>
+    <text wx:if="{{typeof evalResult === 'string'}}" class="result-error-desc">
+      SDT 求值过程中检测到错误，请检查表达式。
+    </text>
+  </view>
+</view>

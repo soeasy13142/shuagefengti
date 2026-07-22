@@ -13,11 +13,14 @@
     "pages/tools-all/tools-all",
     "pages/http-parser/http-parser",
     "pages/ip-fragment/ip-fragment",
+    "pages/ll1-parser/ll1-parser",
+    "pages/regex-dfa/regex-dfa",
     "pages/dh-viz/dh-viz",
     "pages/sync-viz/sync-viz",
     "pages/crypto-tools/crypto-tools",
     "pages/rsa-calc/rsa-calc",
-    "pages/aes-viz/aes-viz"
+    "pages/aes-viz/aes-viz",
+    "pages/ast-builder/ast-builder"
   ],
   "subPackages": [{
     "root": "package-tools",

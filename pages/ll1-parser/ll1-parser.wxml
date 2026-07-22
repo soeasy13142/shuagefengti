@@ -1,0 +1,208 @@
+<view class="page">
+  <!-- Input Band -->
+  <view class="input-band">
+    <text class="band-label">LL(1) 分析器</text>
+    <text class="band-subtitle">输入上下文无关文法，自动计算 FIRST/FOLLOW 集，构造预测分析表，逐步演示串的分析过程</text>
+
+    <!-- Presets -->
+    <view class="preset-section">
+      <text class="section-label">预设示例</text>
+      <view class="preset-row">
+        <view wx:for="{{presets}}" wx:key="index" class="preset-btn" bindtap="onPresetTap" data-index="{{index}}">
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Grammar textarea -->
+    <view class="input-section">
+      <text class="section-label">文法输入（每行一条产生式，→ 分隔左右部，| 分隔同一左部的多个产生式，ε 表示空串）</text>
+      <textarea class="grammar-input" value="{{grammarText}}" bindinput="onGrammarInput" maxlength="2000" auto-height placeholder="E → T E'&#10;E' → + T E' | ε" />
+    </view>
+
+    <!-- Parse input string -->
+    <view class="input-section">
+      <text class="section-label">待分析串（符号之间用空格分隔）</text>
+      <input class="parse-input" value="{{parseInputText}}" bindinput="onParseInputChange" placeholder="id + id * id" />
+    </view>
+
+    <!-- Action buttons -->
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onComputeTap" hover-class="btn-hover">计算 FIRST/FOLLOW</button>
+      <button class="btn-secondary" bindtap="onParseStringTap" hover-class="btn-hover">分析串</button>
+      <button class="btn-secondary" bindtap="onClearTap" hover-class="btn-hover">清空</button>
+    </view>
+
+    <!-- Error / warnings -->
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+    <text wx:if="{{hasLeftRecursion && parsed}}" class="warn-text">
+      ⚠️ 存在左递归: {{leftRecursiveSymbols.join(', ')}}。LL(1) 无法处理左递归，请消除左递归后再试。
+    </text>
+  </view>
+
+  <!-- Tab Bar -->
+  <view wx:if="{{parsed}}" class="tab-bar">
+    <view wx:for="{{tabs}}" wx:for-index="tabIdx" wx:key="*this" class="tab-item {{activeTab === tabIdx ? 'tab-active' : ''}}" bindtap="onTabTap" data-index="{{tabIdx}}">
+      <text>{{item}}</text>
+    </view>
+  </view>
+
+  <!-- Tab 1: Grammar Overview -->
+  <view wx:if="{{parsed && activeTab === 0}}" class="tab-content">
+    <view class="info-card">
+      <text class="info-card-title">文法总览</text>
+      <view class="info-row">
+        <text class="info-label">开始符号</text>
+        <text class="nt-badge">{{parsed.startSymbol}}</text>
+      </view>
+    </view>
+
+    <view class="info-card">
+      <text class="info-card-title">产生式（{{productionList.length}} 条）</text>
+      <view wx:for="{{productionList}}" wx:key="index" class="prod-item">
+        <text class="prod-lhs">{{item.lhs}}</text>
+        <text class="prod-arrow">→</text>
+        <text class="prod-rhs">{{item.rhsDisplay}}</text>
+        <text class="prod-index">#{{item.index}}</text>
+      </view>
+    </view>
+
+    <view class="info-card">
+      <text class="info-card-title">非终结符（{{nonTerminalList.length}} 个）</text>
+      <view class="badge-row">
+        <view wx:for="{{nonTerminalList}}" wx:key="*this" class="nt-badge">{{item}}</view>
+      </view>
+    </view>
+
+    <view class="info-card">
+      <text class="info-card-title">终结符（{{terminalList.length}} 个）</text>
+      <view class="badge-row">
+        <view wx:for="{{terminalList}}" wx:key="*this" class="t-badge">{{item}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 2: FIRST / FOLLOW -->
+  <view wx:if="{{parsed && activeTab === 1}}" class="tab-content">
+    <view class="info-card">
+      <text class="info-card-title">FIRST / FOLLOW 集</text>
+      <text class="info-hint">FIRST 集包含 ε 表示该非终结符可推导出空串；FOLLOW 集包含 $ 表示该非终结符可在输入末尾出现</text>
+    </view>
+
+    <view class="table-card">
+      <view class="ff-table">
+        <view class="ff-row ff-header">
+          <text class="ff-cell ff-cell-header">非终结符</text>
+          <text class="ff-cell ff-cell-header">FIRST</text>
+          <text class="ff-cell ff-cell-header">FOLLOW</text>
+        </view>
+        <view wx:for="{{firstFollowData}}" wx:key="nonTerminal" class="ff-row">
+          <text class="ff-cell ff-cell-nt">{{item.nonTerminal}}</text>
+          <text class="ff-cell ff-cell-value">{ {{item.firstArray.join(', ')}} }</text>
+          <text class="ff-cell ff-cell-value">{ {{item.followArray.join(', ')}} }</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 3: Parse Table -->
+  <view wx:if="{{parsed && activeTab === 2}}" class="tab-content">
+    <view class="info-card">
+      <text class="info-card-title">预测分析表</text>
+      <text class="info-hint">行 = 非终结符，列 = 终结符（含 $）。err = 该格子无产生式（语法错误），红色 = LL(1) 冲突</text>
+    </view>
+
+    <view class="table-scroll">
+      <view class="parse-table">
+        <!-- Header row -->
+        <view class="pt-row">
+          <text class="pt-cell pt-cell-header pt-row-header"></text>
+          <view wx:for="{{tableColumns}}" wx:for-item="col" wx:key="*this" class="pt-cell pt-cell-header">
+            <text>{{col}}</text>
+          </view>
+        </view>
+        <!-- Data rows -->
+        <view wx:for="{{tableRows}}" wx:for-item="row" wx:key="nonTerminal" class="pt-row">
+          <text class="pt-cell pt-cell-header pt-row-header">{{row.nonTerminal}}</text>
+          <view wx:for="{{row.cells}}" wx:for-item="cell" wx:key="terminal" class="pt-cell {{cell.cellClass}}">
+            <text wx:if="{{cell.prodStr}}">{{cell.prodStr}}</text>
+            <text wx:else class="cell-err-text">err</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 4: Parse Animation -->
+  <view wx:if="{{parsed && activeTab === 3}}" class="tab-content">
+    <!-- Step controls -->
+    <view class="step-controls">
+      <button class="btn-step" bindtap="onStepBackward" disabled="{{currentStepIndex <= 0}}" hover-class="btn-hover">◀ 后退</button>
+      <text class="step-indicator">{{currentStepIndex + 1}} / {{totalSteps}}</text>
+      <button class="btn-step" bindtap="onStepForward" disabled="{{currentStepIndex >= totalSteps - 1}}" hover-class="btn-hover">前进 ▶</button>
+      <button class="btn-step" bindtap="onJumpEnd" disabled="{{currentStepIndex >= totalSteps - 1}}" hover-class="btn-hover">跳到最后 ⏭</button>
+    </view>
+
+    <!-- Parse error message -->
+    <text wx:if="{{parseErrorMessage}}" class="parse-error-text">{{parseErrorMessage}}</text>
+
+    <!-- Parse state display -->
+    <view wx:if="{{currentStep}}" class="parse-state">
+
+      <!-- Stack view -->
+      <view class="state-card">
+        <text class="state-card-title">栈（栈顶 → 栈底）</text>
+        <view class="stack-render">
+          <view wx:if="{{currentStep.stack.length === 0}}" class="stack-empty">（空）</view>
+          <view wx:for="{{currentStep.stack}}" wx:for-item="sym" wx:for-index="symIdx" wx:key="symIdx" class="stack-item {{sym === '$' ? 'stack-end' : ''}}">
+            <text>{{sym}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Input buffer -->
+      <view class="state-card">
+        <text class="state-card-title">输入缓冲</text>
+        <view class="input-render">
+          <view wx:for="{{currentStep.input}}" wx:for-item="sym" wx:for-index="symIdx" wx:key="symIdx" class="input-item {{symIdx === 0 ? 'input-current' : ''}}">
+            <text>{{sym}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Output -->
+      <view class="state-card">
+        <text class="state-card-title">产生式序列</text>
+        <view class="output-render">
+          <view wx:if="{{currentStep.output.length === 0}}" class="output-empty">（尚无产生式）</view>
+          <view wx:for="{{currentStep.output}}" wx:for-item="prod" wx:for-index="prodIdx" wx:key="prodIdx" class="output-item">
+            <text>{{prod}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Action -->
+      <view class="state-card">
+        <text class="state-card-title">当前动作</text>
+        <text class="action-label {{'action-' + currentStep.action}}">
+          <text wx:if="{{currentStep.action === null}}">初始状态</text>
+          <text wx:elif="{{currentStep.action === 'accept'}}">✓ 接受！输入串符合文法</text>
+          <text wx:elif="{{currentStep.action === 'match'}}">匹配 "{{currentStep.matched}}"</text>
+          <text wx:elif="{{currentStep.action === 'expand'}}">展开: {{currentStep.production}}</text>
+          <text wx:elif="{{currentStep.action === 'error'}}">✗ 错误: {{currentStep.error}}</text>
+        </text>
+      </view>
+    </view>
+
+    <!-- Parse result -->
+    <view wx:if="{{currentStep && currentStep.action === 'accept' || currentStep && currentStep.action === 'error'}}" class="result-band {{currentStep.action === 'accept' ? 'result-accept' : 'result-reject'}}">
+      <text wx:if="{{currentStep.action === 'accept'}}" class="result-text">✓ 输入串被接受（符合文法）</text>
+      <text wx:if="{{currentStep.action === 'error'}}" class="result-text">✗ 输入串被拒绝（不符合文法）</text>
+    </view>
+  </view>
+
+  <!-- Empty state when no grammar parsed -->
+  <view wx:elif="{{!parsed && !errorMessage}}" class="empty-band">
+    <text class="empty-text">输入文法后点击「计算 FIRST/FOLLOW」查看 LL(1) 分析结果</text>
+  </view>
+</view>

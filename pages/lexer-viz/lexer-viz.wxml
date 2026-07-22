@@ -1,0 +1,134 @@
+<view class="page">
+  <!-- 页面标题 & 示例选择 -->
+  <view class="input-band">
+    <text class="band-label">词法分析器</text>
+    <text class="band-subtitle">输入代码或选择预设示例，观察字符流如何转换为 Token 流</text>
+
+    <view class="sample-row">
+      <text class="section-label">预设示例</text>
+      <picker mode="selector" range="{{sampleLabels}}" value="{{sampleIndex}}" bindchange="onSampleChange">
+        <view class="sample-picker">
+          <text class="sample-picker-text">{{sampleLabels[sampleIndex] || '选择示例...'}}</text>
+          <text class="picker-arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="input-row">
+      <textarea class="code-input" placeholder="在此输入类 C 语言代码&#10;例如：int main() { return 0; }" value="{{rawInput}}" bindinput="onCodeInput" maxlength="5000" auto-height />
+    </view>
+
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onTokenize" hover-class="btn-hover">分析</button>
+      <button class="btn-step" bindtap="onStep" hover-class="btn-hover" disabled="{{!hasResult || animating}}">单步</button>
+      <button class="btn-step" bindtap="onStepAll" hover-class="btn-hover" disabled="{{!hasResult || animating}}">全部</button>
+      <button class="btn-secondary" bindtap="onReset" hover-class="btn-hover">重置</button>
+    </view>
+  </view>
+
+  <!-- 输入提示 -->
+  <view wx:if="{{!hasResult && !rawInput}}" class="empty-band">
+    <text class="empty-text">输入代码后点击「分析」开始词法分析</text>
+  </view>
+
+  <!-- 输入过长提示 -->
+  <view wx:if="{{inputTooLong}}" class="warn-band">
+    <text class="warn-text">输入过长，请输入 5000 字符以内</text>
+  </view>
+
+  <!-- 源码视图 -->
+  <view wx:if="{{hasResult && sourceSegments.length > 0}}" class="source-band">
+    <text class="section-label">源码视图</text>
+    <view class="source-block">
+      <view class="source-line" wx:for="{{sourceLines}}" wx:key="idx">
+        <text wx:for="{{item.segments}}" wx:key="sidx" class="{{item.className}}">{{item.text}}</text>
+        <text wx:if="{{item.showCursor}}" class="cursor-blink">|</text>
+      </view>
+    </view>
+
+    <!-- 状态信息栏 -->
+    <view class="status-bar">
+      <text class="status-item" wx:if="{{currentRule}}">规则: {{currentRule}}</text>
+      <text class="status-item">步数: {{currentStepDisplay}}</text>
+    </view>
+  </view>
+
+  <!-- Token 流 -->
+  <view wx:if="{{hasResult && displayTokens.length > 0}}" class="token-band">
+    <text class="section-label">Token 流（{{displayTokens.length}} 个）</text>
+    <scroll-view class="token-scroll" scroll-x>
+      <view class="token-flow">
+        <view wx:for="{{displayTokens}}" wx:key="index" class="token-card {{item.className}}" bindtap="onTokenClick" data-index="{{index}}">
+          <text class="token-type">{{item.type}}</text>
+          <text class="token-lexeme">{{item.lexeme}}</text>
+          <text class="token-pos">L{{item.line}}:{{item.colStart}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 空 Token 流 -->
+  <view wx:elif="{{hasResult && displayTokens.length === 0 && !hasErrors}}" class="empty-band">
+    <text class="empty-text">未识别到任何 Token</text>
+  </view>
+
+  <!-- 符号表 -->
+  <view wx:if="{{symbolTable.length > 0}}" class="symbol-band">
+    <text class="section-label">符号表（{{symbolTable.length}} 个标识符）</text>
+    <view class="symbol-grid">
+      <view class="symbol-header">
+        <text class="symbol-col-name">标识符</text>
+        <text class="symbol-col-occur">出现位置</text>
+        <text class="symbol-col-count">次数</text>
+      </view>
+      <view wx:for="{{symbolTable}}" wx:key="name" class="symbol-row">
+        <text class="symbol-col-name">{{item.name}}</text>
+        <text class="symbol-col-occur">{{item.occDisplay}}</text>
+        <text class="symbol-col-count">{{item.count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误输出 -->
+  <view wx:if="{{hasErrors}}" class="error-band">
+    <text class="section-label">错误（{{errors.length}} 个）</text>
+    <view wx:for="{{errors}}" wx:key="index" class="error-item">
+      <text class="error-pos">L{{item.line}}:{{item.col}}</text>
+      <text class="error-msg">{{item.message}}</text>
+    </view>
+  </view>
+
+  <!-- Token 详情模态框 -->
+  <view wx:if="{{showTokenDetail}}" class="modal-mask" bindtap="onCloseDetail">
+    <view class="modal-card" catchtap="noop">
+      <text class="modal-title">Token 详情</text>
+      <view wx:if="{{selectedToken}}" class="modal-body">
+        <view class="modal-row">
+          <text class="modal-label">类型</text>
+          <text class="modal-value">{{selectedToken.type}}</text>
+        </view>
+        <view class="modal-row">
+          <text class="modal-label">词素</text>
+          <text class="modal-value mono">{{selectedToken.lexeme}}</text>
+        </view>
+        <view class="modal-row">
+          <text class="modal-label">行号</text>
+          <text class="modal-value">{{selectedToken.line}}</text>
+        </view>
+        <view class="modal-row">
+          <text class="modal-label">列号</text>
+          <text class="modal-value">{{selectedToken.colStart}} - {{selectedToken.colEnd}}</text>
+        </view>
+        <view class="modal-row">
+          <text class="modal-label">分类</text>
+          <text class="modal-value">{{selectedToken.category}}</text>
+        </view>
+        <view class="modal-row">
+          <text class="modal-label">匹配规则</text>
+          <text class="modal-value mono">{{selectedToken.regexRule}}</text>
+        </view>
+      </view>
+      <button class="btn-primary modal-close" bindtap="onCloseDetail">关闭</button>
+    </view>
+  </view>
+</view>

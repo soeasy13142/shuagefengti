@@ -1,0 +1,625 @@
+/* ======================== Page Base ======================== */
+.page {
+  min-height: 100vh;
+  background: #faf9f5;
+  padding: 20rpx 24rpx 60rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  color: #141413;
+}
+
+.band-label {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32rpx;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  color: #141413;
+  margin-bottom: 8rpx;
+}
+
+.band-subtitle {
+  display: block;
+  font-size: 24rpx;
+  color: #6c6a64;
+  margin-bottom: 24rpx;
+  line-height: 1.5;
+}
+
+.section-label {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #6c6a64;
+  margin-bottom: 10rpx;
+  letter-spacing: 1rpx;
+  line-height: 1.4;
+}
+
+.error-text {
+  display: block;
+  margin-top: 12rpx;
+  color: #c0392b;
+  font-size: 24rpx;
+}
+
+.warn-text {
+  display: block;
+  margin-top: 12rpx;
+  color: #e67e22;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+/* ======================== Input Band ======================== */
+.input-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.preset-section {
+  margin-bottom: 20rpx;
+}
+
+.preset-row {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  color: #141413;
+  border: 2rpx solid #d4cfc2;
+}
+
+.preset-btn:active {
+  background: #cc785c;
+  color: #faf9f5;
+  border-color: #cc785c;
+}
+
+.input-section {
+  margin-bottom: 16rpx;
+}
+
+.grammar-input {
+  width: 100%;
+  min-height: 220rpx;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 24rpx;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.parse-input {
+  width: 100%;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  font-size: 24rpx;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  box-sizing: border-box;
+}
+
+.action-row {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  flex: 1;
+  min-width: 200rpx;
+  background: #cc785c;
+  color: #faf9f5;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  border: none;
+  text-align: center;
+}
+
+.btn-primary:active {
+  background: #a9583e;
+}
+
+.btn-secondary {
+  flex: 0 1 auto;
+  background: #faf9f5;
+  color: #141413;
+  border-radius: 12rpx;
+  padding: 20rpx 28rpx;
+  font-size: 26rpx;
+  border: 2rpx solid #d4cfc2;
+  text-align: center;
+}
+
+.btn-secondary:active {
+  background: #e8e0d2;
+}
+
+.btn-hover {
+  opacity: 0.7;
+}
+
+/* ======================== Tab Bar ======================== */
+.tab-bar {
+  display: flex;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 8rpx;
+  margin-bottom: 20rpx;
+  gap: 8rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 8rpx;
+  font-size: 24rpx;
+  color: #6c6a64;
+  border-radius: 16rpx;
+  transition: all 0.2s;
+}
+
+.tab-item:active {
+  opacity: 0.7;
+}
+
+.tab-active {
+  background: #cc785c;
+  color: #faf9f5;
+  font-weight: 600;
+}
+
+/* ======================== Tab Content ======================== */
+.tab-content {
+  margin-bottom: 20rpx;
+}
+
+.info-card {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.info-card-title {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 28rpx;
+  color: #141413;
+  letter-spacing: -2rpx;
+  margin-bottom: 14rpx;
+}
+
+.info-hint {
+  display: block;
+  font-size: 22rpx;
+  color: #6c6a64;
+  line-height: 1.5;
+  margin-bottom: 12rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+/* ======================== Badges ======================== */
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.nt-badge {
+  display: inline-block;
+  background: #cc785c;
+  color: #faf9f5;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.t-badge {
+  display: inline-block;
+  background: #d4cfc2;
+  color: #141413;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+/* ======================== Productions ======================== */
+.prod-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 10rpx 14rpx;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  margin-bottom: 8rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 24rpx;
+}
+
+.prod-item:last-child {
+  margin-bottom: 0;
+}
+
+.prod-lhs {
+  font-weight: 600;
+  color: #cc785c;
+}
+
+.prod-arrow {
+  color: #6c6a64;
+}
+
+.prod-rhs {
+  color: #141413;
+  flex: 1;
+}
+
+.prod-index {
+  color: #8e8b82;
+  font-size: 20rpx;
+}
+
+/* ======================== FIRST/FOLLOW Table ======================== */
+.table-card {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 16rpx;
+  overflow-x: auto;
+}
+
+.ff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 24rpx;
+}
+
+.ff-row {
+  display: flex;
+  border-bottom: 2rpx solid #d4cfc2;
+}
+
+.ff-row:last-child {
+  border-bottom: none;
+}
+
+.ff-header {
+  background: #d4cfc2;
+  font-weight: 600;
+}
+
+.ff-cell {
+  flex: 1;
+  padding: 12rpx 14rpx;
+  min-width: 120rpx;
+  word-break: break-all;
+}
+
+.ff-cell-header {
+  color: #141413;
+  font-weight: 600;
+}
+
+.ff-cell-nt {
+  font-weight: 600;
+  color: #cc785c;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  min-width: 80rpx;
+  flex: 0 0 auto;
+}
+
+.ff-cell-value {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  color: #141413;
+}
+
+/* ======================== Parse Table ======================== */
+.table-scroll {
+  overflow-x: auto;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 12rpx;
+}
+
+.parse-table {
+  min-width: 500rpx;
+  font-size: 20rpx;
+}
+
+.pt-row {
+  display: flex;
+  border-bottom: 2rpx solid #d4cfc2;
+}
+
+.pt-row:last-child {
+  border-bottom: none;
+}
+
+.pt-cell {
+  flex: 1;
+  min-width: 100rpx;
+  padding: 10rpx 8rpx;
+  text-align: center;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  word-break: break-all;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pt-cell-header {
+  background: #d4cfc2;
+  font-weight: 600;
+  color: #141413;
+}
+
+.pt-row-header {
+  min-width: 60rpx;
+  flex: 0 0 auto;
+  color: #cc785c;
+}
+
+.cell-prod {
+  background: #faf9f5;
+  color: #141413;
+}
+
+.cell-error {
+  background: #faf9f5;
+  color: #8e8b82;
+}
+
+.cell-err-text {
+  font-style: italic;
+  color: #8e8b82;
+}
+
+.cell-conflict {
+  background: #f5d6d6;
+  color: #c0392b;
+  font-weight: 600;
+}
+
+/* ======================== Animation Tab ======================== */
+.step-controls {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  flex-wrap: wrap;
+}
+
+.btn-step {
+  flex: 0 1 auto;
+  background: #cc785c;
+  color: #faf9f5;
+  border-radius: 12rpx;
+  padding: 14rpx 24rpx;
+  font-size: 24rpx;
+  border: none;
+  text-align: center;
+}
+
+.btn-step:active {
+  background: #a9583e;
+}
+
+.btn-step[disabled] {
+  opacity: 0.4;
+}
+
+.step-indicator {
+  font-size: 26rpx;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  min-width: 80rpx;
+  text-align: center;
+}
+
+.parse-error-text {
+  display: block;
+  color: #c0392b;
+  font-size: 24rpx;
+  margin-bottom: 12rpx;
+}
+
+/* ======================== State Cards ======================== */
+.parse-state {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.state-card {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 20rpx;
+}
+
+.state-card-title {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #6c6a64;
+  margin-bottom: 12rpx;
+  letter-spacing: 1rpx;
+}
+
+/* Stack */
+.stack-render {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  max-height: 300rpx;
+  overflow-y: auto;
+}
+
+.stack-item {
+  background: #faf9f5;
+  border-radius: 10rpx;
+  padding: 8rpx 16rpx;
+  font-size: 24rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  color: #141413;
+  border-left: 4rpx solid #cc785c;
+}
+
+.stack-end {
+  border-left-color: #6c6a64;
+  color: #6c6a64;
+}
+
+.stack-empty {
+  font-size: 22rpx;
+  color: #8e8b82;
+  font-style: italic;
+  text-align: center;
+  padding: 12rpx;
+}
+
+/* Input buffer */
+.input-render {
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.input-item {
+  background: #faf9f5;
+  border-radius: 10rpx;
+  padding: 8rpx 14rpx;
+  font-size: 24rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  color: #141413;
+}
+
+.input-current {
+  background: #cc785c;
+  color: #faf9f5;
+  font-weight: 600;
+}
+
+/* Output */
+.output-render {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  max-height: 300rpx;
+  overflow-y: auto;
+}
+
+.output-item {
+  padding: 6rpx 12rpx;
+  font-size: 22rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  color: #141413;
+  background: #faf9f5;
+  border-radius: 8rpx;
+}
+
+.output-empty {
+  font-size: 22rpx;
+  color: #8e8b82;
+  font-style: italic;
+  padding: 8rpx;
+  text-align: center;
+}
+
+/* Action */
+.action-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  padding: 12rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.action-null {
+  color: #6c6a64;
+  background: #faf9f5;
+}
+
+.action-accept {
+  color: #27ae60;
+  background: #e8f8f0;
+}
+
+.action-match {
+  color: #cc785c;
+  background: #faf9f5;
+}
+
+.action-expand {
+  color: #2980b9;
+  background: #eaf2f8;
+}
+
+.action-error {
+  color: #c0392b;
+  background: #fce4e4;
+}
+
+/* ======================== Result Band ======================== */
+.result-band {
+  margin-top: 16rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  text-align: center;
+}
+
+.result-accept {
+  background: #e8f8f0;
+  border: 2rpx solid #27ae60;
+}
+
+.result-reject {
+  background: #fce4e4;
+  border: 2rpx solid #c0392b;
+}
+
+.result-text {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* ======================== Empty State ======================== */
+.empty-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 48rpx 24rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: #8e8b82;
+}

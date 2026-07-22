@@ -52,9 +52,9 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 21 个工具', () => {
+    test('返回当前已实现的 22 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(21);
+      expect(result.length).toBe(22);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');
@@ -77,6 +77,7 @@ describe('tool-registry', () => {
       expect(ids).toContain('dh-viz');
       expect(ids).toContain('rsa-calc');
       expect(ids).toContain('aes-viz');
+      expect(ids).toContain('ll1-parser');
     });
   });
 
@@ -123,19 +124,21 @@ describe('tool-registry', () => {
       });
     });
 
-    test('当前包含 network、os、crypto、algo 四个分类', () => {
+    test('当前包含 network、os、crypto、algo、compiler 五个分类', () => {
       let result = getActiveCategories();
       let ids = result.map(function(c) { return c.id; });
       expect(ids).toContain('network');
       expect(ids).toContain('os');
       expect(ids).toContain('crypto');
       expect(ids).toContain('algo');
+      expect(ids).toContain('compiler');
     });
 
-    test('不包含没有已实现工具的分类（如 compiler）', () => {
+    test('不包含没有已实现工具的分类', () => {
       let result = getActiveCategories();
       let ids = result.map(function(c) { return c.id; });
-      expect(ids).not.toContain('compiler');
+      // all categories have at least one available tool now
+      expect(ids.length).toBe(5);
     });
 
     test('结果按 order 排序', () => {

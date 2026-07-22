@@ -1,0 +1,481 @@
+/* ======================== 页面基础 ======================== */
+.page {
+  min-height: 100vh;
+  background: #faf9f5;
+  padding: 20rpx 24rpx 60rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  color: #141413;
+}
+
+.band-label {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32rpx;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  color: #141413;
+  margin-bottom: 8rpx;
+}
+
+.band-subtitle {
+  display: block;
+  font-size: 24rpx;
+  color: #6c6a64;
+  margin-bottom: 24rpx;
+  line-height: 1.5;
+}
+
+.section-label {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #6c6a64;
+  margin-bottom: 12rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ======================== 输入区 ======================== */
+.input-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.sample-row {
+  margin-bottom: 16rpx;
+}
+
+.sample-picker {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 14rpx 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 26rpx;
+  color: #141413;
+}
+
+.sample-picker-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-arrow {
+  color: #6c6a64;
+  margin-left: 8rpx;
+}
+
+.input-row {
+  margin-bottom: 16rpx;
+}
+
+.code-input {
+  width: 100%;
+  min-height: 160rpx;
+  max-height: 400rpx;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 24rpx;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.action-row {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  flex: 1;
+  min-width: 120rpx;
+  background: #cc785c;
+  color: #faf9f5;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  border: none;
+  text-align: center;
+}
+
+.btn-hover {
+  opacity: 0.7;
+}
+
+.btn-step {
+  flex: 0 0 auto;
+  background: #5a7d9a;
+  color: #faf9f5;
+  border-radius: 12rpx;
+  padding: 20rpx 28rpx;
+  font-size: 26rpx;
+  border: none;
+  text-align: center;
+}
+
+.btn-step[disabled] {
+  opacity: 0.4;
+}
+
+.btn-secondary {
+  flex: 0 0 auto;
+  background: #faf9f5;
+  color: #141413;
+  border-radius: 12rpx;
+  padding: 20rpx 28rpx;
+  font-size: 26rpx;
+  border: 2rpx solid #d4cfc2;
+  text-align: center;
+}
+
+.btn-secondary:active {
+  background: #e8e0d2;
+}
+
+/* ======================== 空状态 & 警告 ======================== */
+.empty-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 48rpx 24rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: #8e8b82;
+}
+
+.warn-band {
+  background: #fdf6ec;
+  border-left: 6rpx solid #e67e22;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.warn-text {
+  font-size: 24rpx;
+  color: #c0392b;
+}
+
+/* ======================== 源码视图 ======================== */
+.source-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.source-block {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 24rpx;
+  line-height: 1.8;
+  overflow-x: auto;
+  min-height: 80rpx;
+  white-space: pre;
+}
+
+.source-line {
+  display: block;
+  white-space: pre;
+}
+
+/* 高亮颜色 */
+.hl-keyword {
+  color: #cc785c;
+  font-weight: 600;
+}
+
+.hl-identifier {
+  color: #141413;
+}
+
+.hl-literal {
+  color: #6b8c3e;
+}
+
+.hl-operator {
+  color: #996644;
+}
+
+.hl-separator {
+  color: #141413;
+}
+
+.hl-comment {
+  color: #8e8b82;
+  font-style: italic;
+}
+
+.hl-plain {
+  color: #141413;
+}
+
+.hl-unprocessed {
+  color: #b0aea8;
+}
+
+/* 光标闪烁 */
+.cursor-blink {
+  color: #cc785c;
+  font-weight: 700;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* 状态栏 */
+.status-bar {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 12rpx;
+  flex-wrap: wrap;
+}
+
+.status-item {
+  font-size: 22rpx;
+  color: #6c6a64;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+/* ======================== Token 流 ======================== */
+.token-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.token-scroll {
+  white-space: nowrap;
+  padding-bottom: 12rpx;
+}
+
+.token-flow {
+  display: flex;
+  gap: 12rpx;
+  align-items: stretch;
+}
+
+.token-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 12rpx 20rpx;
+  min-width: 100rpx;
+  border-left: 4rpx solid #d4cfc2;
+  flex-shrink: 0;
+}
+
+.token-card:active {
+  background: #e8e0d2;
+}
+
+/* Token 卡片类型颜色边框 */
+.token-card.hl-keyword {
+  border-left-color: #cc785c;
+}
+
+.token-card.hl-identifier {
+  border-left-color: #141413;
+}
+
+.token-card.hl-literal {
+  border-left-color: #6b8c3e;
+}
+
+.token-card.hl-operator {
+  border-left-color: #996644;
+}
+
+.token-card.hl-separator {
+  border-left-color: #8e8b82;
+}
+
+.token-type {
+  font-size: 18rpx;
+  color: #8e8b82;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  margin-bottom: 4rpx;
+}
+
+.token-lexeme {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.token-pos {
+  font-size: 18rpx;
+  color: #b0aea8;
+  margin-top: 4rpx;
+}
+
+/* ======================== 符号表 ======================== */
+.symbol-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.symbol-grid {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.symbol-header {
+  display: flex;
+  background: #efe9de;
+  padding: 16rpx 20rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #6c6a64;
+}
+
+.symbol-row {
+  display: flex;
+  padding: 16rpx 20rpx;
+  font-size: 24rpx;
+  border-bottom: 2rpx solid #e8e0d2;
+}
+
+.symbol-row:last-child {
+  border-bottom: none;
+}
+
+.symbol-col-name {
+  flex: 2;
+  font-weight: 600;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.symbol-col-occur {
+  flex: 3;
+  color: #6c6a64;
+  font-size: 22rpx;
+}
+
+.symbol-col-count {
+  flex: 1;
+  text-align: right;
+  color: #cc785c;
+  font-weight: 600;
+}
+
+/* ======================== 错误输出 ======================== */
+.error-band {
+  background: #fdf0ef;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.error-item {
+  display: flex;
+  gap: 12rpx;
+  padding: 8rpx 0;
+  align-items: baseline;
+}
+
+.error-pos {
+  font-size: 22rpx;
+  color: #c0392b;
+  font-weight: 600;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  min-width: 80rpx;
+}
+
+.error-msg {
+  font-size: 24rpx;
+  color: #c0392b;
+}
+
+/* ======================== Token 详情模态框 ======================== */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-card {
+  background: #faf9f5;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  width: 560rpx;
+  max-width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 30rpx;
+  color: #141413;
+  letter-spacing: -2rpx;
+  margin-bottom: 20rpx;
+}
+
+.modal-body {
+  margin-bottom: 20rpx;
+}
+
+.modal-row {
+  display: flex;
+  padding: 10rpx 0;
+  border-bottom: 2rpx solid #e8e0d2;
+}
+
+.modal-row:last-child {
+  border-bottom: none;
+}
+
+.modal-label {
+  flex: 0 0 120rpx;
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.modal-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: #141413;
+  font-weight: 600;
+}
+
+.modal-value.mono {
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.modal-close {
+  margin-top: 8rpx;
+}

@@ -648,8 +648,27 @@ const TOOLS = [
     icon: '',
     description: '预测分析表 · FIRST/FOLLOW集',
     route: '/pages/ll1-parser/ll1-parser',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '输入文法，计算 FIRST/FOLLOW 集，构造 LL(1) 预测分析表，逐步骤演示串分析过程',
+    taglineDetail: '支持产生式输入（→ 分隔，| 多选，ε 空串），自动计算 FIRST 与 FOLLOW 集，构造预测分析表并检测 LL(1) 冲突，可逐步回放预测分析器栈/输入缓冲/输出序列的变化',
+    tags: ['#可视化', '#交互式', '#编译原理'],
+    difficulty: 'advanced',
+    intro: {
+      valueProp: '输入上下文无关文法，自动完成 LL(1) 分析的完整工作流：FIRST/FOLLOW → 分析表 → 串分析。',
+      features: [
+        '支持产生式输入（→ 分隔，| 多选，ε 空串）',
+        '自动计算 FIRST 集（含 ε 传播链）和 FOLLOW 集（含 start 符号的 $）',
+        '构造 LL(1) 预测分析表，检测并高亮冲突格子',
+        '逐步骤回放预测分析过程：栈、输入缓冲、输出序列同步展示'
+      ],
+      prerequisites: '了解上下文无关文法的基本概念，知道 FIRST/FOLLOW 集是什么。',
+      useCases: [
+        '编译原理课程 LL(1) 分析章节',
+        '验证文法是否为 LL(1)',
+        '理解预测分析器的工作机制'
+      ]
+    },
     order: 2
   },
   {

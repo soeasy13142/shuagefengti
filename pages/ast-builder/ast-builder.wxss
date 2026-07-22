@@ -1,0 +1,371 @@
+/* ======================== 页面基础 ======================== */
+.page {
+  min-height: 100vh;
+  background: #faf9f5;
+  padding: 20rpx 24rpx 60rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  color: #141413;
+}
+
+/* ======================== 卡片 ======================== */
+.card {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.card-title {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32rpx;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  color: #141413;
+  margin-bottom: 8rpx;
+}
+
+.card-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #6c6a64;
+  margin-bottom: 24rpx;
+  line-height: 1.5;
+}
+
+.title-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+/* ======================== 输入区 ======================== */
+.input-band {
+  background: #efe9de;
+}
+
+.field-label {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #6c6a64;
+  margin-bottom: 8rpx;
+  letter-spacing: 1rpx;
+}
+
+.preset-row {
+  margin-bottom: 16rpx;
+}
+
+.preset-picker {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 14rpx 20rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preset-picker-text {
+  font-size: 26rpx;
+  color: #141413;
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.input-row {
+  margin-bottom: 16rpx;
+}
+
+.expr-input {
+  width: 100%;
+  height: 80rpx;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 32rpx;
+  color: #141413;
+  box-sizing: border-box;
+  font-family: 'Courier New', monospace;
+}
+
+.action-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  flex: 1;
+  min-width: 120rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  background: #cc785c;
+  color: #faf9f5;
+  font-size: 26rpx;
+  border-radius: 12rpx;
+  text-align: center;
+  padding: 0 16rpx;
+}
+
+.btn-hover {
+  background: #a9583e;
+}
+
+.btn-secondary {
+  flex: 1;
+  min-width: 100rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  background: #faf9f5;
+  color: #141413;
+  font-size: 24rpx;
+  border-radius: 12rpx;
+  text-align: center;
+  padding: 0 12rpx;
+  border: 2rpx solid #d4cfc4;
+}
+
+.error-text {
+  display: block;
+  margin-top: 12rpx;
+  color: #c0392b;
+  font-size: 24rpx;
+}
+
+/* ======================== Token 流 ======================== */
+.token-stream {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 12rpx;
+}
+
+.token-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #faf9f5;
+  border-radius: 8rpx;
+  padding: 6rpx 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.token-active {
+  border-color: #cc785c;
+  background: #f5ede8;
+}
+
+.token-type {
+  font-size: 18rpx;
+  color: #6c6a64;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+.token-lexeme {
+  font-size: 26rpx;
+  color: #141413;
+  font-family: 'Courier New', monospace;
+  margin-top: 2rpx;
+}
+
+/* ======================== 步骤列表 ======================== */
+.step-list {
+  margin-top: 12rpx;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8rpx 0;
+  border-bottom: 1rpx solid #d4cfc4;
+}
+
+.step-item:last-child {
+  border-bottom: none;
+}
+
+.step-num {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  background: #d4cfc4;
+  color: #6c6a64;
+  font-size: 20rpx;
+  text-align: center;
+  line-height: 40rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.step-done .step-num {
+  background: #cc785c;
+  color: #faf9f5;
+}
+
+.step-desc {
+  font-size: 24rpx;
+  color: #141413;
+  flex: 1;
+}
+
+.step-pending .step-desc {
+  color: #6c6a64;
+}
+
+/* ======================== AST 树视图 ======================== */
+.tree-scroll {
+  width: 100%;
+  height: 600rpx;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  overflow: auto;
+}
+
+.tree-wrap {
+  position: relative;
+}
+
+.tree-node-wrap {
+  position: absolute;
+}
+
+.node-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rpx;
+  box-sizing: border-box;
+  border: 2rpx solid #8a8580;
+  overflow: hidden;
+}
+
+.node-hover {
+  opacity: 0.85;
+}
+
+.node-type {
+  font-size: 18rpx;
+  font-weight: 600;
+  color: #faf9f5;
+  letter-spacing: 1rpx;
+}
+
+.node-lexeme {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #faf9f5;
+  font-family: 'Courier New', monospace;
+}
+
+.node-val {
+  font-size: 18rpx;
+  color: #faf9f5;
+  opacity: 0.9;
+  margin-top: 2rpx;
+}
+
+.node-typeattr {
+  font-size: 16rpx;
+  color: #faf9f5;
+  opacity: 0.7;
+  margin-top: 1rpx;
+}
+
+/* ======================== SDT 规则 ======================== */
+.sdt-list {
+  margin-top: 12rpx;
+}
+
+.sdt-rule {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6rpx 0;
+  font-size: 24rpx;
+  border-bottom: 1rpx solid #d4cfc4;
+}
+
+.sdt-rule:last-child {
+  border-bottom: none;
+}
+
+.sdt-lhs {
+  font-weight: 700;
+  color: #cc785c;
+  width: 30rpx;
+}
+
+.sdt-arrow {
+  color: #6c6a64;
+  margin: 0 8rpx;
+}
+
+.sdt-rhs {
+  color: #141413;
+  font-family: 'Courier New', monospace;
+  margin-right: 12rpx;
+}
+
+.sdt-action {
+  color: #6c6a64;
+  font-size: 22rpx;
+  font-family: 'Courier New', monospace;
+}
+
+/* ======================== 求值结果 ======================== */
+.result-card {
+  background: #efe9de;
+}
+
+.result-value {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #cc785c;
+  text-align: center;
+  padding: 16rpx 0;
+  font-family: 'Courier New', monospace;
+}
+
+.result-error {
+  color: #c0392b;
+}
+
+.result-error-desc {
+  display: block;
+  text-align: center;
+  font-size: 22rpx;
+  color: #6c6a64;
+  margin-top: 8rpx;
+}
+
+/* ======================== 折叠/展开切换 ======================== */
+.toggle-row {
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+
+.toggle-label {
+  font-size: 22rpx;
+  color: #cc785c;
+  padding: 4rpx 12rpx;
+  border: 2rpx solid #cc785c;
+  border-radius: 8rpx;
+}
