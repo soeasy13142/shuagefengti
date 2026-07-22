@@ -45,7 +45,17 @@ Page({
     arrowEveState: { visible: false, direction: 'right', label: '', isMitm: false },
 
     // 状态
-    hasExchanged: false
+    hasExchanged: false,
+
+    // DH 提示浮层
+    dhTipVisible: false,
+    dhTipTitle: '',
+    dhTipBody: '',
+    dhTips: {
+      alice: { title: 'Alice 的私钥', body: 'Alice 随机选择一个私密数字 a（或手动输入），计算公钥 A = g^a mod p 发送给 Bob。公钥公开，私钥绝不泄露。' },
+      bob: { title: 'Bob 的私钥', body: 'Bob 随机选择私密数字 b，计算公钥 B = g^b mod p 发送给 Alice。即使 Eve 监听到公钥 A 和 B，也无法反推私钥 a 和 b。' },
+      channel: { title: '公共信道与 MITM', body: '所有通信在公共信道上传输，Eve 可以看到公钥 A 和 B。但是因为没有私钥 a 或 b，Eve 无法计算共享密钥。⛔ 如果开启 MITM 模式，Eve 会拦截公钥并替换为自己的，导致 Alice 和 Bob 的密钥不一致。' }
+    }
   },
 
   _playTimer: null,
@@ -399,5 +409,24 @@ Page({
       showDiscreteLog: false,
       isPlaying: false
     });
-  }
+  },
+
+  // ── DH 提示浮层 ──
+
+  onDhTipTap: function(e) {
+    var tipKey = e.currentTarget.dataset.tip;
+    var tip = this.data.dhTips[tipKey];
+    if (!tip) return;
+    this.setData({
+      dhTipTitle: tip.title,
+      dhTipBody: tip.body,
+      dhTipVisible: true
+    });
+  },
+
+  onDhTipClose: function() {
+    this.setData({ dhTipVisible: false });
+  },
+
+  noop: function() {}
 });

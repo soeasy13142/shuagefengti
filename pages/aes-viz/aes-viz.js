@@ -34,7 +34,17 @@ Page({
     mixcolDisplay: [],
     shiftRowInfo: [],
     roundKeyDisplay: '',
-    keyWordsDisplay: []
+    keyWordsDisplay: [],
+
+    // AES 侧边帮助面板
+    aesHelpVisible: false,
+    aesHelpItems: [
+      { step: '① 输入明文与密钥', desc: '在输入框中输入 16 字节（32个十六进制字符）的明文和密钥。内置 FIPS 197 标准测试向量和全零/全 FF 预设。' },
+      { step: '② 密钥扩展 (KeyExpansion)', desc: '从初始密钥生成 44 个字 W[0..43] 的轮密钥。支持展开/折叠查看每轮的扩展过程。' },
+      { step: '③ 初始轮 AddRoundKey', desc: '初始轮：将明文与第 0 轮密钥进行 XOR 运算。' },
+      { step: '④ 主轮操作 (×10)', desc: '每轮依次执行 4 步：SubBytes（S 盒字节替换）、ShiftRows（行移位）、MixColumns（列混合，第 10 轮跳过）、AddRoundKey（加轮密钥）。当前轮次高亮显示。' },
+      { step: '⑤ 步进控制', desc: '使用步进控制器前进/后退单轮，点击「自动播放」观看完整加密过程，速度可调。' }
+    ]
   },
 
   onLoad: function() {
@@ -450,5 +460,15 @@ Page({
 
   onToggleKeyExpansion: function() {
     this.setData({ showKeyExpansion: !this.data.showKeyExpansion });
+  },
+
+  // ── AES 侧边帮助面板 ──
+
+  onAesHelpToggle: function() {
+    this.setData({ aesHelpVisible: !this.data.aesHelpVisible });
+  },
+
+  onAesHelpClose: function() {
+    this.setData({ aesHelpVisible: false });
   }
 });

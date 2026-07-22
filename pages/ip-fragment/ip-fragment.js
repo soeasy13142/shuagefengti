@@ -27,7 +27,9 @@ Page({
     reassemblePercent: 0,
     currentMergeStep: null,
     reassembleComplete: false,
-    currentReassembleIdx: -1
+    currentReassembleIdx: -1,
+
+    showIpGuide: false
   },
 
   _debounceTimer: null,
@@ -35,6 +37,18 @@ Page({
 
   onLoad: function() {
     this._updateParams();
+
+    // 首次访问检测
+    var showGuide = false;
+    try {
+      showGuide = !wx.getStorageSync('guide_seen_ip_fragment');
+      if (showGuide) {
+        var self = this;
+        setTimeout(function() {
+          self.setData({ showIpGuide: true });
+        }, 500);
+      }
+    } catch(e) {}
   },
 
   onUnload: function() {
@@ -268,5 +282,14 @@ Page({
       clearInterval(this._animTimer);
       this._animTimer = null;
     }
-  }
+  },
+
+  // ── 首次引导 ──
+
+  onIpGuideDismiss: function() {
+    this.setData({ showIpGuide: false });
+    try { wx.setStorageSync('guide_seen_ip_fragment', true); } catch(e) {}
+  },
+
+  noop: function() {}
 });
