@@ -268,3 +268,89 @@ describe('parseInput', function() {
     expect(parseResult.steps.length).toBeGreaterThan(10);
   });
 });
+
+describe('buildParseTree', function() {
+  test('creates root node with start symbol', function() {
+    var g = makeExprGrammar();
+    var firstResult = computeFIRST(g);
+    var followResult = computeFOLLOW(g, firstResult);
+    var tableResult = buildParseTable(g, firstResult, followResult);
+    var parseResult = parseInput(g, tableResult.table, ['id', '+', 'id']);
+    var tree = buildParseTree(parseResult.steps, g);
+
+    expect(tree.root).not.toBeNull();
+    expect(tree.root.symbol).toBe('E');
+    expect(tree.root.isNonTerminal).toBe(true);
+    expect(typeof tree.root.depth).toBe('number');
+  });
+
+  test('flatNodes contains all tree nodes', function() {
+    var g = makeExprGrammar();
+    var firstResult = computeFIRST(g);
+    var followResult = computeFOLLOW(g, firstResult);
+    var tableResult = buildParseTable(g, firstResult, followResult);
+    var parseResult = parseInput(g, tableResult.table, ['id']);
+    var tree = buildParseTree(parseResult.steps, g);
+
+    expect(tree.flatNodes.length).toBeGreaterThan(0);
+
+    // First node should be root
+    expect(tree.flatNodes[0].symbol).toBe('E');
+    expect(tree.flatNodes[0].depth).toBe(0);
+  });
+
+  test('marks non-terminal and terminal nodes correctly', function() {
+    var g = makeExprGrammar();
+    var firstResult = computeFIRST(g);
+    var followResult = computeFOLLOW(g, firstResult);
+    var tableResult = buildParseTable(g, firstResult, followResult);
+    var parseResult = parseInput(g, tableResult.table, ['id']);
+    var tree = buildParseTree(parseResult.steps, g);
+
+    // Find a terminal node (should have isNonTerminal = false)
+    var idNode = null;
+    for (var i = 0; i < tree.flatNodes.length; i++) {
+      if (tree.flatNodes[i].symbol === 'id') {
+        idNode = tree.flatNodes[i];
+        break;
+      }
+    }
+    expect(idNode).not.toBeNull();
+    expect(idNode.isNonTerminal).toBe(false);
+  });
+
+  test('returns empty for no steps', function() {
+    var g = makeExprGrammar();
+    var tree = buildParseTree([], g);
+    expect(tree.root).toBeNull();
+    expect(tree.flatNodes).toEqual([]);
+  });
+
+  test('builds correct tree for single production grammar', function() {
+    var g = parseGrammar('S → a');
+    var firstResult = computeFIRST(g);
+    var followResult = computeFOLLOW(g, firstResult);
+    var tableResult = buildParseTable(g, firstResult, followResult);
+    var parseResult = parseInput(g, tableResult.table, ['a']);
+    var tree = buildParseTree(parseResult.steps, g);
+
+    expect(tree.root.symbol).toBe('S');
+    expect(tree.root.children.length).toBe(1);
+    expect(tree.root.children[0].symbol).toBe('a');
+    expect(tree.root.children[0].isNonTerminal).toBe(false);
+  });
+
+  test('epsilon production creates epsilon child node', function() {
+    var g = parseGrammar('S → ε');
+    var firstResult = computeFIRST(g);
+    var followResult = computeFOLLOW(g, firstResult);
+    var tableResult = buildParseTable(g, firstResult, followResult);
+    var parseResult = parseInput(g, tableResult.table, []);
+    var tree = buildParseTree(parseResult.steps, g);
+
+    // Root S has one child: ε
+    expect(tree.root.children.length).toBe(1);
+    expect(tree.root.children[0].symbol).toBe('ε');
+    expect(tree.root.children[0].isNonTerminal).toBe(false);
+  });
+});

@@ -50,21 +50,36 @@ function gcd(a, b) {
  * 扩展欧几里得算法：ax + by = gcd(a, b)
  *
  * 参考：Knuth, TAOCP Vol. 2, Section 4.5.2
+ * 返回结果中包含 Euclidean 除法步骤（dividend = quotient x divisor + remainder）
  * @param {number} a
  * @param {number} b
- * @returns {{ gcd: number, x: number, y: number }}
+ * @returns {{ gcd: number, x: number, y: number, steps: Array<{dividend: number, quotient: number, divisor: number, remainder: number}> }}
  */
 function extendedGcd(a, b) {
-  if (b === 0) return { gcd: a, x: 1, y: 0 };
+  if (b === 0) return { gcd: a, x: 1, y: 0, steps: [] };
   let _a = a;
   let _b = b;
   let x0 = 1, x1 = 0;
   let y0 = 0, y1 = 1;
+  const steps = [];
+  let stepNum = 0;
   while (_b !== 0) {
     const q = Math.floor(_a / _b);
     const temp = _b;
-    _b = _a - q * _b;
+    const remainder = _a - q * _b;
+    _b = remainder;
     _a = temp;
+
+    // Record Euclidean division step (skip trivial q=0 swap steps)
+    if (q > 0) {
+      stepNum++;
+      steps.push({
+        dividend: temp,
+        quotient: q,
+        divisor: _b === 0 ? temp : _b,
+        remainder: remainder
+      });
+    }
 
     const tx = x1;
     x1 = x0 - q * x1;
@@ -74,7 +89,14 @@ function extendedGcd(a, b) {
     y1 = y0 - q * y1;
     y0 = ty;
   }
-  return { gcd: _a, x: x0, y: y0 };
+  // Replace last step's divisor (which was set to temp before the update)
+  // with the actual divisor that produced remainder 0
+  if (steps.length > 0) {
+    const last = steps[steps.length - 1];
+    last.divisor = last.dividend;
+    last.remainder = 0;
+  }
+  return { gcd: _a, x: x0, y: y0, steps: steps };
 }
 
 /**

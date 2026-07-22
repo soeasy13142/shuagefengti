@@ -51,7 +51,7 @@
 
   <!-- ===== 状态矩阵 4x4 ===== -->
   <view class="matrix-band" wx:if="{{hasComputed && matrixCells.length > 0}}">
-    <text class="section-title">{{currentStepName}} · 第 {{currentRound}} 轮</text>
+    <text class="section-title">{{currentTitle}}</text>
     <view class="matrix-grid">
       <view wx:for="{{matrixCells}}" wx:key="index" class="matrix-cell {{item.isModified ? 'cell-modified' : ''}}">
         <text class="cell-hex">{{item.hex}}</text>
@@ -108,7 +108,7 @@
   </view>
 
   <!-- ===== AddRoundKey 详情 ===== -->
-  <view class="detail-band" wx:if="{{roundKeyDisplay && currentStep === 3}}">
+  <view class="detail-band" wx:if="{{roundKeyDisplay && (currentRound === 0 || currentStep === 3)}}">
     <text class="section-title">AddRoundKey · 轮密钥加</text>
     <view class="roundkey-card">
       <text class="roundkey-text">轮密钥: {{roundKeyDisplay}}</text>

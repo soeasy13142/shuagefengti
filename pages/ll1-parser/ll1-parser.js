@@ -4,7 +4,8 @@ const {
   computeFOLLOW,
   buildParseTable,
   parseInput,
-  isLL1
+  isLL1,
+  buildParseTree
 } = require('../../utils/ll1-core');
 
 const PRESETS = [
@@ -72,7 +73,11 @@ Page({
 
     // Tab
     activeTab: 1,
-    tabs: ['文法总览', 'FIRST/FOLLOW', '分析表', '串分析'],
+    tabs: ['文法总览', 'FIRST/FOLLOW', '分析表', '串分析', '分析树'],
+
+    // Parse tree
+    treeNodes: [],
+    treeBuilt: false,
 
     // Internal (not displayed directly)
     _grammar: null,
@@ -212,7 +217,9 @@ Page({
         _grammar: grammar,
         _firstResult: firstResult,
         _followResult: followResult,
-        _tableResult: tableResult
+        _tableResult: tableResult,
+        treeNodes: [],
+        treeBuilt: false
       });
     } catch (e) {
       this.setData({
@@ -250,7 +257,9 @@ Page({
       _grammar: null,
       _firstResult: null,
       _followResult: null,
-      _tableResult: null
+      _tableResult: null,
+      treeNodes: [],
+      treeBuilt: false
     });
   },
 
@@ -302,6 +311,9 @@ Page({
     try {
       const parseResult = parseInput(_grammar, _tableResult.table, tokens);
 
+      // Build parse tree for visualization
+      var treeResult = buildParseTree(parseResult.steps, _grammar);
+
       this.setData({
         steps: parseResult.steps,
         currentStepIndex: 0,
@@ -309,7 +321,9 @@ Page({
         parseAccepted: parseResult.accepted,
         totalSteps: parseResult.steps.length,
         parseErrorMessage: '',
-        activeTab: 3
+        activeTab: 3,
+        treeNodes: treeResult.flatNodes,
+        treeBuilt: treeResult.root !== null
       });
     } catch (e) {
       this.setData({ parseErrorMessage: '分析出错: ' + e.message });

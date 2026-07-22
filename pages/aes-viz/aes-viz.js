@@ -392,13 +392,24 @@ Page({
     }
 
     // Build step sequence
-    const stepSequence = STEP_NAMES.map(function(name, i) {
-      return {
-        name: name,
-        active: i === step,
-        done: i < step
-      };
-    });
+    let stepSequence;
+    if (round === 0) {
+      stepSequence = STEP_NAMES.map(function(name, i) {
+        return {
+          name: name,
+          active: i === 3, // Only AddRoundKey is active for round 0
+          done: i === 3
+        };
+      });
+    } else {
+      stepSequence = STEP_NAMES.map(function(name, i) {
+        return {
+          name: name,
+          active: i === step,
+          done: i < step
+        };
+      });
+    }
 
     // Build key words display
     const keyWordsDisplay = [];
@@ -417,9 +428,14 @@ Page({
       });
     }
 
+    const currentTitle = round === 0
+      ? 'Round 0: AddRoundKey（初始密钥）'
+      : currentStepName + ' · 第 ' + round + ' 轮';
+
     this.setData({
       currentStateBytes: stateBytes,
-      currentStepName: STEP_NAMES[step],
+      currentStepName: round === 0 ? 'AddRoundKey（初始密钥）' : STEP_NAMES[step],
+      currentTitle: currentTitle,
       matrixCells: this._makeMatrixCells(stateBytes, modifiedRowCols),
       stepSequence: stepSequence,
       sboxDisplay: sboxDisplay,
