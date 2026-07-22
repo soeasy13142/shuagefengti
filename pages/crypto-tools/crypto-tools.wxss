@@ -1,0 +1,406 @@
+/* 密码工具箱 - Claude Design 暖奶油画布风格 */
+
+/* 页面容器 */
+.page {
+  background-color: #faf9f5;
+  min-height: 100vh;
+  padding: 0 24rpx 40rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  color: #141413;
+}
+
+/* ── Tab 切换栏 ── */
+.tab-bar {
+  display: flex;
+  background-color: #efe9de;
+  border-radius: 24rpx;
+  margin: 24rpx 0;
+  overflow: hidden;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.tab-label {
+  font-size: 28rpx;
+  color: #6c6a64;
+}
+
+.tab-active {
+  background-color: #cc785c;
+  border-radius: 24rpx;
+}
+
+.tab-active .tab-label {
+  color: #faf9f5;
+  font-weight: 500;
+}
+
+/* ── 卡片 ── */
+.card {
+  background-color: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 30rpx;
+  font-weight: 400;
+  letter-spacing: -1rpx;
+  color: #141413;
+  margin-bottom: 20rpx;
+}
+
+/* ── 控制区域 ── */
+.control-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.control-label {
+  font-size: 26rpx;
+  color: #141413;
+  margin-right: 16rpx;
+  white-space: nowrap;
+}
+
+.shift-input,
+.key-input {
+  flex: 1;
+  height: 64rpx;
+  background-color: #faf9f5;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
+  font-size: 26rpx;
+  color: #141413;
+}
+
+/* ── 按钮 ── */
+.btn-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  padding: 0;
+}
+
+.btn-primary {
+  background-color: #cc785c;
+  color: #faf9f5;
+}
+
+.btn-primary:active {
+  background-color: #a9583e;
+}
+
+.btn-secondary {
+  background-color: #faf9f5;
+  color: #141413;
+  border: 2rpx solid #d6d2c8;
+}
+
+.btn-secondary:active {
+  background-color: #e8e2d6;
+}
+
+/* ── 预设文本选择器 ── */
+.preset-picker {
+  margin-bottom: 16rpx;
+}
+
+.preset-trigger {
+  font-size: 24rpx;
+  color: #cc785c;
+  padding: 8rpx 0;
+}
+
+/* ── 文本输入 ── */
+.text-input {
+  width: 100%;
+  min-height: 120rpx;
+  background-color: #faf9f5;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: #141413;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  color: #6c6a64;
+  margin-top: 8rpx;
+}
+
+/* ── 结果展示 ── */
+.result-box {
+  background-color: #faf9f5;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #141413;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+/* ── 可折叠面板 ── */
+.collapsible {
+  padding: 0;
+  overflow: hidden;
+}
+
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  padding: 28rpx;
+  cursor: pointer;
+  font-size: 28rpx;
+  color: #141413;
+}
+
+.collapsible-icon {
+  margin-right: 12rpx;
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.collapsible-body {
+  padding: 0 28rpx 28rpx;
+}
+
+/* ── 暴力破解结果 ── */
+.brute-scroll {
+  max-height: 600rpx;
+  background-color: #faf9f5;
+  border-radius: 16rpx;
+  padding: 16rpx;
+}
+
+.brute-item {
+  padding: 8rpx 0;
+  display: flex;
+  font-size: 24rpx;
+  line-height: 1.6;
+  border-bottom: 1rpx solid #e8e2d6;
+}
+
+.brute-item:last-child {
+  border-bottom: none;
+}
+
+.brute-shift {
+  color: #cc785c;
+  font-weight: 500;
+  min-width: 120rpx;
+  flex-shrink: 0;
+}
+
+.brute-result {
+  color: #141413;
+  word-break: break-all;
+}
+
+/* ── 频率柱状图 ── */
+.freq-chart {
+  background-color: #faf9f5;
+  border-radius: 16rpx;
+  padding: 16rpx;
+}
+
+.freq-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  height: 36rpx;
+}
+
+.freq-letter {
+  width: 40rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #141413;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.freq-bar-bg {
+  width: 480rpx;
+  height: 24rpx;
+  background-color: #e8e2d6;
+  border-radius: 12rpx;
+  margin: 0 8rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.freq-bar {
+  height: 100%;
+  border-radius: 12rpx;
+  background-color: #cc785c;
+  min-width: 2rpx;
+  transition: width 0.3s;
+}
+
+.freq-std-bg {
+  background-color: transparent;
+  border: 1rpx solid #d6d2c8;
+}
+
+.freq-std-bar {
+  background-color: #b8b4a8;
+  opacity: 0.6;
+}
+
+.freq-pct {
+  font-size: 20rpx;
+  color: #6c6a64;
+  width: 80rpx;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.freq-legend {
+  display: flex;
+  justify-content: center;
+  gap: 32rpx;
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: #6c6a64;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-swatch {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 6rpx;
+}
+
+.legend-input {
+  background-color: #cc785c;
+}
+
+.legend-std {
+  background-color: #b8b4a8;
+  opacity: 0.6;
+}
+
+/* ── 维吉尼亚偏移对照表 ── */
+.step-section {
+  margin-bottom: 16rpx;
+}
+
+.step-label {
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.step-value {
+  font-size: 24rpx;
+  color: #cc785c;
+  word-break: break-all;
+}
+
+.step-scroll {
+  max-height: 500rpx;
+  background-color: #faf9f5;
+  border-radius: 16rpx;
+  padding: 16rpx;
+}
+
+.step-table {
+  width: 100%;
+}
+
+.step-header {
+  display: flex;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #6c6a64;
+  padding-bottom: 8rpx;
+  border-bottom: 2rpx solid #e8e2d6;
+  margin-bottom: 4rpx;
+}
+
+.step-row {
+  display: flex;
+  font-size: 24rpx;
+  color: #141413;
+  padding: 4rpx 0;
+  border-bottom: 1rpx solid #f0ece2;
+}
+
+.step-col {
+  flex: 1;
+  text-align: center;
+}
+
+/* ── 栅栏结构可视化 ── */
+.structure-scroll {
+  background-color: #faf9f5;
+  border-radius: 16rpx;
+  padding: 16rpx;
+  white-space: nowrap;
+}
+
+.structure-row {
+  display: flex;
+  margin-bottom: 8rpx;
+}
+
+.structure-row:last-child {
+  margin-bottom: 0;
+}
+
+.structure-cell {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: #b8b4a8;
+  border: 1rpx solid #e8e2d6;
+  border-radius: 4rpx;
+  margin-right: 2rpx;
+}
+
+.structure-cell-filled {
+  color: #141413;
+  border-color: #cc785c;
+  background-color: rgba(204, 120, 92, 0.08);
+  font-weight: 600;
+}
+
+/* ── Tab 内容容器 ── */
+.tab-content {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
