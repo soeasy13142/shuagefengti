@@ -111,3 +111,9 @@ git status --short              # 检查未提交变更
 | **设计规范** | `docs/DESIGN.md` |
 | **决策记录** | `docs/handoff/decisions.md` |
 | **架构文档** | `docs/handoff/architecture.md` |
+
+### 2026-07-22 新增 D9: Karpathy Guidelines 按需启用
+
+- **新增** CLAUDE.md D9 规则 — 大型任务（specs/plans/superpowers 全流程/大型 code review）必须调用 `andrej-karpathy-skills:karpathy-guidelines`；日常琐碎修改禁止触发
+- **背景**：安装了 karpathy-skills 插件，用户要求按任务粒度条件性启用
+- **触发方式**：Claude 自行辨别任务大小，大型任务自动调用 Skill 加载；不确定时回退 D2 🔴 必问原则

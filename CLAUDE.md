@@ -32,6 +32,8 @@
 
 **D8. 默认用 SubAgent，不问** — 凡能派 SubAgent 处理的（`.claude/rules/subagent-usage.md` 中列出的场景），**直接派，不询问用户**。包括但不限于：独立 utils + 测试开发、批量化重构、全库搜索替换、全量测试、代码审查、查文档/API。主会话保持轻量。仅当任务需要频繁来回确认/视觉迭代/用户决策时才留在主会话。
 
+**D9. Karpathy Guidelines 按需启用** — 进行大型任务（specs+plans 编写、superpowers 全流程、大型 code review、架构设计）时，**必须**通过 `Skill` 工具调用 `andrej-karpathy-skills:karpathy-guidelines` 加载其四条行为准则（Think Before Coding / Simplicity First / Surgical Changes / Goal-Driven Execution）。日常琐碎修改（写 commit message、修复 typo、简单配置变更、纯文档调整等）**禁止**触发该 skill。大小任务的界定由 Claude 自行辨别，不确定时回到 D2 🔴 必问原则。
+
 ### ❌ 禁止
 
 **X1** 替用户决策 | **X2** 跳过 plans | **X3** 不经询问创建/删除文件 | **X4** 硬编码 secrets
