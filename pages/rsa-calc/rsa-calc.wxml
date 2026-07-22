@@ -1,4 +1,9 @@
 <view class="page">
+  <intro-modal
+    show="{{showRsaIntro}}"
+    introContent="{{rsaIntroContent}}"
+    bind:close="onRsaIntroClose"
+  />
   <!-- 密钥生成区 -->
   <view class="card">
     <text class="card-title">第一步：密钥生成</text>

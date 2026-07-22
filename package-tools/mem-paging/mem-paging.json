@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "内存分页可视化",
   "navigationBarBackgroundColor": "#faf9f5",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "tool-help-panel": "../../components/tool-help-panel/tool-help-panel"
+  }
 }

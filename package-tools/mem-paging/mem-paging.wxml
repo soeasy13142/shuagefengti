@@ -1,4 +1,10 @@
 <view class="page">
+  <tool-help-panel
+    content="{{memPagingHelp}}"
+    activeMode="default"
+    visible="{{helpVisible}}"
+    bind:toggle="onMemHelpToggle"
+  />
   <!-- 配置区 -->
   <view class="config-band">
     <text class="band-label">内存分页可视化</text>

@@ -37,13 +37,36 @@ Page({
     addressLabels: [],
 
     // 控制
-    playing: false
+    playing: false,
+
+    // 帮助面板
+    helpVisible: false,
+    memPagingHelp: [
+      {
+        mode: 'default',
+        title: '内存分页操作速查',
+        summary: [
+          '▸ 调整页大小和帧数来配置内存参数',
+          '▸ 输入逻辑地址序列（逗号分隔的十进制数）',
+          '▸ 点击「开始模拟」观看地址转换过程'
+        ],
+        details: [
+          '• 逻辑地址分解为：页号(高位) + 页内偏移(低位)',
+          '• 页表查询：从页号找到对应的物理帧号',
+          '• 缺页中断：目标页不在内存中时触发',
+          '• 置换算法：LRU（最近最少使用）或 FIFO（先进先出）',
+          '• 缺页率实时计算：缺页次数 / 总访问次数',
+          '• 切换「步进模式」可逐条执行地址转换'
+        ]
+      }
+    ]
   },
 
   _animTimer: null,
 
   onLoad() {
     this._seedAddresses();
+    this._checkFirstVisit();
   },
 
   onUnload() {
@@ -192,6 +215,26 @@ Page({
       clearInterval(this._animTimer);
       this._animTimer = null;
     }
+  },
+
+  // ── 首次访问帮助面板 ──
+
+  _checkFirstVisit: function() {
+    var seen = false;
+    try { seen = wx.getStorageSync('help_seen_mem_paging'); } catch(e) {}
+    if (!seen) {
+      this.setData({ helpVisible: true });
+      var self = this;
+      setTimeout(function() {
+        if (!self.data.helpVisible) return;
+        self.setData({ helpVisible: false });
+        try { wx.setStorageSync('help_seen_mem_paging', true); } catch(e) {}
+      }, 5000);
+    }
+  },
+
+  onMemHelpToggle: function(e) {
+    this.setData({ helpVisible: e.detail.visible });
   },
 
   // ── Event Handlers ──
