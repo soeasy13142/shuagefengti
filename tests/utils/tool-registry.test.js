@@ -4,7 +4,10 @@ const {
   getAvailableTools,
   getToolsByCategory,
   getActiveCategories,
-  getFeaturedToolsByCategory
+  getFeaturedToolsByCategory,
+  getHomepageFeaturedTools,
+  getCategoryNameMap,
+  getDifficultyInfo
 } = require('../../utils/tool-registry');
 
 describe('tool-registry', () => {
@@ -174,6 +177,74 @@ describe('tool-registry', () => {
     test('不存在的分类返回空数组', () => {
       let result = getFeaturedToolsByCategory('nonexistent', 10);
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getHomepageFeaturedTools', () => {
+    test('返回首页精选工具列表，按配置顺序排列', () => {
+      const featured = getHomepageFeaturedTools();
+      expect(Array.isArray(featured)).toBe(true);
+      expect(featured.length).toBeGreaterThan(0);
+      // All returned tools should be available
+      featured.forEach(function(tool) {
+        expect(tool.available).toBe(true);
+      });
+    });
+
+    test('返回顺序与 HOMEPAGE_FEATURED_IDS 配置一致', () => {
+      const featured = getHomepageFeaturedTools();
+      // tcp-viz should come first
+      expect(featured[0].id).toBe('tcp-viz');
+      expect(featured[1].id).toBe('nginx-gen');
+    });
+
+    test('所有精选工具都是 available: true', () => {
+      const featured = getHomepageFeaturedTools();
+      featured.forEach(function(tool) {
+        expect(tool.available).toBe(true);
+      });
+    });
+  });
+
+  describe('getCategoryNameMap', () => {
+    test('返回分类 id 到 name 的映射', () => {
+      const map = getCategoryNameMap();
+      expect(map.network).toBe('计算机网络');
+      expect(map.os).toBe('操作系统');
+      expect(map.crypto).toBe('密码学');
+      expect(map.algo).toBe('算法 & 数据结构');
+      expect(map.compiler).toBe('编译原理');
+    });
+
+    test('映射中不包含不存在的分类', () => {
+      const map = getCategoryNameMap();
+      expect(map.nonexistent).toBeUndefined();
+    });
+  });
+
+  describe('getDifficultyInfo', () => {
+    test('返回 easy 的正确信息', () => {
+      const info = getDifficultyInfo('easy');
+      expect(info.label).toBe('简单');
+      expect(info.stars).toBe('★☆☆');
+    });
+
+    test('返回 advanced 的正确信息', () => {
+      const info = getDifficultyInfo('advanced');
+      expect(info.label).toBe('进阶');
+      expect(info.stars).toBe('★★★');
+    });
+
+    test('无效输入回退到 medium 默认值', () => {
+      const info = getDifficultyInfo('invalid');
+      expect(info.label).toBe('中等');
+      expect(info.stars).toBe('★★☆');
+    });
+
+    test('undefined 输入回退到 medium 默认值', () => {
+      const info = getDifficultyInfo(undefined);
+      expect(info.label).toBe('中等');
+      expect(info.stars).toBe('★★☆');
     });
   });
 

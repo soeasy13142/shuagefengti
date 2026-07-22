@@ -43,9 +43,8 @@ Page({
     try {
       showGuide = !wx.getStorageSync('guide_seen_ip_fragment');
       if (showGuide) {
-        var self = this;
-        setTimeout(function() {
-          self.setData({ showIpGuide: true });
+        setTimeout(() => {
+          this.setData({ showIpGuide: true });
         }, 500);
       }
     } catch(e) {}

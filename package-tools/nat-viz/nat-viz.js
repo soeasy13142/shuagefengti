@@ -59,37 +59,47 @@ Page({
     this._stopPlay();
   },
 
+  _collectLanIps(steps) {
+    const ips = [];
+    steps.forEach(function(s) {
+      const p = s.packet;
+      // Collect dstIp as LAN host
+      const isLanDest = s.zone === 'lan' || (s.zone === 'router' && p.direction === 'inbound' && p.dstIp.startsWith('192.168.'));
+      if (isLanDest && p.dstIp.startsWith('192.168.') && !ips.some(function(h) { return h.ip === p.dstIp; })) {
+        ips.push({ ip: p.dstIp, port: p.dstPort, active: false });
+      }
+      // Collect srcIp as LAN host
+      if (p.srcIp.startsWith('192.168.') && !ips.some(function(h) { return h.ip === p.srcIp; })) {
+        ips.push({ ip: p.srcIp, port: p.srcPort, active: false });
+      }
+    });
+    return ips;
+  },
+
+  _collectWanIps(steps, publicIp) {
+    const ips = [];
+    steps.forEach(function(s) {
+      const p = s.packet;
+      // Collect dstIp as WAN host
+      const isWanDest = s.zone === 'wan' || (s.zone === 'router' && p.direction === 'outbound' && !p.dstIp.startsWith('192.168.'));
+      if (isWanDest && !p.dstIp.startsWith('192.168.') && p.dstIp !== publicIp && !ips.some(function(h) { return h.ip === p.dstIp; })) {
+        ips.push({ ip: p.dstIp, port: p.dstPort, active: false });
+      }
+      // Collect srcIp as WAN host
+      if (!p.srcIp.startsWith('192.168.') && p.srcIp !== publicIp && !ips.some(function(h) { return h.ip === p.srcIp; })) {
+        ips.push({ ip: p.srcIp, port: p.srcPort, active: false });
+      }
+    });
+    return ips;
+  },
+
   _initHosts(scenarioId) {
     const scenario = getScenarioById(scenarioId);
     if (!scenario) return;
 
     // 从 step 中收集所有不同的内网和外网 IP
-    const lanIps = [];
-    const wanIps = [];
-    scenario.steps.forEach(function(s) {
-      const p = s.packet;
-      if (s.zone === 'lan' || (s.zone === 'router' && p.direction === 'inbound' && p.dstIp.startsWith('192.168.'))) {
-        if (!lanIps.find(function(h) { return h.ip === p.dstIp; })) {
-          if (p.dstIp.startsWith('192.168.')) {
-            lanIps.push({ ip: p.dstIp, port: p.dstPort, active: false });
-          }
-        }
-      }
-      if (s.zone === 'wan' || (s.zone === 'router' && p.direction === 'outbound' && !p.dstIp.startsWith('192.168.'))) {
-        if (!wanIps.find(function(h) { return h.ip === p.dstIp; })) {
-          if (!p.dstIp.startsWith('192.168.') && p.dstIp !== scenario.publicIp) {
-            wanIps.push({ ip: p.dstIp, port: p.dstPort, active: false });
-          }
-        }
-      }
-      // Also collect srcIp hosts
-      if (!lanIps.find(function(h) { return h.ip === p.srcIp; }) && p.srcIp.startsWith('192.168.')) {
-        lanIps.push({ ip: p.srcIp, port: p.srcPort, active: false });
-      }
-      if (!wanIps.find(function(h) { return h.ip === p.srcIp; }) && !p.srcIp.startsWith('192.168.') && p.srcIp !== scenario.publicIp) {
-        wanIps.push({ ip: p.srcIp, port: p.srcPort, active: false });
-      }
-    });
+    const lanIps = this._collectLanIps(scenario.steps);
+    const wanIps = this._collectWanIps(scenario.steps, scenario.publicIp);
 
     this.setData({
       lanHosts: lanIps,
@@ -196,7 +206,7 @@ Page({
     // 处理映射表更新
     const tableUpdate = step.tableUpdate;
     if (tableUpdate && tableUpdate.action === 'add' && tableUpdate.entry) {
-      this._mappingTable.push({
+      this._mappingTable = this._mappingTable.concat([{
         internalIp: tableUpdate.entry.internalIp,
         internalPort: tableUpdate.entry.internalPort,
         externalPort: tableUpdate.entry.externalPort,
@@ -204,7 +214,7 @@ Page({
         protocol: tableUpdate.entry.protocol,
         timeout: tableUpdate.entry.timeout,
         state: tableUpdate.entry.state
-      });
+      }]);
       this._translationCount++;
     } else if (tableUpdate && tableUpdate.action === 'remove') {
       this._mappingTable = this._mappingTable.filter(function(e) {

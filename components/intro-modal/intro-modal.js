@@ -40,10 +40,9 @@ Component({
     _onShowChange(show) {
       if (show) {
         // 触发入场动画
-        const self = this;
-        self.setData({ animClass: '' });
-        setTimeout(function() {
-          self.setData({ animClass: 'modal-visible' });
+        this.setData({ animClass: '' });
+        setTimeout(() => {
+          this.setData({ animClass: 'modal-visible' });
         }, 30);
       } else {
         this.setData({ animClass: '' });

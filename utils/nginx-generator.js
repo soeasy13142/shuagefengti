@@ -12,6 +12,10 @@ const CIPHER_PROFILES = {
   modern: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305',
 };
 
+const HSTS_MAX_AGE = 31536000;
+const MAX_PORT = 65535;
+const MAX_DNS_LABEL_LENGTH = 63;
+
 /**
  * Strip trailing slash from a path
  * @param {string} str
@@ -113,7 +117,7 @@ function _locationBlock(inputs) {
 function _securityHeaders(inputs) {
   const headers = [];
   if (inputs.enableHSTS) {
-    let hsts = 'max-age=31536000; includeSubDomains';
+    let hsts = 'max-age=' + HSTS_MAX_AGE + '; includeSubDomains';
     if (inputs.hstsPreload) hsts += '; preload';
     headers.push('    add_header Strict-Transport-Security "' + hsts + '" always;');
   }
@@ -272,35 +276,37 @@ function generateConfig(inputs) {
   return blocks.join('\n\n');
 }
 
+function _validateServerName(inputs) {
+  if (!inputs.serverName || !inputs.serverName.trim()) {
+    return [{ field: 'serverName', message: '请输入域名' }];
+  }
+  const cleaned = _cleanServerName(inputs.serverName);
+  if (!cleaned || /[\/:?#]/.test(cleaned)) {
+    return [{ field: 'serverName', message: '域名格式无效' }];
+  }
+  const labels = cleaned.split('.');
+  for (let i = 0; i < labels.length; i++) {
+    if (labels[i] !== '*' && labels[i] !== '_' && labels[i].length > MAX_DNS_LABEL_LENGTH) {
+      return [{ field: 'serverName', message: '域名标签不能超过 63 个字符' }];
+    }
+  }
+  return [];
+}
+
 /**
  * Validate form inputs
  * @param {object} inputs - Form input values
  * @returns {Array<{field: string, message: string}>} Array of errors, empty if valid
  */
 function validateInputs(inputs) {
-  const errors = [];
+  let errors = [];
 
   // serverName
-  if (!inputs.serverName || !inputs.serverName.trim()) {
-    errors.push({ field: 'serverName', message: '请输入域名' });
-  } else {
-    const cleaned = _cleanServerName(inputs.serverName);
-    if (!cleaned || /[\/:?#]/.test(cleaned)) {
-      errors.push({ field: 'serverName', message: '域名格式无效' });
-    } else {
-      const labels = cleaned.split('.');
-      for (let i = 0; i < labels.length; i++) {
-        if (labels[i] !== '*' && labels[i] !== '_' && labels[i].length > 63) {
-          errors.push({ field: 'serverName', message: '域名标签不能超过 63 个字符' });
-          break;
-        }
-      }
-    }
-  }
+  errors = errors.concat(_validateServerName(inputs));
 
   // Port
   const port = parseInt(inputs.listenPort, 10);
-  if (isNaN(port) || port < 1 || port > 65535) {
+  if (isNaN(port) || port < 1 || port > MAX_PORT) {
     errors.push({ field: 'listenPort', message: '端口范围 1-65535' });
   }
 

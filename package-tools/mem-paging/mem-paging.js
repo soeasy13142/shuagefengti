@@ -221,14 +221,13 @@ Page({
 
   _checkFirstVisit: function() {
     var seen = false;
-    try { seen = wx.getStorageSync('help_seen_mem_paging'); } catch(e) {}
+    try { seen = wx.getStorageSync('help_seen_mem_paging'); } catch(e) { console.warn('[mem-paging] failed to read storage', e); }
     if (!seen) {
       this.setData({ helpVisible: true });
-      var self = this;
-      setTimeout(function() {
-        if (!self.data.helpVisible) return;
-        self.setData({ helpVisible: false });
-        try { wx.setStorageSync('help_seen_mem_paging', true); } catch(e) {}
+      setTimeout(() => {
+        if (!this.data.helpVisible) return;
+        this.setData({ helpVisible: false });
+        try { wx.setStorageSync('help_seen_mem_paging', true); } catch(e) { console.warn('[mem-paging] failed to write storage', e); }
       }, 5000);
     }
   },

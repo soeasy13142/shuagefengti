@@ -143,6 +143,178 @@ function getTld(domain) {
 }
 
 /**
+ * 构建 DNS query payload（复用模式：query 报文）。
+ *
+ * @param {number} id 查询 ID
+ * @param {string} domain 查询域名
+ * @returns {{ header: Object, question: Object }}
+ * @private
+ */
+function _makeQueryPayload(id, domain) {
+  return {
+    header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
+    question: { qname: domain, qtype: 'A', qclass: 'IN' }
+  };
+}
+
+/**
+ * 构建 DNS response payload（复用模式：response 报文）。
+ *
+ * @param {number} id   查询 ID
+ * @param {string} name 回答域名
+ * @param {string} type 记录类型（如 'A' / 'NS' / 'CNAME'）
+ * @param {string} classVal 类（如 'IN'）
+ * @param {number} ttl  TTL（秒）
+ * @param {string} rdata 资源数据
+ * @returns {{ header: Object, answer: Object }}
+ * @private
+ */
+function _makeResponsePayload(id, name, type, classVal, ttl, rdata) {
+  return {
+    header: { id, rd: true, rac: true, qdcount: 1, ancount: 1 },
+    answer: { name, type, class: classVal, ttl, rdata }
+  };
+}
+
+/**
+ * 构建步骤 1-3（client → resolver → root → resolver）。
+ *
+ * @param {Object} args
+ * @param {string} args.domain
+ * @param {number} args.id Query ID
+ * @param {boolean} args.useFallback 是否因 TLD 未覆盖而降级
+ * @param {{name:string}} args.tldInfo TLD 服务器信息
+ * @param {number} stepNum 上一个步骤号（调用前已使用的步骤号，从 0 开始）
+ * @returns {DnsStep[]}
+ * @private
+ */
+function _buildRootQuerySteps({ domain, id, useFallback, tldInfo }, stepNum) {
+  const steps = [];
+
+  // 1. Client → Resolver (query)
+  steps.push({
+    step: ++stepNum, from: 'client', to: 'resolver', type: 'query',
+    payload: _makeQueryPayload(id, domain),
+    durationMs: 20,
+    explanation: '客户端向本地递归解析器发起查询',
+    highlight: ['qname']
+  });
+
+  // 2. Resolver → Root (query)
+  steps.push({
+    step: ++stepNum, from: 'resolver', to: 'root', type: 'query',
+    payload: _makeQueryPayload(id, domain),
+    durationMs: 50,
+    explanation: '解析器向根服务器查询',
+    examTip: '全球 13 组根服务器，由 a.root-servers.net 至 m.root-servers.net。',
+    highlight: ['qname']
+  });
+
+  // 3. Root → Resolver (response: 返回 TLD 服务器列表)
+  steps.push({
+    step: ++stepNum, from: 'root', to: 'resolver', type: 'response',
+    payload: {
+      header: { id, rd: true, rac: true, qdcount: 1, ancount: 0 },
+      answer: {
+        name: domain, type: 'NS', class: 'IN', ttl: 172800,
+        rdata: useFallback ? `${tldInfo.name}（fallback）` : tldInfo.name
+      }
+    },
+    durationMs: 80,
+    explanation: useFallback
+      ? `根服务器返回 .com TLD 服务器列表（演示模式：TLD .${getTld(domain)} 未覆盖）`
+      : `根服务器返回 .${getTld(domain)} TLD 服务器列表`,
+    highlight: ['rdata']
+  });
+
+  return steps;
+}
+
+/**
+ * 构建步骤 4-5（resolver → tld → resolver）。
+ *
+ * @param {Object} args
+ * @param {string} args.domain
+ * @param {number} args.id Query ID
+ * @param {{name:string}} args.authInfo 权威服务器信息
+ * @param {number} stepNum 上一个步骤号
+ * @returns {DnsStep[]}
+ * @private
+ */
+function _buildTldQuerySteps({ domain, id, authInfo }, stepNum) {
+  const steps = [];
+
+  // 4. Resolver → TLD (query)
+  steps.push({
+    step: ++stepNum, from: 'resolver', to: 'tld', type: 'query',
+    payload: _makeQueryPayload(id, domain),
+    durationMs: 60,
+    explanation: '解析器向 TLD 服务器查询',
+    highlight: ['qname']
+  });
+
+  // 5. TLD → Resolver (response: 返回权威 NS 记录)
+  steps.push({
+    step: ++stepNum, from: 'tld', to: 'resolver', type: 'response',
+    payload: _makeResponsePayload(id, domain, 'NS', 'IN', 86400, authInfo.name),
+    durationMs: 90,
+    explanation: `TLD 服务器返回 ${domain} 的权威 NS 记录`,
+    highlight: ['rdata']
+  });
+
+  return steps;
+}
+
+/**
+ * 构建步骤 6-8（resolver → auth → resolver → client）。
+ *
+ * @param {Object} args
+ * @param {string} args.domain
+ * @param {number} args.id Query ID
+ * @param {{name:string,ipv4:string}} args.authInfo 权威服务器信息
+ * @param {number} args.now 当前时间戳
+ * @param {LRUCache} args.cache LRU 缓存实例（write-through 写入）
+ * @param {number} stepNum 上一个步骤号
+ * @returns {DnsStep[]}
+ * @private
+ */
+function _buildAuthQuerySteps({ domain, id, authInfo, now, cache }, stepNum) {
+  const steps = [];
+
+  // 6. Resolver → Auth (query)
+  steps.push({
+    step: ++stepNum, from: 'resolver', to: 'auth', type: 'query',
+    payload: _makeQueryPayload(id, domain),
+    durationMs: 70,
+    explanation: '解析器向权威服务器查询',
+    highlight: ['qname']
+  });
+
+  // 7. Auth → Resolver (response: 返回 A 记录)
+  steps.push({
+    step: ++stepNum, from: 'auth', to: 'resolver', type: 'response',
+    payload: _makeResponsePayload(id, domain, 'A', 'IN', 86400, authInfo.ipv4),
+    durationMs: 100,
+    explanation: `权威服务器返回 A 记录：${authInfo.ipv4}`,
+    examTip: 'A 记录将域名映射到 IPv4 地址；AAAA 记录映射到 IPv6。',
+    highlight: ['rdata']
+  });
+
+  // 8. Resolver → Client (response: 最终结果 + 写入缓存)
+  cache.set(domain, { ip: authInfo.ipv4, ttl: 86400 }, 86400);
+  steps.push({
+    step: ++stepNum, from: 'resolver', to: 'client', type: 'response',
+    payload: _makeResponsePayload(id, domain, 'A', 'IN', 86400, authInfo.ipv4),
+    durationMs: 10,
+    explanation: `解析器返回最终结果给客户端，并写入缓存（TTL=86400）`,
+    examTip: '缓存 TTL 由权威 NS 决定，影响后续查询是否命中本地。',
+    highlight: ['rdata', 'ttl']
+  });
+
+  return steps;
+}
+
+/**
  * 构建首次查询的 8 步完整链路。
  * TLD 未覆盖时降级为 `.com`，并在第 3 步说明演示模式。
  *
@@ -163,141 +335,16 @@ function buildFirstQuerySteps({ domain, now, cache }) {
   const authInfo = DNS_AUTHORITATIVE_SERVERS[domain] ||
                    DNS_AUTHORITATIVE_SERVERS['example.com'];
 
-  const steps = [];
-  let stepNum = 0;
   const id = nextQueryId();
+  let stepNum = 0;
 
-  // 1. Client → Resolver (query)
-  steps.push({
-    step: ++stepNum,
-    from: 'client', to: 'resolver',
-    type: 'query',
-    payload: {
-      header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
-      question: { qname: domain, qtype: 'A', qclass: 'IN' }
-    },
-    durationMs: 20,
-    explanation: '客户端向本地递归解析器发起查询',
-    highlight: ['qname']
-  });
+  const rootSteps = _buildRootQuerySteps({ domain, id, useFallback, tldInfo }, stepNum);
+  stepNum = rootSteps[rootSteps.length - 1].step;
+  const tldSteps = _buildTldQuerySteps({ domain, id, authInfo }, stepNum);
+  stepNum = tldSteps[tldSteps.length - 1].step;
+  const authSteps = _buildAuthQuerySteps({ domain, id, authInfo, now, cache }, stepNum);
 
-  // 2. Resolver → Root (query)
-  steps.push({
-    step: ++stepNum,
-    from: 'resolver', to: 'root',
-    type: 'query',
-    payload: {
-      header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
-      question: { qname: domain, qtype: 'A', qclass: 'IN' }
-    },
-    durationMs: 50,
-    explanation: '解析器向根服务器查询',
-    examTip: '全球 13 组根服务器，由 a.root-servers.net 至 m.root-servers.net。',
-    highlight: ['qname']
-  });
-
-  // 3. Root → Resolver (response: 返回 TLD 服务器列表)
-  steps.push({
-    step: ++stepNum,
-    from: 'root', to: 'resolver',
-    type: 'response',
-    payload: {
-      header: { id, rd: true, rac: true, qdcount: 1, ancount: 0 },
-      answer: {
-        name: domain, type: 'NS', class: 'IN', ttl: 172800,
-        rdata: useFallback ? `${tldInfo.name}（fallback）` : tldInfo.name
-      }
-    },
-    durationMs: 80,
-    explanation: useFallback
-      ? `根服务器返回 .com TLD 服务器列表（演示模式：TLD .${tld} 未覆盖）`
-      : `根服务器返回 .${tld} TLD 服务器列表`,
-    highlight: ['rdata']
-  });
-
-  // 4. Resolver → TLD (query)
-  steps.push({
-    step: ++stepNum,
-    from: 'resolver', to: 'tld',
-    type: 'query',
-    payload: {
-      header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
-      question: { qname: domain, qtype: 'A', qclass: 'IN' }
-    },
-    durationMs: 60,
-    explanation: '解析器向 TLD 服务器查询',
-    highlight: ['qname']
-  });
-
-  // 5. TLD → Resolver (response: 返回权威 NS 记录)
-  steps.push({
-    step: ++stepNum,
-    from: 'tld', to: 'resolver',
-    type: 'response',
-    payload: {
-      header: { id, rd: true, rac: true, qdcount: 1, ancount: 1 },
-      answer: {
-        name: domain, type: 'NS', class: 'IN', ttl: 86400,
-        rdata: authInfo.name
-      }
-    },
-    durationMs: 90,
-    explanation: `TLD 服务器返回 ${domain} 的权威 NS 记录`,
-    highlight: ['rdata']
-  });
-
-  // 6. Resolver → Auth (query)
-  steps.push({
-    step: ++stepNum,
-    from: 'resolver', to: 'auth',
-    type: 'query',
-    payload: {
-      header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
-      question: { qname: domain, qtype: 'A', qclass: 'IN' }
-    },
-    durationMs: 70,
-    explanation: '解析器向权威服务器查询',
-    highlight: ['qname']
-  });
-
-  // 7. Auth → Resolver (response: 返回 A 记录)
-  steps.push({
-    step: ++stepNum,
-    from: 'auth', to: 'resolver',
-    type: 'response',
-    payload: {
-      header: { id, rd: true, rac: true, qdcount: 1, ancount: 1 },
-      answer: {
-        name: domain, type: 'A', class: 'IN', ttl: 86400,
-        rdata: authInfo.ipv4
-      }
-    },
-    durationMs: 100,
-    explanation: `权威服务器返回 A 记录：${authInfo.ipv4}`,
-    examTip: 'A 记录将域名映射到 IPv4 地址；AAAA 记录映射到 IPv6。',
-    highlight: ['rdata']
-  });
-
-  // 8. Resolver → Client (response: 最终结果 + 写入缓存)
-  cache.set(domain, { ip: authInfo.ipv4, ttl: 86400 }, 86400);
-  steps.push({
-    step: ++stepNum,
-    from: 'resolver', to: 'client',
-    type: 'response',
-    payload: {
-      header: { id, rd: true, rac: true, qdcount: 1, ancount: 1 },
-      answer: {
-        name: domain, type: 'A', class: 'IN', ttl: 86400,
-        rdata: authInfo.ipv4
-      }
-    },
-    durationMs: 10,
-    explanation: `解析器返回最终结果给客户端，并写入缓存（TTL=86400）`,
-    examTip: '缓存 TTL 由权威 NS 决定，影响后续查询是否命中本地。',
-    highlight: ['rdata', 'ttl']
-  });
-
-  return steps;
+  return [...rootSteps, ...tldSteps, ...authSteps];
 }
 
 /**
@@ -308,21 +355,40 @@ function buildFirstQuerySteps({ domain, now, cache }) {
  * @param {string} args.domain   原始域名（如 'www.example.com'）
  * @param {string} args.target   CNAME 目标（如 'example.com'）
  * @param {{name:string,ipv4:string}} args.authInfo  权威信息
+ * @param {number} args.now 当前时间戳
  * @returns {DnsStep[]}
  * @private
  */
 function buildCnameSteps({ domain, target, authInfo, now }) {
-  const steps = [];
-  let stepNum = 0;
   const id = nextQueryId();
+  let stepNum = 0;
+
+  const querySteps = _buildCnameQuerySteps({ domain, target, id, authInfo }, stepNum);
+  stepNum = querySteps[querySteps.length - 1].step;
+  const resolutionSteps = _buildCnameResolutionSteps({ domain, target, id, authInfo }, stepNum);
+
+  return [...querySteps, ...resolutionSteps];
+}
+
+/**
+ * 构建 CNAME 查询步骤 1-3（client → resolver → auth → resolver）。
+ *
+ * @param {Object} args
+ * @param {string} args.domain
+ * @param {string} args.target
+ * @param {number} args.id Query ID
+ * @param {{name:string,ipv4:string}} args.authInfo 权威信息
+ * @param {number} stepNum 上一个步骤号
+ * @returns {DnsStep[]}
+ * @private
+ */
+function _buildCnameQuerySteps({ domain, target, id, authInfo }, stepNum) {
+  const steps = [];
 
   // 1. Client → Resolver
   steps.push({
     step: ++stepNum, from: 'client', to: 'resolver', type: 'query',
-    payload: {
-      header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
-      question: { qname: domain, qtype: 'A', qclass: 'IN' }
-    },
+    payload: _makeQueryPayload(id, domain),
     durationMs: 20,
     explanation: `客户端查询 ${domain}`,
     highlight: ['qname']
@@ -331,10 +397,7 @@ function buildCnameSteps({ domain, target, authInfo, now }) {
   // 2. Resolver → Auth (向权威查询 www 记录)
   steps.push({
     step: ++stepNum, from: 'resolver', to: 'auth', type: 'query',
-    payload: {
-      header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
-      question: { qname: domain, qtype: 'A', qclass: 'IN' }
-    },
+    payload: _makeQueryPayload(id, domain),
     durationMs: 70,
     explanation: '解析器向权威服务器查询 www 子域',
     highlight: ['qname']
@@ -343,26 +406,35 @@ function buildCnameSteps({ domain, target, authInfo, now }) {
   // 3. Auth → Resolver (返回 CNAME)
   steps.push({
     step: ++stepNum, from: 'auth', to: 'resolver', type: 'response',
-    payload: {
-      header: { id, rd: true, rac: true, qdcount: 1, ancount: 1 },
-      answer: {
-        name: domain, type: 'CNAME', class: 'IN', ttl: 3600,
-        rdata: target
-      }
-    },
+    payload: _makeResponsePayload(id, domain, 'CNAME', 'IN', 3600, target),
     durationMs: 100,
     explanation: `权威服务器返回 CNAME：${domain} → ${target}`,
     examTip: 'CNAME（Canonical Name）将一个域名指向另一个域名，常用于 CDN / 别名。',
     highlight: ['rdata']
   });
 
+  return steps;
+}
+
+/**
+ * 构建 CNAME 解析步骤 4-6（resolver → auth → resolver → client）。
+ *
+ * @param {Object} args
+ * @param {string} args.domain
+ * @param {string} args.target
+ * @param {number} args.id Query ID
+ * @param {{name:string,ipv4:string}} args.authInfo 权威信息
+ * @param {number} stepNum 上一个步骤号
+ * @returns {DnsStep[]}
+ * @private
+ */
+function _buildCnameResolutionSteps({ domain, target, id, authInfo }, stepNum) {
+  const steps = [];
+
   // 4. Resolver → Auth (再查 target)
   steps.push({
     step: ++stepNum, from: 'resolver', to: 'auth', type: 'query',
-    payload: {
-      header: { id, rd: true, rac: false, qdcount: 1, ancount: 0 },
-      question: { qname: target, qtype: 'A', qclass: 'IN' }
-    },
+    payload: _makeQueryPayload(id, target),
     durationMs: 70,
     explanation: `解析器继续查询 CNAME 目标 ${target}`,
     highlight: ['qname']
@@ -371,13 +443,7 @@ function buildCnameSteps({ domain, target, authInfo, now }) {
   // 5. Auth → Resolver (返回 target 的 A 记录)
   steps.push({
     step: ++stepNum, from: 'auth', to: 'resolver', type: 'response',
-    payload: {
-      header: { id, rd: true, rac: true, qdcount: 1, ancount: 1 },
-      answer: {
-        name: target, type: 'A', class: 'IN', ttl: 86400,
-        rdata: authInfo.ipv4
-      }
-    },
+    payload: _makeResponsePayload(id, target, 'A', 'IN', 86400, authInfo.ipv4),
     durationMs: 100,
     explanation: `权威返回 A 记录：${authInfo.ipv4}`,
     highlight: ['rdata']
@@ -386,13 +452,7 @@ function buildCnameSteps({ domain, target, authInfo, now }) {
   // 6. Resolver → Client (返回最终结果)
   steps.push({
     step: ++stepNum, from: 'resolver', to: 'client', type: 'response',
-    payload: {
-      header: { id, rd: true, rac: true, qdcount: 1, ancount: 1 },
-      answer: {
-        name: domain, type: 'A', class: 'IN', ttl: 86400,
-        rdata: authInfo.ipv4
-      }
-    },
+    payload: _makeResponsePayload(id, domain, 'A', 'IN', 86400, authInfo.ipv4),
     durationMs: 10,
     explanation: '解析器返回最终结果',
     highlight: ['rdata']

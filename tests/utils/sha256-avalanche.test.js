@@ -4,6 +4,37 @@ const {
   avalancheReport
 } = require('../../utils/sha256-avalanche');
 
+describe('sha256 multi-byte UTF-8', () => {
+  test('handles multi-byte UTF-8 characters', () => {
+    const result = sha256('你好世界');
+    expect(result).toBeDefined();
+    expect(result.length).toBe(64);
+  });
+
+  test('handles emoji characters', () => {
+    const result = sha256('hello 🌍 world');
+    expect(result).toBeDefined();
+    expect(result.length).toBe(64);
+  });
+
+  test('different Chinese texts produce different hashes', () => {
+    const hash1 = sha256('你好');
+    const hash2 = sha256('您好');
+    expect(hash1).not.toBe(hash2);
+  });
+
+  test('empty string produces valid hash', () => {
+    const result = sha256('');
+    expect(result.length).toBe(64);
+  });
+
+  test('long Chinese text produces valid hash', () => {
+    const text = '先帝创业未半而中道崩殂，今天下三分，益州疲弊，此诚危急存亡之秋也。'.repeat(10);
+    const result = sha256(text);
+    expect(result.length).toBe(64);
+  });
+});
+
 describe('flipFirstBit', () => {
   test('ASCII string: flips bit 0 of byte 0', () => {
     const result = flipFirstBit('A', 'utf-8');  // 0x41 = 0100 0001

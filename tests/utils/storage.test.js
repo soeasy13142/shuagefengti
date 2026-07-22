@@ -73,3 +73,51 @@ describe('wrongQuestions 存储', () => {
     expect(storage.getUnmasteredWrongQuestions()).toHaveLength(0);
   });
 });
+
+describe('async storage methods', () => {
+  test('getPapersAsync returns empty array when no papers exist', async () => {
+    const papers = await storage.getPapersAsync();
+    expect(papers).toEqual([]);
+  });
+
+  test('savePaperAsync saves and getPapersAsync retrieves papers', async () => {
+    const paper = { id: 'p1', name: '测试试卷', questions: [] };
+    await storage.savePaperAsync(paper);
+    const papers = await storage.getPapersAsync();
+    expect(papers).toHaveLength(1);
+    expect(papers[0].id).toBe('p1');
+  });
+
+  test('deletePaperAsync removes paper and cascades to records and wrong questions', async () => {
+    // Create paper
+    await storage.savePaperAsync({ id: 'p1', name: '试卷1', questions: [] });
+    await storage.savePaperAsync({ id: 'p2', name: '试卷2', questions: [] });
+    // Add record and wrong question for p1
+    const { saveRecord, addWrongQuestion } = require('../../utils/storage');
+    saveRecord({ id: 'r1', paperId: 'p1' });
+    addWrongQuestion({ questionId: 'q1', paperId: 'p1', question: {} });
+
+    await storage.deletePaperAsync('p1');
+
+    const papers = await storage.getPapersAsync();
+    expect(papers).toHaveLength(1);
+    expect(papers[0].id).toBe('p2');
+
+    // Verify cascade delete
+    expect(storage.getRecordsByPaperId('p1')).toHaveLength(0);
+    expect(storage.getWrongQuestions().filter(w => w.paperId === 'p1')).toHaveLength(0);
+  });
+
+  test('savePaperAsync updates existing paper', async () => {
+    await storage.savePaperAsync({ id: 'p1', name: '原试卷', questions: [] });
+    await storage.savePaperAsync({ id: 'p1', name: '更新后试卷', questions: [] });
+    const papers = await storage.getPapersAsync();
+    expect(papers).toHaveLength(1);
+    expect(papers[0].name).toBe('更新后试卷');
+  });
+
+  test('getPaperByIdAsync returns null for missing paper', async () => {
+    const paper = await storage.getPaperByIdAsync('nonexistent');
+    expect(paper).toBeNull();
+  });
+});

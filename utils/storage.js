@@ -69,12 +69,10 @@ function savePaper(paper) {
   }
   const papers = getPapers();
   const idx = papers.findIndex(p => p.id === paper.id);
-  if (idx >= 0) {
-    papers[idx] = paper;
-  } else {
-    papers.push(paper);
-  }
-  _set(KEYS.PAPERS, papers);
+  const newPapers = idx >= 0
+    ? [...papers.slice(0, idx), paper, ...papers.slice(idx + 1)]
+    : [...papers, paper];
+  _set(KEYS.PAPERS, newPapers);
 }
 
 function getPaperById(id) {
@@ -99,8 +97,8 @@ function getRecords() {
 
 function saveRecord(record) {
   const records = getRecords();
-  records.push(record);
-  _set(KEYS.RECORDS, records);
+  const newRecords = [...records, record];
+  _set(KEYS.RECORDS, newRecords);
 }
 
 function getRecordsByPaperId(paperId) {
@@ -122,20 +120,21 @@ function addWrongQuestion({ questionId, paperId, question }) {
   }
   const wrongs = getWrongQuestions();
   const existing = wrongs.find(w => w.questionId === questionId);
-  if (existing) {
-    existing.wrongCount += 1;
-    existing.lastWrongTime = new Date().toISOString();
-  } else {
-    wrongs.push({
-      questionId,
-      paperId,
-      question,
-      wrongCount: 1,
-      mastered: false,
-      lastWrongTime: new Date().toISOString()
-    });
-  }
-  _set(KEYS.WRONG_QUESTIONS, wrongs);
+  const newWrongs = existing
+    ? wrongs.map(w =>
+        w.questionId === questionId
+          ? { ...w, wrongCount: w.wrongCount + 1, lastWrongTime: new Date().toISOString() }
+          : w
+      )
+    : [...wrongs, {
+        questionId,
+        paperId,
+        question,
+        wrongCount: 1,
+        mastered: false,
+        lastWrongTime: new Date().toISOString()
+      }];
+  _set(KEYS.WRONG_QUESTIONS, newWrongs);
 }
 
 function markMastered(questionId) {
@@ -143,8 +142,10 @@ function markMastered(questionId) {
   const wrongs = getWrongQuestions();
   const item = wrongs.find(w => w.questionId === questionId);
   if (item) {
-    item.mastered = true;
-    _set(KEYS.WRONG_QUESTIONS, wrongs);
+    const newWrongs = wrongs.map(w =>
+      w.questionId === questionId ? { ...w, mastered: true } : w
+    );
+    _set(KEYS.WRONG_QUESTIONS, newWrongs);
     return true;
   }
   return false;
@@ -289,13 +290,28 @@ async function clearTempImportDataAsync() {
   } catch {}
 }
 
+async function deletePaperAsync(id) {
+  if (!id) return;
+  const papers = await getPapersAsync();
+  const newPapers = papers.filter(p => p.id !== id);
+  await _setAsync(KEYS.PAPERS, newPapers);
+  // Cascade delete associated records
+  const records = await getRecordsAsync();
+  const newRecords = records.filter(r => r.paperId !== id);
+  await _setAsync(KEYS.RECORDS, newRecords);
+  // Cascade delete associated wrong questions
+  const wrongs = await getWrongQuestionsAsync();
+  const newWrongs = wrongs.filter(w => w.paperId !== id);
+  await _setAsync(KEYS.WRONG_QUESTIONS, newWrongs);
+}
+
 module.exports = {
   getPapers, savePaper, getPaperById, deletePaper,
   getRecords, saveRecord, getRecordsByPaperId,
   getWrongQuestions, getUnmasteredWrongQuestions, addWrongQuestion, markMastered,
   setTempImportData, getTempImportData, clearTempImportData,
   // Async versions
-  getPapersAsync, getPaperByIdAsync, savePaperAsync,
+  getPapersAsync, getPaperByIdAsync, savePaperAsync, deletePaperAsync,
   getRecordsAsync, saveRecordAsync, getRecordsByPaperIdAsync,
   getWrongQuestionsAsync, getUnmasteredWrongQuestionsAsync, addWrongQuestionAsync, markMasteredAsync,
   setTempImportDataAsync, getTempImportDataAsync, clearTempImportDataAsync

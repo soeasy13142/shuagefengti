@@ -77,7 +77,7 @@ Page({
 
   onLoad: function() {
     this.loadPreset(1);
-    var showIntro = false;
+    let showIntro = false;
     try {
       showIntro = !wx.getStorageSync('intro_seen_regex_dfa');
     } catch(e) {}
@@ -279,28 +279,28 @@ Page({
       const dfaDiagramStates = this._statesWithPositions(dfaStatesList, dfaPositions);
       const dfaArrows = this._buildArrows(dfaTransitions, dfaPositions);
 
-      var arrowCount = nfaArrows.length;
-      var dArrowCount = dfaArrows.length;
-      var subCount = subsetSteps.length;
+      const arrowCount = nfaArrows.length;
+      const dArrowCount = dfaArrows.length;
+      const subCount = subsetSteps.length;
 
       // Apply initial highlights (before setData to avoid async timing)
-      var initNfaArrows = arrowCount > 0 ? nfaArrows.map(function(a, i) {
+      const initNfaArrows = arrowCount > 0 ? nfaArrows.map(function(a, i) {
         return Object.assign({}, a, { isHighlight: i === 0 });
       }) : nfaArrows;
-      var initDfaArrows = dArrowCount > 0 ? dfaArrows.map(function(a, i) {
+      const initDfaArrows = dArrowCount > 0 ? dfaArrows.map(function(a, i) {
         return Object.assign({}, a, { isHighlight: i === 0 });
       }) : dfaArrows;
-      var initSubsetSteps = subCount > 0 ? subsetSteps.map(function(s, i) {
+      const initSubsetSteps = subCount > 0 ? subsetSteps.map(function(s, i) {
         return Object.assign({}, s, { isHighlight: i === 0 });
       }) : subsetSteps;
-      var initNfaStates = arrowCount > 0 ? nfaDiagramStates.map(function(s) {
-        var involved = s.id === nfaArrows[0].from || s.id === nfaArrows[0].to;
+      const initNfaStates = arrowCount > 0 ? nfaDiagramStates.map(function(s) {
+        const involved = s.id === nfaArrows[0].from || s.id === nfaArrows[0].to;
         return Object.assign({}, s, { isHighlighted: involved });
       }) : nfaDiagramStates.map(function(s) {
         return Object.assign({}, s, { isHighlighted: false });
       });
-      var initDfaStates = dArrowCount > 0 ? dfaDiagramStates.map(function(s) {
-        var involved = s.id === dfaArrows[0].from || s.id === dfaArrows[0].to;
+      const initDfaStates = dArrowCount > 0 ? dfaDiagramStates.map(function(s) {
+        const involved = s.id === dfaArrows[0].from || s.id === dfaArrows[0].to;
         return Object.assign({}, s, { isHighlighted: involved });
       }) : dfaDiagramStates.map(function(s) {
         return Object.assign({}, s, { isHighlighted: false });
@@ -512,40 +512,44 @@ Page({
 
   // ── 状态图布局 ──
 
-  _computeLayoutFromStates: function(states, startId) {
-    // BFS layering: group states into layers by distance from start
+  _buildAdjacency: function(states) {
     const adj = {};
     for (let i = 0; i < states.length; i++) {
       const s = states[i];
       adj[s.id] = new Set();
       if (!s.transitions) continue;
-      var keys = Object.keys(s.transitions);
+      const keys = Object.keys(s.transitions);
       for (let j = 0; j < keys.length; j++) {
-        var targets = s.transitions[keys[j]];
+        const targets = s.transitions[keys[j]];
         if (Array.isArray(targets)) {
           for (let k = 0; k < targets.length; k++) {
             adj[s.id].add(targets[k]);
           }
         } else {
-          // DFA style: single target
           adj[s.id].add(targets);
         }
       }
     }
+    return adj;
+  },
+
+  _computeLayoutFromStates: function(states, startId) {
+    // BFS layering: group states into layers by distance from start
+    const adj = this._buildAdjacency(states);
 
     // BFS
     const layers = [];
     const visited = new Set();
-    var queue = [startId];
+    let queue = [startId];
     visited.add(startId);
 
     while (queue.length > 0) {
       layers.push(queue.slice());
-      var nextQueue = [];
+      let nextQueue = [];
       for (let qi = 0; qi < queue.length; qi++) {
-        var sid = queue[qi];
-        var neighbors = adj[sid] || new Set();
-        var neighborArr = [];
+        const sid = queue[qi];
+        const neighbors = adj[sid] || new Set();
+        const neighborArr = [];
         neighbors.forEach(function(n) { neighborArr.push(n); });
         for (let ni = 0; ni < neighborArr.length; ni++) {
           if (!visited.has(neighborArr[ni])) {
@@ -569,17 +573,17 @@ Page({
   },
 
   _layoutToPositions: function(layers, stateCount) {
-    var DIAGRAM_W = 640;
-    var DIAGRAM_H = 320;
-    var positions = {};
-    var numLayers = layers.length;
+    const DIAGRAM_W = 640;
+    const DIAGRAM_H = 320;
+    const positions = {};
+    const numLayers = layers.length;
 
-    for (var li = 0; li < numLayers; li++) {
-      var layer = layers[li];
-      var x = DIAGRAM_W * (li + 1) / (numLayers + 1);
-      var yStep = DIAGRAM_H / (layer.length + 1);
-      for (var si = 0; si < layer.length; si++) {
-        var y = yStep * (si + 1);
+    for (let li = 0; li < numLayers; li++) {
+      const layer = layers[li];
+      const x = DIAGRAM_W * (li + 1) / (numLayers + 1);
+      const yStep = DIAGRAM_H / (layer.length + 1);
+      for (let si = 0; si < layer.length; si++) {
+        const y = yStep * (si + 1);
         positions[layer[si]] = { x: Math.round(x), y: Math.round(y) };
       }
     }
@@ -589,7 +593,7 @@ Page({
 
   _statesWithPositions: function(stateList, positions) {
     return stateList.map(function(s) {
-      var pos = positions[s.id] || { x: 0, y: 0 };
+      const pos = positions[s.id] || { x: 0, y: 0 };
       return Object.assign({}, s, {
         x: pos.x,
         y: pos.y,
@@ -599,36 +603,36 @@ Page({
   },
 
   _buildArrows: function(transitions, positions) {
-    var STATE_R = 33;
-    var arrows = [];
+    const STATE_R = 33;
+    const arrows = [];
 
-    for (var ti = 0; ti < transitions.length; ti++) {
-      var t = transitions[ti];
+    for (let ti = 0; ti < transitions.length; ti++) {
+      const t = transitions[ti];
       if (t.from === t.to) continue; // skip self-loops for diagram simplicity
 
-      var src = positions[t.from];
-      var dst = positions[t.to];
+      const src = positions[t.from];
+      const dst = positions[t.to];
       if (!src || !dst) continue;
 
-      var dx = dst.x - src.x;
-      var dy = dst.y - src.y;
-      var dist = Math.sqrt(dx * dx + dy * dy);
+      const dx = dst.x - src.x;
+      const dy = dst.y - src.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < 1) continue;
 
-      var angle = Math.atan2(dy, dx);
+      const angle = Math.atan2(dy, dx);
 
       // Adjust for multiple arrows between same pair
-      var multiKey = t.from < t.to ? t.from + '-' + t.to : t.to + '-' + t.from;
-      var startX = src.x + STATE_R * Math.cos(angle);
-      var startY = src.y + STATE_R * Math.sin(angle);
-      var endX = dst.x - STATE_R * Math.cos(angle);
-      var endY = dst.y - STATE_R * Math.sin(angle);
+      const multiKey = t.from < t.to ? t.from + '-' + t.to : t.to + '-' + t.from;
+      const startX = src.x + STATE_R * Math.cos(angle);
+      const startY = src.y + STATE_R * Math.sin(angle);
+      const endX = dst.x - STATE_R * Math.cos(angle);
+      const endY = dst.y - STATE_R * Math.sin(angle);
 
-      var lineLen = Math.sqrt((endX - startX) * (endX - startX) + (endY - startY) * (endY - startY));
+      const lineLen = Math.sqrt((endX - startX) * (endX - startX) + (endY - startY) * (endY - startY));
       if (lineLen < 5) continue;
 
-      var midX = (startX + endX) / 2;
-      var midY = (startY + endY) / 2;
+      const midX = (startX + endX) / 2;
+      const midY = (startY + endY) / 2;
 
       arrows.push({
         key: t.from + '->' + t.to + '-' + t.input,

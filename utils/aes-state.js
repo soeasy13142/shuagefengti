@@ -7,6 +7,9 @@
 
 const { sBox, xtime, gfMul } = require('./aes-core');
 
+const AES_ROWS = 4;
+const AES_COLS = 4;
+
 /**
  * @typedef {number[][]} State - 4x4 byte matrix, state[row][col]
  */
@@ -16,12 +19,7 @@ const { sBox, xtime, gfMul } = require('./aes-core');
  * @returns {State}
  */
 function _emptyState() {
-  return [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0]
-  ];
+  return Array.from({ length: AES_ROWS }, function() { return Array(AES_COLS).fill(0); });
 }
 
 /**
@@ -30,12 +28,7 @@ function _emptyState() {
  * @returns {State}
  */
 function _cloneState(state) {
-  return [
-    [state[0][0], state[0][1], state[0][2], state[0][3]],
-    [state[1][0], state[1][1], state[1][2], state[1][3]],
-    [state[2][0], state[2][1], state[2][2], state[2][3]],
-    [state[3][0], state[3][1], state[3][2], state[3][3]]
-  ];
+  return state.map(function(row) { return row.slice(); });
 }
 
 /**
@@ -46,9 +39,9 @@ function _cloneState(state) {
  */
 function bytesToState(bytes) {
   const s = _emptyState();
-  for (let col = 0; col < 4; col++) {
-    for (let row = 0; row < 4; row++) {
-      s[row][col] = bytes[col * 4 + row];
+  for (let col = 0; col < AES_COLS; col++) {
+    for (let row = 0; row < AES_ROWS; row++) {
+      s[row][col] = bytes[col * AES_COLS + row];
     }
   }
   return s;
@@ -61,8 +54,8 @@ function bytesToState(bytes) {
  */
 function stateToBytes(state) {
   const bytes = [];
-  for (let col = 0; col < 4; col++) {
-    for (let row = 0; row < 4; row++) {
+  for (let col = 0; col < AES_COLS; col++) {
+    for (let row = 0; row < AES_ROWS; row++) {
       bytes.push(state[row][col]);
     }
   }
@@ -76,8 +69,8 @@ function stateToBytes(state) {
  */
 function subBytes(state) {
   const s = _cloneState(state);
-  for (let row = 0; row < 4; row++) {
-    for (let col = 0; col < 4; col++) {
+  for (let row = 0; row < AES_ROWS; row++) {
+    for (let col = 0; col < AES_COLS; col++) {
       s[row][col] = sBox[s[row][col]];
     }
   }
@@ -122,7 +115,7 @@ function shiftRows(state) {
 function mixColumns(state) {
   const s = _cloneState(state);
 
-  for (let col = 0; col < 4; col++) {
+  for (let col = 0; col < AES_COLS; col++) {
     const s0 = s[0][col];
     const s1 = s[1][col];
     const s2 = s[2][col];
@@ -146,9 +139,9 @@ function mixColumns(state) {
  */
 function addRoundKey(state, roundKey) {
   const s = _cloneState(state);
-  for (let col = 0; col < 4; col++) {
-    for (let row = 0; row < 4; row++) {
-      s[row][col] ^= roundKey[col * 4 + row];
+  for (let col = 0; col < AES_COLS; col++) {
+    for (let row = 0; row < AES_ROWS; row++) {
+      s[row][col] ^= roundKey[col * AES_COLS + row];
     }
   }
   return s;
@@ -185,6 +178,8 @@ function encryptBlock(plaintext, w) {
 }
 
 module.exports = {
+  AES_ROWS,
+  AES_COLS,
   bytesToState,
   stateToBytes,
   subBytes,

@@ -43,12 +43,14 @@ function computeFIRST(grammar) {
 
       const firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
 
+      const newSet = new Set(FIRST[lhs]);
       firstRHS.forEach(function(sym) {
-        if (!FIRST[lhs].has(sym)) {
-          FIRST[lhs].add(sym);
-          changed = true;
-        }
+        newSet.add(sym);
       });
+      if (newSet.size !== FIRST[lhs].size) {
+        FIRST[lhs] = newSet;
+        changed = true;
+      }
     }
   }
 
@@ -101,24 +103,71 @@ function _computeFIRSTOfSequence(symbols, FIRST, nonTerminals) {
 }
 
 /**
- * Compute FOLLOW sets for all non-terminals.
- * @param {Object} grammar - Grammar from parseGrammar()
- * @param {{ FIRST: Object<string, Set<string>> }} firstResult
- * @returns {{ FOLLOW: Object<string, Set<string>> }}
- * @throws {Error} If fixed-point iteration does not converge
+ * Process one RHS symbol's contribution to FOLLOW sets.
+ * @param {string} B - Current non-terminal in RHS
+ * @param {string[]} beta - Symbols after B in the RHS
+ * @param {string} lhs - Left-hand side of the production
+ * @param {Object} FOLLOW - FOLLOW sets
+ * @param {Object} FIRST - FIRST sets
+ * @param {Set<string>} nonTerminals
+ * @returns {boolean} Whether FOLLOW was modified
  */
-function computeFOLLOW(grammar, firstResult) {
-  const FIRST = firstResult.FIRST;
-  const nonTerminals = grammar.nonTerminals;
-  const productions = grammar.productions;
-  const startSymbol = grammar.startSymbol;
+function _updateFOLLOWForSymbol(B, beta, lhs, FOLLOW, FIRST, nonTerminals) {
+  let changed = false;
+  const firstBeta = _computeFIRSTOfSequence(beta, FIRST, nonTerminals);
 
+  // Add FIRST[β] - {ε} to FOLLOW[B]
+  const newFollowB = new Set(FOLLOW[B]);
+  firstBeta.forEach(function(sym) {
+    if (sym !== EPSILON) {
+      newFollowB.add(sym);
+    }
+  });
+  if (newFollowB.size !== FOLLOW[B].size) {
+    FOLLOW[B] = newFollowB;
+    changed = true;
+  }
+
+  // If ε ∈ FIRST[β], add FOLLOW[lhs] to FOLLOW[B]
+  if (firstBeta.has(EPSILON)) {
+    const newFollowB2 = new Set(FOLLOW[B]);
+    FOLLOW[lhs].forEach(function(sym) {
+      newFollowB2.add(sym);
+    });
+    if (newFollowB2.size !== FOLLOW[B].size) {
+      FOLLOW[B] = newFollowB2;
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
+/**
+ * Initialize FOLLOW sets for all non-terminals.
+ * @param {Set<string>} nonTerminals
+ * @param {string} startSymbol
+ * @returns {Object<string, Set<string>>}
+ */
+function _initFollowSets(nonTerminals, startSymbol) {
   const FOLLOW = {};
   nonTerminals.forEach(function(nt) {
     FOLLOW[nt] = new Set();
   });
   FOLLOW[startSymbol].add(END_MARKER);
+  return FOLLOW;
+}
 
+/**
+ * Iterate FOLLOW computation until fixed point.
+ * @param {Object[]} productions
+ * @param {Set<string>} nonTerminals
+ * @param {Object<string, Set<string>>} FIRST
+ * @param {Object<string, Set<string>>} FOLLOW
+ * @returns {Object<string, Set<string>>}
+ * @throws {Error} If fixed-point iteration does not converge
+ */
+function _iterateFollowComputation(productions, nonTerminals, FIRST, FOLLOW) {
   let changed = true;
   let iterations = 0;
 
@@ -139,24 +188,8 @@ function computeFOLLOW(grammar, firstResult) {
 
         // β = symbols after B in RHS
         const beta = rhs.slice(i + 1);
-        const firstBeta = _computeFIRSTOfSequence(beta, FIRST, nonTerminals);
-
-        // Add FIRST[β] - {ε} to FOLLOW[B]
-        firstBeta.forEach(function(sym) {
-          if (sym !== EPSILON && !FOLLOW[B].has(sym)) {
-            FOLLOW[B].add(sym);
-            changed = true;
-          }
-        });
-
-        // If ε ∈ FIRST[β], add FOLLOW[lhs] to FOLLOW[B]
-        if (firstBeta.has(EPSILON)) {
-          FOLLOW[lhs].forEach(function(sym) {
-            if (!FOLLOW[B].has(sym)) {
-              FOLLOW[B].add(sym);
-              changed = true;
-            }
-          });
+        if (_updateFOLLOWForSymbol(B, beta, lhs, FOLLOW, FIRST, nonTerminals)) {
+          changed = true;
         }
       }
     }
@@ -166,24 +199,75 @@ function computeFOLLOW(grammar, firstResult) {
     throw new Error('FOLLOW 计算未收敛（超过 ' + MAX_ITERATIONS + ' 轮迭代）');
   }
 
+  return FOLLOW;
+}
+
+/**
+ * Compute FOLLOW sets for all non-terminals.
+ * @param {Object} grammar - Grammar from parseGrammar()
+ * @param {{ FIRST: Object<string, Set<string>> }} firstResult
+ * @returns {{ FOLLOW: Object<string, Set<string>> }}
+ * @throws {Error} If fixed-point iteration does not converge
+ */
+function computeFOLLOW(grammar, firstResult) {
+  const FIRST = firstResult.FIRST;
+  const nonTerminals = grammar.nonTerminals;
+  const productions = grammar.productions;
+  const startSymbol = grammar.startSymbol;
+
+  const FOLLOW = _initFollowSets(nonTerminals, startSymbol);
+  _iterateFollowComputation(productions, nonTerminals, FIRST, FOLLOW);
   return { FOLLOW: FOLLOW };
 }
 
 /**
- * Build LL(1) predictive parsing table.
- * @param {Object} grammar
- * @param {{ FIRST: Object }} firstResult
- * @param {{ FOLLOW: Object }} followResult
+ * Fill parse table entry for one production.
+ * @param {Object} prod - Production object
+ * @param {Object} table - Parse table
+ * @param {Object} conflicts - Conflict tracker
+ * @param {Object} FIRST - FIRST sets
+ * @param {Object} FOLLOW - FOLLOW sets
+ * @param {Set<string>} nonTerminals
+ */
+function _fillParseTableEntry(prod, table, conflicts, FIRST, FOLLOW, nonTerminals) {
+  const lhs = prod.lhs;
+  const rhs = prod.rhs;
+  const firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
+
+  // For each a ∈ FIRST[RHS], a ≠ ε: table[lhs][a] = prod
+  firstRHS.forEach(function(a) {
+    if (a === EPSILON) {
+      return;
+    }
+
+    if (table[lhs][a] === null) {
+      table[lhs][a] = prod;
+    } else {
+      conflicts[lhs][a].push(table[lhs][a]);
+      conflicts[lhs][a].push(prod);
+    }
+  });
+
+  // If ε ∈ FIRST[RHS]: for each b ∈ FOLLOW[lhs]: table[lhs][b] = prod
+  if (firstRHS.has(EPSILON)) {
+    FOLLOW[lhs].forEach(function(b) {
+      if (table[lhs][b] === null) {
+        table[lhs][b] = prod;
+      } else {
+        conflicts[lhs][b].push(table[lhs][b]);
+        conflicts[lhs][b].push(prod);
+      }
+    });
+  }
+}
+
+/**
+ * Create empty parse table and conflicts structure.
+ * @param {Set<string>} terminals
+ * @param {Set<string>} nonTerminals
  * @returns {{ table: Object, conflicts: Object }}
  */
-function buildParseTable(grammar, firstResult, followResult) {
-  const FIRST = firstResult.FIRST;
-  const FOLLOW = followResult.FOLLOW;
-  const nonTerminals = grammar.nonTerminals;
-  const terminals = grammar.terminals;
-  const productions = grammar.productions;
-
-  // Build column set: all terminals + $
+function _initializeTable(terminals, nonTerminals) {
   const columns = [];
   terminals.forEach(function(t) { columns.push(t); });
   columns.push(END_MARKER);
@@ -203,41 +287,166 @@ function buildParseTable(grammar, firstResult, followResult) {
     });
   });
 
+  return { table: table, conflicts: conflicts };
+}
+
+/**
+ * Build LL(1) predictive parsing table.
+ * @param {Object} grammar
+ * @param {{ FIRST: Object }} firstResult
+ * @param {{ FOLLOW: Object }} followResult
+ * @returns {{ table: Object, conflicts: Object }}
+ */
+function buildParseTable(grammar, firstResult, followResult) {
+  const FIRST = firstResult.FIRST;
+  const FOLLOW = followResult.FOLLOW;
+  const nonTerminals = grammar.nonTerminals;
+  const terminals = grammar.terminals;
+  const productions = grammar.productions;
+
+  const { table, conflicts } = _initializeTable(terminals, nonTerminals);
+
   for (let i = 0; i < productions.length; i++) {
-    const prod = productions[i];
-    const lhs = prod.lhs;
-    const rhs = prod.rhs;
-
-    const firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
-
-    // For each a ∈ FIRST[RHS], a ≠ ε: table[lhs][a] = prod
-    firstRHS.forEach(function(a) {
-      if (a === EPSILON) {
-        return;
-      }
-
-      if (table[lhs][a] === null) {
-        table[lhs][a] = prod;
-      } else {
-        conflicts[lhs][a].push(table[lhs][a]);
-        conflicts[lhs][a].push(prod);
-      }
-    });
-
-    // If ε ∈ FIRST[RHS]: for each b ∈ FOLLOW[lhs]: table[lhs][b] = prod
-    if (firstRHS.has(EPSILON)) {
-      FOLLOW[lhs].forEach(function(b) {
-        if (table[lhs][b] === null) {
-          table[lhs][b] = prod;
-        } else {
-          conflicts[lhs][b].push(table[lhs][b]);
-          conflicts[lhs][b].push(prod);
-        }
-      });
-    }
+    _fillParseTableEntry(productions[i], table, conflicts, FIRST, FOLLOW, nonTerminals);
   }
 
   return { table: table, conflicts: conflicts };
+}
+
+/**
+ * Record initial parsing state.
+ * @param {string[]} stack
+ * @param {string[]} inputBuf
+ * @returns {Object[]}
+ */
+function _pushInitialState(stack, inputBuf) {
+  return [{
+    stack: [].concat(stack),
+    input: [].concat(inputBuf),
+    output: [],
+    action: null,
+    production: null
+  }];
+}
+
+/**
+ * Handle accept condition (stack top and lookahead both END_MARKER).
+ * @param {string[]} stack
+ * @param {string[]} inputBuf
+ * @param {string[]} output
+ * @returns {{ type: string, step: Object }}
+ */
+function _handleAccept(stack, inputBuf, output) {
+  return {
+    type: 'accept',
+    step: {
+      stack: [].concat(stack),
+      input: [].concat(inputBuf),
+      output: [].concat(output),
+      action: 'accept',
+      production: null
+    }
+  };
+}
+
+/**
+ * Handle terminal match (stack top equals lookahead).
+ * @param {string} top
+ * @param {string[]} stack
+ * @param {string[]} inputBuf
+ * @param {string[]} output
+ * @returns {{ type: string, step: Object }}
+ */
+function _handleMatch(top, stack, inputBuf, output) {
+  stack.pop();
+  inputBuf.shift();
+  return {
+    type: 'match',
+    step: {
+      stack: [].concat(stack),
+      input: [].concat(inputBuf),
+      output: [].concat(output),
+      action: 'match',
+      production: null,
+      matched: top
+    }
+  };
+}
+
+/**
+ * Handle terminal mismatch (top is a terminal but does not match lookahead).
+ * @param {string} top
+ * @param {string} lookahead
+ * @param {string[]} stack
+ * @param {string[]} inputBuf
+ * @param {string[]} output
+ * @returns {{ type: string, step: Object }}
+ */
+function _handleError(top, lookahead, stack, inputBuf, output) {
+  return {
+    type: 'error',
+    step: {
+      stack: [].concat(stack),
+      input: [].concat(inputBuf),
+      output: [].concat(output),
+      action: 'error',
+      production: null,
+      error: '期望 "' + top + '"，但遇到 "' + lookahead + '"'
+    }
+  };
+}
+
+/**
+ * Look up parse table and expand non-terminal.
+ * @param {string} top
+ * @param {string} lookahead
+ * @param {Object} table
+ * @param {string[]} stack
+ * @param {string[]} inputBuf
+ * @param {string[]} output
+ * @returns {{ type: string, step: Object }}
+ */
+function _handleExpand(top, lookahead, table, stack, inputBuf, output) {
+  const row = table[top];
+  const prod = row ? row[lookahead] : null;
+  if (!prod) {
+    return {
+      type: 'error',
+      step: {
+        stack: [].concat(stack),
+        input: [].concat(inputBuf),
+        output: [].concat(output),
+        action: 'error',
+        production: null,
+        error: '表项 M[' + top + ', ' + lookahead + '] 为空，无法展开'
+      }
+    };
+  }
+
+  stack.pop();
+  const rhs = prod.rhs;
+  for (let j = rhs.length - 1; j >= 0; j--) {
+    stack.push(rhs[j]);
+  }
+
+  let prodStr = prod.lhs + ' → ';
+  if (rhs.length > 0) {
+    prodStr += rhs.join(' ');
+  } else {
+    prodStr += 'ε';
+  }
+  output.push(prodStr);
+
+  return {
+    type: 'expand',
+    step: {
+      stack: [].concat(stack),
+      input: [].concat(inputBuf),
+      output: [].concat(output),
+      action: 'expand',
+      production: prodStr
+    }
+  };
 }
 
 /**
@@ -258,98 +467,41 @@ function parseInput(grammar, table, input) {
   }
   inputBuf.push(END_MARKER);
   const output = [];
-  const steps = [];
 
-  // Record initial state
-  steps.push({
-    stack: [].concat(stack),
-    input: [].concat(inputBuf),
-    output: [],
-    action: null,
-    production: null
-  });
+  const steps = _pushInitialState(stack, inputBuf);
 
   while (true) {
-    let top = stack[stack.length - 1];
-    let lookahead = inputBuf[0];
+    const top = stack[stack.length - 1];
+    const lookahead = inputBuf[0];
 
     // Accept
     if (top === END_MARKER && lookahead === END_MARKER) {
-      steps.push({
-        stack: [].concat(stack),
-        input: [].concat(inputBuf),
-        output: [].concat(output),
-        action: 'accept',
-        production: null
-      });
+      const result = _handleAccept(stack, inputBuf, output);
+      steps.push(result.step);
       break;
     }
 
     // Match terminal
     if (top === lookahead) {
-      stack.pop();
-      inputBuf.shift();
-      steps.push({
-        stack: [].concat(stack),
-        input: [].concat(inputBuf),
-        output: [].concat(output),
-        action: 'match',
-        production: null,
-        matched: top
-      });
+      const result = _handleMatch(top, stack, inputBuf, output);
+      steps.push(result.step);
       continue;
     }
 
     // Terminal mismatch
     if (!nonTerminals.has(top)) {
-      steps.push({
-        stack: [].concat(stack),
-        input: [].concat(inputBuf),
-        output: [].concat(output),
-        action: 'error',
-        production: null,
-        error: '期望 "' + top + '"，但遇到 "' + lookahead + '"'
-      });
-      break;
-    }
-
-    // Look up parse table
-    const row = table[top];
-    const prod = row ? row[lookahead] : null;
-    if (!prod) {
-      steps.push({
-        stack: [].concat(stack),
-        input: [].concat(inputBuf),
-        output: [].concat(output),
-        action: 'error',
-        production: null,
-        error: '表项 M[' + top + ', ' + lookahead + '] 为空，无法展开'
-      });
+      const result = _handleError(top, lookahead, stack, inputBuf, output);
+      steps.push(result.step);
       break;
     }
 
     // Expand
-    stack.pop();
-    const rhs = prod.rhs;
-    for (let j = rhs.length - 1; j >= 0; j--) {
-      stack.push(rhs[j]);
+    const result = _handleExpand(top, lookahead, table, stack, inputBuf, output);
+    if (result.type === 'error') {
+      steps.push(result.step);
+      break;
     }
-
-    let prodStr = prod.lhs + ' → ';
-    if (rhs.length > 0) {
-      prodStr += rhs.join(' ');
-    } else {
-      prodStr += 'ε';
-    }
-    output.push(prodStr);
-
-    steps.push({
-      stack: [].concat(stack),
-      input: [].concat(inputBuf),
-      output: [].concat(output),
-      action: 'expand',
-      production: prodStr
-    });
+    steps.push(result.step);
   }
 
   const lastStep = steps[steps.length - 1];
@@ -390,7 +542,7 @@ function buildParseTree(steps, grammar) {
     return { root: null, flatNodes: [] };
   }
 
-  var root = {
+  const root = {
     symbol: grammar.startSymbol,
     children: [],
     isNonTerminal: true,
@@ -399,27 +551,25 @@ function buildParseTree(steps, grammar) {
   };
 
   // Collect only expand steps
-  var expandSteps = [];
-  for (var i = 0; i < steps.length; i++) {
+  const expandSteps = [];
+  for (let i = 0; i < steps.length; i++) {
     if (steps[i].action === 'expand') {
       expandSteps.push(steps[i]);
     }
   }
 
-  for (var e = 0; e < expandSteps.length; e++) {
-    var step = expandSteps[e];
-    // Parse production string: "E → T E'" or "E' → ε"
-    var arrowIdx = step.production.indexOf(' → ');
+  for (let e = 0; e < expandSteps.length; e++) {
+    const step = expandSteps[e];
+    const arrowIdx = step.production.indexOf(' → ');
     if (arrowIdx < 0) continue;
-    var lhs = step.production.substring(0, arrowIdx);
-    var rhsStr = step.production.substring(arrowIdx + 3);
-    var rhs = rhsStr === EPSILON ? ['ε'] : rhsStr.split(' ');
+    const lhs = step.production.substring(0, arrowIdx);
+    const rhsStr = step.production.substring(arrowIdx + 3);
+    const rhs = rhsStr === EPSILON ? [EPSILON] : rhsStr.split(' ');
 
-    // Find the leftmost unexpanded non-terminal
-    var target = _findLeftmostUnexpanded(root);
+    const target = _findLeftmostUnexpanded(root);
     if (target) {
-      for (var j = 0; j < rhs.length; j++) {
-        var sym = rhs[j];
+      for (let j = 0; j < rhs.length; j++) {
+        const sym = rhs[j];
         target.children.push({
           symbol: sym,
           children: [],
@@ -435,7 +585,7 @@ function buildParseTree(steps, grammar) {
   _markLastChild(root);
 
   // Flatten tree for WXML rendering
-  var flatNodes = _flattenTree(root);
+  const flatNodes = _flattenTree(root);
 
   return { root: root, flatNodes: flatNodes };
 }
@@ -449,8 +599,8 @@ function _findLeftmostUnexpanded(node) {
   if (node.children.length === 0) {
     return node;
   }
-  for (var i = 0; i < node.children.length; i++) {
-    var result = _findLeftmostUnexpanded(node.children[i]);
+  for (let i = 0; i < node.children.length; i++) {
+    const result = _findLeftmostUnexpanded(node.children[i]);
     if (result) return result;
   }
   return null;
@@ -461,7 +611,7 @@ function _findLeftmostUnexpanded(node) {
  * @param {Object} node
  */
 function _markLastChild(node) {
-  for (var i = 0; i < node.children.length; i++) {
+  for (let i = 0; i < node.children.length; i++) {
     node.children[i].isLastChild = (i === node.children.length - 1);
     _markLastChild(node.children[i]);
   }
@@ -473,8 +623,8 @@ function _markLastChild(node) {
  * @returns {Object[]}
  */
 function _flattenTree(node) {
-  var result = [];
-  var ancestorIsLast = [];
+  const result = [];
+  const ancestorIsLast = [];
   _flattenNode(node, result, ancestorIsLast);
   return result;
 }
@@ -487,8 +637,8 @@ function _flattenTree(node) {
  */
 function _flattenNode(node, result, ancestorIsLast) {
   // Build prefix string
-  var prefix = '';
-  for (var i = 0; i < ancestorIsLast.length; i++) {
+  let prefix = '';
+  for (let i = 0; i < ancestorIsLast.length; i++) {
     if (i === ancestorIsLast.length - 1) {
       prefix += node.isLastChild ? '└── ' : '├── ';
     } else {
@@ -505,9 +655,9 @@ function _flattenNode(node, result, ancestorIsLast) {
     prefix: prefix
   });
 
-  var newAncestorIsLast = ancestorIsLast.concat([node.isLastChild]);
+  const newAncestorIsLast = ancestorIsLast.concat([node.isLastChild]);
 
-  for (var i = 0; i < node.children.length; i++) {
+  for (let i = 0; i < node.children.length; i++) {
     _flattenNode(node.children[i], result, newAncestorIsLast);
   }
 }

@@ -59,12 +59,11 @@ Page({
   _ctx: null,
 
   onLoad: function() {
-    const self = this;
     if (!this._bst) { this._bst = require('../../utils/bst'); }
     if (!this._graph) { this._graph = require('../../utils/graph'); }
     if (!this._hashTable) { this._hashTable = require('../../utils/hash-table'); }
     this._ctx = wx.createCanvasContext('vizCanvas', this);
-    setTimeout(function() { self._canvasReady = true; }, 200);
+    setTimeout(() => { this._canvasReady = true; }, 200);
   },
 
   /* ========== Mode Switching ========== */
@@ -220,40 +219,41 @@ Page({
   },
 
   _highlightPath: function(path, state) {
-    const nodes = this.data.bstNodes.slice();
-    const edges = this.data.bstEdges.slice();
-    for (let i = 0; i < nodes.length; i++) {
-      if (path.indexOf(nodes[i].value) !== -1) {
-        nodes[i].state = state;
-      } else if (nodes[i].state !== 'visited') {
-        nodes[i].state = 'normal';
+    const nodes = this.data.bstNodes.map(function(n) {
+      let newState;
+      if (path.indexOf(n.value) !== -1) {
+        newState = state;
+      } else if (n.state !== 'visited') {
+        newState = 'normal';
+      } else {
+        newState = n.state;
       }
-    }
-    for (let j = 0; j < edges.length; j++) {
-      const e = edges[j];
+      return Object.assign({}, n, { state: newState });
+    });
+    const edges = this.data.bstEdges.map(function(e) {
       let n1 = null;
       let n2 = null;
       for (let k = 0; k < nodes.length; k++) {
         if (Math.abs(nodes[k].x - e.x1) < 1 && Math.abs(nodes[k].y - e.y1) < 1) n1 = nodes[k];
         if (Math.abs(nodes[k].x - e.x2) < 1 && Math.abs(nodes[k].y - e.y2) < 1) n2 = nodes[k];
       }
-      if (n1 && n2 && path.indexOf(n1.value) !== -1 && path.indexOf(n2.value) !== -1) {
-        edges[j].state = 'highlight';
-      } else {
-        edges[j].state = 'normal';
-      }
-    }
+      const newState = (n1 && n2 && path.indexOf(n1.value) !== -1 && path.indexOf(n2.value) !== -1)
+        ? 'highlight'
+        : 'normal';
+      return Object.assign({}, e, { state: newState });
+    });
     this.setData({ bstNodes: nodes, bstEdges: edges });
     this._drawCanvas();
   },
 
   _resetHighlights: function() {
-    const nodes = this.data.bstNodes.slice();
-    for (let i = 0; i < nodes.length; i++) {
-      if (nodes[i].state !== 'visited') nodes[i].state = 'normal';
-    }
-    const edges = this.data.bstEdges.slice();
-    for (let j = 0; j < edges.length; j++) edges[j].state = 'normal';
+    const nodes = this.data.bstNodes.map(function(n) {
+      const newState = n.state !== 'visited' ? 'normal' : n.state;
+      return Object.assign({}, n, { state: newState });
+    });
+    const edges = this.data.bstEdges.map(function(e) {
+      return Object.assign({}, e, { state: 'normal' });
+    });
     this.setData({ bstNodes: nodes, bstEdges: edges });
   },
 
@@ -270,10 +270,12 @@ Page({
     } else if (step.type === 'visit') {
       this._highlightPath(step.path || [], 'visited');
     } else if (step.type === 'done') {
-      const nodes = this.data.bstNodes.slice();
-      for (let i = 0; i < nodes.length; i++) nodes[i].state = 'normal';
-      const edges = this.data.bstEdges.slice();
-      for (let j = 0; j < edges.length; j++) edges[j].state = 'normal';
+      const nodes = this.data.bstNodes.map(function(n) {
+        return Object.assign({}, n, { state: 'normal' });
+      });
+      const edges = this.data.bstEdges.map(function(e) {
+        return Object.assign({}, e, { state: 'normal' });
+      });
       this.setData({ bstNodes: nodes, bstEdges: edges });
       this._drawCanvas();
     }
@@ -664,8 +666,7 @@ Page({
     this._applyStep(step);
     if (step.type !== 'done') {
       const delay = Math.max(50, 800 - this.data.speed * 80);
-      const self = this;
-      this._timer = setTimeout(function() { self._playNext(); }, delay);
+      this._timer = setTimeout(() => { this._playNext(); }, delay);
     } else {
       this.setData({ playing: false });
     }

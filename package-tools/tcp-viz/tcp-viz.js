@@ -168,9 +168,8 @@ Page({
     }
     this._applyStep(this.data.stepIndex + 1);
     const delay = Math.max(200, 1500 - this.data.speed * 150);
-    const self = this;
-    this._timer = setTimeout(function() {
-      self._playNext();
+    this._timer = setTimeout(() => {
+      this._playNext();
     }, delay);
   },
 

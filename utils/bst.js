@@ -89,11 +89,10 @@ function _insert(node, value, steps) {
   });
 
   if (value < node.value) {
-    node.left = _insert(node.left, value, steps);
+    return { ...node, left: _insert(node.left, value, steps) };
   } else {
-    node.right = _insert(node.right, value, steps);
+    return { ...node, right: _insert(node.right, value, steps) };
   }
-  return node;
 }
 
 // ======================== 查找 ========================
@@ -194,7 +193,7 @@ function _delete(node, value, steps, pathSoFar) {
       path: currentPath,
       description: '比较 ' + value + ' < ' + node.value + '，走向左子树'
     });
-    node.left = _delete(node.left, value, steps, currentPath);
+    return { ...node, left: _delete(node.left, value, steps, currentPath) };
   } else if (value > node.value) {
     steps.push({
       type: 'compare',
@@ -203,7 +202,7 @@ function _delete(node, value, steps, pathSoFar) {
       path: currentPath,
       description: '比较 ' + value + ' > ' + node.value + '，走向右子树'
     });
-    node.right = _delete(node.right, value, steps, currentPath);
+    return { ...node, right: _delete(node.right, value, steps, currentPath) };
   } else {
     // 找到要删除的节点
     if (!node.left && !node.right) {
@@ -238,12 +237,10 @@ function _delete(node, value, steps, pathSoFar) {
         description: '删除双子节点 ' + value + '，用后继 ' + successor.value + ' 替换',
         treeSnapshot: cloneTree(node)
       });
-      node.value = successor.value;
-      const deleteResult = _delete(node.right, successor.value, steps, currentPath);
-      node.right = deleteResult;
+      const newRight = _delete(node.right, successor.value, steps, currentPath);
+      return { value: successor.value, left: node.left, right: newRight };
     }
   }
-  return node;
 }
 
 // ======================== 遍历 ========================

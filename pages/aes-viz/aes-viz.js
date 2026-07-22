@@ -1,5 +1,5 @@
 const { hexToBytes, bytesToHex, sBox } = require('../../utils/aes-core');
-const { bytesToState, stateToBytes, subBytes, shiftRows, mixColumns, addRoundKey } = require('../../utils/aes-state');
+const { AES_ROWS, AES_COLS, bytesToState, stateToBytes, subBytes, shiftRows, mixColumns, addRoundKey } = require('../../utils/aes-state');
 const { keyExpansion, getRoundKey, keyExpansionWithSteps } = require('../../utils/aes-key-expansion');
 
 const STEP_NAMES = ['SubBytes', 'ShiftRows', 'MixColumns', 'AddRoundKey'];
@@ -103,16 +103,16 @@ Page({
     const modSet = {};
     if (modifiedRowCols) {
       modifiedRowCols.forEach(function(m) {
-        modSet[m.row * 4 + m.col] = true;
+        modSet[m.row * AES_COLS + m.col] = true;
       });
     }
     const cells = [];
     // Column-major: iterate col then row to build visual grid
-    for (let row = 0; row < 4; row++) {
-      for (let col = 0; col < 4; col++) {
-        const idx = col * 4 + row;
+    for (let row = 0; row < AES_ROWS; row++) {
+      for (let col = 0; col < AES_COLS; col++) {
+        const idx = col * AES_COLS + row;
         const hex = this._fmtHex(stateBytes[idx]);
-        const isMod = !!modSet[row * 4 + col];
+        const isMod = !!modSet[row * AES_COLS + col];
         cells.push({
           hex: hex,
           isModified: isMod,
@@ -166,17 +166,7 @@ Page({
     });
   },
 
-  _computeAes: function() {
-    const plaintext = hexToBytes(this.data.hexPlaintext);
-    const key = hexToBytes(this.data.hexKey);
-    const w = keyExpansion(key);
-    const keyTrace = keyExpansionWithSteps(key);
-
-    // Compute full trace
-    const trace = [];
-    let state = bytesToState(plaintext);
-
-    // Round 0: Initial AddRoundKey (plaintext XOR round key 0)
+  _computeRound0: function(state, w, trace) {
     const roundKey0 = getRoundKey(w, 0);
     const afterARK0 = addRoundKey(state, roundKey0);
     const arkBytes0 = stateToBytes(afterARK0);
@@ -189,8 +179,10 @@ Page({
       roundKey: roundKey0
     });
 
-    state = afterARK0;
+    return afterARK0;
+  },
 
+  _computeMainRounds: function(state, w, trace) {
     for (let round = 1; round <= 10; round++) {
       const roundKey = getRoundKey(w, round);
 
@@ -238,8 +230,23 @@ Page({
       state = afterARK;
     }
 
+    return state;
+  },
+
+  _computeAes: function() {
+    const plaintext = hexToBytes(this.data.hexPlaintext);
+    const key = hexToBytes(this.data.hexKey);
+    const w = keyExpansion(key);
+    const keyTrace = keyExpansionWithSteps(key);
+
+    const trace = [];
+    let state = bytesToState(plaintext);
+
+    state = this._computeRound0(state, w, trace);
+    state = this._computeMainRounds(state, w, trace);
+
     const ciphertext = bytesToHex(stateToBytes(state));
-    const initialRoundKeyBytes = this._fmtWord(roundKey0);
+    const initialRoundKeyBytes = this._fmtWord(getRoundKey(w, 0));
 
     this.setData({
       trace: trace,
@@ -256,8 +263,8 @@ Page({
 
   _buildSBoxDetail: function(before, after) {
     const detail = [];
-    for (let col = 0; col < 4; col++) {
-      for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < AES_COLS; col++) {
+      for (let row = 0; row < AES_ROWS; row++) {
         detail.push({
           row: row,
           col: col,
@@ -271,7 +278,7 @@ Page({
 
   _buildMixColDetail: function(before, after) {
     const details = [];
-    for (let col = 0; col < 4; col++) {
+    for (let col = 0; col < AES_COLS; col++) {
       details.push({
         col: col,
         inputs: [before[0][col], before[1][col], before[2][col], before[3][col]],
@@ -315,16 +322,7 @@ Page({
     }
   },
 
-  _renderCurrentStep: function() {
-    const round = this.data.currentRound;
-    const step = this.data.currentStep;
-    const trace = this.data.trace;
-    if (!trace || trace.length === 0) return;
-
-    // trace is now 0-indexed: trace[0] = Round 0, trace[1..10] = Rounds 1-10
-    const entry = trace[round];
-    if (!entry) return;
-
+  _renderStateMatrix: function(round, step, entry) {
     let stateBytes;
     let modifiedRowCols = [];
     let sboxDisplay = [];
@@ -335,8 +333,8 @@ Page({
     if (round === 0) {
       // Round 0: initial AddRoundKey (single operation)
       stateBytes = entry.arkBytes;
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) {
+      for (let row = 0; row < AES_ROWS; row++) {
+        for (let col = 0; col < AES_COLS; col++) {
           modifiedRowCols.push({ row: row, col: col });
         }
       }
@@ -344,8 +342,8 @@ Page({
     } else if (step === 0) {
       // SubBytes: show before state, all cells modified
       stateBytes = entry.beforeBytes;
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) {
+      for (let row = 0; row < AES_ROWS; row++) {
+        for (let col = 0; col < AES_COLS; col++) {
           modifiedRowCols.push({ row: row, col: col });
         }
       }
@@ -362,7 +360,7 @@ Page({
       // ShiftRows: show state after SubBytes
       stateBytes = entry.sbBytes;
       // Rows 1-3 have shifted cells
-      for (let col = 0; col < 4; col++) {
+      for (let col = 0; col < AES_COLS; col++) {
         modifiedRowCols.push({ row: 1, col: col });
         modifiedRowCols.push({ row: 2, col: col });
         modifiedRowCols.push({ row: 3, col: col });
@@ -376,8 +374,8 @@ Page({
     } else if (step === 2) {
       // MixColumns
       stateBytes = entry.srBytes;
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) {
+      for (let row = 0; row < AES_ROWS; row++) {
+        for (let col = 0; col < AES_COLS; col++) {
           modifiedRowCols.push({ row: row, col: col });
         }
       }
@@ -393,35 +391,44 @@ Page({
     } else {
       // AddRoundKey
       stateBytes = entry.arkBytes;
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) {
+      for (let row = 0; row < AES_ROWS; row++) {
+        for (let col = 0; col < AES_COLS; col++) {
           modifiedRowCols.push({ row: row, col: col });
         }
       }
       roundKeyDisplay = this._fmtWord(entry.roundKey);
     }
 
-    // Build step sequence
-    let stepSequence;
+    return {
+      stateBytes: stateBytes,
+      modifiedRowCols: modifiedRowCols,
+      sboxDisplay: sboxDisplay,
+      mixcolDisplay: mixcolDisplay,
+      shiftRowInfo: shiftRowInfo,
+      roundKeyDisplay: roundKeyDisplay
+    };
+  },
+
+  _renderStepSequence: function(round, step) {
     if (round === 0) {
-      stepSequence = STEP_NAMES.map(function(name, i) {
+      return STEP_NAMES.map(function(name, i) {
         return {
           name: name,
           active: i === 3, // Only AddRoundKey is active for round 0
           done: i === 3
         };
       });
-    } else {
-      stepSequence = STEP_NAMES.map(function(name, i) {
-        return {
-          name: name,
-          active: i === step,
-          done: i < step
-        };
-      });
     }
+    return STEP_NAMES.map(function(name, i) {
+      return {
+        name: name,
+        active: i === step,
+        done: i < step
+      };
+    });
+  },
 
-    // Build key words display
+  _renderKeyWordsDisplay: function() {
     const keyWordsDisplay = [];
     if (this.data.keyTrace) {
       this.data.keyTrace.steps.forEach(function(s) {
@@ -437,21 +444,37 @@ Page({
         });
       });
     }
+    return keyWordsDisplay;
+  },
+
+  _renderCurrentStep: function() {
+    const round = this.data.currentRound;
+    const step = this.data.currentStep;
+    const trace = this.data.trace;
+    if (!trace || trace.length === 0) return;
+
+    // trace is now 0-indexed: trace[0] = Round 0, trace[1..10] = Rounds 1-10
+    const entry = trace[round];
+    if (!entry) return;
+
+    const matrixData = this._renderStateMatrix(round, step, entry);
+    const stepSequence = this._renderStepSequence(round, step);
+    const keyWordsDisplay = this._renderKeyWordsDisplay();
 
     const currentTitle = round === 0
       ? 'Round 0: AddRoundKey（初始密钥）'
       : currentStepName + ' · 第 ' + round + ' 轮';
 
     this.setData({
-      currentStateBytes: stateBytes,
+      currentStateBytes: matrixData.stateBytes,
       currentStepName: round === 0 ? 'AddRoundKey（初始密钥）' : STEP_NAMES[step],
       currentTitle: currentTitle,
-      matrixCells: this._makeMatrixCells(stateBytes, modifiedRowCols),
+      matrixCells: this._makeMatrixCells(matrixData.stateBytes, matrixData.modifiedRowCols),
       stepSequence: stepSequence,
-      sboxDisplay: sboxDisplay,
-      mixcolDisplay: mixcolDisplay,
-      shiftRowInfo: shiftRowInfo,
-      roundKeyDisplay: roundKeyDisplay,
+      sboxDisplay: matrixData.sboxDisplay,
+      mixcolDisplay: matrixData.mixcolDisplay,
+      shiftRowInfo: matrixData.shiftRowInfo,
+      roundKeyDisplay: matrixData.roundKeyDisplay,
       keyWordsDisplay: keyWordsDisplay
     });
   },

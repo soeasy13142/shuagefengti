@@ -119,29 +119,7 @@ function _extractBody(text) {
  * @param {string} text - 完整 HTTP 报文文本
  * @returns {ParseResult}
  */
-function parseHttp(text) {
-  if (!text || text.trim().length === 0) {
-    return {
-      type: 'request',
-      errors: [{ line: 0, message: '输入为空', type: 'error' }],
-      notes: [],
-      headers: [],
-      body: { raw: '', isEmpty: true, length: 0 },
-      version: { raw: '', info: '' }
-    };
-  }
-
-  const errors = [];
-  const notes = [];
-  const lines = text.split(/\r?\n/);
-  const firstLine = lines[0];
-
-  if (lines.length < 2) {
-    errors.push({ line: 1, message: '报文不完整：至少需要首行和空行', type: 'error' });
-  }
-
-  const type = _detectType(text);
-
+function _parseFirstLine(type, firstLine, errors) {
   let version = { raw: '', info: '' };
   let method;
   let uri;
@@ -166,6 +144,10 @@ function parseHttp(text) {
     }
   }
 
+  return { version: version, method: method, uri: uri, statusCode: statusCode };
+}
+
+function _parseBlankLineAndHeaders(lines, errors, notes) {
   // Find blank line separating headers from body
   let blankLineIdx = -1;
   for (let i = 1; i < lines.length; i++) {
@@ -182,9 +164,10 @@ function parseHttp(text) {
     notes.push({ line: lines.length, type: 'warn', message: '缺少空行分隔头部与报文体（非标准格式）' });
   }
 
-  // Body extraction
-  const body = _extractBody(text);
+  return { headers: headers, blankLineIdx: blankLineIdx };
+}
 
+function _validateHeaders(type, headers, body, notes) {
   // Check Content-Length mismatch
   let clHeader = null;
   for (let j = 0; j < headers.length; j++) {
@@ -213,6 +196,44 @@ function parseHttp(text) {
       notes.push({ line: 1, type: 'warn', message: '警告：缺少 Host 头（HTTP/1.1 必需）' });
     }
   }
+}
+
+function parseHttp(text) {
+  if (!text || text.trim().length === 0) {
+    return {
+      type: 'request',
+      errors: [{ line: 0, message: '输入为空', type: 'error' }],
+      notes: [],
+      headers: [],
+      body: { raw: '', isEmpty: true, length: 0 },
+      version: { raw: '', info: '' }
+    };
+  }
+
+  const errors = [];
+  const notes = [];
+  const lines = text.split(/\r?\n/);
+  const firstLine = lines[0];
+
+  if (lines.length < 2) {
+    errors.push({ line: 1, message: '报文不完整：至少需要首行和空行', type: 'error' });
+  }
+
+  const type = _detectType(text);
+
+  const firstLineResult = _parseFirstLine(type, firstLine, errors);
+  const version = firstLineResult.version;
+  const method = firstLineResult.method;
+  const uri = firstLineResult.uri;
+  const statusCode = firstLineResult.statusCode;
+
+  const blankLineResult = _parseBlankLineAndHeaders(lines, errors, notes);
+  const headers = blankLineResult.headers;
+
+  // Body extraction
+  const body = _extractBody(text);
+
+  _validateHeaders(type, headers, body, notes);
 
   const result = { type: type, headers: headers, body: body, errors: errors, notes: notes, version: version };
   if (method) result.method = method;

@@ -9,6 +9,8 @@
  * @typedef {{ id: number, type: string, lexeme?: string, children: ASTNode[], attributes: { val: (number|string|undefined), type: (string|undefined) }, production?: string, stepCreated: number }} ASTNode
  */
 
+const INT_ARROW_TYPE = 'int → int → int';
+
 /**
  * Calculate the depth (height) of an AST
  * @param {ASTNode} node
@@ -147,16 +149,16 @@ function annotateTypes(node) {
       newNode.attributes.type = 'int';
       break;
     case 'ADD':
-      newNode.attributes.type = 'int → int → int';
+      newNode.attributes.type = INT_ARROW_TYPE;
       break;
     case 'SUB':
-      newNode.attributes.type = 'int → int → int';
+      newNode.attributes.type = INT_ARROW_TYPE;
       break;
     case 'MUL':
-      newNode.attributes.type = 'int → int → int';
+      newNode.attributes.type = INT_ARROW_TYPE;
       break;
     case 'DIV':
-      newNode.attributes.type = 'int → int → int';
+      newNode.attributes.type = INT_ARROW_TYPE;
       break;
     case 'PAREN':
       if (newNode.children.length > 0) {

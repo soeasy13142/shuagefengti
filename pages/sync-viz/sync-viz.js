@@ -8,13 +8,13 @@ const {
 
 const { semWait, semSignal } = require('../../utils/semaphore');
 
-var ITEMS = ['🍎', '🍊', '🍇', '🍋', '🍉', '🍓', '🍑', '🍒'];
-var SPEED_OPTIONS = [
+const ITEMS = ['🍎', '🍊', '🍇', '🍋', '🍉', '🍓', '🍑', '🍒'];
+const SPEED_OPTIONS = [
   { label: '0.5x', delayMs: 2000 },
   { label: '1x',   delayMs: 1000 },
   { label: '2x',   delayMs: 500 }
 ];
-var LOG_ID_OFFSET = 10000;
+const LOG_ID_OFFSET = 10000;
 
 Page({
   data: {
@@ -73,13 +73,13 @@ Page({
 
   _syncState: function() {
     if (!this._sim) return;
-    var buffer = this._sim.buffer.slice();
-    var bufferSize = this._sim.bufferSize;
-    var sems = this._sim.semaphores;
+    const buffer = this._sim.buffer.slice();
+    const bufferSize = this._sim.bufferSize;
+    const sems = this._sim.semaphores;
 
-    var fullPercent = bufferSize > 0 ? (sems.full.value / bufferSize) * 100 : 0;
-    var emptyPercent = bufferSize > 0 ? (sems.empty.value / bufferSize) * 100 : 0;
-    var mutexPercent = sems.mutex.value >= 0 ? sems.mutex.value * 100 : 0;
+    const fullPercent = bufferSize > 0 ? (sems.full.value / bufferSize) * 100 : 0;
+    const emptyPercent = bufferSize > 0 ? (sems.empty.value / bufferSize) * 100 : 0;
+    const mutexPercent = sems.mutex.value >= 0 ? sems.mutex.value * 100 : 0;
 
     this.setData({
       simulation: this._sim,
@@ -107,7 +107,7 @@ Page({
   },
 
   onBufferSizeChange: function(e) {
-    var val = Number(e.detail.value);
+    const val = Number(e.detail.value);
     if (val === this.data.bufferSize) return;
     this._stopAll();
     this.setData({ bufferSize: val });
@@ -166,6 +166,135 @@ Page({
   },
 
   /**
+   * Execute one producer sub-step (0-4).
+   * @param {Object} sim - Current simulation state
+   * @param {number} sub - Sub-step index (0-4)
+   * @returns {{ newSim: Object|null, blocked: boolean }}
+   */
+  _doProducerSubStep: function(sim, sub) {
+    let newSim = null;
+    let blocked = false;
+
+    if (sub === 0) {
+      // P(empty)
+      const pEmpty = semWait(sim.semaphores.empty, 'producer');
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { empty: pEmpty.semaphore }),
+        steps: sim.steps.concat([this._makeLog('producer', 'P(empty)', sim.stepCount, 'empty', sim.semaphores.empty.value, pEmpty.semaphore.value, pEmpty.blocked, false)]),
+        stepCount: sim.stepCount + 1
+      });
+      blocked = pEmpty.blocked;
+      if (blocked) this._blockedProducer = true;
+    } else if (sub === 1) {
+      // P(mutex)
+      const pMutex = semWait(sim.semaphores.mutex, 'producer');
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { mutex: pMutex.semaphore }),
+        steps: sim.steps.concat([this._makeLog('producer', 'P(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, pMutex.semaphore.value, false, false)]),
+        stepCount: sim.stepCount + 1
+      });
+    } else if (sub === 2) {
+      // Produce item
+      const newBuffer = sim.buffer.slice();
+      newBuffer[sim.producerIndex] = this._stepItem;
+      const newProdIdx = (sim.producerIndex + 1) % sim.bufferSize;
+      newSim = Object.assign({}, sim, {
+        buffer: newBuffer,
+        producerIndex: newProdIdx,
+        steps: sim.steps.concat([this._makeLog('producer', '生产 ' + this._stepItem, sim.stepCount, null, null, null, false, false)]),
+        stepCount: sim.stepCount + 1
+      });
+    } else if (sub === 3) {
+      // V(mutex)
+      const vMutex = semSignal(sim.semaphores.mutex);
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { mutex: vMutex.semaphore }),
+        steps: sim.steps.concat([this._makeLog('producer', 'V(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, vMutex.semaphore.value, false, vMutex.woken !== null)]),
+        stepCount: sim.stepCount + 1
+      });
+      if (vMutex.woken === 'consumer') this._blockedConsumer = false;
+      if (vMutex.woken === 'producer') this._blockedProducer = false;
+    } else if (sub === 4) {
+      // V(full) — cycle complete
+      const vFull = semSignal(sim.semaphores.full);
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { full: vFull.semaphore }),
+        steps: sim.steps.concat([this._makeLog('producer', 'V(full)', sim.stepCount, 'full', sim.semaphores.full.value, vFull.semaphore.value, false, vFull.woken !== null)]),
+        stepCount: sim.stepCount + 1
+      });
+      if (vFull.woken === 'consumer') this._blockedConsumer = false;
+      if (vFull.woken === 'producer') this._blockedProducer = false;
+    }
+
+    return { newSim: newSim, blocked: blocked };
+  },
+
+  /**
+   * Execute one consumer sub-step (0-4).
+   * @param {Object} sim - Current simulation state
+   * @param {number} sub - Sub-step index (0-4)
+   * @returns {{ newSim: Object|null, blocked: boolean }}
+   */
+  _doConsumerSubStep: function(sim, sub) {
+    let newSim = null;
+    let blocked = false;
+
+    if (sub === 0) {
+      // P(full)
+      const pFull = semWait(sim.semaphores.full, 'consumer');
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { full: pFull.semaphore }),
+        steps: sim.steps.concat([this._makeLog('consumer', 'P(full)', sim.stepCount, 'full', sim.semaphores.full.value, pFull.semaphore.value, pFull.blocked, false)]),
+        stepCount: sim.stepCount + 1
+      });
+      blocked = pFull.blocked;
+      if (blocked) this._blockedConsumer = true;
+    } else if (sub === 1) {
+      // P(mutex)
+      const pMutexC = semWait(sim.semaphores.mutex, 'consumer');
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { mutex: pMutexC.semaphore }),
+        steps: sim.steps.concat([this._makeLog('consumer', 'P(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, pMutexC.semaphore.value, false, false)]),
+        stepCount: sim.stepCount + 1
+      });
+    } else if (sub === 2) {
+      // Consume item
+      const newBufferC = sim.buffer.slice();
+      const item = newBufferC[sim.consumerIndex] || '';
+      newBufferC[sim.consumerIndex] = null;
+      const newConsIdx = (sim.consumerIndex + 1) % sim.bufferSize;
+      newSim = Object.assign({}, sim, {
+        buffer: newBufferC,
+        consumerIndex: newConsIdx,
+        steps: sim.steps.concat([this._makeLog('consumer', '消费 ' + (item || '?'), sim.stepCount, null, null, null, false, false)]),
+        stepCount: sim.stepCount + 1
+      });
+    } else if (sub === 3) {
+      // V(mutex)
+      const vMutexC = semSignal(sim.semaphores.mutex);
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { mutex: vMutexC.semaphore }),
+        steps: sim.steps.concat([this._makeLog('consumer', 'V(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, vMutexC.semaphore.value, false, vMutexC.woken !== null)]),
+        stepCount: sim.stepCount + 1
+      });
+      if (vMutexC.woken === 'producer') this._blockedProducer = false;
+      if (vMutexC.woken === 'consumer') this._blockedConsumer = false;
+    } else if (sub === 4) {
+      // V(empty) — cycle complete
+      const vEmpty = semSignal(sim.semaphores.empty);
+      newSim = Object.assign({}, sim, {
+        semaphores: Object.assign({}, sim.semaphores, { empty: vEmpty.semaphore }),
+        steps: sim.steps.concat([this._makeLog('consumer', 'V(empty)', sim.stepCount, 'empty', sim.semaphores.empty.value, vEmpty.semaphore.value, false, vEmpty.woken !== null)]),
+        stepCount: sim.stepCount + 1
+      });
+      if (vEmpty.woken === 'producer') this._blockedProducer = false;
+      if (vEmpty.woken === 'consumer') this._blockedConsumer = false;
+    }
+
+    return { newSim: newSim, blocked: blocked };
+  },
+
+  /**
    * 执行一步原子 P/V 操作（步进模式）
    *
    * 每个生产者/消费者周期分为 5 个子步骤：
@@ -177,126 +306,21 @@ Page({
   _doOneStep: function() {
     if (!this._sim) return;
 
-    var isProducer = this._stepActor === 'producer';
-    var sub = this._stepSubIdx;
-    var sim = this._sim;
-    var newSim = null;
-    var blocked = false;
+    const isProducer = this._stepActor === 'producer';
+    const sub = this._stepSubIdx;
+    const sim = this._sim;
 
-    if (isProducer) {
-      if (sub === 0) {
-        // P(empty)
-        var pEmpty = semWait(sim.semaphores.empty, 'producer');
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { empty: pEmpty.semaphore }),
-          steps: sim.steps.concat([this._makeLog('producer', 'P(empty)', sim.stepCount, 'empty', sim.semaphores.empty.value, pEmpty.semaphore.value, pEmpty.blocked, false)]),
-          stepCount: sim.stepCount + 1
-        });
-        blocked = pEmpty.blocked;
-        if (blocked) this._blockedProducer = true;
-      } else if (sub === 1) {
-        // P(mutex)
-        var pMutex = semWait(sim.semaphores.mutex, 'producer');
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { mutex: pMutex.semaphore }),
-          steps: sim.steps.concat([this._makeLog('producer', 'P(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, pMutex.semaphore.value, false, false)]),
-          stepCount: sim.stepCount + 1
-        });
-      } else if (sub === 2) {
-        // Produce item
-        var newBuffer = sim.buffer.slice();
-        newBuffer[sim.producerIndex] = this._stepItem;
-        var newProdIdx = (sim.producerIndex + 1) % sim.bufferSize;
-        newSim = Object.assign({}, sim, {
-          buffer: newBuffer,
-          producerIndex: newProdIdx,
-          steps: sim.steps.concat([this._makeLog('producer', '生产 ' + this._stepItem, sim.stepCount, null, null, null, false, false)]),
-          stepCount: sim.stepCount + 1
-        });
-      } else if (sub === 3) {
-        // V(mutex)
-        var vMutex = semSignal(sim.semaphores.mutex);
-        var wokenProducer = vMutex.woken === 'producer' || vMutex.woken === 'consumer';
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { mutex: vMutex.semaphore }),
-          steps: sim.steps.concat([this._makeLog('producer', 'V(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, vMutex.semaphore.value, false, vMutex.woken !== null)]),
-          stepCount: sim.stepCount + 1
-        });
-        if (vMutex.woken === 'consumer') this._blockedConsumer = false;
-        if (vMutex.woken === 'producer') this._blockedProducer = false;
-      } else if (sub === 4) {
-        // V(full) — cycle complete
-        var vFull = semSignal(sim.semaphores.full);
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { full: vFull.semaphore }),
-          steps: sim.steps.concat([this._makeLog('producer', 'V(full)', sim.stepCount, 'full', sim.semaphores.full.value, vFull.semaphore.value, false, vFull.woken !== null)]),
-          stepCount: sim.stepCount + 1
-        });
-        if (vFull.woken === 'consumer') this._blockedConsumer = false;
-        if (vFull.woken === 'producer') this._blockedProducer = false;
-      }
-    } else {
-      // Consumer steps
-      if (sub === 0) {
-        // P(full)
-        var pFull = semWait(sim.semaphores.full, 'consumer');
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { full: pFull.semaphore }),
-          steps: sim.steps.concat([this._makeLog('consumer', 'P(full)', sim.stepCount, 'full', sim.semaphores.full.value, pFull.semaphore.value, pFull.blocked, false)]),
-          stepCount: sim.stepCount + 1
-        });
-        blocked = pFull.blocked;
-        if (blocked) this._blockedConsumer = true;
-      } else if (sub === 1) {
-        // P(mutex)
-        var pMutexC = semWait(sim.semaphores.mutex, 'consumer');
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { mutex: pMutexC.semaphore }),
-          steps: sim.steps.concat([this._makeLog('consumer', 'P(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, pMutexC.semaphore.value, false, false)]),
-          stepCount: sim.stepCount + 1
-        });
-      } else if (sub === 2) {
-        // Consume item
-        var newBufferC = sim.buffer.slice();
-        var item = newBufferC[sim.consumerIndex] || '';
-        newBufferC[sim.consumerIndex] = null;
-        var newConsIdx = (sim.consumerIndex + 1) % sim.bufferSize;
-        newSim = Object.assign({}, sim, {
-          buffer: newBufferC,
-          consumerIndex: newConsIdx,
-          steps: sim.steps.concat([this._makeLog('consumer', '消费 ' + (item || '?'), sim.stepCount, null, null, null, false, false)]),
-          stepCount: sim.stepCount + 1
-        });
-      } else if (sub === 3) {
-        // V(mutex)
-        var vMutexC = semSignal(sim.semaphores.mutex);
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { mutex: vMutexC.semaphore }),
-          steps: sim.steps.concat([this._makeLog('consumer', 'V(mutex)', sim.stepCount, 'mutex', sim.semaphores.mutex.value, vMutexC.semaphore.value, false, vMutexC.woken !== null)]),
-          stepCount: sim.stepCount + 1
-        });
-        if (vMutexC.woken === 'producer') this._blockedProducer = false;
-        if (vMutexC.woken === 'consumer') this._blockedConsumer = false;
-      } else if (sub === 4) {
-        // V(empty) — cycle complete
-        var vEmpty = semSignal(sim.semaphores.empty);
-        newSim = Object.assign({}, sim, {
-          semaphores: Object.assign({}, sim.semaphores, { empty: vEmpty.semaphore }),
-          steps: sim.steps.concat([this._makeLog('consumer', 'V(empty)', sim.stepCount, 'empty', sim.semaphores.empty.value, vEmpty.semaphore.value, false, vEmpty.woken !== null)]),
-          stepCount: sim.stepCount + 1
-        });
-        if (vEmpty.woken === 'producer') this._blockedProducer = false;
-        if (vEmpty.woken === 'consumer') this._blockedConsumer = false;
-      }
-    }
+    const result = isProducer
+      ? this._doProducerSubStep(sim, sub)
+      : this._doConsumerSubStep(sim, sub);
 
-    if (!newSim) return;
-    this._sim = newSim;
+    if (!result || !result.newSim) return;
+    this._sim = result.newSim;
 
     // Advance sub-step
     this._stepSubIdx++;
-    var cycleDone = sub >= 4;
-    if (cycleDone || blocked) {
+    const cycleDone = sub >= 4;
+    if (cycleDone || result.blocked) {
       this._stepSubIdx = 0;
       this._stepActor = isProducer ? 'consumer' : 'producer';
       if (this._stepActor === 'producer') {
@@ -311,7 +335,7 @@ Page({
    * 在页面层生成日志条目（ID 从 LOG_ID_OFFSET 开始，避免与模块层日志 ID 冲突）
    */
   _makeLog: function(actor, action, timestamp, semName, semBefore, semAfter, blocked, woken) {
-    var log = {
+    const log = {
       id: this._stepLogId++,
       timestamp: timestamp,
       actor: actor,
@@ -336,40 +360,38 @@ Page({
   },
 
   _startTimers: function() {
-    var speedIdx = this.data.speedIndex;
-    var producerDelay = this.data.producerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
-    var consumerDelay = this.data.consumerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
+    const speedIdx = this.data.speedIndex;
+    const producerDelay = this.data.producerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
+    const consumerDelay = this.data.consumerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
 
-    var self = this;
-
-    this._producerTimer = setInterval(function() {
-      if (!self._sim) return;
-      var item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
-      var result = producerStep(self._sim, item);
+    this._producerTimer = setInterval(() => {
+      if (!this._sim) return;
+      const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+      const result = producerStep(this._sim, item);
       if (result.blocked) {
-        self._blockedProducer = true;
+        this._blockedProducer = true;
       } else {
-        self._sim = result.state;
-        self._stepCounter++;
-        self._blockedProducer = false;
+        this._sim = result.state;
+        this._stepCounter++;
+        this._blockedProducer = false;
       }
-      self._syncState();
-      if (self._stepCounter > 100) {
-        self._stopAll();
+      this._syncState();
+      if (this._stepCounter > 100) {
+        this._stopAll();
       }
     }, producerDelay);
 
-    this._consumerTimer = setInterval(function() {
-      if (!self._sim) return;
-      var result = consumerStep(self._sim);
+    this._consumerTimer = setInterval(() => {
+      if (!this._sim) return;
+      const result = consumerStep(this._sim);
       if (result.blocked) {
-        self._blockedConsumer = true;
+        this._blockedConsumer = true;
       } else {
-        self._sim = result.state;
-        self._stepCounter++;
-        self._blockedConsumer = false;
+        this._sim = result.state;
+        this._stepCounter++;
+        this._blockedConsumer = false;
       }
-      self._syncState();
+      this._syncState();
     }, consumerDelay);
   },
 

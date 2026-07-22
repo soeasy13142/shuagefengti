@@ -13,6 +13,11 @@ const TYPE_LABELS = {
 
 const TYPE_KEYS = ['single', 'multi', 'judge', 'fill', 'essay'];
 
+const TREND_DAY_WINDOW = 7;
+const LOW_ACCURACY_THRESHOLD = 60;
+const WEAK_SPOT_THRESHOLD = 80;
+const HIGH_ACCURACY_THRESHOLD = 85;
+
 function _round(num) {
   return Math.round(num || 0);
 }
@@ -32,34 +37,37 @@ function _buildEmptyTypeStats() {
 }
 
 function _buildSevenDayTrend(records, now) {
-  const days = [];
-  for (let i = 6; i >= 0; i--) {
+  const dates = [];
+  for (let i = TREND_DAY_WINDOW - 1; i >= 0; i--) {
     const d = new Date(now.getTime());
     d.setDate(d.getDate() - i);
-    days.push({ date: _formatDay(d), count: 0, correct: 0, total: 0, accuracy: 0 });
+    dates.push(_formatDay(d));
   }
+
+  const counts = {};
+  const correctTotals = {};
+  const totalTotals = {};
+  dates.forEach(function (date) {
+    counts[date] = 0;
+    correctTotals[date] = 0;
+    totalTotals[date] = 0;
+  });
 
   records.forEach(function (record) {
     const raw = record.endTime || record.startTime || '';
     const dayKey = raw.length >= 10 ? raw.slice(5, 10) : '';
-    let matched = null;
-    for (let j = 0; j < days.length; j++) {
-      if (days[j].date === dayKey) {
-        matched = days[j];
-        break;
-      }
-    }
-    if (matched) {
-      matched.count += 1;
-      matched.correct += record.correctCount || 0;
-      matched.total += record.totalQuestions || 0;
+    if (counts[dayKey] !== undefined) {
+      counts[dayKey] = counts[dayKey] + 1;
+      correctTotals[dayKey] = correctTotals[dayKey] + (record.correctCount || 0);
+      totalTotals[dayKey] = totalTotals[dayKey] + (record.totalQuestions || 0);
     }
   });
 
-  days.forEach(function (day) {
-    day.accuracy = day.total > 0 ? _round((day.correct / day.total) * 100) : 0;
-    delete day.correct;
-    delete day.total;
+  const days = dates.map(function (date) {
+    const total = totalTotals[date];
+    const correct = correctTotals[date];
+    const accuracy = total > 0 ? _round((correct / total) * 100) : 0;
+    return { date: date, count: counts[date], accuracy: accuracy };
   });
 
   return days;
@@ -79,7 +87,7 @@ function _buildSuggestions(overview, typeStats, weakSpot) {
     return suggestions;
   }
 
-  if (overview.averageAccuracy < 60) {
+  if (overview.averageAccuracy < LOW_ACCURACY_THRESHOLD) {
     suggestions.push({
       level: 'warning',
       title: '先稳住基础正确率',
@@ -89,7 +97,7 @@ function _buildSuggestions(overview, typeStats, weakSpot) {
     });
   }
 
-  if (weakSpot && weakSpot.total > 0 && weakSpot.accuracy < 80) {
+  if (weakSpot && weakSpot.total > 0 && weakSpot.accuracy < WEAK_SPOT_THRESHOLD) {
     suggestions.push({
       level: 'warning',
       title: weakSpot.label + ' 是当前薄弱点',
@@ -110,7 +118,7 @@ function _buildSuggestions(overview, typeStats, weakSpot) {
     });
   }
 
-  if (overview.averageAccuracy >= 85 && unmastered === 0) {
+  if (overview.averageAccuracy >= HIGH_ACCURACY_THRESHOLD && unmastered === 0) {
     suggestions.push({
       level: 'success',
       title: '状态很好，可以挑战考试模式',
@@ -155,12 +163,13 @@ function buildDashboardData(records, wrongQuestions, papers, now) {
     if (wrongQuestions[i].mastered) masteredWrongCount++;
   }
 
-  // 题型统计
-  const typeStats = _buildEmptyTypeStats();
-  const typeMap = {};
-  for (let i = 0; i < typeStats.length; i++) {
-    typeMap[typeStats[i].type] = typeStats[i];
-  }
+  // 题型统计 — 使用原始计数器避免对象突变
+  const typeCounts = {};
+  const typeCorrects = {};
+  TYPE_KEYS.forEach(function (key) {
+    typeCounts[key] = 0;
+    typeCorrects[key] = 0;
+  });
 
   records.forEach(function (record) {
     if (!record.answers) return;
@@ -168,12 +177,11 @@ function buildDashboardData(records, wrongQuestions, papers, now) {
     const questionTypes = record.questionTypes;
     if (questionTypes && questionTypes.length > 0) {
       questionTypes.forEach(function (qt) {
-        const stat = typeMap[qt.type];
-        if (!stat) return;
+        if (typeCounts[qt.type] === undefined) return;
         const answer = record.answers[qt.id];
         if (!answer) return;
-        stat.total += 1;
-        if (answer.correct) stat.correct += 1;
+        typeCounts[qt.type] = typeCounts[qt.type] + 1;
+        if (answer.correct) typeCorrects[qt.type] = typeCorrects[qt.type] + 1;
       });
       return;
     }
@@ -184,19 +192,20 @@ function buildDashboardData(records, wrongQuestions, papers, now) {
     }
     if (!paper || !paper.questions) return;
     paper.questions.forEach(function (q) {
-      const stat = typeMap[q.type];
-      if (!stat) return;
+      if (typeCounts[q.type] === undefined) return;
       const answer = record.answers[q.id];
       if (!answer) return;
-      stat.total += 1;
-      if (answer.correct) stat.correct += 1;
+      typeCounts[q.type] = typeCounts[q.type] + 1;
+      if (answer.correct) typeCorrects[q.type] = typeCorrects[q.type] + 1;
     });
   });
 
-  for (let i = 0; i < typeStats.length; i++) {
-    const s = typeStats[i];
-    s.accuracy = s.total > 0 ? _round((s.correct / s.total) * 100) : 0;
-  }
+  const typeStats = TYPE_KEYS.map(function (key) {
+    const total = typeCounts[key];
+    const correct = typeCorrects[key];
+    const accuracy = total > 0 ? _round((correct / total) * 100) : 0;
+    return { type: key, label: TYPE_LABELS[key], total: total, correct: correct, accuracy: accuracy };
+  });
 
   // 最薄弱 / 最强题型
   const activeTypeStats = typeStats.filter(function (s) { return s.total > 0; });

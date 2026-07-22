@@ -13,6 +13,21 @@ global.wx = {
   clearStorageSync() {
     Object.keys(storage).forEach(k => delete storage[k]);
   },
+  getStorage(options) {
+    const { key, success, fail } = options;
+    const data = storage[key] !== undefined ? storage[key] : null;
+    success && success({ data: data });
+  },
+  setStorage(options) {
+    const { key, data, success, fail } = options;
+    storage[key] = data;
+    success && success();
+  },
+  removeStorage(options) {
+    const { key, success, fail } = options;
+    delete storage[key];
+    success && success();
+  },
   showToast(options) {},
   showModal(options) {},
   navigateTo(options) {},

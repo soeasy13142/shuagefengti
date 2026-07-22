@@ -10,13 +10,12 @@ Page({
   },
 
   onShow: function () {
-    const self = this;
     this.setData({ loading: true });
     Promise.all([
       storage.getRecordsAsync(),
       storage.getWrongQuestionsAsync(),
       storage.getPapersAsync()
-    ]).then(function (results) {
+    ]).then((results) => {
       const records = results[0];
       const wrongQuestions = results[1];
       const papers = results[2];
@@ -27,7 +26,7 @@ Page({
           maxTrendCount = dashboard.sevenDayTrend[i].count;
         }
       }
-      self.setData({
+      this.setData({
         dashboard: dashboard,
         maxTrendCount: maxTrendCount,
         hasData: dashboard.overview.totalSessions > 0,

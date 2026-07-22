@@ -22,10 +22,9 @@ Page({
   },
 
   _buildAllSections(categories) {
-    const self = this;
-    return categories.map(function(cat) {
+    return categories.map((cat) => {
       const allTools = registry.getToolsByCategory(cat.id);
-      const enrichedTools = allTools.map(function(t) { return self._enrichTool(t); });
+      const enrichedTools = allTools.map((t) => { return this._enrichTool(t); });
       return {
         category: cat,
         tools: enrichedTools
@@ -44,7 +43,6 @@ Page({
   },
 
   onCategoryTap(e) {
-    const self = this;
     const categoryId = e.currentTarget.dataset.id;
     let currentTools = [];
     let availableTools = [];
@@ -52,8 +50,8 @@ Page({
 
     if (categoryId !== 'all') {
       currentTools = registry.getToolsByCategory(categoryId);
-      availableTools = currentTools.filter(function(t) { return t.available; }).map(function(t) { return self._enrichTool(t); });
-      unavailableTools = currentTools.filter(function(t) { return !t.available; });
+      availableTools = currentTools.filter((t) => { return t.available; }).map((t) => { return this._enrichTool(t); });
+      unavailableTools = currentTools.filter((t) => { return !t.available; });
     }
 
     this.setData({

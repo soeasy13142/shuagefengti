@@ -122,67 +122,73 @@ function nfaToDFA(nfa) {
     return sorted.join(',');
   }
 
-  // Initial DFA state = ε-closure({nfa.start})
-  const initClosure = epsilonClosure(nfa, [nfa.start]);
-  const dfaStates = []; // { id, nfaStateIds, isAccept, transitions: {} }
-  const stateMap = {};  // setKey → DFA state id
+  const dfaStates = [];
+  const stateMap = {};
 
-  const initId = nextDfaId();
-  const initStates = Array.from(initClosure);
-  const initDFA = {
-    id: initId,
-    nfaStates: initStates,
-    transitions: {},
-    isAccept: containsAccept(initStates)
-  };
-  dfaStates.push(initDFA);
-  stateMap[setKey(initClosure)] = initId;
+  function _computeInitDfaState() {
+    const initClosure = epsilonClosure(nfa, [nfa.start]);
+    const initId = nextDfaId();
+    const initStates = Array.from(initClosure);
+    const initDFA = {
+      id: initId,
+      nfaStates: initStates,
+      transitions: {},
+      isAccept: containsAccept(initStates)
+    };
+    dfaStates.push(initDFA);
+    stateMap[setKey(initClosure)] = initId;
+    return initDFA;
+  }
 
-  // Process queue
-  const queue = [initDFA];
+  function _buildDfaTransitions(initDFA) {
+    const queue = [initDFA];
 
-  while (queue.length > 0) {
-    const current = queue.shift();
+    while (queue.length > 0) {
+      const current = queue.shift();
 
-    for (let i = 0; i < alphabet.length; i++) {
-      const ch = alphabet[i];
+      for (let i = 0; i < alphabet.length; i++) {
+        const ch = alphabet[i];
 
-      // move + epsilonClosure
-      const moveResult = move(nfa, current.nfaStates, ch);
-      if (moveResult.length === 0) continue; // no transition on this char
+        // move + epsilonClosure
+        const moveResult = move(nfa, current.nfaStates, ch);
+        if (moveResult.length === 0) continue; // no transition on this char
 
-      const closure = epsilonClosure(nfa, moveResult);
-      const key = setKey(closure);
+        const closure = epsilonClosure(nfa, moveResult);
+        const key = setKey(closure);
 
-      if (stateMap[key]) {
-        // Already exists
-        current.transitions[ch] = stateMap[key];
-      } else {
-        // Create new DFA state
-        if (dfaStateCount >= DFA_STATE_LIMIT) {
-          throw new Error(
-            'DFA state limit exceeded (' + DFA_STATE_LIMIT + '). ' +
-            'Please simplify your regex.'
-          );
+        if (stateMap[key]) {
+          // Already exists
+          current.transitions[ch] = stateMap[key];
+        } else {
+          // Create new DFA state
+          if (dfaStateCount >= DFA_STATE_LIMIT) {
+            throw new Error(
+              'DFA state limit exceeded (' + DFA_STATE_LIMIT + '). ' +
+              'Please simplify your regex.'
+            );
+          }
+          const newId = nextDfaId();
+          const newStates = Array.from(closure);
+          const newDFA = {
+            id: newId,
+            nfaStates: newStates,
+            transitions: {},
+            isAccept: containsAccept(newStates)
+          };
+          dfaStates.push(newDFA);
+          stateMap[key] = newId;
+          current.transitions[ch] = newId;
+          queue.push(newDFA);
         }
-        const newId = nextDfaId();
-        const newStates = Array.from(closure);
-        const newDFA = {
-          id: newId,
-          nfaStates: newStates,
-          transitions: {},
-          isAccept: containsAccept(newStates)
-        };
-        dfaStates.push(newDFA);
-        stateMap[key] = newId;
-        current.transitions[ch] = newId;
-        queue.push(newDFA);
       }
     }
   }
 
+  const initDFA = _computeInitDfaState();
+  _buildDfaTransitions(initDFA);
+
   return {
-    start: initId,
+    start: initDFA.id,
     states: dfaStates,
     alphabet: alphabet
   };

@@ -89,6 +89,40 @@ Page({
     return nums;
   },
 
+  _buildRequestMarkers(requests) {
+    const uniqueReqs = [...new Set(requests)];
+    return uniqueReqs.map(track => ({
+      track,
+      leftPct: (track / CYLINDER_MAX) * 100
+    }));
+  },
+
+  _buildPathSegments(steps, start) {
+    const pathSegments = [];
+    let fromPos = start;
+    for (let i = 0; i < steps.length; i++) {
+      const seg = steps[i];
+      const fromLeft = (fromPos / CYLINDER_MAX) * 100;
+      const toLeft = (seg.to / CYLINDER_MAX) * 100;
+      const widthPct = Math.abs(toLeft - fromLeft);
+      pathSegments.push({
+        fromLeft: Math.min(fromLeft, toLeft),
+        widthPct,
+        color: HEAD_COLORS[i % HEAD_COLORS.length],
+        topOffset: 0
+      });
+      fromPos = seg.to;
+    }
+    return pathSegments;
+  },
+
+  _buildVisitedLabels(path) {
+    return path.slice(1).map((track, idx) => ({
+      leftPct: (track / CYLINDER_MAX) * 100,
+      order: idx + 1
+    }));
+  },
+
   _compute(start, direction, algo) {
     const requests = this._parseRequests();
     if (!requests) return;
@@ -105,44 +139,14 @@ Page({
     const totalSeek = result.totalSeek;
     const avgSeek = steps.length > 0 ? (totalSeek / steps.length).toFixed(1) : '0.0';
 
-    // Build request markers
-    const uniqueReqs = [...new Set(requests)];
-    const requestMarkers = uniqueReqs.map(track => ({
-      track,
-      leftPct: (track / CYLINDER_MAX) * 100
-    }));
-
-    // Build path segments for initial state (all at start)
-    const pathSegments = [];
-    let fromPos = start;
-    for (let i = 0; i < steps.length; i++) {
-      const seg = steps[i];
-      const fromLeft = (fromPos / CYLINDER_MAX) * 100;
-      const toLeft = (seg.to / CYLINDER_MAX) * 100;
-      const widthPct = Math.abs(toLeft - fromLeft);
-      pathSegments.push({
-        fromLeft: Math.min(fromLeft, toLeft),
-        widthPct,
-        color: HEAD_COLORS[i % HEAD_COLORS.length],
-        topOffset: 0
-      });
-      fromPos = seg.to;
-    }
-
-    // Visited labels (exclude start)
-    const visitedLabels = result.path.slice(1).map((track, idx) => ({
-      leftPct: (track / CYLINDER_MAX) * 100,
-      order: idx + 1
-    }));
-
     this.setData({
       path: result.path,
       steps,
       totalSeek,
       avgSeek,
-      requestMarkers,
-      pathSegments,
-      visitedLabels,
+      requestMarkers: this._buildRequestMarkers(requests),
+      pathSegments: this._buildPathSegments(steps, start),
+      visitedLabels: this._buildVisitedLabels(result.path),
       errorMessage: '',
       currentStep: null,
       headLeftPct: (start / CYLINDER_MAX) * 100,

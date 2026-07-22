@@ -82,8 +82,8 @@ describe('dnat', () => {
 
 describe('removeExpiredEntries', () => {
   test('removes entries past their timeout', () => {
-    const fresh = { externalPort: 50000, timeout: 100, state: 'Active' };
-    const expired = { externalPort: 50001, timeout: 0, state: 'Active' };
+    const fresh = { externalPort: 50000, time: 0, timeout: 100, state: 'Active' };
+    const expired = { externalPort: 50001, time: 0, timeout: 0, state: 'Active' };
     const result = removeExpiredEntries([fresh, expired], 50);
     expect(result.length).toBe(1);
     expect(result[0].externalPort).toBe(50000);
