@@ -81,4 +81,13 @@ function analyzeFrequency(text) {
   return result;
 }
 
-module.exports = { analyzeFrequency, STANDARD_ENGLISH_FREQ };
+/**
+ * Standard English frequency lookup by letter
+ * @type {Object<string, {letter: string, pct: number}>}
+ */
+const STANDARD_ENGLISH_FREQ_BY_LETTER = {};
+STANDARD_ENGLISH_FREQ.forEach(function(item) {
+  STANDARD_ENGLISH_FREQ_BY_LETTER[item.letter] = item;
+});
+
+module.exports = { analyzeFrequency, STANDARD_ENGLISH_FREQ, STANDARD_ENGLISH_FREQ_BY_LETTER };

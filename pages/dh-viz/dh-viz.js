@@ -37,6 +37,7 @@ Page({
     // 离散对数
     showDiscreteLog: false,
     discreteLogResult: null,
+    discreteLogPct: '0.0',
 
     // 状态
     hasExchanged: false
@@ -282,7 +283,8 @@ Page({
     const target = this.data.alice.publicKey;
 
     const result = bruteForceDiscreteLog(g, p, target);
-    this.setData({ discreteLogResult: result });
+    const pct = result.totalSpace > 0 ? (result.attempts / result.totalSpace * 100) : 0;
+    this.setData({ discreteLogResult: result, discreteLogPct: pct.toFixed(1) });
   },
 
   // ── 动画控制 ──

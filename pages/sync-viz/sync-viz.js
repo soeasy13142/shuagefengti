@@ -6,8 +6,8 @@ const {
   resetSimulation: resetSimulation
 } = require('../../utils/producer-consumer');
 
-var ITEMS = ['🍎', '🍊', '🍇', '🍋', '🍉', '🍓', '🍑', '🍒'];
-var SPEED_OPTIONS = [
+const ITEMS = ['🍎', '🍊', '🍇', '🍋', '🍉', '🍓', '🍑', '🍒'];
+const SPEED_OPTIONS = [
   { label: '0.5x', delayMs: 2000 },
   { label: '1x',   delayMs: 1000 },
   { label: '2x',   delayMs: 500 }
@@ -36,7 +36,6 @@ Page({
   },
 
   _sim: null,
-  _timer: null,
   _producerTimer: null,
   _consumerTimer: null,
   _stepCounter: 0,
@@ -57,13 +56,13 @@ Page({
 
   _syncState: function() {
     if (!this._sim) return;
-    var buffer = this._sim.buffer.slice();
-    var bufferSize = this._sim.bufferSize;
-    var sems = this._sim.semaphores;
+    const buffer = this._sim.buffer.slice();
+    const bufferSize = this._sim.bufferSize;
+    const sems = this._sim.semaphores;
 
-    var fullPercent = bufferSize > 0 ? (sems.full.value / bufferSize) * 100 : 0;
-    var emptyPercent = bufferSize > 0 ? (sems.empty.value / bufferSize) * 100 : 0;
-    var mutexPercent = sems.mutex.value >= 0 ? sems.mutex.value * 100 : 0;
+    const fullPercent = bufferSize > 0 ? (sems.full.value / bufferSize) * 100 : 0;
+    const emptyPercent = bufferSize > 0 ? (sems.empty.value / bufferSize) * 100 : 0;
+    const mutexPercent = sems.mutex.value >= 0 ? sems.mutex.value * 100 : 0;
 
     this.setData({
       simulation: this._sim,
@@ -89,7 +88,7 @@ Page({
   },
 
   onBufferSizeChange: function(e) {
-    var val = Number(e.detail.value);
+    const val = Number(e.detail.value);
     if (val === this.data.bufferSize) return;
     this._stopAll();
     this.setData({ bufferSize: val });
@@ -152,10 +151,10 @@ Page({
   _doOneStep: function() {
     if (!this._sim) return;
     // alternate: producer then consumer
-    var isProducer = this._stepCounter % 2 === 0;
-    var result;
+    const isProducer = this._stepCounter % 2 === 0;
+    let result;
     if (isProducer) {
-      var item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+      const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
       result = producerStep(this._sim, item);
     } else {
       result = consumerStep(this._sim);
@@ -176,16 +175,16 @@ Page({
   },
 
   _startTimers: function() {
-    var speedIdx = this.data.speedIndex;
-    var producerDelay = this.data.producerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
-    var consumerDelay = this.data.consumerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
+    const speedIdx = this.data.speedIndex;
+    const producerDelay = this.data.producerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
+    const consumerDelay = this.data.consumerInterval * SPEED_OPTIONS[speedIdx].delayMs / 1000;
 
-    var self = this;
+    const self = this;
 
     this._producerTimer = setInterval(function() {
       if (!self._sim) return;
-      var item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
-      var result = producerStep(self._sim, item);
+      const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+      const result = producerStep(self._sim, item);
       if (!result.blocked) {
         self._sim = result.state;
         self._stepCounter++;
@@ -198,7 +197,7 @@ Page({
 
     this._consumerTimer = setInterval(function() {
       if (!self._sim) return;
-      var result = consumerStep(self._sim);
+      const result = consumerStep(self._sim);
       if (!result.blocked) {
         self._sim = result.state;
         self._stepCounter++;

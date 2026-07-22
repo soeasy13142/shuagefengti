@@ -47,12 +47,12 @@ Page({
   // ── 素数输入 ──
 
   _updateFromInputs: function() {
-    var pStr = this.data.inputP.trim();
-    var qStr = this.data.inputQ.trim();
-    var p = parseInt(pStr, 10);
-    var q = parseInt(qStr, 10);
-    var pError = '';
-    var qError = '';
+    const pStr = this.data.inputP.trim();
+    const qStr = this.data.inputQ.trim();
+    const p = parseInt(pStr, 10);
+    const q = parseInt(qStr, 10);
+    let pError = '';
+    let qError = '';
 
     if (pStr === '' || isNaN(p)) {
       pError = '请输入数值';
@@ -89,15 +89,15 @@ Page({
   },
 
   onPSelect: function(e) {
-    var idx = parseInt(e.detail.value, 10);
-    var val = PRIMES_2_997[idx];
+    const idx = parseInt(e.detail.value, 10);
+    const val = PRIMES_2_997[idx];
     this.setData({ primeIndexP: idx, inputP: '' + val });
     this._updateFromInputs();
   },
 
   onQSelect: function(e) {
-    var idx = parseInt(e.detail.value, 10);
-    var val = PRIMES_2_997[idx];
+    const idx = parseInt(e.detail.value, 10);
+    const val = PRIMES_2_997[idx];
     this.setData({ primeIndexQ: idx, inputQ: '' + val });
     this._updateFromInputs();
   },
@@ -105,15 +105,15 @@ Page({
   // ── 随机选择 ──
 
   onRandomP: function() {
-    var idx = Math.floor(Math.random() * PRIMES_2_997.length);
-    var val = PRIMES_2_997[idx];
+    const idx = Math.floor(Math.random() * PRIMES_2_997.length);
+    const val = PRIMES_2_997[idx];
     this.setData({ primeIndexP: idx, inputP: '' + val });
     this._updateFromInputs();
   },
 
   onRandomQ: function() {
-    var idx = Math.floor(Math.random() * PRIMES_2_997.length);
-    var val = PRIMES_2_997[idx];
+    const idx = Math.floor(Math.random() * PRIMES_2_997.length);
+    const val = PRIMES_2_997[idx];
     this.setData({ primeIndexQ: idx, inputQ: '' + val });
     this._updateFromInputs();
   },
@@ -121,24 +121,24 @@ Page({
   // ── 密钥生成 ──
 
   onGenerateKeypair: function() {
-    var result = this._updateFromInputs();
+    const result = this._updateFromInputs();
     if (!result.valid) {
       wx.showToast({ title: '请检查素数输入', icon: 'none' });
       return;
     }
 
     try {
-      var key = generateKeypair(result.p, result.q);
+      const key = generateKeypair(result.p, result.q);
       // 添加展示用计算字段
-      var edProduct = key.e * key.d;
-      var edQuotient = Math.floor(edProduct / key.phi);
-      var edRemainder = edProduct % key.phi;
-      var verifyDetail = key.e + '×' + key.d + ' = ' + edProduct + ' = ' + edQuotient + '×' + key.phi + ' + ' + edRemainder;
+      const edProduct = key.e * key.d;
+      const edQuotient = Math.floor(edProduct / key.phi);
+      const edRemainder = edProduct % key.phi;
+      const verifyDetail = key.e + '×' + key.d + ' = ' + edProduct + ' = ' + edQuotient + '×' + key.phi + ' + ' + edRemainder;
       key._verifyDetail = verifyDetail;
       // 弱密钥检测：Wiener 攻击条件 d < n^(1/4)/3
-      var nRoot4 = Math.pow(key.n, 0.25);
-      var wienerThreshold = nRoot4 / 3;
-      var wienerWarning = '';
+      const nRoot4 = Math.pow(key.n, 0.25);
+      const wienerThreshold = nRoot4 / 3;
+      let wienerWarning = '';
       if (key.d < wienerThreshold) {
         wienerWarning = '此私钥偏小（d=' + key.d + ' < n^(1/4)/3 ≈ ' + Math.round(wienerThreshold) + '），存在 Wiener 攻击风险';
       }
@@ -155,8 +155,8 @@ Page({
       wx.showToast({ title: '请先生成密钥对', icon: 'none' });
       return;
     }
-    var mStr = this.data.plaintext.trim();
-    var m = parseInt(mStr, 10);
+    const mStr = this.data.plaintext.trim();
+    const m = parseInt(mStr, 10);
     if (isNaN(m) || mStr === '') {
       wx.showToast({ title: '请输入有效明文', icon: 'none' });
       return;
@@ -166,8 +166,8 @@ Page({
       return;
     }
 
-    var c = encrypt(m, this.data.keypair.e, this.data.keypair.n);
-    var steps = modPowWithSteps(m, this.data.keypair.e, this.data.keypair.n);
+    const c = encrypt(m, this.data.keypair.e, this.data.keypair.n);
+    const steps = modPowWithSteps(m, this.data.keypair.e, this.data.keypair.n);
     this.setData({
       encrypted: c,
       decrypted: null,
@@ -181,15 +181,15 @@ Page({
       wx.showToast({ title: '请先生成密钥对', icon: 'none' });
       return;
     }
-    var cStr = this.data.ciphertext.trim();
-    var c = parseInt(cStr, 10);
+    const cStr = this.data.ciphertext.trim();
+    const c = parseInt(cStr, 10);
     if (isNaN(c) || cStr === '') {
       wx.showToast({ title: '请输入有效密文', icon: 'none' });
       return;
     }
 
-    var m = decrypt(c, this.data.keypair.d, this.data.keypair.n);
-    var steps = modPowWithSteps(c, this.data.keypair.d, this.data.keypair.n);
+    const m = decrypt(c, this.data.keypair.d, this.data.keypair.n);
+    const steps = modPowWithSteps(c, this.data.keypair.d, this.data.keypair.n);
     this.setData({
       decrypted: m,
       encrypted: null,
@@ -227,31 +227,31 @@ Page({
       wx.showToast({ title: '请先生成密钥对', icon: 'none' });
       return;
     }
-    var text = this.data.textModePlain;
+    const text = this.data.textModePlain;
     if (!text) {
       wx.showToast({ title: '请输入文本', icon: 'none' });
       return;
     }
 
     // 检查是否包含非 ASCII 字符
-    for (var i = 0; i < text.length; i++) {
+    for (let i = 0; i < text.length; i++) {
       if (text.charCodeAt(i) > 127) {
         wx.showToast({ title: '暂只支持 ASCII 字符', icon: 'none' });
         return;
       }
     }
 
-    var key = this.data.keypair;
-    var results = [];
-    var isEncrypt = this.data.textModeType === 'encrypt';
+    const key = this.data.keypair;
+    const results = [];
+    const isEncrypt = this.data.textModeType === 'encrypt';
 
-    for (var j = 0; j < text.length; j++) {
-      var code = text.charCodeAt(j);
+    for (let j = 0; j < text.length; j++) {
+      const code = text.charCodeAt(j);
       if (code >= key.n) {
         wx.showToast({ title: '字符码值 (' + code + ') 超出 n=' + key.n + '，请换更大 p/q', icon: 'none' });
         return;
       }
-      var out;
+      let out;
       if (isEncrypt) {
         out = encrypt(code, key.e, key.n);
       } else {

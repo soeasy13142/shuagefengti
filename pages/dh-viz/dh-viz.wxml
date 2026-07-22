@@ -145,14 +145,14 @@
 
       <view class="dl-search-result">
         <text wx:if="{{discreteLogResult.foundX !== null}}">
-          找到! a = {{discreteLogResult.foundX}}，搜索次数: {{discreteLogResult.attempts}}/{{discreteLogResult.totalSpace}} ({{(discreteLogResult.attempts / discreteLogResult.totalSpace * 100).toFixed(1)}}%)
+          找到! a = {{discreteLogResult.foundX}}，搜索次数: {{discreteLogResult.attempts}}/{{discreteLogResult.totalSpace}} ({{discreteLogPct}}%)
         </text>
         <text wx:else>未找到（遍历 {{discreteLogResult.attempts}} 次）</text>
       </view>
 
       <!-- 进度条 -->
       <view class="progress-bar">
-        <view class="progress-fill" style="width: {{discreteLogResult.totalSpace > 0 ? (discreteLogResult.attempts / discreteLogResult.totalSpace * 100).toFixed(1) + '%' : '0%'}}"></view>
+        <view class="progress-fill" style="width: {{discreteLogPct + '%'}}"></view>
       </view>
 
       <!-- 搜索步骤（仅显示一部分） -->

@@ -75,7 +75,7 @@
             <text class="freq-pct">{{item.pct}}%</text>
             <!-- 标准频率对比 -->
             <view class="freq-bar-bg freq-std-bg">
-              <view class="freq-bar freq-std-bar" style="width: {{caesarStdFreq[item.letter.charCodeAt(0) - 65].pct * 6}}px;"></view>
+              <view class="freq-bar freq-std-bar" style="width: {{caesarStdFreq[item.letter].pct * 6}}px;"></view>
             </view>
           </view>
         </view>

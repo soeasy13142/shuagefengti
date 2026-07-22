@@ -15,16 +15,13 @@ const MIN_BUFFER = 2;
 const MAX_BUFFER = 8;
 const ITEMS = ['🍎', '🍊', '🍇', '🍋', '🍉', '🍓', '🍑', '🍒'];
 
-var _nextLogId = 0;
-
 /**
  * 创建初始模拟状态
  * @param {number} bufferSize 缓冲区大小（自动 clamp 到 [2, 8]）
  * @returns {Object} SimulationState
  */
 function createSimulation(bufferSize) {
-  var size = Math.max(MIN_BUFFER, Math.min(MAX_BUFFER, Math.floor(bufferSize) || MIN_BUFFER));
-  _nextLogId = 0;
+  const size = Math.max(MIN_BUFFER, Math.min(MAX_BUFFER, Math.floor(bufferSize) || MIN_BUFFER));
   return {
     buffer: Array(size).fill(null),
     bufferSize: size,
@@ -36,20 +33,22 @@ function createSimulation(bufferSize) {
       full: createSemaphore(0)
     },
     steps: [],
-    stepCount: 0
+    stepCount: 0,
+    nextLogId: 0
   };
 }
 
 /**
  * 生成日志条目
+ * @param {number} nextLogId 当前日志 ID
  * @param {string} actor
  * @param {string} action
  * @param {Object} opts
- * @returns {Object} LogEntry
+ * @returns {Object} { log: LogEntry, nextLogId: number }
  */
-function _makeLog(actor, action, opts) {
-  var log = {
-    id: _nextLogId++,
+function _makeLog(nextLogId, actor, action, opts) {
+  const log = {
+    id: nextLogId,
     timestamp: opts.stepCount,
     actor: actor,
     action: action,
@@ -64,7 +63,7 @@ function _makeLog(actor, action, opts) {
   if (opts.item !== undefined) {
     log.item = opts.item;
   }
-  return log;
+  return { log: log, nextLogId: nextLogId + 1 };
 }
 
 /**
@@ -74,18 +73,19 @@ function _makeLog(actor, action, opts) {
  * @param {'P'|'V'} type
  * @param {string} owner
  * @param {number} stepCount
+ * @param {number} nextLogId
  * @returns {Object}
  */
-function _doPV(semaphores, semName, type, owner, stepCount) {
-  var sem = semaphores[semName];
-  var result;
+function _doPV(semaphores, semName, type, owner, stepCount, nextLogId) {
+  const sem = semaphores[semName];
+  let result;
   if (type === 'P') {
     result = semWait(sem, owner);
   } else {
     result = semSignal(sem);
   }
-  var newSems = Object.assign({}, semaphores, { [semName]: result.semaphore });
-  var log = _makeLog(owner, type + '(' + semName + ')', {
+  const newSems = Object.assign({}, semaphores, { [semName]: result.semaphore });
+  const { log, nextLogId: newNextLogId } = _makeLog(nextLogId, owner, type + '(' + semName + ')', {
     stepCount: stepCount,
     semaphoreName: semName,
     semaphoreBefore: sem.value,
@@ -93,7 +93,7 @@ function _doPV(semaphores, semName, type, owner, stepCount) {
     blocked: result.blocked || false,
     woken: result.woken !== null && result.woken !== undefined
   });
-  return { semaphores: newSems, log: log, blocked: result.blocked, woken: result.woken };
+  return { semaphores: newSems, log: log, nextLogId: newNextLogId, blocked: result.blocked, woken: result.woken };
 }
 
 /**
@@ -103,54 +103,62 @@ function _doPV(semaphores, semName, type, owner, stepCount) {
  * @returns {{ state: Object, logs: Array, blocked: boolean }}
  */
 function producerStep(state, item) {
+  let nextLogId = state.nextLogId;
+
   if (state.semaphores.empty.value <= 0) {
     // 缓冲区满，生产者阻塞
-    var blockedLog = _makeLog('producer', '阻塞等待 empty', {
+    const { log, nextLogId: newNextLogId } = _makeLog(nextLogId, 'producer', '阻塞等待 empty', {
       stepCount: state.stepCount,
       blocked: true
     });
     return {
       state: Object.assign({}, state, {
-        steps: state.steps.concat([blockedLog])
+        steps: state.steps.concat([log]),
+        nextLogId: newNextLogId
       }),
-      logs: [blockedLog],
+      logs: [log],
       blocked: true
     };
   }
 
-  var stepCount = state.stepCount;
-  var logs = [];
-  var curSems = state.semaphores;
+  const stepCount = state.stepCount;
+  const logs = [];
+  let curSems = state.semaphores;
 
   // 1. P(empty)
-  var pEmpty = _doPV(curSems, 'empty', 'P', 'producer', stepCount);
+  const pEmpty = _doPV(curSems, 'empty', 'P', 'producer', stepCount, nextLogId);
   curSems = pEmpty.semaphores;
+  nextLogId = pEmpty.nextLogId;
   logs.push(pEmpty.log);
 
   // 2. P(mutex)
-  var pMutex = _doPV(curSems, 'mutex', 'P', 'producer', stepCount);
+  const pMutex = _doPV(curSems, 'mutex', 'P', 'producer', stepCount, nextLogId);
   curSems = pMutex.semaphores;
+  nextLogId = pMutex.nextLogId;
   logs.push(pMutex.log);
 
   // 3. 放入缓冲区
-  var newBuffer = state.buffer.slice();
-  var prodIdx = state.producerIndex;
+  const newBuffer = state.buffer.slice();
+  const prodIdx = state.producerIndex;
   newBuffer[prodIdx] = item;
-  var newProdIdx = (prodIdx + 1) % state.bufferSize;
-  var produceLog = _makeLog('producer', '生产 ' + item, {
+  const newProdIdx = (prodIdx + 1) % state.bufferSize;
+  const { log: produceLog, nextLogId: nl3 } = _makeLog(nextLogId, 'producer', '生产 ' + item, {
     stepCount: stepCount,
     item: item
   });
+  nextLogId = nl3;
   logs.push(produceLog);
 
   // 4. V(mutex)
-  var vMutex = _doPV(curSems, 'mutex', 'V', 'producer', stepCount);
+  const vMutex = _doPV(curSems, 'mutex', 'V', 'producer', stepCount, nextLogId);
   curSems = vMutex.semaphores;
+  nextLogId = vMutex.nextLogId;
   logs.push(vMutex.log);
 
   // 5. V(full)
-  var vFull = _doPV(curSems, 'full', 'V', 'producer', stepCount);
+  const vFull = _doPV(curSems, 'full', 'V', 'producer', stepCount, nextLogId);
   curSems = vFull.semaphores;
+  nextLogId = vFull.nextLogId;
   logs.push(vFull.log);
 
   return {
@@ -161,7 +169,8 @@ function producerStep(state, item) {
       consumerIndex: state.consumerIndex,
       semaphores: curSems,
       steps: state.steps.concat(logs),
-      stepCount: stepCount + 1
+      stepCount: stepCount + 1,
+      nextLogId: nextLogId
     },
     logs: logs,
     blocked: false
@@ -174,55 +183,63 @@ function producerStep(state, item) {
  * @returns {{ state: Object, logs: Array, blocked: boolean }}
  */
 function consumerStep(state) {
+  let nextLogId = state.nextLogId;
+
   if (state.semaphores.full.value <= 0) {
     // 缓冲区空，消费者阻塞
-    var blockedLog = _makeLog('consumer', '阻塞等待 full', {
+    const { log, nextLogId: newNextLogId } = _makeLog(nextLogId, 'consumer', '阻塞等待 full', {
       stepCount: state.stepCount,
       blocked: true
     });
     return {
       state: Object.assign({}, state, {
-        steps: state.steps.concat([blockedLog])
+        steps: state.steps.concat([log]),
+        nextLogId: newNextLogId
       }),
-      logs: [blockedLog],
+      logs: [log],
       blocked: true
     };
   }
 
-  var stepCount = state.stepCount;
-  var logs = [];
-  var curSems = state.semaphores;
+  const stepCount = state.stepCount;
+  const logs = [];
+  let curSems = state.semaphores;
 
   // 1. P(full)
-  var pFull = _doPV(curSems, 'full', 'P', 'consumer', stepCount);
+  const pFull = _doPV(curSems, 'full', 'P', 'consumer', stepCount, nextLogId);
   curSems = pFull.semaphores;
+  nextLogId = pFull.nextLogId;
   logs.push(pFull.log);
 
   // 2. P(mutex)
-  var pMutex = _doPV(curSems, 'mutex', 'P', 'consumer', stepCount);
+  const pMutex = _doPV(curSems, 'mutex', 'P', 'consumer', stepCount, nextLogId);
   curSems = pMutex.semaphores;
+  nextLogId = pMutex.nextLogId;
   logs.push(pMutex.log);
 
   // 3. 取出物品
-  var newBuffer = state.buffer.slice();
-  var consIdx = state.consumerIndex;
-  var item = newBuffer[consIdx];
+  const newBuffer = state.buffer.slice();
+  const consIdx = state.consumerIndex;
+  const item = newBuffer[consIdx];
   newBuffer[consIdx] = null;
-  var newConsIdx = (consIdx + 1) % state.bufferSize;
-  var consumeLog = _makeLog('consumer', '消费 ' + (item || '?'), {
+  const newConsIdx = (consIdx + 1) % state.bufferSize;
+  const { log: consumeLog, nextLogId: nl3 } = _makeLog(nextLogId, 'consumer', '消费 ' + (item || '?'), {
     stepCount: stepCount,
     item: item || ''
   });
+  nextLogId = nl3;
   logs.push(consumeLog);
 
   // 4. V(mutex)
-  var vMutex = _doPV(curSems, 'mutex', 'V', 'consumer', stepCount);
+  const vMutex = _doPV(curSems, 'mutex', 'V', 'consumer', stepCount, nextLogId);
   curSems = vMutex.semaphores;
+  nextLogId = vMutex.nextLogId;
   logs.push(vMutex.log);
 
   // 5. V(empty)
-  var vEmpty = _doPV(curSems, 'empty', 'V', 'consumer', stepCount);
+  const vEmpty = _doPV(curSems, 'empty', 'V', 'consumer', stepCount, nextLogId);
   curSems = vEmpty.semaphores;
+  nextLogId = vEmpty.nextLogId;
   logs.push(vEmpty.log);
 
   return {
@@ -233,7 +250,8 @@ function consumerStep(state) {
       consumerIndex: newConsIdx,
       semaphores: curSems,
       steps: state.steps.concat(logs),
-      stepCount: stepCount + 1
+      stepCount: stepCount + 1,
+      nextLogId: nextLogId
     },
     logs: logs,
     blocked: false
@@ -247,13 +265,13 @@ function consumerStep(state) {
  * @returns {{ state: Object, logs: Array }}
  */
 function addRandomItems(state, count) {
-  var s = state;
-  var allLogs = [];
-  var total = count !== undefined ? count : state.bufferSize;
-  for (var i = 0; i < total; i++) {
+  let s = state;
+  const allLogs = [];
+  const total = count !== undefined ? count : state.bufferSize;
+  for (let i = 0; i < total; i++) {
     if (s.semaphores.empty.value <= 0) break;
-    var item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
-    var r = producerStep(s, item);
+    const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+    const r = producerStep(s, item);
     s = r.state;
     allLogs.push.apply(allLogs, r.logs);
   }
@@ -266,7 +284,6 @@ function addRandomItems(state, count) {
  * @returns {Object} 新的初始状态
  */
 function resetSimulation(state) {
-  _nextLogId = 0;
   return createSimulation(state.bufferSize);
 }
 

@@ -22,7 +22,8 @@ const {
 } = require('../../utils/cipher-railfence');
 const {
   analyzeFrequency,
-  STANDARD_ENGLISH_FREQ
+  STANDARD_ENGLISH_FREQ,
+  STANDARD_ENGLISH_FREQ_BY_LETTER
 } = require('../../utils/cipher-freq');
 
 const MAX_INPUT_LENGTH = 5000;
@@ -67,7 +68,7 @@ Page({
     caesarBruteForceResults: [],
     caesarShowFreq: false,
     caesarFreqResults: [],
-    caesarStdFreq: STANDARD_ENGLISH_FREQ,
+    caesarStdFreq: STANDARD_ENGLISH_FREQ_BY_LETTER,
 
     // Vigenere
     vigenereKey: '',
