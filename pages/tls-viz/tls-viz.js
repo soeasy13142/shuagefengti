@@ -174,9 +174,26 @@ Page({
       };
     }
 
+    // 预处理 certChain：WXML 不支持 .repeat() 等方法调用，需提前算好缩进字符串
+    let currentStepObj = step;
+    if (step.payload && step.payload.extra && step.payload.extra.certChain) {
+      currentStepObj = {
+        ...step,
+        payload: {
+          ...step.payload,
+          extra: {
+            ...step.payload.extra,
+            certChain: step.payload.extra.certChain.map(function(subject, i) {
+              return { subject: subject, indentStr: '  '.repeat(i) };
+            })
+          }
+        }
+      };
+    }
+
     this.setData({
       currentStep: idx,
-      currentStepObj: step,
+      currentStepObj,
       activeMessage,
       progressPercent
     });

@@ -30,7 +30,7 @@
   <view wx:if="{{rawInput && parsed}}" class="raw-band">
     <text class="section-label">原始报文</text>
     <view class="raw-block">
-      <view wx:for="{{rawLines}}" wx:key="index" class="raw-line {{item.hasError ? 'line-error' : ''}}">
+      <view wx:for="{{rawLines}}" wx:key="num" class="raw-line {{item.hasError ? 'line-error' : ''}}">
         <text class="raw-line-num">{{item.num}}</text>
         <text class="raw-line-text">{{item.text}}</text>
       </view>

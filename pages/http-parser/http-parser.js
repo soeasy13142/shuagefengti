@@ -37,13 +37,12 @@ Page({
 
   onSampleChange(e) {
     const idx = parseInt(e.detail.value, 10);
-    const samples = SAMPLES;
     if (idx === 0) {
       // 自定义输入 — 不清空已有文本
       this.setData({ sampleIndex: 0 });
       return;
     }
-    const sample = samples[idx - 1];
+    const sample = SAMPLES[idx - 1];
     if (sample) {
       this.setData({
         rawInput: sample.raw,
@@ -66,19 +65,23 @@ Page({
       return;
     }
 
-    const result = parseHttp(rawInput);
-    const lines = rawInput.split(/\r?\n/);
-    const rawLines = lines.map((text, idx) => ({
-      num: idx + 1,
-      text: text || '⏎',
-      hasError: result.errors.some(e => e.line === idx + 1 && e.type === 'error')
-    }));
+    try {
+      const result = parseHttp(rawInput);
+      const lines = rawInput.split(/\r?\n/);
+      const rawLines = lines.map((text, idx) => ({
+        num: idx + 1,
+        text: text || '⏎',
+        hasError: result.errors.some(e => e.line === idx + 1 && e.type === 'error')
+      }));
 
-    this.setData({
-      parsed: result,
-      rawLines,
-      errorMessage: ''
-    });
+      this.setData({
+        parsed: result,
+        rawLines,
+        errorMessage: ''
+      });
+    } catch (e) {
+      this.setData({ errorMessage: '解析失败: ' + e.message, parsed: null, rawLines: [] });
+    }
   },
 
   onClearTap() {

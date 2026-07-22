@@ -70,6 +70,8 @@ describe('tool-registry', () => {
       expect(ids).toContain('mem-paging');
       expect(ids).toContain('nat-viz');
       expect(ids).toContain('ip-fragment');
+      expect(ids).toContain('nginx-gen');
+      expect(ids).toContain('deadlock');
     });
   });
 

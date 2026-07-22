@@ -79,8 +79,8 @@
     <view wx:if="{{currentStepObj.payload.extra && currentStepObj.payload.extra.certChain}}" class="cert-chain">
       <text class="cert-chain-label">证书链</text>
       <view wx:for="{{currentStepObj.payload.extra.certChain}}" wx:key="index" class="cert-item">
-        <text class="cert-indent">{{'  '.repeat(index)}}└─ </text>
-        <text class="cert-subject">{{item}}</text>
+        <text class="cert-indent">{{item.indentStr}}└─ </text>
+        <text class="cert-subject">{{item.subject}}</text>
       </view>
     </view>
 

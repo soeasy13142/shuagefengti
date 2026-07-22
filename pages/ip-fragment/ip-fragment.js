@@ -1,8 +1,9 @@
-var { fragment, randomId } = require('../../utils/ip-fragment');
-var { reassemble } = require('../../utils/ip-reassemble');
+const { fragment, randomId } = require('../../utils/ip-fragment');
+const { reassemble } = require('../../utils/ip-reassemble');
 
-var IP_HEADER = 20;
-var SLIDER_DEBOUNCE_MS = 300;
+const IP_HEADER = 20;
+const SLIDER_DEBOUNCE_MS = 300;
+const ANIM_DELAY_MS = 800;
 
 Page({
   data: {
@@ -43,9 +44,9 @@ Page({
   // ── 参数更新 ──
 
   _updateParams: function() {
-    var mtu = this.data.mtu;
-    var payload = mtu - IP_HEADER;
-    var estFragments = Math.ceil(this.data.datagramSize / payload);
+    const mtu = this.data.mtu;
+    const payload = mtu - IP_HEADER;
+    const estFragments = Math.ceil(this.data.datagramSize / payload);
     this.setData({
       payloadPerFragment: payload,
       totalFragments: estFragments,
@@ -79,10 +80,9 @@ Page({
     if (this._debounceTimer) {
       clearTimeout(this._debounceTimer);
     }
-    var self = this;
-    this._debounceTimer = setTimeout(function() {
-      self._updateParams();
-      self._debounceTimer = null;
+    this._debounceTimer = setTimeout(() => {
+      this._updateParams();
+      this._debounceTimer = null;
     }, SLIDER_DEBOUNCE_MS);
   },
 
@@ -90,10 +90,16 @@ Page({
 
   onFragmentTap: function() {
     this._stopAnim();
-    var result = fragment(this.data.datagramSize, this.data.mtu);
+    let result;
+    try {
+      result = fragment(this.data.datagramSize, this.data.mtu);
+    } catch (e) {
+      this.setData({ errorMessage: '分片计算失败: ' + e.message });
+      return;
+    }
 
-    var id = result.id;
-    var mfSummary = result.fragments
+    const id = result.id;
+    const mfSummary = result.fragments
       .map(function(f) { return f.mf ? '1' : '0'; })
       .join(' → ');
 
@@ -123,7 +129,13 @@ Page({
     if (this.data.fragments.length === 0) return;
 
     this._stopAnim();
-    var assembled = reassemble(this.data.fragments);
+    let assembled;
+    try {
+      assembled = reassemble(this.data.fragments);
+    } catch (e) {
+      this.setData({ errorMessage: '重组失败: ' + e.message });
+      return;
+    }
 
     this.setData({
       mergeSteps: assembled.mergeSteps,
@@ -163,19 +175,17 @@ Page({
     }
 
     this.setData({ reassembling: true });
-    var delayMs = 800;
-    var self = this;
-    this._animTimer = setInterval(function() {
-      var idx = self.data.currentReassembleIdx;
+    this._animTimer = setInterval(() => {
+      let idx = this.data.currentReassembleIdx;
       if (idx === null || idx < 0) {
         idx = 0;
       } else {
         idx = idx + 1;
       }
 
-      if (idx >= self.data.mergeSteps.length) {
-        self._stopAnim();
-        self.setData({
+      if (idx >= this.data.mergeSteps.length) {
+        this._stopAnim();
+        this.setData({
           reassembling: false,
           reassembleComplete: true,
           reassemblePercent: 100
@@ -183,25 +193,25 @@ Page({
         return;
       }
 
-      var step = self.data.mergeSteps[idx];
-      var percent = Math.round(((idx + 1) / self.data.mergeSteps.length) * 100);
-      self.setData({
+      const step = this.data.mergeSteps[idx];
+      const percent = Math.round(((idx + 1) / this.data.mergeSteps.length) * 100);
+      this.setData({
         currentReassembleIdx: idx,
         currentMergeStep: step,
         reassemblePercent: percent
       });
-    }, delayMs);
+    }, ANIM_DELAY_MS);
   },
 
   onPrevStep: function() {
     if (this.data.mergeSteps.length === 0) return;
-    var idx = this.data.currentReassembleIdx;
+    let idx = this.data.currentReassembleIdx;
     if (idx === null || idx < 0) {
       idx = 0;
     }
-    var prevIdx = Math.max(0, idx - 1);
-    var step = this.data.mergeSteps[prevIdx];
-    var percent = Math.round(((prevIdx + 1) / this.data.mergeSteps.length) * 100);
+    const prevIdx = Math.max(0, idx - 1);
+    const step = this.data.mergeSteps[prevIdx];
+    const percent = Math.round(((prevIdx + 1) / this.data.mergeSteps.length) * 100);
     this.setData({
       currentReassembleIdx: prevIdx,
       currentMergeStep: step,
@@ -212,11 +222,11 @@ Page({
 
   onNextStep: function() {
     if (this.data.mergeSteps.length === 0) return;
-    var idx = this.data.currentReassembleIdx;
+    let idx = this.data.currentReassembleIdx;
     if (idx === null || idx < 0) {
       idx = -1;
     }
-    var nextIdx = idx + 1;
+    const nextIdx = idx + 1;
     if (nextIdx >= this.data.mergeSteps.length) {
       this.setData({
         reassembleComplete: true,
@@ -224,8 +234,8 @@ Page({
       });
       return;
     }
-    var step = this.data.mergeSteps[nextIdx];
-    var percent = Math.round(((nextIdx + 1) / this.data.mergeSteps.length) * 100);
+    const step = this.data.mergeSteps[nextIdx];
+    const percent = Math.round(((nextIdx + 1) / this.data.mergeSteps.length) * 100);
     this.setData({
       currentReassembleIdx: nextIdx,
       currentMergeStep: step,

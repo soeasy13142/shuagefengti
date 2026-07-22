@@ -32,6 +32,11 @@ const STATUS_CODES = {
   ]
 };
 
+const CODE_LOOKUP = Object.values(STATUS_CODES).flat().reduce((map, entry) => {
+  map[entry.code] = entry;
+  return map;
+}, {});
+
 /**
  * 获取指定分类的状态码列表
  * @param {'1xx'|'2xx'|'3xx'|'4xx'|'5xx'} category
@@ -47,14 +52,7 @@ function getStatusCodesByCategory(category) {
  * @returns {Object|undefined}
  */
 function getStatusCodeInfo(code) {
-  const allEntries = Object.values(STATUS_CODES);
-  for (let i = 0; i < allEntries.length; i++) {
-    const entries = allEntries[i];
-    for (let j = 0; j < entries.length; j++) {
-      if (entries[j].code === code) return entries[j];
-    }
-  }
-  return undefined;
+  return CODE_LOOKUP[code];
 }
 
 module.exports = { STATUS_CODES, getStatusCodesByCategory, getStatusCodeInfo };

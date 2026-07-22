@@ -39,17 +39,17 @@ function reassemble(fragments) {
   }
 
   // Sort by offset to ensure correct order
-  var sorted = [].concat(fragments).sort(function(a, b) { return a.offset - b.offset; });
+  const sorted = [...fragments].sort(function(a, b) { return a.offset - b.offset; });
 
   // Verify no gaps (simplified)
-  var totalBytes = sorted.reduce(function(sum, f) { return sum + f.dataLength; }, 0);
+  const totalBytes = sorted.reduce(function(sum, f) { return sum + f.dataLength; }, 0);
 
   // Build merge steps for animation (reverse order: last fragment first)
-  var mergeSteps = [];
-  var reversed = [].concat(sorted).reverse();
-  var cumulativeBytes = 0;
-  for (var i = 0; i < reversed.length; i++) {
-    var f = reversed[i];
+  const mergeSteps = [];
+  const reversed = [...sorted].reverse();
+  let cumulativeBytes = 0;
+  for (let i = 0; i < reversed.length; i++) {
+    const f = reversed[i];
     cumulativeBytes = cumulativeBytes + f.dataLength;
     mergeSteps.push({
       fragmentIndex: f.index,
