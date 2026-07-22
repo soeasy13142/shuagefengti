@@ -438,3 +438,38 @@
   border-radius: 8rpx;
   line-height: 1.4;
 }
+
+/* ── 详细模式：featured-card tagline 不截断 ── */
+.fc-tagline-detail {
+  overflow: visible;
+  display: block;
+  -webkit-line-clamp: unset;
+}
+
+/* ── 详细模式：featured-card tags + 难度行 ── */
+.fc-meta-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 6rpx;
+  margin-bottom: 4rpx;
+}
+
+.fc-tags-inline {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 18rpx;
+  font-weight: 400;
+  color: #6c6a64;
+  line-height: 1.4;
+}
+
+.fc-diff-label {
+  display: inline-block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 18rpx;
+  font-weight: 400;
+  color: #8e8b82;
+  line-height: 1.4;
+  margin-left: 12rpx;
+}

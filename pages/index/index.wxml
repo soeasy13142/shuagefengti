@@ -60,7 +60,15 @@
               <text class="featured-card-name">{{item.name}}</text>
               <text class="featured-card-diff">{{item._diffStars}}</text>
             </view>
-            <text class="featured-card-tagline">{{item.tagline || item.description}}</text>
+            <!-- tagline：详细模式不截断 + 用长文本 -->
+            <text class="featured-card-tagline {{cardMode === 'detail' ? 'fc-tagline-detail' : ''}}">{{cardMode === 'detail' ? (item.taglineDetail || item.tagline || item.description) : (item.tagline || item.description)}}</text>
+            <!-- 详细模式：tags + 难度标签 -->
+            <view class="fc-meta-row" wx:if="{{cardMode === 'detail' && (item.tags && item.tags.length > 0 || item.difficulty)}}">
+              <text class="fc-tags-inline" wx:if="{{item.tags && item.tags.length > 0}}">
+                <text wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
+              </text>
+              <text class="fc-diff-label" wx:if="{{item.difficulty}}">{{item._diffLabel}}</text>
+            </view>
             <view class="featured-card-meta">
               <text class="featured-card-category">{{item._catName}}</text>
             </view>
