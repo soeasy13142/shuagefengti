@@ -159,7 +159,34 @@
         </view>
       </scroll-view>
 
+      <!-- DFA 状态图 -->
       <text class="section-label">DFA 状态图</text>
+      <view class="diagram-canvas">
+        <view wx:for="{{dfaArrows}}" wx:key="key" class="arrow-group">
+          <view class="arrow-line {{item.isEpsilon ? 'eps-arrow' : ''}} {{item.isHighlight ? 'arrow-highlight' : ''}}"
+                style="left: {{item.x}}rpx; top: {{item.y}}rpx; width: {{item.len}}rpx; transform: rotate({{item.deg}}deg);">
+          </view>
+          <view class="arrow-head {{item.isEpsilon ? 'eps-arrow' : ''}} {{item.isHighlight ? 'arrow-highlight' : ''}}"
+                style="left: {{item.headX}}rpx; top: {{item.headY}}rpx; transform: rotate({{item.deg}}deg);">
+          </view>
+          <text class="arrow-label"
+                style="left: {{item.labelX}}rpx; top: {{item.labelY}}rpx;">{{item.input}}</text>
+        </view>
+        <view wx:for="{{dfaDiagramStates}}" wx:key="id"
+              class="diagram-state {{item.isAccept ? 'state-accept' : ''}} {{item.isStart ? 'state-start' : ''}} {{item.isHighlighted ? 'state-highlighted' : ''}}"
+              style="left: {{item.x}}rpx; top: {{item.y}}rpx;">
+          <text class="state-label">{{item.id}}</text>
+        </view>
+      </view>
+
+      <!-- 步进导航 -->
+      <view class="step-nav" wx:if="{{dfaTotalSteps > 0}}">
+        <button class="step-btn" bindtap="onStepPrev" data-tab="dfa" hover-class="btn-hover">‹ 上一步</button>
+        <text class="step-indicator">步骤 {{dfaStepIndex + 1}} / {{dfaTotalSteps}}</text>
+        <button class="step-btn" bindtap="onStepNext" data-tab="dfa" hover-class="btn-hover">下一步 ›</button>
+      </view>
+
+      <text class="section-label">DFA 状态列表</text>
       <view class="states-row">
         <view wx:for="{{dfaStatesList}}" wx:key="id" class="state-node-wrapper">
           <view class="state-circle {{ds.isAccept ? 'state-accept' : ''}} {{ds.isStart ? 'state-start' : ''}}">

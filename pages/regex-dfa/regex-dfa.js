@@ -248,38 +248,57 @@ Page({
       const dfaDiagramStates = this._statesWithPositions(dfaStatesList, dfaPositions);
       const dfaArrows = this._buildArrows(dfaTransitions, dfaPositions);
 
-      const nfaArrowCount = nfaArrows.length;
-      const dfaArrowCount = dfaArrows.length;
-      const subsetCount = subsetSteps.length;
+      var arrowCount = nfaArrows.length;
+      var dArrowCount = dfaArrows.length;
+      var subCount = subsetSteps.length;
+
+      // Apply initial highlights (before setData to avoid async timing)
+      var initNfaArrows = arrowCount > 0 ? nfaArrows.map(function(a, i) {
+        return Object.assign({}, a, { isHighlight: i === 0 });
+      }) : nfaArrows;
+      var initDfaArrows = dArrowCount > 0 ? dfaArrows.map(function(a, i) {
+        return Object.assign({}, a, { isHighlight: i === 0 });
+      }) : dfaArrows;
+      var initSubsetSteps = subCount > 0 ? subsetSteps.map(function(s, i) {
+        return Object.assign({}, s, { isHighlight: i === 0 });
+      }) : subsetSteps;
+      var initNfaStates = arrowCount > 0 ? nfaDiagramStates.map(function(s) {
+        var involved = s.id === nfaArrows[0].from || s.id === nfaArrows[0].to;
+        return Object.assign({}, s, { isHighlighted: involved });
+      }) : nfaDiagramStates.map(function(s) {
+        return Object.assign({}, s, { isHighlighted: false });
+      });
+      var initDfaStates = dArrowCount > 0 ? dfaDiagramStates.map(function(s) {
+        var involved = s.id === dfaArrows[0].from || s.id === dfaArrows[0].to;
+        return Object.assign({}, s, { isHighlighted: involved });
+      }) : dfaDiagramStates.map(function(s) {
+        return Object.assign({}, s, { isHighlighted: false });
+      });
 
       this.setData({
         errorMessage: '',
         nfa: { start: nfa.start, accept: nfa.accept },
         nfaStates: nfaStates,
         nfaTransitions: nfaTransitions,
-        nfaDiagramStates: nfaDiagramStates,
-        nfaArrows: nfaArrows,
+        nfaDiagramStates: initNfaStates,
+        nfaArrows: initNfaArrows,
         dfa: { start: dfa.start, alphabet: dfa.alphabet },
         dfaStatesList: dfaStatesList,
         dfaAlphabet: dfa.alphabet,
         dfaTableRows: dfaTableRows,
         dfaTransitions: dfaTransitions,
-        dfaDiagramStates: dfaDiagramStates,
-        dfaArrows: dfaArrows,
-        subsetSteps: subsetSteps,
+        dfaDiagramStates: initDfaStates,
+        dfaArrows: initDfaArrows,
+        subsetSteps: initSubsetSteps,
         activeStep: 1,
         simResult: null,
         nfaStepIndex: 0,
         subsetStepIndex: 0,
         dfaStepIndex: 0,
-        nfaTotalSteps: nfaArrowCount,
-        subsetTotalSteps: subsetCount,
-        dfaTotalSteps: dfaArrowCount
+        nfaTotalSteps: arrowCount,
+        subsetTotalSteps: subCount,
+        dfaTotalSteps: dArrowCount
       });
-      // Apply initial highlights
-      if (nfaArrowCount > 0) this._updateNFAHighlight(0);
-      if (subsetCount > 0) this._updateSubsetHighlight(0);
-      if (dfaArrowCount > 0) this._updateDFAHighlight(0);
     } catch (e) {
       this.setData({
         errorMessage: e.message || '构造失败',
