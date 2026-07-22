@@ -128,4 +128,9 @@
       <text class="ctrl-icon">步进</text>
     </view>
   </view>
+
+  <quick-tip-bubble
+    title="磁盘调度操作提示"
+    items="{{diskHelpItems}}"
+  />
 </view>

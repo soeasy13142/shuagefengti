@@ -55,6 +55,8 @@
   "usingComponents": {
     "intro-modal": "/components/intro-modal/intro-modal",
     "tool-help-panel": "/components/tool-help-panel/tool-help-panel",
-    "inline-collapse": "/components/inline-collapse/inline-collapse"
+<<<<<<< HEAD
+    "inline-collapse": "/components/inline-collapse/inline-collapse",
+    "quick-tip-bubble": "/components/quick-tip-bubble/quick-tip-bubble"
   }
 }

@@ -35,7 +35,14 @@ Page({
     comparison: [],
 
     // 控制
-    playing: false
+    playing: false,
+    diskHelpItems: [
+      '点击「随机生成」快速获取磁道请求序列',
+      '在 4 种算法间切换，观察磁头移动路径的变化',
+      '绿色点表示当前位置，蓝色线条表示磁头轨迹',
+      '总寻道长度和平均寻道长度实时计算并对比',
+      '启动位置（START）可手动输入修改'
+    ]
   },
 
   _animTimer: null,
