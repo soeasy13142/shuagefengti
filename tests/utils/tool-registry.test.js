@@ -52,9 +52,9 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 15 个工具', () => {
+    test('返回当前已实现的 16 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(15);
+      expect(result.length).toBe(16);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');
@@ -68,6 +68,7 @@ describe('tool-registry', () => {
       expect(ids).toContain('disk-sched');
       expect(ids).toContain('mem-paging');
       expect(ids).toContain('nat-viz');
+      expect(ids).toContain('ip-fragment');
     });
   });
 

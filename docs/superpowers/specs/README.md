@@ -36,10 +36,13 @@
 | `2026-07-19-deadlock-design.md` | 死锁模拟器 | 操作系统 |
 | `2026-07-19-disk-sched-design.md` | 磁盘调度可视化 | 操作系统 |
 | `2026-07-19-mem-paging-design.md` | 内存分页可视化 | 操作系统 |
+| `2026-07-12-cpu-scheduling-design.md` | 进程调度可视化 | 操作系统 |
+| `2026-07-21-nginx-config-generator-design.md` | Nginx 配置生成器 | 计算机网络 |
+| `2026-07-19-nat-viz-design.md` | NAT 模拟器 | 计算机网络 |
 
-另外 4 个已上线工具（subnet-calc、tcp-viz、sort-viz、ds-viz）在本目录没有独立的 spec 文件——它们是在 brainstroming 工作流建立之前开发的。
+另外 4 个已上线工具（subnet-calc、tcp-viz、sort-viz、ds-viz）在本目录没有独立的 spec 文件——它们是在 brainstorming 工作流建立之前开发的。
 
-### 📋 待实现（15 份）
+### 📋 待实现（13 份）
 
 对应 spec 已就绪、但软件尚未开发、`tool-registry.js` 中 `available: false`。
 
@@ -50,13 +53,11 @@
 | `2026-07-19-tls-viz-design.md` | TLS 动画机 | TLS 1.3 握手 + 证书链 + MITM |
 | `2026-07-19-http-parser-design.md` | HTTP 解析器 | 报文解析 + 状态码速查 |
 | `2026-07-19-ip-fragment-design.md` | IP 分片可视化 | MTU/偏移量/重组动画 |
-| `2026-07-19-nat-viz-design.md` | NAT 模拟器 | 端口映射 + 多主机共享 IP |
 
 #### 操作系统
 
 | 文件 | 工具 | 备注 |
 |---|---|---|
-| `2026-07-12-cpu-scheduling-design.md` | 进程调度可视化 | FCFS/SJF/RR/MFQ + 甘特图，**已有完整实施 plan** |
 | `2026-07-19-sync-viz-design.md` | 同步互斥演示 | 生产者-消费者 + PV 操作 |
 
 #### 密码学
@@ -82,7 +83,7 @@
 ## 三、如何开始实施
 
 1. 选一个待实现工具 → 读对应的 spec 文件
-2. 运行 `superpowers:writing-plans` 产出实施 plan（cpu-sched 已有 plan，可直接跳过）
+2. 运行 `superpowers:writing-plans` 产出实施 plan
 3. 走 TDD 流程：RED → GREEN → IMPROVE
 4. 改 `tool-registry.js` 中对应 `available` 为 `true`
 5. 更新 `app.json` 注册页面

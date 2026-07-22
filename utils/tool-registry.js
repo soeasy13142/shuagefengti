@@ -162,8 +162,27 @@ const TOOLS = [
     icon: '',
     description: '请求/响应报文 · 状态码 · 头部',
     route: '/pages/http-parser/http-parser',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '粘贴 HTTP 报文，逐字段拆解请求行/状态行、头部和报文体',
+    taglineDetail: '输入或选择预置 HTTP 报文，自动识别请求/响应类型，拆解为请求行（方法/URI/版本）、状态行（状态码/短语）、头部字段（含 inline 说明与面试考点）和报文体，内置 16 个核心状态码速查卡',
+    tags: ['#可视化', '#交互式', '#计算机网络'],
+    difficulty: 'easy',
+    intro: {
+      valueProp: '粘贴一段 HTTP 报文，自动拆解为结构化展示，每个字段都有说明。',
+      features: [
+        '自动识别请求/响应类型，拆解首行、头部和报文体',
+        '每个字段附 inline 说明（用途、语义、面试考点）',
+        '内置 8 个预置示例，覆盖 GET/POST/200/404/500/重定向',
+        '16 个核心状态码速查卡，按分类快速浏览'
+      ],
+      prerequisites: '知道 HTTP 是"超文本传输协议"就行。',
+      useCases: [
+        '计网面试复习',
+        '学习 HTTP 报文格式',
+        '快速查阅状态码含义'
+      ]
+    },
     order: 5
   },
   {
@@ -173,8 +192,27 @@ const TOOLS = [
     icon: '',
     description: '分片过程 · MTU · 偏移量计算',
     route: '/pages/ip-fragment/ip-fragment',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '调整报文大小和 MTU，看 IP 层怎么切分和重组数据报',
+    taglineDetail: '双滑块调整报文大小和 MTU，自动计算分片列表（ID/MF/偏移量），可折叠展示偏移量计算过程，从最后一片开始逐步回放重组过程',
+    tags: ['#可视化', '#交互式'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '拖到滑块调参数，看 IP 层怎么把大报文切成小片、接收端又怎么拼回来。',
+      features: [
+        '双滑块调节报文大小和 MTU，实时显示头部/载荷/分片数',
+        '分片列表逐片展示 ID、MF 标志、片偏移、数据范围',
+        '偏移量计算过程可折叠展开',
+        '自后向前逐步回放重组动画'
+      ],
+      prerequisites: '了解 IP 协议的基本概念（头部、MTU）。',
+      useCases: [
+        '计网课程 IP 协议章节',
+        '理解片偏移的 8 字节对齐规则',
+        '面试前复习分片与重组机制'
+      ]
+    },
     order: 6
   },
   {

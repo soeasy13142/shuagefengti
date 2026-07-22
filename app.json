@@ -10,7 +10,8 @@
     "pages/wrong-questions/wrong-questions",
     "pages/dashboard/dashboard",
     "pages/tls-viz/tls-viz",
-    "pages/tools-all/tools-all"
+    "pages/tools-all/tools-all",
+    "pages/ip-fragment/ip-fragment"
   ],
   "subPackages": [{
     "root": "package-tools",
