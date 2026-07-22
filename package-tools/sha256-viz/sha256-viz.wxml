@@ -20,6 +20,15 @@
     </view>
   </view>
 
+  <!-- 使用说明（内联折叠） -->
+  <inline-collapse title="SHA-256 使用说明">
+    <text>▸ 在输入框中输入任意文本（中英文均可）</text>
+    <text>▸ 点击「计算哈希」查看 64 轮压缩函数完整过程</text>
+    <text>▸ 每轮展示：消息调度 W[i]、轮常数 K[i]、工作变量 a~h 的变化</text>
+    <text>▸ 「雪崩对比」模式：改 1 个字符，对比两次哈希结果差异</text>
+    <text>▸ 消息填充过程也可见：补位 → 补长度 → 分块</text>
+  </inline-collapse>
+
   <!-- 雪崩效应卡 -->
   <view wx:if="{{avalanche.bitDistance !== undefined}}" class="avalanche-band">
     <text class="band-label">雪崩效应</text>

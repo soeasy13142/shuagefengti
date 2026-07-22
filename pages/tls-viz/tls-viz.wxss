@@ -3,13 +3,13 @@
   min-height: 100vh;
   background: #faf9f5;
   padding: 20rpx 24rpx 40rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  font-family: -apple-system, BlinkMacSystemFont, Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
 }
 
 .band-label {
   display: block;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
   font-weight: 400;
   letter-spacing: -3rpx;
@@ -196,7 +196,7 @@
 .step-counter {
   font-size: 22rpx;
   color: #6c6a64;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   flex-shrink: 0;
   width: 80rpx;
   text-align: right;
@@ -220,7 +220,7 @@
 .detail-step-label {
   font-size: 32rpx;
   font-weight: 700;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
   letter-spacing: -2rpx;
 }
@@ -270,13 +270,13 @@
   color: #6c6a64;
   width: 140rpx;
   flex-shrink: 0;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .field-value {
   font-size: 24rpx;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   word-break: break-all;
   flex: 1;
 }
@@ -313,12 +313,12 @@
 
 .cert-indent {
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .cert-subject {
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* ======================== 密钥派生 ======================== */
@@ -356,13 +356,13 @@
   color: #6c6a64;
   width: 110rpx;
   flex-shrink: 0;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .key-value {
   font-size: 18rpx;
   color: #3a5a2a;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   word-break: break-all;
 }
 
@@ -402,7 +402,7 @@
   display: block;
   font-size: 36rpx;
   font-weight: 700;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #fff;
   margin-bottom: 12rpx;
   letter-spacing: -2rpx;

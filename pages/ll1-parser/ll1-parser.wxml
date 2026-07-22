@@ -40,6 +40,16 @@
     </text>
   </view>
 
+    <!-- 使用说明（内联折叠） -->
+    <inline-collapse title="LL(1) 分析器使用说明">
+      <text>▸ 产生式格式：A → α | β（→ 分隔左右，| 分隔多个产生式）</text>
+      <text>▸ ε 表示空串，非终结符用大写字母，终结符用小写/符号</text>
+      <text>▸ FIRST 集自动计算，包含 ε 的传播链追踪</text>
+      <text>▸ FOLLOW 集自动计算，起始符号的 FOLLOW 包含 $</text>
+      <text>▸ 预测分析表检测 LL(1) 冲突，冲突格子红色高亮</text>
+      <text>▸ 点击「分析串」后可用步进模式逐步骤追踪栈变化</text>
+    </inline-collapse>
+
   <!-- Tab Bar -->
   <view wx:if="{{parsed}}" class="tab-bar">
     <view wx:for="{{tabs}}" wx:for-index="tabIdx" wx:key="*this" class="tab-item {{activeTab === tabIdx ? 'tab-active' : ''}}" bindtap="onTabTap" data-index="{{tabIdx}}">

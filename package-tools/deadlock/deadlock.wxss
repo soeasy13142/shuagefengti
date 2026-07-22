@@ -194,7 +194,7 @@
 }
 
 .result-title {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-weight: 400;
   letter-spacing: -3rpx;
   font-size: 32rpx;
@@ -229,7 +229,7 @@
 }
 
 .matrix-label {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 28rpx;
   color: #141413;
   margin-bottom: 12rpx;

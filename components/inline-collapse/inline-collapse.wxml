@@ -1,0 +1,11 @@
+<view class="collapse-wrap">
+  <view class="collapse-header" bindtap="onToggle">
+    <text class="collapse-title">{{title}}</text>
+    <text class="collapse-arrow {{isExpanded ? 'expanded' : ''}}">▾</text>
+  </view>
+  <view class="collapse-body {{isExpanded ? 'collapse-open' : 'collapse-closed'}}">
+    <view class="collapse-content">
+      <slot></slot>
+    </view>
+  </view>
+</view>

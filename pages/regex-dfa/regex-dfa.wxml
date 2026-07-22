@@ -1,4 +1,9 @@
 <view class="page">
+  <intro-modal
+    show="{{showRegexIntro}}"
+    introContent="{{regexIntroContent}}"
+    bind:close="onRegexIntroClose"
+  />
   <!-- ── 输入区 ── -->
   <view class="input-band">
     <text class="band-label">Regex  DFA</text>

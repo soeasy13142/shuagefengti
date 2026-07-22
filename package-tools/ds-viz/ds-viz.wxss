@@ -31,7 +31,7 @@
 .mode-tabs { display: flex; gap: 12rpx; padding: 24rpx 0; }
 .mode-tab {
   flex: 1; text-align: center; padding: 18rpx 0; border-radius: 16rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; font-weight: 500; color: #6c6a64; background: #f5f0e8; transition: all 0.25s ease;
 }
 .mode-active { color: #141413; background: #efe9de; }
@@ -64,7 +64,7 @@
 .sq-tabs { display: flex; gap: 16rpx; margin-bottom: 20rpx; }
 .sq-tab {
   flex: 1; text-align: center; padding: 18rpx 0; border-radius: 16rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; color: #6c6a64; background: #f5f0e8;
 }
 .sq-active { color: #141413; background: #efe9de; }
@@ -73,20 +73,20 @@
 .sq-viz { min-height: 320rpx; display: flex; align-items: center; justify-content: center; }
 .stack-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
 .sq-label {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 22rpx; color: #6c6a64; margin-bottom: 16rpx;
 }
 .stack-items { position: relative; width: 200rpx; min-height: 240rpx; display: flex; flex-direction: column-reverse; align-items: center; }
 .sq-item {
   width: 180rpx; height: 60rpx; border-radius: 12rpx; display: flex; align-items: center; justify-content: center;
   background: #f5f0e8; border: 2rpx solid #e6dfd8; margin-bottom: 8rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 28rpx; font-weight: 500; color: #141413; transition: all 0.3s ease;
 }
 .sq-item.highlight { background: #cc785c; border-color: #cc785c; color: #fff; }
 .sq-item.removing { background: #c64545; border-color: #c64545; color: #fff; opacity: 0.6; }
 .sq-empty {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; color: #8e8b82;
 }
 .queue-container { width: 100%; }
@@ -97,7 +97,7 @@
 }
 .queue-arrow {
   text-align: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 22rpx; color: #6c6a64; margin-top: 8rpx;
 }
 
@@ -107,21 +107,21 @@
 .hash-bucket { display: flex; align-items: flex-start; gap: 12rpx; }
 .bucket-index {
   width: 60rpx; flex-shrink: 0; text-align: right; padding-top: 10rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 22rpx; color: #6c6a64; font-weight: 500;
 }
 .bucket-chain { display: flex; align-items: center; gap: 8rpx; flex-wrap: wrap; }
 .hash-entry { display: flex; align-items: center; gap: 8rpx; }
 .entry-node {
   padding: 8rpx 20rpx; border-radius: 12rpx; background: #f5f0e8; border: 2rpx solid #e6dfd8;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; color: #141413;
 }
 .chain-arrow {
   font-size: 20rpx; color: #8a8580;
 }
 .chain-null {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 22rpx; color: #8e8b82;
 }
 
@@ -131,19 +131,19 @@
 }
 .input-title {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 30rpx; font-weight: 500; color: #141413; margin-bottom: 8rpx;
 }
 .input-hint {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 22rpx; color: #8e8b82; margin-bottom: 20rpx;
 }
 .input-row { display: flex; gap: 12rpx; margin-bottom: 20rpx; }
 .input-field {
   flex: 1; height: 72rpx; background: #faf9f5; border: 1rpx solid #e6dfd8;
   border-radius: 16rpx; padding: 0 24rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 26rpx; color: #141413;
 }
 .input-ph { color: #8e8b82; }
@@ -157,19 +157,19 @@
 .input-btn-danger { background: #c64545; }
 .input-btn-danger:active { background: #a63535; }
 .btn-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; font-weight: 500; color: #ffffff; white-space: nowrap;
 }
 
 /* Quick Buttons */
 .quick-row { display: flex; align-items: center; gap: 12rpx; flex-wrap: wrap; }
 .quick-label {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; color: #6c6a64;
 }
 .quick-btn {
   padding: 14rpx 28rpx; background: #f5f0e8; border-radius: 999rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; color: #3d3d3a;
 }
 .quick-btn:active { background: #e8e0d2; color: #cc785c; }
@@ -181,12 +181,12 @@
 }
 .step-desc {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx; color: #3d3d3a; line-height: 1.6; margin-bottom: 10rpx;
 }
 .step-stats { display: flex; gap: 28rpx; }
 .stat {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 22rpx; color: #6c6a64;
 }
 
@@ -209,7 +209,7 @@
 .ctrl-text { font-size: 24rpx; font-weight: 600; white-space: nowrap; }
 .speed-row { display: flex; align-items: center; gap: 16rpx; }
 .speed-label {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 20rpx; color: #6c6a64; flex-shrink: 0;
 }
 .speed-slider { flex: 1; }

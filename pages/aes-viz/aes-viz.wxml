@@ -156,4 +156,22 @@
   <view class="empty-band" wx:if="{{!hasComputed}}">
     <text class="empty-text">输入 16 字节明文和密钥后点击「加密」</text>
   </view>
+
+  <!-- AES 侧边说明面板 -->
+  <view class="aes-help-trigger" bindtap="onAesHelpToggle">
+    <text class="aes-help-trigger-icon">?</text>
+  </view>
+
+  <view class="aes-help-panel {{aesHelpVisible ? 'aes-help-open' : ''}}">
+    <view class="aes-help-header">
+      <text class="aes-help-title">AES 使用说明</text>
+      <text class="aes-help-close" bindtap="onAesHelpClose">✕</text>
+    </view>
+    <scroll-view class="aes-help-body" scroll-y>
+      <view class="aes-help-section" wx:for="{{aesHelpItems}}" wx:key="index">
+        <text class="aes-help-step">{{item.step}}</text>
+        <text class="aes-help-desc">{{item.desc}}</text>
+      </view>
+    </scroll-view>
+  </view>
 </view>

@@ -3,13 +3,13 @@
   min-height: 100vh;
   background: #faf9f5;
   padding: 20rpx 24rpx 40rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  font-family: -apple-system, BlinkMacSystemFont, Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
 }
 
 .band-label {
   display: block;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
   font-weight: 400;
   letter-spacing: -3rpx;
@@ -19,7 +19,7 @@
 
 .section-title {
   display: block;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 28rpx;
   font-weight: 400;
   letter-spacing: -2rpx;
@@ -64,7 +64,7 @@
   flex-shrink: 0;
   width: 110rpx;
   text-align: right;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .params-row {
@@ -95,7 +95,7 @@
   font-size: 28rpx;
   font-weight: 600;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* ======================== 操作按钮 ======================== */
@@ -219,7 +219,7 @@
 }
 
 .fragment-index {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 26rpx;
   font-weight: 600;
   color: #141413;
@@ -228,7 +228,7 @@
 .fragment-range {
   font-size: 22rpx;
   color: #6c6a64;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .fragment-fields {
@@ -255,7 +255,7 @@
 }
 
 .mono {
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .flag-on {
@@ -308,7 +308,7 @@
 .calc-line-text {
   font-size: 22rpx;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   line-height: 1.6;
 }
 
@@ -376,7 +376,7 @@
 .merge-step-text {
   font-size: 24rpx;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   line-height: 1.6;
 }
 
@@ -400,7 +400,7 @@
   display: block;
   font-size: 28rpx;
   color: #141413;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
 }
 
 /* ======================== 空状态 ======================== */
@@ -464,4 +464,99 @@
 .ctrl-icon {
   font-size: 24rpx;
   color: #141413;
+}
+
+/* ── IP 分片引导覆盖层 ── */
+
+.ip-guide-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ip-guide-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ip-guide-card {
+  width: 560rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx 32rpx;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.ip-guide-show .ip-guide-card {
+  transform: scale(1);
+}
+
+.ip-guide-title {
+  display: block;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
+  font-size: 34rpx;
+  font-weight: 400;
+  color: #141413;
+  margin-bottom: 28rpx;
+}
+
+.ip-guide-steps {
+  text-align: left;
+  margin-bottom: 32rpx;
+}
+
+.ip-guide-step {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+  gap: 16rpx;
+}
+
+.ip-guide-num {
+  display: block;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #cc785c;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  font-size: 22rpx;
+  font-weight: 600;
+  text-align: center;
+  line-height: 40rpx;
+  flex-shrink: 0;
+}
+
+.ip-guide-text {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  font-size: 26rpx;
+  color: #141413;
+  line-height: 1.5;
+  padding-top: 4rpx;
+}
+
+.ip-guide-dismiss {
+  display: inline-block;
+  background: #cc785c;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  font-size: 26rpx;
+  font-weight: 500;
+  padding: 12rpx 48rpx;
+  border-radius: 12rpx;
+}
+
+.ip-guide-dismiss:active {
+  background: #a9583e;
 }

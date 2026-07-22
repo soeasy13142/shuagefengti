@@ -30,7 +30,7 @@
 ## 3. 架构
 
 | 路径 | 类型 | 状态 | 说明 |
-|---|---|---|---|---|
+|---|---|---|
 | `pages/rsa-calc/rsa-calc.{js,wxml,wxss,json}` | 新增 | ✅ 已实现 | 4 文件页面 |
 | `utils/rsa-core.js` | 新增 | ✅ 已实现 | 纯函数：素数判定、欧拉函数、模逆、模幂、密钥生成 |
 | `utils/rsa-primes.js` | 新增 | ✅ 已实现 | 内置素数表（2-997，共 168 个） |
@@ -138,8 +138,7 @@
 
 | 测试文件 | 覆盖 | 状态 |
 |---|---|---|
-| `tests/utils/rsa-core.test.js` | `isPrime(2/17/97/997)` ✓、`isPrime(1/0/15/100)` ✗、欧拉函数正确性、扩展欧几里得求模逆（含步骤验证）、快速幂正确性、密钥生成（多组 p/q）、加密后解密恢复原文、`gcd(e,phi) ≠ 1` 自动重选 e、弱密钥检测（小 p/q、共模） | ✅ 已编写（共 18 个测试用例） |
-| `tests/utils/rsa-primes.test.js` | 素数表正确性（168 个、首尾值、全素数） | ✅ 已编写 |
+| `tests/utils/rsa-core.test.js` | `isPrime(2/17/97/997)` ✓、`isPrime(1/0/15/100)` ✗、欧拉函数正确性、扩展欧几里得求模逆（含步骤验证）、快速幂正确性、密钥生成（多组 p/q）、加密后解密恢复原文、`gcd(e,phi) ≠ 1` 自动重选 e、弱密钥检测（小 p/q、共模）、素数表正确性（168 个、首尾值、全素数） | ✅ 已编写（共 18 个测试用例） |
 
 关键测试用例：
 
@@ -162,12 +161,12 @@ test('extended gcd computes modular inverse', () => {
 
 ## 8. 实施注意事项
 
-1. **风格统一**：Claude Design 暖奶油画布（`#faf9f5` 背景 / `#efe9de` 卡片 / `#cc785c` CTA / Georgia 衬线标题）。
-2. **纯函数优先**：`rsa-core.js` 全部无副作用。
-3. **数字限制**：p/q ≤ 997（保证 n ≤ 994,009 < Number.MAX_SAFE_INTEGER 约 9e15）。超过提醒"演示模式限制"。
-4. **弱密钥检测**：如 d < n^(1/4)/3（Wiener 攻击条件），弹提示"此私钥偏小，存在 Wiener 攻击风险"。
-5. **动画规范**：步骤间用 WXSS `transition`，不引入第三方库。
-6. **更新 PROJECT_HANDOFF**：完成时追加。
+1. ✅ **风格统一**：Claude Design 暖奶油画布（`#faf9f5` 背景 / `#efe9de` 卡片 / `#cc785c` CTA / Georgia 衬线标题）。
+2. ✅ **纯函数优先**：`rsa-core.js` 全部无副作用。
+3. ✅ **数字限制**：p/q ≤ 997（保证 n ≤ 994,009 < Number.MAX_SAFE_INTEGER 约 9e15）。超过标红提示"演示限制"。
+4. ✅ **弱密钥检测**：Wiener 攻击（d 偏小）+ 共模攻击（同 n 异 e），分别展示橙色警告。
+5. ✅ **动画规范**：WXSS `transition` 用于折叠面板箭头旋转，无第三方库。
+6. ✅ **模块文档**：已追加至 `docs/handoff/modules/rsa-calc.md`。
 
 ## 9. 风险与未来工作
 
@@ -177,7 +176,7 @@ test('extended gcd computes modular inverse', () => {
 | 教科书 RSA 有安全缺陷 | 标注"仅供学习，请勿用于实际加密" |
 | 中文/特殊字符编码 | 明文限制为 ASCII |
 
-未来可拓展：
+未来可拓展（待后续版本）：
 - 大数运算（BigInt）支持 2048-bit 密钥
 - OAEP 填充
 - CRT 加速解密步骤展示

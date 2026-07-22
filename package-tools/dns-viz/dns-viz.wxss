@@ -2,13 +2,13 @@
   background-color: #faf9f5;
   min-height: 100vh;
   padding: 24rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  font-family: -apple-system, BlinkMacSystemFont, Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
 }
 
 .band-label {
   display: block;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
   letter-spacing: -3rpx;
   color: #141413;
@@ -114,7 +114,7 @@
 
 .lane-name {
   display: block;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 28rpx;
   color: #141413;
 }

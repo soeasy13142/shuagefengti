@@ -47,10 +47,41 @@ Page({
 
     testInput: '',
     simResult: null
+    simResult: null,
+
+    // 引导弹窗
+    showRegexIntro: false,
+    regexIntroContent: [
+      {
+        icon: '📝',
+        title: '输入正则',
+        body: '在输入框中输入正则表达式。\n支持语法：*（克林闭包）、|（选择）、.（连接）、()（分组）、?（可选）、+（一次或多次）\n\n例如：a(b|c)* 或 (01)*1'
+      },
+      {
+        icon: '🔄',
+        title: 'Thompson 构造法',
+        body: '工具会自动将正则表达式转化为 NFA（非确定性有限自动机）。\n展示每个子表达式的 NFA 片段如何组合。\n\n你可以看到 ε-转移、状态编号和转移标签。'
+      },
+      {
+        icon: '📊',
+        title: '子集构造 → DFA',
+        body: 'NFA 通过子集构造法转化为 DFA（确定性有限自动机）。\n逐步骤展示：ε-闭包 → move 转移 → 新 DFA 状态。\n\n完成后可以看到 DFA 状态图和转移表。'
+      },
+      {
+        icon: '▶️',
+        title: '模拟运行',
+        body: '在「测试输入」框中输入字符串，点击运行。\n工具会逐字符追踪 DFA 的转移路径。\n\n绿色路径 = 接受（匹配），红色路径 = 拒绝（不匹配）。'
+      }
+    ]
   },
 
   onLoad: function() {
     this.loadPreset(1);
+    var showIntro = false;
+    try {
+      showIntro = !wx.getStorageSync('intro_seen_regex_dfa');
+    } catch(e) {}
+    this.setData({ showRegexIntro: showIntro });
   },
 
   // ── 输入事件 ──
@@ -618,5 +649,12 @@ Page({
     }
 
     return arrows;
+  },
+
+  // ── 引导弹窗 ──
+
+  onRegexIntroClose: function() {
+    this.setData({ showRegexIntro: false });
+    try { wx.setStorageSync('intro_seen_regex_dfa', true); } catch(e) {}
   }
 });

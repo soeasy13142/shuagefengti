@@ -13,3 +13,6 @@ design-previews/
 # macOS filesystem noise (覆盖子目录)
 .DS_Store
 progress.md
+
+# Git worktree agent auto-generated directories
+.claude/worktrees/

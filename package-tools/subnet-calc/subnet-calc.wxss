@@ -20,7 +20,7 @@
 
 .section-label {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx;
   font-weight: 500;
   color: #6c6a64;
@@ -45,7 +45,7 @@
   border: 2rpx solid #e6dfd8;
   border-radius: 16rpx;
   text-align: center;
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
   font-size: 32rpx;
   font-weight: 600;
   color: #141413;
@@ -67,7 +67,7 @@
 }
 
 .cidr-value {
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
   font-size: 36rpx;
   font-weight: 700;
   color: #cc785c;
@@ -96,7 +96,7 @@
 }
 
 .slider-value {
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
   font-size: 28rpx;
   font-weight: 700;
   color: #cc785c;
@@ -127,7 +127,7 @@
   background: #faf9f5;
   border: 2rpx solid #e6dfd8;
   border-radius: 999rpx;
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
   font-size: 24rpx;
   font-weight: 500;
   color: #141413;
@@ -173,7 +173,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
   font-size: 20rpx;
   font-weight: 600;
   margin: 2rpx;
@@ -260,7 +260,7 @@
 }
 
 .result-value.mono {
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .result-value.small {
@@ -279,7 +279,7 @@
   font-size: 40rpx;
   font-weight: 800;
   color: #cc785c;
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* ═══════════════════════════════════════════
@@ -436,7 +436,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
   font-size: 20rpx;
   font-weight: 600;
   margin: 2rpx;

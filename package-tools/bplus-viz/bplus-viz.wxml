@@ -122,4 +122,9 @@
       </view>
     </view>
   </view>
+
+  <quick-tip-bubble
+    title="B+ 树操作提示"
+    items="{{bplusHelpItems}}"
+  />
 </view>

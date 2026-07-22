@@ -17,20 +17,24 @@
 ## Done
 
 - **刷题引擎闭环** — Markdown 导入、五题型（单选/多选/判断/填空/简答）、练习/考试模式、答题记录、错题本、历史统计
-- **已上线 25 个工具**（`utils/tool-registry.js`）：
-  - 驾驶舱 `dashboard` · 子网计算器 `subnet-calc` · TCP 动画机 `tcp-viz`
-  - 数据结构可视化 `ds-viz` · 排序可视化 `sort-viz` · CPU 调度 `cpu-sched`
-  - SHA-256 演示 `sha256-viz` · DNS 解析 `dns-viz` · B+ 树 `bplus-viz`
-  - Nginx 生成器 `nginx-gen` · 死锁模拟器 `deadlock` · 磁盘调度 `disk-sched`
-  - 内存分页 `mem-paging` · HTTP 解析器 `http-parser` · IP 分片 `ip-fragment`
-  - NAT 模拟器 `nat-viz` · TLS 动画机 `tls-viz`
-  - **同步互斥演示** `sync-viz` · **RSA 演算器** `rsa-calc` · **AES 演示** `aes-viz`
-  - **DH 密钥交换** `dh-viz` · **密码工具箱** `crypto-tools`
-  - **Regex→DFA** `regex-dfa` · **LL(1) 分析器** `ll1-parser` · **词法分析器** `lexer-viz`
-  - **AST 构建器** `ast-builder`
-- **首页重设计** — 工具箱优先布局 · 分类标签栏 · 2 列网格 · 简洁/详细双模式
-- **设计系统** — Claude Design 暖奶油画布 · intro-modal 向导式分步组件 · 底部固定底栏
-- **工程规范** — var→const/let 清零 · 纯函数 + 不可变 · TDD（47 suites / 748 tests 全绿）
+- **已上线 25 个工具**（`utils/tool-registry.js`），测试 173 suites / 2719 tests 全绿
+- **首页精选改造** — 默认只展示 7 个精选工具（tcp-viz/nginx-gen/cpu-sched/deadlock/dh-viz/ds-viz/ast-builder），覆盖 5 个分类，保留分类标签和「查看全部」入口
+- **设计系统** — Claude Design 暖奶油画布 · 零阴影
+- **工程规范** — var→const/let 清零 · 纯函数 + 不可变 · TDD（173 suites / 2719 tests 全绿）
+
+### 使用说明弹窗系统（分支：feature/usage-instructions）
+
+10 个冷门/偏难工具已加上差异化使用说明，每种交互模式不同：
+
+| 模式 | 组件 | 工具 |
+|------|------|------|
+| 底部抽屉面板 | `tool-help-panel`（已有） | deadlock（原有）、mem-paging（新增） |
+| 分步引导弹窗 | `intro-modal`（已有） | rsa-calc、regex-dfa |
+| 浮动问号气泡 | `quick-tip-bubble`（新建） | bplus-viz、disk-sched |
+| 内联折叠面板 | `inline-collapse`（新建） | sha256-viz、ll1-parser |
+| 场景内嵌标注 | 页面内嵌（定制） | dh-viz（Alice/Bob ⓘ 标注） |
+| 侧边滑入面板 | 页面内嵌（定制） | aes-viz（右侧滑入面板） |
+| 首次覆盖引导 | 页面内嵌（定制） | ip-fragment（首次访问弹窗） |
 
 ---
 
@@ -38,9 +42,10 @@
 
 | | |
 |---|---|
-| **Working** | 全部 12 个工具 + 刷题主链路。`npm test` 748 tests / 47 suites 全绿 |
+| **Working** | 全部 25 个工具 + 刷题主链路。`npm test` 173 suites / 2719 tests 全绿 |
 | **Broken** | 无已知问题 |
 | **Blocked** | 无 |
+| **分支** | `feature/usage-instructions` — 差异化使用说明弹窗开发中，master 已同步首页精选改造 |
 | **待上线** | 已全部上线。25/25 工具 `available: true` |
 | **分包** | 10 个工具页已移入 `package-tools/` 分包，首包从 20 页降到 10 页 |
 | **Storage** | 6 个页面已改为异步读取 + loading-skeleton 骨架屏 |
@@ -60,6 +65,8 @@
 
 ---
 
+- **新组件：inline-collapse** — 页面内联折叠面板，用于展开/收起说明内容。注册在 `app.json` usingComponents，已在 sha256-viz 和 ll1-parser 页面集成。
+
 ## Quick Start
 
 ```bash
@@ -77,6 +84,14 @@ git status --short              # 检查未提交变更
 5. 写代码 → 每步 commit → 跑测试 → 审查 → 更新 handoff
 
 详情见 [CLAUDE.md](./CLAUDE.md) 完整开发流程。
+
+---
+
+### 2026-07-22 首页「全部」视图卡片响应模式切换
+
+- **问题**：首页「全部」视图的 `featured-card` 模板完全忽略 `cardMode` 变量，点击简洁/详细切换胶囊按钮仅按钮样式变化，卡片内容无响应，体验反人类。
+- **根因**：`featured-card` 未添加任何 `wx:if="{{cardMode === 'detail'}}"` 条件渲染，而「分类」视图的 `tool-card` 已正确响应。
+- **修复**：在 `featured-card` 中按 `cardMode` 切换 tagline 截断/非截断版本，详细模式下额外显示 tags 和难度文字标签。新增 WXSS 类 `.fc-tagline-detail` / `.fc-meta-row` / `.fc-tags-inline` / `.fc-diff-label`。
 
 ---
 

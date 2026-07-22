@@ -45,10 +45,36 @@ Page({
     textModeResult: null,
     textModeType: 'encrypt', // 'encrypt' | 'decrypt'
     textModeOutput: ''
+    textModeOutput: '',
+
+    // 引导弹窗
+    showRsaIntro: false,
+    rsaIntroContent: [
+      {
+        icon: '🔑',
+        title: '选择素数',
+        body: '从内置素数表中选择两个素数 p 和 q（或手动输入）。\n工具会自动计算 n = p × q 和 φ(n) = (p-1)(q-1)。\n\n提示：建议选小素数（2-100），计算过程更清晰。'
+      },
+      {
+        icon: '⚙️',
+        title: '生成密钥',
+        body: '选择公钥指数 e（通常选 65537 或 3、5）。\n工具会用扩展欧几里得算法计算私钥 d ≡ e⁻¹ mod φ(n)。\n\n数学过程每一步都展开展示，可以跟踪模逆的计算。'
+      },
+      {
+        icon: '🔐',
+        title: '加密与解密',
+        body: '输入明文消息（数字形式），点击「加密」查看密文。\n点击「解密」验证原始消息可以还原。\n\n模幂运算使用快速幂算法，二进制分解过程可逐位追踪。'
+      }
+    ]
   },
 
   onLoad: function() {
     this._updateFromInputs();
+    var showIntro = false;
+    try {
+      showIntro = !wx.getStorageSync('intro_seen_rsa');
+    } catch(e) {}
+    this.setData({ showRsaIntro: showIntro });
   },
 
   // ── 素数输入 ──
@@ -296,5 +322,12 @@ Page({
 
   onTextModeClear: function() {
     this.setData({ textModePlain: '', textModeResult: null });
+  },
+
+  // ── 引导弹窗 ──
+
+  onRsaIntroClose: function() {
+    this.setData({ showRsaIntro: false });
+    try { wx.setStorageSync('intro_seen_rsa', true); } catch(e) {}
   }
 });

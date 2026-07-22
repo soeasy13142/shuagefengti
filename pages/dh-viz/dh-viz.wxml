@@ -35,9 +35,20 @@
 
   <!-- ===== 主视图：双方面板 ===== -->
   <view class="panels-wrapper" wx:if="{{hasExchanged}}">
+    <!-- 公共信道说明 -->
+    <view class="channel-section">
+      <view class="channel-header">
+        <text class="channel-title">公共信道</text>
+        <text class="inline-tip-icon" data-tip="channel" bindtap="onDhTipTap">ⓘ</text>
+      </view>
+    </view>
+
     <!-- Alice 面板 -->
     <view class="panel-card panel-alice">
-      <text class="panel-title">Alice</text>
+      <view class="panel-title-row">
+        <text class="panel-title">Alice</text>
+        <text class="inline-tip-icon" data-tip="alice" bindtap="onDhTipTap">ⓘ</text>
+      </view>
       <view class="panel-body">
         <view class="key-row">
           <text class="key-label">私钥 a</text>
@@ -94,7 +105,10 @@
 
     <!-- Bob 面板 -->
     <view class="panel-card panel-bob">
-      <text class="panel-title">Bob</text>
+      <view class="panel-title-row">
+        <text class="panel-title">Bob</text>
+        <text class="inline-tip-icon" data-tip="bob" bindtap="onDhTipTap">ⓘ</text>
+      </view>
       <view class="panel-body">
         <view class="key-row">
           <text class="key-label">私钥 b</text>
@@ -182,4 +196,13 @@
       <text class="dl-note">提示: p 增大时搜索空间指数增长。素数 p 每增加 1 位，暴力破解难度翻倍。</text>
     </view>
   </view>
+
+      <!-- DH 提示浮层 -->
+      <view class="dh-tip-overlay {{dhTipVisible ? 'dh-tip-show' : ''}}" bindtap="onDhTipClose">
+        <view class="dh-tip-card {{dhTipVisible ? 'dh-tip-card-show' : ''}}" catchtap="noop">
+          <text class="dh-tip-close" bindtap="onDhTipClose">✕</text>
+          <text class="dh-tip-title">{{dhTipTitle}}</text>
+          <text class="dh-tip-body">{{dhTipBody}}</text>
+        </view>
+      </view>
 </view>

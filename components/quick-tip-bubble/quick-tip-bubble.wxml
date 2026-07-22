@@ -1,0 +1,23 @@
+<view class="tip-bubble-wrap">
+  <!-- 问号按钮 -->
+  <view class="tip-btn {{visible ? 'active' : ''}}" bindtap="onToggle">
+    <text class="tip-btn-icon">?</text>
+  </view>
+
+  <!-- 提示卡片 -->
+  <view class="tip-card {{visible ? 'tip-card-open' : 'tip-card-closed'}}">
+    <!-- 关闭按钮 -->
+    <view class="tip-card-close" bindtap="onClose">
+      <text class="tip-card-close-icon">✕</text>
+    </view>
+    <!-- 标题 -->
+    <text class="tip-card-title">{{title}}</text>
+    <!-- 内容列表 -->
+    <view class="tip-card-list">
+      <view class="tip-card-item" wx:for="{{items}}" wx:key="*this">
+        <text class="tip-card-bullet">▸</text>
+        <text class="tip-card-text">{{item}}</text>
+      </view>
+    </view>
+  </view>
+</view>

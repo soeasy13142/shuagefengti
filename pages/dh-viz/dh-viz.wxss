@@ -17,7 +17,7 @@
 }
 
 .card-title {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-weight: 400;
   font-size: 32rpx;
   color: #141413;
@@ -140,7 +140,7 @@
 }
 
 .panel-title {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-weight: 400;
   font-size: 30rpx;
   color: #141413;
@@ -362,7 +362,7 @@
 }
 
 .section-title {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-weight: 400;
   font-size: 28rpx;
   color: #141413;
@@ -424,7 +424,7 @@
   padding: 24rpx 28rpx;
   font-size: 28rpx;
   color: #141413;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   letter-spacing: -3rpx;
 }
 
@@ -497,4 +497,113 @@
   color: #6c6a64;
   font-style: italic;
   margin-top: 8rpx;
+}
+
+/* ── 公共信道标题 ── */
+
+.channel-section {
+  width: 100%;
+  margin-bottom: 8rpx;
+}
+
+.channel-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.channel-title {
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #6c6a64;
+  letter-spacing: -2rpx;
+}
+
+/* ── 面板标题行（内联标注支持） ── */
+
+.panel-title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.panel-title-row .panel-title {
+  margin-bottom: 0;
+}
+
+/* ── DH 内联标注 ── */
+
+.inline-tip-icon {
+  display: inline-block;
+  font-size: 30rpx;
+  color: #cc785c;
+  margin-left: 8rpx;
+  padding: 4rpx;
+  line-height: 1;
+}
+
+.inline-tip-icon:active {
+  opacity: 0.6;
+}
+
+/* ── DH 提示浮层 ── */
+
+.dh-tip-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dh-tip-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dh-tip-card {
+  width: 560rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx 32rpx;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.25s ease;
+}
+
+.dh-tip-card-show {
+  transform: scale(1);
+}
+
+.dh-tip-close {
+  position: absolute;
+  top: 16rpx;
+  right: 24rpx;
+  font-size: 28rpx;
+  color: #6c6a64;
+  padding: 8rpx;
+}
+
+.dh-tip-title {
+  display: block;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
+  font-size: 34rpx;
+  font-weight: 400;
+  color: #141413;
+  margin-bottom: 20rpx;
+}
+
+.dh-tip-body {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  font-size: 26rpx;
+  color: #141413;
+  line-height: 1.7;
 }
