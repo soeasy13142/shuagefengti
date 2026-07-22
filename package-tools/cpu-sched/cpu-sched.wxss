@@ -3,13 +3,13 @@
   min-height: 100vh;
   background: #faf9f5;
   padding: 20rpx 24rpx 40rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  font-family: -apple-system, BlinkMacSystemFont, Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
 }
 
 .band-label {
   display: block;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
   font-weight: 400;
   letter-spacing: -3rpx;
@@ -80,7 +80,7 @@
 .option-value,
 .option-static {
   font-size: 24rpx;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   color: #141413;
   flex-shrink: 0;
 }
@@ -104,7 +104,7 @@
   font-size: 28rpx;
   font-weight: 700;
   color: #141413;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
 }
 
 .proc-actions {
@@ -171,7 +171,7 @@
   font-size: 24rpx;
   color: #141413;
   text-align: center;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .proc-del-btn {
@@ -215,7 +215,7 @@
   position: absolute;
   font-size: 20rpx;
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   transform: translateX(-50%);
 }
 
@@ -238,7 +238,7 @@
   font-size: 22rpx;
   font-weight: 600;
   color: #fff;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .gantt-track {
@@ -264,7 +264,7 @@
   font-size: 22rpx;
   font-weight: 600;
   color: #fff;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .gantt-empty {
@@ -310,7 +310,7 @@
 .metric-value {
   font-size: 40rpx;
   font-weight: 700;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
   letter-spacing: -2rpx;
 }
@@ -318,7 +318,7 @@
 .metric-unit {
   font-size: 22rpx;
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* ======================== 控制栏 ======================== */
@@ -391,7 +391,7 @@
   text-align: center;
   font-size: 22rpx;
   color: #6c6a64;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .speed-active {

@@ -20,7 +20,7 @@
 
 .collapse-title {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 26rpx;
   font-weight: 600;
   color: #141413;
@@ -58,7 +58,7 @@
 
 .collapse-content {
   padding: 0 24rpx 24rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 24rpx;
   color: #141413;
   line-height: 1.6;

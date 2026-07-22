@@ -74,7 +74,7 @@
 
 /* ── Step Title ── */
 .step-title {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
   font-weight: 600;
   color: #141413;
@@ -108,7 +108,7 @@
 }
 
 .step-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 26rpx;
   font-weight: 400;
   color: #141413;

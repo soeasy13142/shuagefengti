@@ -28,7 +28,7 @@
 }
 
 .tip-btn-icon {
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 36rpx;
   font-weight: 700;
   color: #ffffff;
@@ -73,7 +73,7 @@
 
 .tip-card-title {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 28rpx;
   font-weight: 600;
   color: #141413;
@@ -95,7 +95,7 @@
 }
 
 .tip-card-bullet {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 24rpx;
   color: #cc785c;
   line-height: 1.4;
@@ -103,7 +103,7 @@
 }
 
 .tip-card-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 24rpx;
   color: #141413;
   line-height: 1.4;

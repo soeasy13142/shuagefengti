@@ -3,13 +3,13 @@
   min-height: 100vh;
   background: #faf9f5;
   padding: 20rpx 24rpx 40rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  font-family: -apple-system, BlinkMacSystemFont, Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
 }
 
 .band-label {
   display: block;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
   font-weight: 400;
   letter-spacing: -3rpx;
@@ -76,7 +76,7 @@
   font-size: 28rpx;
   font-weight: 600;
   text-align: center;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
 }
 
 .btn-hover {
@@ -93,7 +93,7 @@
   font-size: 26rpx;
   font-weight: 600;
   text-align: center;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
 }
 
 /* ======================== 3 区域布局 ======================== */
@@ -122,14 +122,14 @@
   font-size: 26rpx;
   font-weight: 700;
   color: #141413;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   margin-bottom: 8rpx;
 }
 
 .zone-ip {
   font-size: 20rpx;
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   margin-bottom: 12rpx;
   display: block;
 }
@@ -137,7 +137,7 @@
 .zone-ip-small {
   font-size: 20rpx;
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   display: block;
 }
 
@@ -186,14 +186,14 @@
   font-size: 22rpx;
   font-weight: 600;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .host-port {
   display: block;
   font-size: 18rpx;
   color: #6c6a64;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   margin-top: 4rpx;
 }
 
@@ -207,7 +207,7 @@
 .badge-label {
   font-size: 20rpx;
   color: #6c6a64;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* ======================== 报文详情 ======================== */
@@ -226,7 +226,7 @@
   font-size: 24rpx;
   font-weight: 700;
   color: #cc785c;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
 }
 
 .packet-detail {
@@ -251,7 +251,7 @@
   font-size: 22rpx;
   font-weight: 600;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .packet-changed {
@@ -344,7 +344,7 @@
   padding: 12rpx 10rpx;
   font-size: 20rpx;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   vertical-align: middle;
 }
 
@@ -386,7 +386,7 @@
 .step-count {
   font-size: 22rpx;
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .ctrl-buttons {
@@ -468,7 +468,7 @@
   font-size: 40rpx;
   font-weight: 700;
   color: #141413;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   letter-spacing: -2rpx;
 }
 

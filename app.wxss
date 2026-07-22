@@ -1,5 +1,10 @@
+/* ── 字体栈（CSS 变量，可在各页面按需覆写） ── */
 page {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
+  --font-serif: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
+  --font-mono: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', 'Noto Sans Mono', monospace;
+
+  font-family: var(--font-sans);
   font-size: 28rpx;
   color: #1a1a2e;
   background-color: #faf9f5;

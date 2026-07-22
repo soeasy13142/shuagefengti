@@ -87,6 +87,14 @@ git status --short              # 检查未提交变更
 
 ---
 
+### 2026-07-22 首页「全部」视图卡片响应模式切换
+
+- **问题**：首页「全部」视图的 `featured-card` 模板完全忽略 `cardMode` 变量，点击简洁/详细切换胶囊按钮仅按钮样式变化，卡片内容无响应，体验反人类。
+- **根因**：`featured-card` 未添加任何 `wx:if="{{cardMode === 'detail'}}"` 条件渲染，而「分类」视图的 `tool-card` 已正确响应。
+- **修复**：在 `featured-card` 中按 `cardMode` 切换 tagline 截断/非截断版本，详细模式下额外显示 tags 和难度文字标签。新增 WXSS 类 `.fc-tagline-detail` / `.fc-meta-row` / `.fc-tags-inline` / `.fc-diff-label`。
+
+---
+
 ## Next Step
 
 按用户需求从 tool-registry 中选择下一工具上线（9 个待开发）。

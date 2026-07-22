@@ -81,7 +81,7 @@
   font-size: 28rpx;
   font-weight: 700;
   color: #141413;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
 }
 
 /* ======================== 箭头区域 ======================== */
@@ -163,7 +163,7 @@
   position: relative;
   z-index: 1;
   font-size: 22rpx;
-  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   color: #141413;
   background: #efe9de;
   padding: 2rpx 10rpx;
@@ -222,7 +222,7 @@
   font-size: 24rpx;
   font-weight: 600;
   color: #fff;
-  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* ======================== 步骤详情 ======================== */
@@ -252,7 +252,7 @@
   font-size: 32rpx;
   font-weight: 700;
   color: #141413;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
 }
 
 /* 标志位 */
@@ -268,7 +268,7 @@
   border-radius: 999rpx;
   font-size: 24rpx;
   font-weight: 600;
-  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   background: #faf9f5;
   color: #b8b4ac;
   border: 2rpx solid #e6dfd8;
@@ -298,7 +298,7 @@
 .seq-label {
   font-size: 22rpx;
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   text-transform: uppercase;
 }
 
@@ -306,7 +306,7 @@
   font-size: 32rpx;
   font-weight: 700;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* 状态变化 */
@@ -333,7 +333,7 @@
 .sc-from {
   font-size: 24rpx;
   color: #8e8b82;
-  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   padding: 4rpx 12rpx;
   background: #faf9f5;
   border-radius: 8rpx;
@@ -347,7 +347,7 @@
 .sc-to {
   font-size: 24rpx;
   font-weight: 600;
-  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   padding: 4rpx 12rpx;
   background: #cc785c;
   color: #fff;

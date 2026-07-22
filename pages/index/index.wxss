@@ -39,7 +39,7 @@
 
 .brand-title {
   display: block;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 48rpx;
   font-weight: 400;
   color: #141413;
@@ -63,7 +63,7 @@
 }
 
 .cta-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 26rpx;
   font-weight: 500;
   color: #ffffff;
@@ -77,7 +77,7 @@
 }
 
 .brand-link {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 24rpx;
   font-weight: 400;
   color: #6c6a64;
@@ -89,7 +89,7 @@
 }
 
 .brand-dot {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 24rpx;
   color: #6c6a64;
 }
@@ -125,7 +125,7 @@
 
 .mode-capsule-item {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 22rpx;
   font-weight: 500;
   color: #6c6a64;
@@ -156,7 +156,7 @@
   display: inline-block;
   padding: 14rpx 24rpx;
   margin-right: 12rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 26rpx;
   font-weight: 500;
   color: #6c6a64;
@@ -206,7 +206,7 @@
 
 .tool-name {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 28rpx;
   font-weight: 500;
   color: #141413;
@@ -217,7 +217,7 @@
 /* ── tagline（替换原 description） ── */
 .tool-tagline {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 20rpx;
   font-weight: 400;
   color: #6c6a64;
@@ -240,7 +240,7 @@
 /* ── 详细模式：tags 纯文字 ── */
 .tool-tags-inline {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 18rpx;
   font-weight: 400;
   color: #6c6a64;
@@ -249,7 +249,7 @@
 
 .tool-difficulty-stars {
   display: inline-block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 18rpx;
   font-weight: 400;
   color: #8e8b82;
@@ -267,7 +267,7 @@
 
 .tool-tag {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 22rpx;
   font-weight: 400;
   color: #6c6a64;
@@ -285,7 +285,7 @@
 /* ── 分类标题 ── */
 .cat-section-title {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 24rpx;
   font-weight: 500;
   color: #8e8b82;
@@ -313,7 +313,7 @@
 }
 
 .view-all-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 26rpx;
   font-weight: 500;
   color: #cc785c;
@@ -326,7 +326,7 @@
 }
 
 .empty-cat-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 26rpx;
   color: #8e8b82;
 }
@@ -342,7 +342,7 @@
 }
 
 .icp {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 22rpx;
   font-weight: 400;
   color: #8e8b82;
@@ -387,7 +387,7 @@
 
 .featured-card-name {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
   font-size: 30rpx;
   font-weight: 600;
   color: #141413;
@@ -396,7 +396,7 @@
 
 .featured-card-diff {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 20rpx;
   font-weight: 400;
   color: #8e8b82;
@@ -407,7 +407,7 @@
 
 .featured-card-tagline {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 22rpx;
   font-weight: 400;
   color: #6c6a64;
@@ -429,7 +429,7 @@
 
 .featured-card-category {
   display: inline-block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 20rpx;
   font-weight: 500;
   color: #cc785c;
@@ -457,7 +457,7 @@
 
 .fc-tags-inline {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 18rpx;
   font-weight: 400;
   color: #6c6a64;
@@ -466,7 +466,7 @@
 
 .fc-diff-label {
   display: inline-block;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   font-size: 18rpx;
   font-weight: 400;
   color: #8e8b82;

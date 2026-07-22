@@ -3,13 +3,13 @@
   min-height: 100vh;
   background: #faf9f5;
   padding: 20rpx 24rpx 40rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  font-family: -apple-system, BlinkMacSystemFont, Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
 }
 
 .band-label {
   display: block;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
   font-weight: 400;
   letter-spacing: -3rpx;
@@ -25,7 +25,7 @@
 }
 
 .mono {
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 /* ======================== 配置区 ======================== */
@@ -64,7 +64,7 @@
 .picker-text {
   font-size: 24rpx;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .config-input-wide {
@@ -76,7 +76,7 @@
   padding: 12rpx 16rpx;
   font-size: 24rpx;
   color: #141413;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
 }
 
 .algo-buttons {
@@ -333,7 +333,7 @@
 .metric-value {
   font-size: 36rpx;
   font-weight: 700;
-  font-family: Georgia, serif;
+  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
   color: #141413;
   letter-spacing: -2rpx;
 }
@@ -365,7 +365,7 @@
 
 .timeline-label {
   font-size: 20rpx;
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', 'Noto Sans Mono', monospace;
   color: #141413;
   margin-top: 4rpx;
 }
