@@ -1,0 +1,480 @@
+/* ======================== 页面基础 ======================== */
+.page {
+  min-height: 100vh;
+  background: #faf9f5;
+  padding: 20rpx 24rpx 40rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  color: #141413;
+}
+
+.band-label {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32rpx;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  color: #141413;
+  margin-bottom: 16rpx;
+}
+
+.error-text {
+  display: block;
+  margin-top: 12rpx;
+  color: #c0392b;
+  font-size: 24rpx;
+}
+
+/* ======================== 配置区 ======================== */
+.config-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.config-row {
+  margin-bottom: 16rpx;
+}
+
+.scenario-tabs {
+  display: flex;
+  gap: 12rpx;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.scenario-tab {
+  display: inline-block;
+  padding: 14rpx 24rpx;
+  border-radius: 999rpx;
+  background: #faf9f5;
+  color: #6c6a64;
+  font-size: 24rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.scenario-active {
+  background: #cc785c;
+  color: #fff;
+}
+
+.action-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.btn-primary {
+  flex: 1;
+  background: #cc785c;
+  color: #fff;
+  border: none;
+  border-radius: 999rpx;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-align: center;
+  font-family: Georgia, serif;
+}
+
+.btn-hover {
+  opacity: 0.8;
+}
+
+.btn-secondary {
+  flex: 1;
+  background: #faf9f5;
+  color: #6c6a64;
+  border: 2rpx solid #e6dfd8;
+  border-radius: 999rpx;
+  padding: 18rpx 0;
+  font-size: 26rpx;
+  font-weight: 600;
+  text-align: center;
+  font-family: Georgia, serif;
+}
+
+/* ======================== 3 区域布局 ======================== */
+.zones-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.zone {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 8rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.zone-active {
+  border-color: #cc785c;
+  background: #fdf1ea;
+}
+
+.zone-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #141413;
+  font-family: Georgia, serif;
+  margin-bottom: 8rpx;
+}
+
+.zone-ip {
+  font-size: 20rpx;
+  color: #8e8b82;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.zone-ip-small {
+  font-size: 20rpx;
+  color: #8e8b82;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  display: block;
+}
+
+.router-ip-row {
+  margin-bottom: 8rpx;
+}
+
+.zone-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40rpx;
+}
+
+.arrow-symbol {
+  font-size: 28rpx;
+  color: #cc785c;
+  font-weight: 700;
+}
+
+.host-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.host-card {
+  background: #efe9de;
+  border-radius: 12rpx;
+  padding: 12rpx 18rpx;
+  min-width: 160rpx;
+  transition: all 0.3s ease;
+}
+
+.host-active {
+  background: #cc785c;
+}
+
+.host-active .host-ip,
+.host-active .host-port {
+  color: #fff;
+}
+
+.host-ip {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.host-port {
+  display: block;
+  font-size: 18rpx;
+  color: #6c6a64;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  margin-top: 4rpx;
+}
+
+.static-mapping-badge {
+  background: #e8e0d2;
+  border-radius: 8rpx;
+  padding: 8rpx 12rpx;
+  margin-top: 8rpx;
+}
+
+.badge-label {
+  font-size: 20rpx;
+  color: #6c6a64;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+/* ======================== 报文详情 ======================== */
+.packet-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.packet-header {
+  margin-bottom: 12rpx;
+}
+
+.packet-dir-label {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #cc785c;
+  font-family: Georgia, serif;
+}
+
+.packet-detail {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.packet-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6rpx 0;
+}
+
+.packet-field {
+  font-size: 22rpx;
+  color: #6c6a64;
+}
+
+.packet-value {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.packet-changed {
+  color: #cc785c;
+}
+
+.translated-block {
+  background: #fdf1ea;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+  border: 2rpx solid #cc785c;
+}
+
+.translated-label {
+  display: block;
+  font-size: 20rpx;
+  color: #cc785c;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+
+.explanation-block {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 16rpx;
+}
+
+.explanation-text {
+  font-size: 24rpx;
+  color: #141413;
+  line-height: 1.6;
+}
+
+.exam-tip {
+  margin-top: 12rpx;
+  background: #fdf8ee;
+  border-left: 6rpx solid #d4a574;
+  border-radius: 8rpx;
+  padding: 12rpx 16rpx;
+}
+
+.exam-tip-label {
+  display: block;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #d4a574;
+  margin-bottom: 4rpx;
+}
+
+.exam-tip-text {
+  font-size: 22rpx;
+  color: #6c6a64;
+  line-height: 1.5;
+}
+
+/* ======================== NAT 映射表 ======================== */
+.table-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.table-scroll {
+  width: 100%;
+}
+
+.table-container {
+  display: table;
+  width: 100%;
+  min-width: 600rpx;
+  border-collapse: collapse;
+}
+
+.table-row {
+  display: table-row;
+}
+
+.table-header .table-cell {
+  font-weight: 700;
+  color: #6c6a64;
+  font-size: 20rpx;
+  background: #faf9f5;
+  border-bottom: 2rpx solid #e6dfd8;
+}
+
+.table-cell {
+  display: table-cell;
+  padding: 12rpx 10rpx;
+  font-size: 20rpx;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  vertical-align: middle;
+}
+
+.col-protocol { width: 60rpx; }
+.col-internal { width: 160rpx; }
+.col-port { width: 100rpx; }
+.col-remote { width: 160rpx; }
+.col-status { width: 80rpx; }
+
+.status-active {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.status-expired {
+  color: #e74c3c;
+}
+
+.row-expired {
+  opacity: 0.5;
+  transition: opacity 0.5s ease;
+}
+
+/* ======================== 控制栏 ======================== */
+.control-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.step-progress {
+  flex-shrink: 0;
+}
+
+.step-count {
+  font-size: 22rpx;
+  color: #8e8b82;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.ctrl-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.ctrl-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #faf9f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctrl-btn:active { background: #e8e0d2; }
+
+.ctrl-play {
+  background: #cc785c;
+  width: 88rpx;
+  height: 88rpx;
+}
+
+.ctrl-pause {
+  background: #cc785c;
+}
+
+.ctrl-play .ctrl-icon { color: #fff; font-size: 32rpx; }
+
+.ctrl-pause .ctrl-icon { color: #fff; font-size: 32rpx; }
+
+.ctrl-icon {
+  font-size: 28rpx;
+  color: #141413;
+}
+
+/* ======================== 空状态 ======================== */
+.empty-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 48rpx 24rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: #8e8b82;
+}
+
+/* ======================== 会话摘要 ======================== */
+.summary-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.summary-item {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  text-align: center;
+}
+
+.summary-num {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #141413;
+  font-family: Georgia, serif;
+  letter-spacing: -2rpx;
+}
+
+.summary-label {
+  display: block;
+  font-size: 22rpx;
+  color: #6c6a64;
+  margin-top: 8rpx;
+}

@@ -1,0 +1,165 @@
+<view class="page">
+  <!-- 场景选择和标题 -->
+  <view class="config-band">
+    <text class="band-label">NAT 模拟器</text>
+    <view class="config-row">
+      <view class="scenario-tabs">
+        <view wx:for="{{scenarios}}" wx:key="id" class="scenario-tab {{selectedScenario === item.id ? 'scenario-active' : ''}}" data-id="{{item.id}}" bindtap="onScenarioSelect">
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onStartTap" hover-class="btn-hover">▶ 开始</button>
+      <button class="btn-secondary" bindtap="onResetTap" hover-class="btn-hover">重置</button>
+    </view>
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 3 区域主视图 -->
+  <view class="zones-band" wx:if="{{steps.length > 0}}">
+    <!-- 内网 LAN -->
+    <view class="zone zone-lan {{currentZone === 'lan' ? 'zone-active' : ''}}">
+      <text class="zone-title">内网 (LAN)</text>
+      <text class="zone-ip">192.168.1.0/24</text>
+      <view class="host-row">
+        <view wx:for="{{lanHosts}}" wx:key="ip" class="host-card {{item.active ? 'host-active' : ''}}">
+          <text class="host-ip">{{item.ip}}</text>
+          <text class="host-port">端口 {{item.port}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 区域间箭头 -->
+    <view class="zone-arrow">
+      <text class="arrow-symbol">{{currentZone === 'lan' || currentZone === 'router' ? (currentDirection === 'outbound' ? '▶' : '◀') : ''}}</text>
+    </view>
+
+    <!-- NAT 路由器 Router -->
+    <view class="zone zone-router {{currentZone === 'router' ? 'zone-active' : ''}}">
+      <text class="zone-title">NAT 路由器</text>
+      <view class="router-ip-row">
+        <text class="zone-ip-small">内网: 192.168.1.1</text>
+        <text class="zone-ip-small">公网: {{publicIp}}</text>
+      </view>
+      <view wx:if="{{selectedScenario === 'port-forward' && staticMapping}}" class="static-mapping-badge">
+        <text class="badge-label">静态映射: 公网 {{staticMapping.externalPort}} → 内网 {{staticMapping.internalIp}}:{{staticMapping.internalPort}}</text>
+      </view>
+    </view>
+
+    <view class="zone-arrow">
+      <text class="arrow-symbol">{{currentZone === 'router' || currentZone === 'wan' ? (currentDirection === 'outbound' ? '▶' : '◀') : ''}}</text>
+    </view>
+
+    <!-- 外网 WAN -->
+    <view class="zone zone-wan {{currentZone === 'wan' ? 'zone-active' : ''}}">
+      <text class="zone-title">外网 (WAN)</text>
+      <text class="zone-ip">Internet</text>
+      <view class="host-row">
+        <view wx:for="{{wanHosts}}" wx:key="ip" class="host-card {{item.active ? 'host-active' : ''}}">
+          <text class="host-ip">{{item.ip}}</text>
+          <text class="host-port">端口 {{item.port}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 报文详情浮层 -->
+  <view class="packet-band" wx:if="{{currentStepObj}}">
+    <view class="packet-header">
+      <text class="packet-dir-label">{{currentDirection === 'outbound' ? '出站报文 →' : '入站报文 ←'}}</text>
+    </view>
+    <view class="packet-detail">
+      <view class="packet-row">
+        <text class="packet-field">源地址</text>
+        <text class="packet-value">{{currentPacket.srcIp}}:{{currentPacket.srcPort}}</text>
+      </view>
+      <view class="packet-row">
+        <text class="packet-field">目标地址</text>
+        <text class="packet-value">{{currentPacket.dstIp}}:{{currentPacket.dstPort}}</text>
+      </view>
+      <view class="packet-row">
+        <text class="packet-field">协议</text>
+        <text class="packet-value">{{currentPacket.protocol}}</text>
+      </view>
+    </view>
+    <!-- 转换后报文（NAT 路由器区） -->
+    <view wx:if="{{translatedPacket}}" class="translated-block">
+      <text class="translated-label">NAT 转换后</text>
+      <view class="packet-row">
+        <text class="packet-field">源地址</text>
+        <text class="packet-value packet-changed">{{translatedPacket.srcIp}}:{{translatedPacket.srcPort}}</text>
+      </view>
+    </view>
+    <view class="explanation-block">
+      <text class="explanation-text">{{currentStepObj.explanation}}</text>
+    </view>
+    <view wx:if="{{currentStepObj.examTip}}" class="exam-tip">
+      <text class="exam-tip-label">面试考点</text>
+      <text class="exam-tip-text">{{currentStepObj.examTip}}</text>
+    </view>
+  </view>
+
+  <!-- NAT 映射表 -->
+  <view class="table-band" wx:if="{{mappingTable.length > 0}}">
+    <text class="band-label">NAT 映射表</text>
+    <scroll-view class="table-scroll" scroll-x enable-flex>
+      <view class="table-container">
+        <view class="table-row table-header">
+          <text class="table-cell col-protocol">协议</text>
+          <text class="table-cell col-internal">内网地址</text>
+          <text class="table-cell col-port">内网端口</text>
+          <text class="table-cell col-port">公网端口</text>
+          <text class="table-cell col-remote">外网地址</text>
+          <text class="table-cell col-status">状态</text>
+        </view>
+        <view wx:for="{{mappingTable}}" wx:key="externalPort" class="table-row {{item.state === 'Expired' ? 'row-expired' : ''}}">
+          <text class="table-cell col-protocol">{{item.protocol}}</text>
+          <text class="table-cell col-internal">{{item.internalIp}}</text>
+          <text class="table-cell col-port">{{item.internalPort}}</text>
+          <text class="table-cell col-port">{{item.externalPort}}</text>
+          <text class="table-cell col-remote">{{item.remoteHost}}</text>
+          <text class="table-cell col-status {{item.state === 'Active' ? 'status-active' : 'status-expired'}}">{{item.state}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 步骤控制 + 进度 -->
+  <view class="control-band" wx:if="{{steps.length > 0}}">
+    <view class="step-progress">
+      <text class="step-count">{{currentStep + 1}} / {{steps.length}}</text>
+    </view>
+    <view class="ctrl-buttons">
+      <view class="ctrl-btn ctrl-reset" bindtap="onResetTap">
+        <text class="ctrl-icon">重置</text>
+      </view>
+      <view class="ctrl-btn ctrl-play {{isPlaying ? 'ctrl-pause' : ''}}" bindtap="onTogglePlay">
+        <text class="ctrl-icon">{{isPlaying ? '⏸' : '▶'}}</text>
+      </view>
+      <view class="ctrl-btn" bindtap="onNextStep">
+        <text class="ctrl-icon">步进</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-band" wx:if="{{steps.length === 0}}">
+    <text class="empty-text">选择一个场景后点击 ▶ 开始</text>
+  </view>
+
+  <!-- 会话摘要（结束时展示） -->
+  <view class="summary-band" wx:if="{{showSummary}}">
+    <text class="band-label">NAT 会话摘要</text>
+    <view class="summary-grid">
+      <view class="summary-item">
+        <text class="summary-num">{{totalTranslations}}</text>
+        <text class="summary-label">转换次数</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-num">{{activeMappingCount}}</text>
+        <text class="summary-label">活跃映射数</text>
+      </view>
+    </view>
+  </view>
+</view>
