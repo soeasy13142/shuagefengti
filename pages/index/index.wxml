@@ -40,50 +40,30 @@
       </view>
     </view>
 
-    <!-- 「全部」视图：分类分组 + 精选预告 -->
+    <!-- 「全部」视图：精选工具 -->
     <block wx:if="{{activeCategory === 'all'}}">
-      <view class="cat-section" wx:for="{{allViewData}}" wx:key="id" wx:for-item="section">
 
-        <!-- 分类标题 -->
-        <text class="cat-section-title">{{section.category.name}}</text>
-
-        <!-- 可用工具 -->
-        <view class="tool-grid">
+      <view class="featured-section">
+        <!-- 精选工具网格 -->
+        <view class="featured-grid">
           <view
-            class="tool-card"
-            wx:for="{{section.tools}}"
+            class="featured-card"
+            wx:for="{{featuredTools}}"
             wx:key="id"
-            wx:for-item="tool"
-            data-id="{{tool.id}}"
+            data-id="{{item.id}}"
             data-available="true"
             bindtap="onToolTap"
             hover-class="tool-hover"
             hover-stay-time="100"
           >
-            <text class="tool-name">{{tool.name}}</text>
-            <text class="tool-tagline tool-tagline-detail" wx:if="{{cardMode === 'detail'}}">{{tool.taglineDetail || tool.tagline || tool.description}}</text>
-            <text class="tool-tagline" wx:else>{{tool.tagline || tool.description}}</text>
-            <!-- 详细模式：tags + 难度 -->
-            <view class="tool-meta-row" wx:if="{{cardMode === 'detail' && (tool.tags && tool.tags.length > 0 || tool.difficulty)}}">
-              <text class="tool-tags-inline" wx:if="{{tool.tags && tool.tags.length > 0}}">
-                <text wx:for="{{tool.tags}}" wx:for-item="tag" wx:for-index="i" wx:key="*this"><text wx:if="{{i > 0}}"> </text>{{tag}}</text>
-              </text>
-              <text class="tool-difficulty-stars" wx:if="{{tool.difficulty}}">{{tool._diffStars}}</text>
+            <view class="featured-card-top">
+              <text class="featured-card-name">{{item.name}}</text>
+              <text class="featured-card-diff">{{item._diffStars}}</text>
             </view>
-          </view>
-        </view>
-
-        <!-- 精选预告（即将上线） -->
-        <view class="preview-grid" wx:if="{{section.previews.length > 0}}">
-          <view
-            class="tool-card tool-card-preview"
-            wx:for="{{section.previews}}"
-            wx:key="id"
-            wx:for-item="preview"
-          >
-            <text class="tool-name">{{preview.name}}</text>
-            <text class="tool-tagline">{{preview.tagline || preview.description}}</text>
-            <text class="tool-tag">即将上线</text>
+            <text class="featured-card-tagline">{{item.tagline || item.description}}</text>
+            <view class="featured-card-meta">
+              <text class="featured-card-category">{{item._catName}}</text>
+            </view>
           </view>
         </view>
       </view>

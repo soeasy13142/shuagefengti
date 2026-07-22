@@ -16,6 +16,9 @@ Page({
     // ── 卡片模式 ──
     cardMode: 'simple',   // 'simple' | 'detail'
 
+    // ── 精选工具 ──
+    featuredTools: [],
+
     // ── 工具总数 ──
     toolsCount: 0
   },
@@ -36,9 +39,23 @@ Page({
     const activeCategories = registry.getActiveCategories();
     const allViewData = this._buildAllViewData(activeCategories);
 
+    // 获取首页精选工具
+    const rawFeatured = registry.getHomepageFeaturedTools();
+    const featuredTools = rawFeatured.map(function(t) {
+      return this._enrichTool(t);
+    }.bind(this));
+
+    // 为精选工具补充分类名
+    const catNameMap = registry.getCategoryNameMap();
+    const enrichedFeatured = featuredTools.map(function(t) {
+      const catName = catNameMap[t.category] || '';
+      return Object.assign({}, t, { _catName: catName });
+    });
+
     this.setData({
       activeCategories: activeCategories,
       allViewData: allViewData,
+      featuredTools: enrichedFeatured,
       currentTools: [],
       toolsCount: registry.TOOLS.length
     });

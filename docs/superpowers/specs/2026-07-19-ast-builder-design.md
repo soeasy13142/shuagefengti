@@ -1,9 +1,21 @@
 # AST 构建器 · 设计文档
 
 > 日期：2026-07-19
-> 阶段：brainstorming → spec
-> 状态：待用户审核
+> 阶段：brainstorming → spec → **已实现** ✅
+> 状态：已实现
 > 关联：`utils/tool-registry.js`（`ast-builder` 占位）、`app.json`
+>
+> 实现状态速览:
+> - ✅ 算术表达式解析（+、-、\*、/、括号、标识符）
+> - ✅ LL(1) 自顶向下 AST 构建
+> - ✅ **AST 树可视化**（带颜色编码的定位节点）
+> - ✅ SDT 求值 + 类型标注
+> - ✅ 步进模式（词法→解析→SDT 四阶段）
+> - ✅ 树布局算法（Reingold-Tilford 简化版）
+> - ✅ 交互式展开/折叠节点
+> - ✅ 5 个预设示例
+> - ✅ 错误处理
+> - ✅ Claude Design 色调
 
 ## 1. 目标
 

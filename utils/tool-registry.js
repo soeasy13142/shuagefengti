@@ -789,6 +789,48 @@ function getFeaturedToolsByCategory(categoryId, maxCount) {
     .slice(0, maxCount);
 }
 
+// ── 首页精选工具配置 ──
+const HOMEPAGE_FEATURED_IDS = [
+  'tcp-viz',
+  'nginx-gen',
+  'cpu-sched',
+  'deadlock',
+  'dh-viz',
+  'ds-viz',
+  'ast-builder'
+];
+
+/**
+ * 获取首页精选工具列表（按配置顺序）
+ */
+function getHomepageFeaturedTools() {
+  const result = [];
+  const idMap = {};
+  // 构建 ID→tool 的映射
+  for (let i = 0; i < TOOLS.length; i++) {
+    idMap[TOOLS[i].id] = TOOLS[i];
+  }
+  // 按配置顺序取
+  for (let j = 0; j < HOMEPAGE_FEATURED_IDS.length; j++) {
+    const tool = idMap[HOMEPAGE_FEATURED_IDS[j]];
+    if (tool && tool.available) {
+      result.push(tool);
+    }
+  }
+  return result;
+}
+
+/**
+ * 获取分类名映射（id → name）
+ */
+function getCategoryNameMap() {
+  const map = {};
+  for (let i = 0; i < TOOL_CATEGORIES.length; i++) {
+    map[TOOL_CATEGORIES[i].id] = TOOL_CATEGORIES[i].name;
+  }
+  return map;
+}
+
 // ── 难度等级映射 ──
 const DIFFICULTY_MAP = {
   easy: { label: '简单', stars: '★☆☆' },
@@ -812,5 +854,7 @@ module.exports = {
   getToolsByCategory,
   getActiveCategories,
   getFeaturedToolsByCategory,
-  getDifficultyInfo
+  getDifficultyInfo,
+  getHomepageFeaturedTools,
+  getCategoryNameMap
 };

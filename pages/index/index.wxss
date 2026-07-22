@@ -347,3 +347,94 @@
   font-weight: 400;
   color: #8e8b82;
 }
+
+/* ═══════════════════════════════════════════
+   精选工具区域（首页默认视图）
+   ═══════════════════════════════════════════ */
+.featured-section {
+  margin-bottom: 8rpx;
+}
+
+.featured-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.featured-card {
+  flex: 0 0 48%;
+  margin-bottom: 20rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.featured-card:active {
+  background: #e8e0d2;
+}
+
+.featured-card-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.featured-card-name {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #141413;
+  line-height: 1.35;
+}
+
+.featured-card-diff {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 20rpx;
+  font-weight: 400;
+  color: #8e8b82;
+  line-height: 1.4;
+  flex-shrink: 0;
+  margin-left: 8rpx;
+}
+
+.featured-card-tagline {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 22rpx;
+  font-weight: 400;
+  color: #6c6a64;
+  line-height: 1.4;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.featured-card-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: auto;
+}
+
+.featured-card-category {
+  display: inline-block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 20rpx;
+  font-weight: 500;
+  color: #cc785c;
+  background: rgba(204, 120, 92, 0.1);
+  padding: 4rpx 14rpx;
+  border-radius: 8rpx;
+  line-height: 1.4;
+}
