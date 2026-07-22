@@ -11,6 +11,7 @@
     "pages/dashboard/dashboard",
     "pages/tls-viz/tls-viz",
     "pages/tools-all/tools-all",
+    "pages/http-parser/http-parser",
     "pages/ip-fragment/ip-fragment"
   ],
   "subPackages": [{

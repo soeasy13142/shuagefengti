@@ -60,6 +60,7 @@ describe('tool-registry', () => {
       expect(ids).toContain('tcp-viz');
       expect(ids).toContain('tls-viz');
       expect(ids).toContain('dns-viz');
+      expect(ids).toContain('http-parser');
       expect(ids).toContain('sort-viz');
       expect(ids).toContain('ds-viz');
       expect(ids).toContain('bplus-viz');
