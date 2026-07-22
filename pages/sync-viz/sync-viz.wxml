@@ -37,30 +37,34 @@
     <!-- 左侧：缓冲区 -->
     <view class="buffer-section">
       <text class="section-title">缓冲区</text>
-      <view class="buffer-grid">
-        <view wx:for="{{buffer}}" wx:key="index" wx:for-index="idx"
-              class="buffer-slot {{item ? 'buffer-slot-filled' : 'buffer-slot-empty'}}"
-              style="transition-delay: {{idx * 50}}ms">
-          <text wx:if="{{item}}" class="buffer-item">{{item}}</text>
-          <text wx:else class="buffer-empty-indicator">.</text>
-          <text class="slot-index">{{idx}}</text>
+      <scroll-view scroll-x class="buffer-scroll">
+        <view class="buffer-grid">
+          <view wx:for="{{buffer}}" wx:key="index" wx:for-index="idx"
+                class="buffer-slot {{item ? 'buffer-slot-filled' : 'buffer-slot-empty'}}"
+                style="transition-delay: {{idx * 50}}ms">
+            <text wx:if="{{item}}" class="buffer-item">{{item}}</text>
+            <text wx:else class="buffer-empty-indicator">.</text>
+            <text class="slot-index">{{idx}}</text>
+          </view>
         </view>
-      </view>
+      </scroll-view>
       <!-- 生产者 / 消费者指针 -->
       <view class="pointer-row">
         <view class="pointer-item pointer-producer">
           <text class="pointer-label">生产者-></text>
-          <text class="pointer-arrow" style="margin-left: {{producerIndex * (100 / bufferSize)}}%">V</text>
+          <text class="pointer-arrow {{blockedProducer ? 'pointer-arrow-blocked' : ''}}"
+                style="margin-left: {{producerIndex * (100 / bufferSize)}}%">{{blockedProducer ? '' : 'V'}}</text>
         </view>
         <view class="pointer-item pointer-consumer">
           <text class="pointer-label">消费者-></text>
-          <text class="pointer-arrow consumer-arrow" style="margin-left: {{consumerIndex * (100 / bufferSize)}}%">^</text>
+          <text class="pointer-arrow consumer-arrow {{blockedConsumer ? 'pointer-arrow-blocked' : ''}}"
+                style="margin-left: {{consumerIndex * (100 / bufferSize)}}%">{{blockedConsumer ? '' : '^'}}</text>
         </view>
       </view>
       <!-- 阻塞状态 -->
-      <view wx:if="{{waiting.producer || waiting.consumer}}" class="waiting-banner">
-        <text wx:if="{{waiting.producer}}" class="waiting-text producer-waiting">等待 empty</text>
-        <text wx:if="{{waiting.consumer}}" class="waiting-text consumer-waiting">等待 full</text>
+      <view wx:if="{{blockedProducer || blockedConsumer}}" class="waiting-banner">
+        <text wx:if="{{blockedProducer}}" class="waiting-text producer-waiting">阻塞等待 empty…</text>
+        <text wx:if="{{blockedConsumer}}" class="waiting-text consumer-waiting">阻塞等待 full…</text>
       </view>
     </view>
 

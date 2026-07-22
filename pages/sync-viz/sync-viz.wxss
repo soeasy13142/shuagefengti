@@ -105,10 +105,19 @@
   flex: 1;
 }
 
+.buffer-scroll {
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.buffer-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .buffer-grid {
   display: flex;
   gap: 8rpx;
-  margin-bottom: 20rpx;
 }
 
 .buffer-slot {
@@ -182,6 +191,16 @@
 
 .consumer-arrow {
   color: #8d99ae;
+}
+
+.pointer-arrow-blocked {
+  color: #8e8b82 !important;
+  animation: hourglass-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes hourglass-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 /* ======================== 阻塞指示 ======================== */
@@ -362,7 +381,7 @@
 }
 
 .log-action-blocked {
-  color: #c0392b;
+  color: #8b6914;
   font-weight: 600;
 }
 
@@ -375,8 +394,8 @@
   font-size: 18rpx;
   padding: 2rpx 8rpx;
   border-radius: 6rpx;
-  background: #f5d9d3;
-  color: #c0392b;
+  background: #fff3cd;
+  color: #856404;
 }
 
 .log-woken-badge {
