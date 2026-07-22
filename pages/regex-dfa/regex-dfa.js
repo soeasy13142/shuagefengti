@@ -458,5 +458,146 @@ Page({
       }
     }
     return result;
+  },
+
+  // ── 状态图布局 ──
+
+  _computeLayoutFromStates: function(states, startId) {
+    // BFS layering: group states into layers by distance from start
+    const adj = {};
+    for (let i = 0; i < states.length; i++) {
+      const s = states[i];
+      adj[s.id] = new Set();
+      if (!s.transitions) continue;
+      var keys = Object.keys(s.transitions);
+      for (let j = 0; j < keys.length; j++) {
+        var targets = s.transitions[keys[j]];
+        if (Array.isArray(targets)) {
+          for (let k = 0; k < targets.length; k++) {
+            adj[s.id].add(targets[k]);
+          }
+        } else {
+          // DFA style: single target
+          adj[s.id].add(targets);
+        }
+      }
+    }
+
+    // BFS
+    const layers = [];
+    const visited = new Set();
+    var queue = [startId];
+    visited.add(startId);
+
+    while (queue.length > 0) {
+      layers.push(queue.slice());
+      var nextQueue = [];
+      for (let qi = 0; qi < queue.length; qi++) {
+        var sid = queue[qi];
+        var neighbors = adj[sid] || new Set();
+        var neighborArr = [];
+        neighbors.forEach(function(n) { neighborArr.push(n); });
+        for (let ni = 0; ni < neighborArr.length; ni++) {
+          if (!visited.has(neighborArr[ni])) {
+            visited.add(neighborArr[ni]);
+            nextQueue.push(neighborArr[ni]);
+          }
+        }
+      }
+      queue = nextQueue;
+    }
+
+    // Add any unvisited states
+    for (let i = 0; i < states.length; i++) {
+      if (!visited.has(states[i].id)) {
+        layers.push([states[i].id]);
+        visited.add(states[i].id);
+      }
+    }
+
+    return layers;
+  },
+
+  _layoutToPositions: function(layers, stateCount) {
+    var DIAGRAM_W = 640;
+    var DIAGRAM_H = 320;
+    var positions = {};
+    var numLayers = layers.length;
+
+    for (var li = 0; li < numLayers; li++) {
+      var layer = layers[li];
+      var x = DIAGRAM_W * (li + 1) / (numLayers + 1);
+      var yStep = DIAGRAM_H / (layer.length + 1);
+      for (var si = 0; si < layer.length; si++) {
+        var y = yStep * (si + 1);
+        positions[layer[si]] = { x: Math.round(x), y: Math.round(y) };
+      }
+    }
+
+    return positions;
+  },
+
+  _statesWithPositions: function(stateList, positions) {
+    return stateList.map(function(s) {
+      var pos = positions[s.id] || { x: 0, y: 0 };
+      return Object.assign({}, s, {
+        x: pos.x,
+        y: pos.y,
+        isHighlighted: false
+      });
+    });
+  },
+
+  _buildArrows: function(transitions, positions) {
+    var STATE_R = 33;
+    var arrows = [];
+
+    for (var ti = 0; ti < transitions.length; ti++) {
+      var t = transitions[ti];
+      if (t.from === t.to) continue; // skip self-loops for diagram simplicity
+
+      var src = positions[t.from];
+      var dst = positions[t.to];
+      if (!src || !dst) continue;
+
+      var dx = dst.x - src.x;
+      var dy = dst.y - src.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 1) continue;
+
+      var angle = Math.atan2(dy, dx);
+
+      // Adjust for multiple arrows between same pair
+      var multiKey = t.from < t.to ? t.from + '-' + t.to : t.to + '-' + t.from;
+      var startX = src.x + STATE_R * Math.cos(angle);
+      var startY = src.y + STATE_R * Math.sin(angle);
+      var endX = dst.x - STATE_R * Math.cos(angle);
+      var endY = dst.y - STATE_R * Math.sin(angle);
+
+      var lineLen = Math.sqrt((endX - startX) * (endX - startX) + (endY - startY) * (endY - startY));
+      if (lineLen < 5) continue;
+
+      var midX = (startX + endX) / 2;
+      var midY = (startY + endY) / 2;
+
+      arrows.push({
+        key: t.from + '->' + t.to + '-' + t.input,
+        from: t.from,
+        to: t.to,
+        input: t.input,
+        isEpsilon: t.input === 'ε',
+        isHighlight: false,
+        x: Math.round(startX),
+        y: Math.round(startY),
+        len: Math.round(lineLen),
+        deg: angle * 180 / Math.PI,
+        headX: Math.round(endX),
+        headY: Math.round(endY),
+        labelX: Math.round(midX),
+        labelY: Math.round(midY - 20)
+      });
+    }
+
+    return arrows;
   }
 });

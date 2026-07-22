@@ -47,6 +47,33 @@
 
     <!-- NFA 状态图 -->
     <view wx:if="{{activeStep === 1}}" class="step-content">
+      <!-- 状态图 -->
+      <text class="section-label">NFA 状态图</text>
+      <view class="diagram-canvas">
+        <view wx:for="{{nfaArrows}}" wx:key="key" class="arrow-group">
+          <view class="arrow-line {{item.isEpsilon ? 'eps-arrow' : ''}} {{item.isHighlight ? 'arrow-highlight' : ''}}"
+                style="left: {{item.x}}rpx; top: {{item.y}}rpx; width: {{item.len}}rpx; transform: rotate({{item.deg}}deg);">
+          </view>
+          <view class="arrow-head {{item.isEpsilon ? 'eps-arrow' : ''}} {{item.isHighlight ? 'arrow-highlight' : ''}}"
+                style="left: {{item.headX}}rpx; top: {{item.headY}}rpx; transform: rotate({{item.deg}}deg);">
+          </view>
+          <text class="arrow-label {{item.isEpsilon ? 'eps-label' : ''}}"
+                style="left: {{item.labelX}}rpx; top: {{item.labelY}}rpx;">{{item.input}}</text>
+        </view>
+        <view wx:for="{{nfaDiagramStates}}" wx:key="id"
+              class="diagram-state {{item.isAccept ? 'state-accept' : ''}} {{item.isStart ? 'state-start' : ''}} {{item.isHighlighted ? 'state-highlighted' : ''}}"
+              style="left: {{item.x}}rpx; top: {{item.y}}rpx;">
+          <text class="state-label">{{item.id}}</text>
+        </view>
+      </view>
+
+      <!-- 步进导航 -->
+      <view class="step-nav" wx:if="{{nfaTotalSteps > 0}}">
+        <button class="step-btn" bindtap="onStepPrev" data-tab="nfa" hover-class="btn-hover">‹ 上一步</button>
+        <text class="step-indicator">步骤 {{nfaStepIndex + 1}} / {{nfaTotalSteps}}</text>
+        <button class="step-btn" bindtap="onStepNext" data-tab="nfa" hover-class="btn-hover">下一步 ›</button>
+      </view>
+
       <text class="section-label">NFA 状态列表（共 {{nfaStates.length}} 个状态）</text>
       <view class="states-row">
         <view wx:for="{{nfaStates}}" wx:key="id" class="state-node-wrapper">
@@ -82,9 +109,9 @@
 
     <!-- 子集构造过程 -->
     <view wx:if="{{activeStep === 2}}" class="step-content">
-      <text class="section-label">子集构造法：-闭包  新的 DFA 状态</text>
+      <text class="section-label">子集构造法：ε-闭包 → 新的 DFA 状态</text>
       <view class="subset-steps">
-        <view wx:for="{{subsetSteps}}" wx:for-item="step" wx:key="*this" class="subset-step">
+        <view wx:for="{{subsetSteps}}" wx:for-item="step" wx:key="*this" class="subset-step {{step.isHighlight ? 'subset-step-highlight' : ''}}">
           <view class="subset-step-header">
             <text class="subset-step-num">{{step.label}}</text>
           </view>
@@ -92,6 +119,13 @@
             <text wx:for="{{step.lines}}" wx:for-item="line" wx:key="*this" class="subset-line">{{line}}</text>
           </view>
         </view>
+      </view>
+
+      <!-- 步进导航 -->
+      <view class="step-nav" wx:if="{{subsetTotalSteps > 0}}">
+        <button class="step-btn" bindtap="onStepPrev" data-tab="subset" hover-class="btn-hover">‹ 上一步</button>
+        <text class="step-indicator">步骤 {{subsetStepIndex + 1}} / {{subsetTotalSteps}}</text>
+        <button class="step-btn" bindtap="onStepNext" data-tab="subset" hover-class="btn-hover">下一步 ›</button>
       </view>
 
       <view wx:if="{{dfaStatesList.length > 0}}" class="dfa-states-summary">

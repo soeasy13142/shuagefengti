@@ -58,6 +58,9 @@
         <text wx:else=""> ❌</text>
       </view>
       <text class="wiener-warning" wx:if="{{wienerWarning}}">⚠️ {{wienerWarning}}</text>
+      <block wx:for="{{weakKeyWarnings}}" wx:key="index">
+        <text class="wiener-warning">⚠️ {{item}}</text>
+      </block>
     </view>
   </view>
 
@@ -153,11 +156,19 @@
     </view>
 
     <view class="detail-section">
-      <view class="detail-header" bindtap="onToggleDetails">
-        <text class="detail-toggle {{showDetails ? 'expanded' : ''}}">▶</text>
+      <view class="detail-header" bindtap="onToggleEeDetails">
+        <text class="detail-toggle {{showEeDetails ? 'expanded' : ''}}">▶</text>
         <text>扩展欧几里得求模逆</text>
       </view>
-      <view class="detail-body" wx:if="{{showDetails && keypair.steps}}">
+      <view class="detail-body" wx:if="{{showEeDetails && keypair.steps && keypair.steps.extendedEuclid.steps}}">
+        <text class="step-title">Euclidean 除法步骤</text>
+        <view class="ee-steps">
+          <view class="ee-step" wx:for="{{keypair.steps.extendedEuclid.steps}}" wx:key="index" wx:for-index="idx">
+            <text class="ee-step-num">step {{idx + 1}}</text>
+            <text class="ee-step-eq">{{item.dividend}} = {{item.quotient}}×{{item.divisor}} + {{item.remainder}}</text>
+          </view>
+        </view>
+        <text class="formula-line" wx:if="{{keypair.steps.extendedEuclid.gcd === 1}}">→ gcd = 1，存在模逆</text>
         <text class="formula-line">{{keypair.steps.extendedEuclid.detail}}</text>
         <text class="formula-line formula-result">d ≡ {{keypair.e}}⁻¹ (mod {{keypair.phi}}) = {{keypair.d}}</text>
         <text class="verify-line">验证：{{keypair._verifyDetail}}</text>

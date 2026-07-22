@@ -1,4 +1,4 @@
-const { generateKeypair, encrypt, decrypt, modPowWithSteps, modPow, isPrime, gcd, extendedGcd } = require('../../utils/rsa-core');
+const { generateKeypair, encrypt, decrypt, modPowWithSteps, modPow, isPrime, gcd, extendedGcd, detectWeakKey } = require('../../utils/rsa-core');
 const { PRIMES_2_997 } = require('../../utils/rsa-primes');
 
 const PRIME_INDICES = PRIMES_2_997.map(function(p, i) {
@@ -32,6 +32,13 @@ Page({
 
     // 弱密钥提示
     wienerWarning: '',
+    weakKeyWarnings: [],
+
+    // 共模检测
+    knownKeys: [],
+
+    // 扩展欧几里得步骤展开
+    showEeDetails: false,
 
     // 文字模式
     textModePlain: '',
@@ -135,14 +142,34 @@ Page({
       const edRemainder = edProduct % key.phi;
       const verifyDetail = key.e + '×' + key.d + ' = ' + edProduct + ' = ' + edQuotient + '×' + key.phi + ' + ' + edRemainder;
       key._verifyDetail = verifyDetail;
-      // 弱密钥检测：Wiener 攻击条件 d < n^(1/4)/3
-      const nRoot4 = Math.pow(key.n, 0.25);
-      const wienerThreshold = nRoot4 / 3;
+
+      // 弱密钥检测（含 Wiener + 共模）
+      const knownKeys = this.data.knownKeys;
+      const warnings = detectWeakKey(key, { knownKeys: knownKeys });
       let wienerWarning = '';
-      if (key.d < wienerThreshold) {
-        wienerWarning = '此私钥偏小（d=' + key.d + ' < n^(1/4)/3 ≈ ' + Math.round(wienerThreshold) + '），存在 Wiener 攻击风险';
+      const weakKeyWarnings = [];
+      for (let i = 0; i < warnings.length; i++) {
+        const w = warnings[i];
+        if (w.indexOf('Wiener') !== -1) {
+          wienerWarning = w;
+        } else {
+          weakKeyWarnings.push(w);
+        }
       }
-      this.setData({ keypair: key, wienerWarning: wienerWarning, encrypted: null, decrypted: null, modPowSteps: null });
+
+      // 记录已知密钥（用于共模检测）
+      knownKeys.push({ n: key.n, e: key.e });
+
+      this.setData({
+        keypair: key,
+        wienerWarning: wienerWarning,
+        weakKeyWarnings: weakKeyWarnings,
+        knownKeys: knownKeys,
+        encrypted: null,
+        decrypted: null,
+        modPowSteps: null,
+        showEeDetails: false
+      });
     } catch (e) {
       wx.showToast({ title: e.message, icon: 'none' });
     }
@@ -210,6 +237,10 @@ Page({
 
   onToggleDetails: function() {
     this.setData({ showDetails: !this.data.showDetails });
+  },
+
+  onToggleEeDetails: function() {
+    this.setData({ showEeDetails: !this.data.showEeDetails });
   },
 
   // ── 文字模式 ──
