@@ -22,37 +22,32 @@
 
 ---
 
-## 二、工具级设计文档（20 份）
+## 二、工具级设计文档
 
-### ✅ 已实现（8 份）
+### ✅ 已实现（12 份）
 
 对应 spec 已完成、页面已上线、`tool-registry.js` 中 `available: true`。
 
 | 文件 | 工具 | 分类 |
 |---|---|---|
 | `2026-07-12-dns-resolver-design.md` | DNS 解析器 | 计算机网络 |
-| `2026-07-12-sha256-design.md` | SHA-256 演示 | 密码学 |
-| `2026-07-12-bplus-tree-design.md` | B+ 树可视化 | 算法 & 数据结构 |
+| `2026-07-19-http-parser-design.md` | HTTP 解析器 | 计算机网络 |
+| `2026-07-19-ip-fragment-design.md` | IP 分片可视化 | 计算机网络 |
+| `2026-07-19-nat-viz-design.md` | NAT 模拟器 | 计算机网络 |
+| `2026-07-21-nginx-config-generator-design.md` | Nginx 配置生成器 | 计算机网络 |
+| `2026-07-19-tls-viz-design.md` | TLS 动画机 | 计算机网络 |
+| `2026-07-12-cpu-scheduling-design.md` | 进程调度可视化 | 操作系统 |
 | `2026-07-19-deadlock-design.md` | 死锁模拟器 | 操作系统 |
 | `2026-07-19-disk-sched-design.md` | 磁盘调度可视化 | 操作系统 |
 | `2026-07-19-mem-paging-design.md` | 内存分页可视化 | 操作系统 |
-| `2026-07-12-cpu-scheduling-design.md` | 进程调度可视化 | 操作系统 |
-| `2026-07-21-nginx-config-generator-design.md` | Nginx 配置生成器 | 计算机网络 |
-| `2026-07-19-nat-viz-design.md` | NAT 模拟器 | 计算机网络 |
+| `2026-07-12-bplus-tree-design.md` | B+ 树可视化 | 算法 & 数据结构 |
+| `2026-07-12-sha256-design.md` | SHA-256 演示 | 密码学 |
 
 另外 4 个已上线工具（subnet-calc、tcp-viz、sort-viz、ds-viz）在本目录没有独立的 spec 文件——它们是在 brainstorming 工作流建立之前开发的。
 
-### 📋 待实现（13 份）
+### 📋 待实现（9 份）
 
 对应 spec 已就绪、但软件尚未开发、`tool-registry.js` 中 `available: false`。
-
-#### 计算机网络
-
-| 文件 | 工具 | 备注 |
-|---|---|---|
-| `2026-07-19-tls-viz-design.md` | TLS 动画机 | TLS 1.3 握手 + 证书链 + MITM |
-| `2026-07-19-http-parser-design.md` | HTTP 解析器 | 报文解析 + 状态码速查 |
-| `2026-07-19-ip-fragment-design.md` | IP 分片可视化 | MTU/偏移量/重组动画 |
 
 #### 操作系统
 
