@@ -12,7 +12,11 @@
     "pages/tls-viz/tls-viz",
     "pages/tools-all/tools-all",
     "pages/http-parser/http-parser",
-    "pages/ip-fragment/ip-fragment"
+    "pages/ip-fragment/ip-fragment",
+    "pages/dh-viz/dh-viz",
+    "pages/sync-viz/sync-viz",
+    "pages/crypto-tools/crypto-tools",
+    "pages/rsa-calc/rsa-calc"
   ],
   "subPackages": [{
     "root": "package-tools",

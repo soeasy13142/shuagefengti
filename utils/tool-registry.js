@@ -370,8 +370,26 @@ const TOOLS = [
     icon: '',
     description: '生产者消费者 · 信号量 · PV操作',
     route: '/pages/sync-viz/sync-viz',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '生产者-消费者问题，信号量 P/V 操作可视化',
+    taglineDetail: '信号量（full/empty/mutex）数值实时变化，缓冲区 slot 逐格展示生产与消费，完整 P/V 操作序列日志，支持自动播放/步进/速度调节',
+    tags: ['#可视化', '#交互式', '#操作系统'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '通过生产者-消费者问题，可视化信号量 P/V 操作控制进程同步的过程。',
+      features: [
+        '三个信号量（full / empty / mutex）数值实时变化条',
+        '环形缓冲区逐格展示物品的生产与消费',
+        '完整 P/V 操作序列日志，阻塞/唤醒高亮标识'
+      ],
+      prerequisites: '知道进程同步和信号量的基本概念。',
+      useCases: [
+        'OS 课程信号量与进程同步章节',
+        '理解 P/V 操作如何控制临界区访问',
+        '区分计数信号量与互斥信号量的作用'
+      ]
+    },
     order: 5
   },
 
@@ -383,8 +401,26 @@ const TOOLS = [
     icon: '',
     description: '密钥生成 · 加密解密 · 数论',
     route: '/pages/rsa-calc/rsa-calc',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '输入素数 p/q，生成密钥对，加密解密，数论过程一步步展示',
+    taglineDetail: '三步走：选素数→生成密钥→加密/解密。欧拉函数、模逆、快速幂的中间过程每一步都展开给你看',
+    tags: ['#交互式', '#进阶'],
+    difficulty: 'advanced',
+    intro: {
+      valueProp: '输入两个小素数，看 RSA 的密钥生成、加密和解密的完整计算过程。',
+      features: [
+        '内置素数表（2-997），下拉选择或手动输入',
+        '密钥生成展示欧拉函数、扩展欧几里得求模逆的逐行推导',
+        '加密/解密展示模幂运算的快速幂二进制分解过程'
+      ],
+      prerequisites: '知道 RSA 是"非对称加密"就够了。',
+      useCases: [
+        '密码学课程辅助学习',
+        '理解模幂和扩展欧几里得算法的实际应用',
+        '面试 RSA 原理前快速实操'
+      ]
+    },
     order: 1
   },
   {
@@ -405,8 +441,26 @@ const TOOLS = [
     icon: '',
     description: 'Diffie-Hellman · 离散对数',
     route: '/pages/dh-viz/dh-viz',
-    available: false,
+    available: true,
     featured: false,
+    tagline: 'Alice 和 Bob 怎么在不安全信道上约定密钥？DH 密钥交换一步一步看',
+    taglineDetail: '设定素数和本原根，Alice 和 Bob 自动生成私钥→交换公钥→计算共享密钥；切换 MITM 模式看 Eve 怎么拦截篡改',
+    tags: ['#可视化', '#进阶'],
+    difficulty: 'advanced',
+    intro: {
+      valueProp: '选一个素数和一个本原根，看 Alice 和 Bob 怎么在不安全信道上约定共享密钥。',
+      features: [
+        'Alice/Bob 双方面板，私钥可手输可随机，公钥自动计算',
+        '公钥交换过程动画展示（含模幂展开）',
+        'MITM 攻击模拟：Eve 拦截篡改，密钥不一致警示'
+      ],
+      prerequisites: '知道"密钥交换"的概念，了解模幂运算基本知识。',
+      useCases: [
+        '密码学课程密钥交换章节',
+        '理解 DH 协议如何防止窃听',
+        '演示中间人攻击的工作原理和危害'
+      ]
+    },
     order: 3
   },
   {
@@ -445,8 +499,26 @@ const TOOLS = [
     icon: '',
     description: '凯撒/维吉尼亚/栅栏密码',
     route: '/pages/crypto-tools/crypto-tools',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '凯撒/维吉尼亚/栅栏——三种古典密码加密/解密/暴力破解',
+    taglineDetail: '三种密码一键切换。凯撒移位破解所有 25 种可能，维吉尼亚密钥循环逐字母展示，栅栏密码点阵结构可视化，附带字母频率柱状图',
+    tags: ['#交互式', '#实用工具'],
+    difficulty: 'easy',
+    intro: {
+      valueProp: '凯撒、维吉尼亚、栅栏——三种古典密码的加密/解密/暴力破解，频率分析一眼看清。',
+      features: [
+        '三种密码一键切换：凯撒（1-25 移位）、维吉尼亚（密钥循环）、栅栏（2-20 栏）',
+        '暴力破解：凯撒展示全部 25 种移位结果，栅栏枚举所有栏数',
+        '字母频率柱状图，对比标准英文频率'
+      ],
+      prerequisites: '知道"加密就是把字母变一下"就够了。',
+      useCases: [
+        '密码学入门学习',
+        '理解古典密码的移位和替换原理',
+        '认识字母频率分析在破译中的作用'
+      ]
+    },
     order: 5
   },
 

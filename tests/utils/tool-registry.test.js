@@ -52,26 +52,30 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 16 个工具', () => {
+    test('返回当前已实现的 20 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(16);
+      expect(result.length).toBe(20);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');
       expect(ids).toContain('tls-viz');
       expect(ids).toContain('dns-viz');
       expect(ids).toContain('http-parser');
+      expect(ids).toContain('ip-fragment');
+      expect(ids).toContain('nat-viz');
+      expect(ids).toContain('nginx-gen');
+      expect(ids).toContain('cpu-sched');
+      expect(ids).toContain('mem-paging');
+      expect(ids).toContain('deadlock');
+      expect(ids).toContain('disk-sched');
+      expect(ids).toContain('sync-viz');
       expect(ids).toContain('sort-viz');
       expect(ids).toContain('ds-viz');
       expect(ids).toContain('bplus-viz');
       expect(ids).toContain('sha256-viz');
-      expect(ids).toContain('cpu-sched');
-      expect(ids).toContain('disk-sched');
-      expect(ids).toContain('mem-paging');
-      expect(ids).toContain('nat-viz');
-      expect(ids).toContain('ip-fragment');
-      expect(ids).toContain('nginx-gen');
-      expect(ids).toContain('deadlock');
+      expect(ids).toContain('crypto-tools');
+      expect(ids).toContain('dh-viz');
+      expect(ids).toContain('rsa-calc');
     });
   });
 
