@@ -52,9 +52,9 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 22 个工具', () => {
+    test('返回当前已实现的 25 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(22);
+      expect(result.length).toBe(25);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');

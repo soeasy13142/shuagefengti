@@ -13,6 +13,7 @@
     "pages/tools-all/tools-all",
     "pages/http-parser/http-parser",
     "pages/ip-fragment/ip-fragment",
+    "pages/lexer-viz/lexer-viz",
     "pages/ll1-parser/ll1-parser",
     "pages/regex-dfa/regex-dfa",
     "pages/dh-viz/dh-viz",

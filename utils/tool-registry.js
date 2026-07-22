@@ -637,8 +637,28 @@ const TOOLS = [
     icon: '',
     description: '正则转NFA·DFA·状态图',
     route: '/pages/regex-dfa/regex-dfa',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '输入正则表达式，看 Thompson 构造法生成 NFA，再转化为 DFA 状态图',
+    taglineDetail: '支持正则语法（* | . () ? +），三步展示：NFA 状态图 ← 子集构造过程 ← DFA 转移表 + 状态图，支持 DFA 模拟运行验证输入串是否匹配',
+    tags: ['#可视化', '#交互式', '#编译原理'],
+    difficulty: 'advanced',
+    intro: {
+      valueProp: '输入正则表达式，逐步观察 Thompson 构造法生成 NFA、子集构造法转化为 DFA 的完整过程。',
+      features: [
+        '支持常用正则语法：* 克林闭包、| 选择、. 连接、() 分组、? 可选、+ 一次或多次',
+        'NFA 状态图与转移列表，清晰的 Thompson 构造法展示',
+        '子集构造过程逐步骤展开：ε-闭包 → move → 新 DFA 状态',
+        'DFA 转移表与状态图，接受态醒目标注',
+        'DFA 模拟运行：输入测试串，逐字符追踪转移路径'
+      ],
+      prerequisites: '了解正则表达式的基本语法，知道 NFA 和 DFA 是"有限自动机"就够了。',
+      useCases: [
+        '编译原理课程辅助学习',
+        '理解 Thompson 构造法和子集构造法的实际运行过程',
+        '面试前复习正则表达式到 DFA 的转化流程'
+      ]
+    },
     order: 1
   },
   {
@@ -678,8 +698,28 @@ const TOOLS = [
     icon: '',
     description: 'Token化 · 正则匹配 · 符号表',
     route: '/pages/lexer-viz/lexer-viz',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '输入代码，逐字符观察 Token 化过程和符号表构建',
+    taglineDetail: '输入类 C 代码或选择预设示例，自动执行词法分析：源码视图逐字符高亮 Token 类型，Token 流卡片可点击查看详情，符号表汇总标识符出现位置，步进模式可单步/全部/重置。展示最长匹配原则和关键字优先规则',
+    tags: ['#可视化', '#编译原理'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '输入一段类 C 代码，看词法分析器怎么把字符流变成 Token 流，符号表怎么构建。',
+      features: [
+        '源码视图逐字符高亮，已识别 Token 按类型着色（关键字/标识符/数字/运算符等）',
+        'Token 流卡片可点击查看详情（类型、词素、行列号、匹配规则）',
+        '符号表自动汇总标识符出现位置和次数',
+        '步进模式：单步前进、一键全部、重置，观察光标在源码上的移动',
+        '最长匹配原则演示（>= 识别为一个运算符而非 > + =）'
+      ],
+      prerequisites: '知道"词法分析"是编译前端的第一步就够了。',
+      useCases: [
+        '编译原理课程词法分析章节',
+        '理解正则匹配和最长匹配原则',
+        '观察词法分析器如何处理注释、字符串和非法字符'
+      ]
+    },
     order: 3
   },
   {
@@ -689,8 +729,27 @@ const TOOLS = [
     icon: '',
     description: '语法分析树 · 语法制导翻译',
     route: '/pages/ast-builder/ast-builder',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '输入算术表达式，看它怎么一步步变成抽象语法树',
+    taglineDetail: '词法分析 → LL(1) 递归下降解析 → AST 树视图 → SDT 求值，三步递进展示表达式的语法树构建和语义计算全过程',
+    tags: ['#可视化', '#交互式', '#编译原理'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '输入一个算术表达式，跟踪它从 Token 流到抽象语法树的完整构建过程。',
+      features: [
+        '词法分析展示 Token 流，逐步高亮当前 Token',
+        'LL(1) 递归下降解析，完整记录每一步产生式应用',
+        'AST 树视图带节点颜色编码（数字/操作符/标识符）',
+        '语法制导翻译（SDT）步进求值，节点属性实时标注'
+      ],
+      prerequisites: '知道什么是表达式和四则运算就行。',
+      useCases: [
+        '编译原理课程辅助学习',
+        '理解 LL(1) 自顶向下解析的工作方式',
+        '学习语法制导翻译（SDT）求值过程'
+      ]
+    },
     order: 4
   }
 ];
