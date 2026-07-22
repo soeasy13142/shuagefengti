@@ -1,0 +1,467 @@
+/* ======================== 页面基础 ======================== */
+.page {
+  min-height: 100vh;
+  background: #faf9f5;
+  padding: 20rpx 24rpx 40rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  color: #141413;
+}
+
+.band-label {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32rpx;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  color: #141413;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 28rpx;
+  font-weight: 400;
+  letter-spacing: -2rpx;
+  color: #141413;
+  margin-bottom: 16rpx;
+}
+
+/* ======================== 配置区 ======================== */
+.config-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.slider-row:last-child {
+  margin-bottom: 0;
+}
+
+.slider-label {
+  font-size: 24rpx;
+  color: #141413;
+  flex-shrink: 0;
+  width: 120rpx;
+}
+
+/* WeChat slider custom styling */
+.warm-slider {
+  flex: 1;
+}
+
+.slider-value {
+  font-size: 22rpx;
+  color: #6c6a64;
+  flex-shrink: 0;
+  width: 110rpx;
+  text-align: right;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.params-row {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 16rpx;
+  flex-wrap: wrap;
+}
+
+.param-chip {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 12rpx 18rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100rpx;
+  flex: 1;
+}
+
+.param-label {
+  font-size: 20rpx;
+  color: #6c6a64;
+  margin-bottom: 4rpx;
+}
+
+.param-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+/* ======================== 操作按钮 ======================== */
+.action-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  flex: 1;
+  min-width: 150rpx;
+  background: #cc785c;
+  color: #faf9f5;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  border: none;
+  text-align: center;
+}
+
+.btn-primary:active {
+  background: #a9583e;
+}
+
+.btn-primary[disabled] {
+  background: #d4cfc2;
+  color: #8e8b82;
+}
+
+.btn-secondary {
+  background: #faf9f5;
+  color: #141413;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  border: none;
+  min-width: 120rpx;
+  text-align: center;
+}
+
+.btn-secondary:active {
+  background: #e8e0d2;
+}
+
+.btn-hover {
+  opacity: 0.7;
+}
+
+/* ======================== 提示信息 ======================== */
+.info-text {
+  display: block;
+  background: #f5ede2;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.error-text {
+  display: block;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: #c0392b;
+}
+
+/* ======================== 可视化区 ======================== */
+.viz-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.datagram-bar {
+  height: 32rpx;
+  background: #faf9f5;
+  border-radius: 8rpx;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+}
+
+.datagram-fill {
+  height: 100%;
+  background: #a0b4c8;
+  border-radius: 8rpx;
+  opacity: 0.6;
+}
+
+/* ── 分片列表 ── */
+.fragment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.fragment-card {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.fragment-highlight {
+  border: 2rpx solid #cc785c;
+  background: #f5ede2;
+}
+
+.fragment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 2rpx solid #e6dfd8;
+}
+
+.fragment-index {
+  font-family: Georgia, serif;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #141413;
+}
+
+.fragment-range {
+  font-size: 22rpx;
+  color: #6c6a64;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.fragment-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8rpx 16rpx;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.field-label {
+  font-size: 22rpx;
+  color: #6c6a64;
+  flex-shrink: 0;
+}
+
+.field-value {
+  font-size: 22rpx;
+  color: #141413;
+}
+
+.mono {
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.flag-on {
+  color: #cc785c;
+  font-weight: 600;
+}
+
+.flag-off {
+  color: #6c6a64;
+}
+
+/* ======================== 偏移量计算面板 ======================== */
+.calc-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.calc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calc-toggle {
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.calc-body {
+  margin-top: 16rpx;
+}
+
+.calc-note {
+  display: block;
+  font-size: 22rpx;
+  color: #6c6a64;
+  margin-bottom: 12rpx;
+  font-style: italic;
+}
+
+.calc-line {
+  background: #faf9f5;
+  border-radius: 8rpx;
+  padding: 12rpx 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.calc-line-text {
+  font-size: 22rpx;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  line-height: 1.6;
+}
+
+/* ======================== 关键字段小结 ======================== */
+.summary-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12rpx;
+}
+
+.summary-item {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  text-align: center;
+}
+
+.summary-label {
+  display: block;
+  font-size: 20rpx;
+  color: #6c6a64;
+  margin-bottom: 6rpx;
+}
+
+.summary-value {
+  display: block;
+  font-size: 24rpx;
+  color: #141413;
+  margin-bottom: 4rpx;
+  font-weight: 600;
+}
+
+.summary-note {
+  display: block;
+  font-size: 18rpx;
+  color: #8e8b82;
+}
+
+/* ======================== 重组动画区 ======================== */
+.reassemble-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.reassemble-progress {
+  margin-bottom: 16rpx;
+}
+
+.merge-step-detail {
+  background: #faf9f5;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.merge-step-text {
+  font-size: 24rpx;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  line-height: 1.6;
+}
+
+.reassemble-result {
+  background: #f5ede2;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  text-align: center;
+  border: 2rpx solid #cc785c;
+}
+
+.result-label {
+  display: block;
+  font-size: 22rpx;
+  color: #cc785c;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
+.result-value {
+  display: block;
+  font-size: 28rpx;
+  color: #141413;
+  font-family: Georgia, serif;
+}
+
+/* ======================== 空状态 ======================== */
+.empty-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 48rpx 24rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: #8e8b82;
+}
+
+/* ======================== 控制栏 ======================== */
+.ctrl-band {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 40rpx;
+}
+
+.ctrl-btn {
+  flex: 1;
+  padding: 14rpx 20rpx;
+  border-radius: 12rpx;
+  background: #faf9f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.ctrl-btn:active {
+  background: #e8e0d2;
+}
+
+.ctrl-play {
+  background: #cc785c;
+}
+
+.ctrl-play:active {
+  background: #a9583e;
+}
+
+.ctrl-active {
+  background: #a9583e;
+}
+
+.ctrl-play .ctrl-icon {
+  color: #faf9f5;
+}
+
+.ctrl-icon {
+  font-size: 24rpx;
+  color: #141413;
+}

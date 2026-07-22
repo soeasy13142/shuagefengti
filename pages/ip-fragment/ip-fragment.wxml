@@ -1,0 +1,160 @@
+<view class="page">
+  <!-- 配置区 -->
+  <view class="config-band">
+    <text class="band-label">IP 分片可视化</text>
+
+    <!-- 报文大小滑块 -->
+    <view class="slider-row">
+      <text class="slider-label">报文大小</text>
+      <slider class="warm-slider" min="100" max="10000" value="{{datagramSize}}" step="100" bindchanging="onSizeSliding" bindchange="onSizeChange" backgroundColor="#e6dfd8" activeColor="#cc785c" block-size="16" />
+      <text class="slider-value">{{datagramSize}} 字节</text>
+    </view>
+
+    <!-- MTU 滑块 -->
+    <view class="slider-row">
+      <text class="slider-label">MTU</text>
+      <slider class="warm-slider" min="68" max="2000" value="{{mtu}}" step="50" bindchanging="onMtuSliding" bindchange="onMtuChange" backgroundColor="#e6dfd8" activeColor="#cc785c" block-size="16" />
+      <text class="slider-value">{{mtu}} 字节</text>
+    </view>
+
+    <!-- 实时参数 -->
+    <view class="params-row">
+      <view class="param-chip">
+        <text class="param-label">IP 头部</text>
+        <text class="param-value">{{headerSize}} 字节</text>
+      </view>
+      <view class="param-chip">
+        <text class="param-label">每片载荷</text>
+        <text class="param-value">{{payloadPerFragment}} 字节</text>
+      </view>
+      <view class="param-chip">
+        <text class="param-label">总分片数</text>
+        <text class="param-value">{{totalFragments}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-band">
+    <button class="btn-primary" bindtap="onFragmentTap" hover-class="btn-hover">▶ 分片</button>
+    <button class="btn-primary" bindtap="onReassembleTap" hover-class="btn-hover" disabled="{{!hasFragments}}">↺ 重组回放</button>
+    <button class="btn-secondary" bindtap="onResetTap" hover-class="btn-hover">重置</button>
+  </view>
+
+  <!-- 提示信息 -->
+  <text wx:if="{{infoMessage}}" class="info-text">{{infoMessage}}</text>
+  <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+
+  <!-- ===== 原始报文可视化 ===== -->
+  <view class="viz-band" wx:if="{{fragments.length > 0}}">
+    <text class="section-title">原始报文（{{totalBytes}} 字节）</text>
+    <view class="datagram-bar">
+      <view class="datagram-fill" style="width: 100%;"></view>
+    </view>
+
+    <!-- 分片列表 -->
+    <text class="section-title">分片列表（{{totalFragments}} 片）</text>
+    <view class="fragment-list">
+      <view wx:for="{{fragments}}" wx:key="index" class="fragment-card {{item.isHighlight ? 'fragment-highlight' : ''}}">
+        <view class="fragment-header">
+          <text class="fragment-index">分片 {{item.index}}</text>
+          <text class="fragment-range">{{item.dataStart}}..{{item.dataEnd}}</text>
+        </view>
+        <view class="fragment-fields">
+          <view class="field-row">
+            <text class="field-label">ID</text>
+            <text class="field-value mono">{{item.id}}</text>
+          </view>
+          <view class="field-row">
+            <text class="field-label">MF</text>
+            <text class="field-value {{item.mf ? 'flag-on' : 'flag-off'}}">{{item.mf ? '1（还有）' : '0（最后）'}}</text>
+          </view>
+          <view class="field-row">
+            <text class="field-label">片偏移</text>
+            <text class="field-value mono">{{item.offset}}（{{item.offsetBytes}} 字节）</text>
+          </view>
+          <view class="field-row">
+            <text class="field-label">数据长度</text>
+            <text class="field-value">{{item.dataLength}} 字节</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 偏移量计算过程（可折叠） ===== -->
+  <view class="calc-band" wx:if="{{fragments.length > 0}}">
+    <view class="calc-header" bindtap="onToggleCalc">
+      <text class="section-title">偏移量计算过程</text>
+      <text class="calc-toggle">{{showCalc ? '▲' : '▼'}}</text>
+    </view>
+    <view wx:if="{{showCalc}}" class="calc-body">
+      <text class="calc-note">每片可携带最多 {{payloadPerFragment}} 字节（MTU {{mtu}} - IP 头 {{headerSize}}）</text>
+      <view wx:for="{{fragments}}" wx:key="index" class="calc-line">
+        <text class="calc-line-text">分片 {{item.index}}：字节 {{item.dataStart}}~{{item.dataEnd}} → 偏移 {{item.offset}}（{{item.dataStart}} / 8）</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 关键字段小结 ===== -->
+  <view class="summary-band" wx:if="{{fragments.length > 0}}">
+    <text class="section-title">关键字段</text>
+    <view class="summary-grid">
+      <view class="summary-item">
+        <text class="summary-label">标识符 (ID)</text>
+        <text class="summary-value mono">{{fragmentId}}</text>
+        <text class="summary-note">同一报文所有分片相同</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">标志 (Flags)</text>
+        <text class="summary-value">MF = {{mfSummary}}</text>
+        <text class="summary-note">1=还有分片 / 0=最后分片</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">片偏移</text>
+        <text class="summary-value">= 起始字节 ÷ 8</text>
+        <text class="summary-note">8 字节对齐</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 重组动画区 ===== -->
+  <view class="reassemble-band" wx:if="{{mergeSteps.length > 0}}">
+    <text class="section-title">重组过程</text>
+
+    <!-- 进度条 -->
+    <view class="reassemble-progress">
+      <progress percent="{{reassemblePercent}}" stroke-width="6" color="#cc785c" backgroundColor="#e6dfd8" />
+    </view>
+
+    <!-- 当前合并步骤详情 -->
+    <view wx:if="{{currentMergeStep !== null}}" class="merge-step-detail">
+      <text class="merge-step-text">{{currentMergeStep.description}}</text>
+    </view>
+
+    <!-- 最终结果 -->
+    <view wx:if="{{reassembleComplete}}" class="reassemble-result">
+      <text class="result-label">重组完成</text>
+      <text class="result-value">{{totalBytes}} 字节 → 完整数据报</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-band" wx:if="{{fragments.length === 0 && !errorMessage}}">
+    <text class="empty-text">调整参数后点击「分片」按钮</text>
+  </view>
+
+  <!-- 控制栏 -->
+  <view class="ctrl-band" wx:if="{{fragments.length > 0}}">
+    <view class="ctrl-btn" bindtap="onPrevStep">
+      <text class="ctrl-icon">← 上一步</text>
+    </view>
+    <view class="ctrl-btn ctrl-play {{reassembling ? 'ctrl-active' : ''}}" bindtap="onToggleReassemble">
+      <text class="ctrl-icon">{{reassembling ? '暂停' : '▶ 播放'}}</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onNextStep">
+      <text class="ctrl-icon">下一步 →</text>
+    </view>
+  </view>
+
+</view>
