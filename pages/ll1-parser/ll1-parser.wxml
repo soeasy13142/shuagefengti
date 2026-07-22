@@ -201,6 +201,22 @@
     </view>
   </view>
 
+  <!-- Tab 5: Parse Tree -->
+  <view wx:if="{{parsed && activeTab === 4}}" class="tab-content">
+    <view class="info-card">
+      <text class="info-card-title">语法分析树</text>
+      <text wx:if="{{!treeBuilt}}" class="info-hint">请先在「串分析」中分析一个输入串，语法树将在此展示</text>
+      <text wx:elif="{{treeNodes.length === 0}}" class="info-hint">树结构中包含 ε 产生式，仅展开非空子节点</text>
+    </view>
+
+    <view wx:if="{{treeBuilt && treeNodes.length > 0}}" class="tree-container">
+      <view wx:for="{{treeNodes}}" wx:for-item="node" wx:key="index" class="tree-node" style="padding-left: {{node.depth * 52}}rpx">
+        <text class="tree-prefix">{{node.prefix}}</text>
+        <text class="{{node.isNonTerminal ? 'tree-nt' : 'tree-t'}}">{{node.symbol}}</text>
+      </view>
+    </view>
+  </view>
+
   <!-- Empty state when no grammar parsed -->
   <view wx:elif="{{!parsed && !errorMessage}}" class="empty-band">
     <text class="empty-text">输入文法后点击「计算 FIRST/FOLLOW」查看 LL(1) 分析结果</text>

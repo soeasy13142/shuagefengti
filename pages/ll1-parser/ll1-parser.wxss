@@ -608,6 +608,40 @@
   font-weight: 600;
 }
 
+/* ======================== Parse Tree Tab ======================== */
+.tree-container {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 24rpx;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  min-height: 48rpx;
+}
+
+.tree-prefix {
+  color: #6c6a64;
+  font-size: 22rpx;
+  margin-right: 4rpx;
+  flex-shrink: 0;
+}
+
+.tree-nt {
+  color: #cc785c;
+  font-weight: 600;
+}
+
+.tree-t {
+  color: #141413;
+}
+
 /* ======================== Empty State ======================== */
 .empty-band {
   background: #efe9de;
