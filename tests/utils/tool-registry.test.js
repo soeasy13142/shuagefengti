@@ -37,6 +37,13 @@ describe('tool-registry', () => {
     });
   });
 
+  describe('nat-viz', () => {
+    test('nat-viz tool is now available', () => {
+      const natViz = TOOLS.find(function(t) { return t.id === 'nat-viz'; });
+      expect(natViz.available).toBe(true);
+    });
+  });
+
   describe('getAvailableTools', () => {
     test('只返回 available: true 的工具', () => {
       let result = getAvailableTools();
@@ -45,12 +52,13 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 12 个工具', () => {
+    test('返回当前已实现的 15 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(12);
+      expect(result.length).toBe(15);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');
+      expect(ids).toContain('tls-viz');
       expect(ids).toContain('dns-viz');
       expect(ids).toContain('sort-viz');
       expect(ids).toContain('ds-viz');
@@ -59,6 +67,7 @@ describe('tool-registry', () => {
       expect(ids).toContain('cpu-sched');
       expect(ids).toContain('disk-sched');
       expect(ids).toContain('mem-paging');
+      expect(ids).toContain('nat-viz');
     });
   });
 

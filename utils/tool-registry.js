@@ -104,8 +104,26 @@ const TOOLS = [
     icon: '',
     description: 'TLS 1.3 握手 · 证书链 · 密钥交换',
     route: '/pages/tls-viz/tls-viz',
-    available: false,
+    available: true,
     featured: false,
+    tagline: 'TLS 1.3 握手协议 step-by-step 动画，看完就懂',
+    taglineDetail: '3 种握手场景切换（初次握手/PSK 恢复/中间人警告），客户端-服务器交互动画，报文 payload 逐字段展示，ECDHE→HKDF 密钥派生全过程',
+    tags: ['#可视化', '#交互式', '#计算机网络'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: 'TLS 1.3 握手三步一歇走给你看，证书和密钥交换不再黑盒。',
+      features: [
+        '3 种握手场景：初次握手、PSK 会话恢复、中间人攻击告警',
+        '客户端-服务器双向动画，报文 payload 逐字段展示',
+        'ECDHE→HKDF 密钥派生链路可视化（4 组对称密钥 + IV）'
+      ],
+      prerequisites: '知道 HTTPS 和"握手"的概念就够了。',
+      useCases: [
+        '计网面试 TLS 章节复习',
+        '理解 ECDHE 密钥交换和 HKDF 派生的流程',
+        '对比完整握手与 PSK 恢复的性能差异'
+      ]
+    },
     order: 3
   },
   {
@@ -165,9 +183,27 @@ const TOOLS = [
     name: 'NAT 模拟器',
     icon: '',
     description: '网络地址转换 · 端口映射',
-    route: '/pages/nat-viz/nat-viz',
-    available: false,
+    route: '/package-tools/nat-viz/nat-viz',
+    available: true,
     featured: false,
+    tagline: 'SNAT/DNAT 模拟，看报文如何穿越 NAT 路由器',
+    taglineDetail: '单台主机外出、多台主机共享公网 IP、端口映射三种场景，报文在 3 个区域间流向动画，NAT 映射表实时更新',
+    tags: ['#可视化', '#交互式', '#计算机网络'],
+    difficulty: 'medium',
+    intro: {
+      valueProp: '选择 NAT 场景，观察内网报文怎么经过 NAT 转换到达外网，响应又如何回送。',
+      features: [
+        '三种预设场景：单主机、多主机共享 IP、端口映射 Web 服务器',
+        '报文在 LAN / NAT 路由器 / WAN 三区间流向动画',
+        'NAT 映射表实时更新，理解端口复用的原理'
+      ],
+      prerequisites: '知道 IP 地址和端口是什么，了解"内网"和"外网"的区别。',
+      useCases: [
+        '计网面试复习',
+        '理解 NAPT 如何解决 IPv4 地址短缺',
+        '对比 SNAT 和 DNAT（端口映射）的不同工作方式'
+      ]
+    },
     order: 7
   },
   {

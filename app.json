@@ -9,6 +9,7 @@
     "pages/record-detail/record-detail",
     "pages/wrong-questions/wrong-questions",
     "pages/dashboard/dashboard",
+    "pages/tls-viz/tls-viz",
     "pages/tools-all/tools-all"
   ],
   "subPackages": [{
@@ -25,6 +26,7 @@
       "deadlock/deadlock",
       "disk-sched/disk-sched",
       "mem-paging/mem-paging",
+      "nat-viz/nat-viz",
       "nginx-gen/nginx-gen"
     ]
   }],
