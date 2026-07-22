@@ -1,0 +1,182 @@
+<view class="page">
+  <!-- ── 输入区 ── -->
+  <view class="input-band">
+    <text class="band-label">Regex  DFA</text>
+    <text class="band-subtitle">输入正则表达式，逐步展示 Thompson 构造法生成 NFA、子集构造法转换为 DFA 以及状态转移表</text>
+
+    <!-- 预置示例 -->
+    <view class="sample-row">
+      <text class="section-label">预置示例</text>
+      <picker mode="selector" range="{{presetLabels}}" value="{{presetIndex}}" bindchange="onPresetChange">
+        <view class="sample-picker">
+          <text class="sample-picker-text">{{presetLabels[presetIndex] || '选择示例...'}}</text>
+          <text class="picker-arrow"></text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 正则输入 -->
+    <view class="input-row">
+      <input class="regex-input" placeholder="输入正则表达式，如 a(b|c)*" value="{{regex}}" bindinput="onRegexInput" maxlength="100" />
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onConstruct" hover-class="btn-hover">构造</button>
+      <button class="btn-secondary" bindtap="onClear" hover-class="btn-hover">清空</button>
+    </view>
+
+    <!-- 错误信息 -->
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- ── Step 1: NFA 状态图 ── -->
+  <view wx:if="{{nfa}}" class="result-card">
+    <!-- Tab 切换 -->
+    <view class="tab-bar">
+      <view class="tab-item {{activeStep === 1 ? 'tab-active' : ''}}" data-step="1" bindtap="onStepChange">
+        <text>NFA 状态图</text>
+      </view>
+      <view class="tab-item {{activeStep === 2 ? 'tab-active' : ''}}" data-step="2" bindtap="onStepChange">
+        <text>子集构造</text>
+      </view>
+      <view class="tab-item {{activeStep === 3 ? 'tab-active' : ''}}" data-step="3" bindtap="onStepChange">
+        <text>DFA + 转移表</text>
+      </view>
+    </view>
+
+    <!-- NFA 状态图 -->
+    <view wx:if="{{activeStep === 1}}" class="step-content">
+      <text class="section-label">NFA 状态列表（共 {{nfaStates.length}} 个状态）</text>
+      <view class="states-row">
+        <view wx:for="{{nfaStates}}" wx:key="id" class="state-node-wrapper">
+          <view class="state-circle {{item.isAccept ? 'state-accept' : ''}} {{item.isStart ? 'state-start' : ''}}">
+            <text class="state-label">{{item.id}}</text>
+          </view>
+          <text wx:if="{{item.isStart}}" class="state-tag">开始</text>
+          <text wx:elif="{{item.isAccept}}" class="state-tag">接受</text>
+        </view>
+      </view>
+
+      <text class="section-label">转移列表</text>
+      <view class="transition-table">
+        <view class="tt-row tt-header">
+          <text class="tt-cell tt-cell-from">从</text>
+          <text class="tt-cell tt-cell-arrow"></text>
+          <text class="tt-cell tt-cell-input">输入</text>
+          <text class="tt-cell tt-cell-arrow2"></text>
+          <text class="tt-cell tt-cell-to">到</text>
+        </view>
+        <view wx:for="{{nfaTransitions}}" wx:for-item="t" wx:key="*this" class="tt-row">
+          <text class="tt-cell tt-cell-from">{{t.from}}</text>
+          <text class="tt-cell tt-cell-arrow">→</text>
+          <text class="tt-cell tt-cell-input {{t.input === 'ε' ? 'eps-input' : ''}}">{{t.input}}</text>
+          <text class="tt-cell tt-cell-arrow2">→</text>
+          <text class="tt-cell tt-cell-to">{{t.to}}</text>
+        </view>
+        <view wx:if="{{nfaTransitions.length === 0}}" class="tt-row">
+          <text class="tt-cell-empty">无转移</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 子集构造过程 -->
+    <view wx:if="{{activeStep === 2}}" class="step-content">
+      <text class="section-label">子集构造法：-闭包  新的 DFA 状态</text>
+      <view class="subset-steps">
+        <view wx:for="{{subsetSteps}}" wx:for-item="step" wx:key="*this" class="subset-step">
+          <view class="subset-step-header">
+            <text class="subset-step-num">{{step.label}}</text>
+          </view>
+          <view class="subset-step-body">
+            <text wx:for="{{step.lines}}" wx:for-item="line" wx:key="*this" class="subset-line">{{line}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{dfaStatesList.length > 0}}" class="dfa-states-summary">
+        <text class="section-label">DFA 状态汇总（共 {{dfaStatesList.length}} 个状态）</text>
+        <view wx:for="{{dfaStatesList}}" wx:for-item="ds" wx:key="id" class="dfa-state-summary">
+          <view class="state-circle {{ds.isAccept ? 'state-accept' : ''}} {{ds.isStart ? 'state-start' : ''}}">
+            <text class="state-label">{{ds.id}}</text>
+          </view>
+          <text class="dfa-state-nfas">= {{ds.nfaSummary}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- DFA 转移表 + 状态图 -->
+    <view wx:if="{{activeStep === 3}}" class="step-content">
+      <text class="section-label">DFA 状态转移表</text>
+      <scroll-view class="tt-scroll" scroll-x>
+        <view class="tt-grid">
+          <!-- 表头 -->
+          <view class="tt-grid-row tt-grid-header">
+            <text class="tt-grid-cell tt-grid-state">状态</text>
+            <text wx:for="{{dfaAlphabet}}" wx:for-item="ch" wx:key="*this" class="tt-grid-cell tt-grid-input">{{ch}}</text>
+            <text class="tt-grid-cell tt-grid-accept">接受</text>
+          </view>
+          <!-- 数据行 -->
+          <view wx:for="{{dfaTableRows}}" wx:for-item="row" wx:key="state" class="tt-grid-row {{row.isStart ? 'tt-grid-start' : ''}} {{row.isHighlight ? 'tt-grid-highlight' : ''}}">
+            <text class="tt-grid-cell tt-grid-state">{{row.state}}{{row.isStart ? ' (开始)' : ''}}</text>
+            <text wx:for="{{row.transitions}}" wx:for-item="t" wx:key="*this" class="tt-grid-cell tt-grid-tcell {{t === '-' ? 'tt-grid-none' : ''}}">{{t}}</text>
+            <text class="tt-grid-cell tt-grid-accept {{row.isAccept ? 'tt-grid-yes' : ''}}">{{row.isAccept ? '✓' : ''}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <text class="section-label">DFA 状态图</text>
+      <view class="states-row">
+        <view wx:for="{{dfaStatesList}}" wx:key="id" class="state-node-wrapper">
+          <view class="state-circle {{ds.isAccept ? 'state-accept' : ''}} {{ds.isStart ? 'state-start' : ''}}">
+            <text class="state-label">{{ds.id}}</text>
+          </view>
+          <text wx:if="{{ds.isStart}}" class="state-tag">开始</text>
+          <text wx:elif="{{ds.isAccept}}" class="state-tag">接受</text>
+        </view>
+      </view>
+
+      <text class="section-label">转移列表</text>
+      <view class="transition-table">
+        <view class="tt-row tt-header">
+          <text class="tt-cell tt-cell-from">从</text>
+          <text class="tt-cell tt-cell-arrow"></text>
+          <text class="tt-cell tt-cell-input">输入</text>
+          <text class="tt-cell tt-cell-arrow2"></text>
+          <text class="tt-cell tt-cell-to">到</text>
+        </view>
+        <view wx:for="{{dfaTransitions}}" wx:for-item="t" wx:key="*this" class="tt-row">
+          <text class="tt-cell tt-cell-from">{{t.from}}</text>
+          <text class="tt-cell tt-cell-arrow">→</text>
+          <text class="tt-cell tt-cell-input">{{t.input}}</text>
+          <text class="tt-cell tt-cell-arrow2">→</text>
+          <text class="tt-cell tt-cell-to">{{t.to}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── 模拟运行 ── -->
+  <view wx:if="{{dfa}}" class="simulation-band">
+    <text class="section-label">DFA 模拟运行</text>
+    <view class="sim-input-row">
+      <input class="sim-input" placeholder="输入测试串，如 aaa" value="{{testInput}}" bindinput="onTestInput" maxlength="50" />
+      <button class="btn-primary btn-sm" bindtap="onSimulate" hover-class="btn-hover">模拟</button>
+    </view>
+
+    <!-- 模拟结果 -->
+    <view wx:if="{{simResult}}" class="sim-result">
+      <text class="sim-result-text {{simResult.accepted ? 'sim-accepted' : 'sim-rejected'}}">
+        {{simResult.accepted ? '✓ 接受' : '✗ 拒绝'}}
+      </text>
+      <view class="sim-path">
+        <text wx:for="{{simResult.path}}" wx:for-item="p" wx:key="*this" class="sim-step">
+          <text>{{p.fromState}}</text>
+          <text class="sim-char">─{{p.char}}→</text>
+          <text wx:if="{{p.toState}}">{{p.toState}}</text>
+          <text wx:else class="sim-dead">(阻塞)</text>
+        </text>
+      </view>
+    </view>
+  </view>
+</view>
