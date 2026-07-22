@@ -24,6 +24,9 @@ Page({
     hostBitStart: 0,
     // 帮助说明
     showHelp: false,
+    // ℹ︎ 介绍
+    toolId: 'subnet-calc',
+    showIntro: false,
     // 错误提示
     error: '',
     // AND 动画
@@ -64,6 +67,17 @@ Page({
   // 切换帮助说明
   toggleHelp() {
     this.setData({ showHelp: !this.data.showHelp });
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter() {
+    this.setData({ showIntro: false });
   },
 
   // 核心计算

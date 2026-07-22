@@ -1,3 +1,6 @@
+var { BPlusTree } = require('../../utils/bplus-tree');
+var { buildLayout, leafCount } = require('../../utils/bplus-node');
+
 Page({
   data: {
     m: 4,
@@ -14,31 +17,22 @@ Page({
     leafCount: 0,
     errorMessage: '',
     log: [],
-    bplusHelpItems: [
-      '在输入框中输入数字，点击「插入」添加节点',
-      '点击「查找」可查看从根到目标节点的路径',
-      '范围查询：输入起始值到结束值，查看覆盖范围',
-      '调大「阶数」(m) 让树更矮胖，调小更瘦高',
-      '插入时节点会自动分裂，删除时节点会尝试合并'
-    ]
+    // ℹ︎ 介绍
+    toolId: 'bplus-viz',
+    showIntro: false
   },
 
   _tree: null,
 
   onLoad: function() {
-    var bpt = require('../../utils/bplus-tree');
-    var bpn = require('../../utils/bplus-node');
-    this._BPlusTree = bpt.BPlusTree;
-    this._buildLayout = bpn.buildLayout;
-    this._leafCount = bpn.leafCount;
-    this._tree = new this._BPlusTree(4);
+    this._tree = new BPlusTree(4);
     this._refreshRender();
   },
 
   onMChange: function(e) {
     var newM = Number(e.detail.value);
     if (newM === this.data.m) return;
-    this._tree = new this._BPlusTree(newM);
+    this._tree = new BPlusTree(newM);
     this.setData({
       m: newM,
       keyInput: '',
@@ -121,7 +115,7 @@ Page({
   },
 
   onReset: function() {
-    this._tree = new this._BPlusTree(this.data.m);
+    this._tree = new BPlusTree(this.data.m);
     this.setData({
       keyInput: '',
       loInput: '',
@@ -155,7 +149,7 @@ Page({
 
   _refreshRender: function(opts) {
     opts = opts || {};
-    var layout = this._buildLayout(this._tree.root);
+    var layout = buildLayout(this._tree.root);
     var levels = layout.levels.map(function(level) {
       return {
         y: level.y,
@@ -187,7 +181,7 @@ Page({
       canvasWidth: canvasWidth,
       canvasHeight: canvasHeight,
       nodeCount: this._countNodes(this._tree.root),
-      leafCount: this._leafCount(this._tree.root)
+      leafCount: leafCount(this._tree.root)
     });
   },
 
@@ -251,5 +245,16 @@ Page({
   _summarizeSteps: function(steps) {
     var splitCount = steps.filter(function(s) { return s.type === 'split' || s.type === 'rootSplit'; }).length;
     return splitCount > 0 ? '触发 ' + splitCount + ' 次分裂' : '无分裂';
-  }
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro: function() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose: function() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter: function() {
+    this.setData({ showIntro: false });
+  },
 });

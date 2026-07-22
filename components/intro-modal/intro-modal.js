@@ -1,65 +1,69 @@
-// components/intro-modal/intro-modal.js
+const registry = require('../../utils/tool-registry');
+
 Component({
   properties: {
-    show: { type: Boolean, value: false, observer: '_onShowChange' },
-    introContent: { type: Array, value: [] }
+    toolId: {
+      type: String,
+      value: '',
+      observer: '_loadToolData'
+    },
+    show: {
+      type: Boolean,
+      value: false,
+      observer: '_onShowChange'
+    }
   },
 
   data: {
-    animReady: false,
-    currentStep: 0,
-    slideClass: '',
-    totalSteps: 0
+    tool: null,
+    toolData: null,
+    difficultyLabel: '',
+    difficultyStars: '',
+    animClass: ''
   },
 
   methods: {
-    noop() {},
+    _loadToolData(toolId) {
+      if (!toolId) return;
+      const tool = registry.TOOLS.find(function(t) { return t.id === toolId; });
+      if (!tool || !tool.intro) return;
 
-    onMaskTap() {
-      this._close();
-    },
-
-    onClose() {
-      this._close();
-    },
-
-    onPrev() {
-      if (this.data.currentStep <= 0) return;
-      this._goToStep(this.data.currentStep - 1, 'slide-in-left');
-    },
-
-    onNext() {
-      const next = this.data.currentStep + 1;
-      if (next >= this.data.totalSteps) {
-        // Last step — close
-        this._close();
-        return;
-      }
-      this._goToStep(next, 'slide-in-right');
-    },
-
-    _goToStep(step, direction) {
-      this.setData({ slideClass: direction });
-      const timer = setTimeout(() => {
-        this.setData({ currentStep: step, slideClass: '' });
-        clearTimeout(timer);
-      }, 50);
-    },
-
-    _close() {
-      this.setData({ show: false, animReady: false, currentStep: 0, slideClass: '' });
-      this.triggerEvent('close');
+      const diff = registry.getDifficultyInfo(tool.difficulty);
+      this.setData({
+        tool: tool,
+        toolData: tool.intro,
+        difficultyLabel: diff.label,
+        difficultyStars: diff.stars
+      });
     },
 
     _onShowChange(show) {
       if (show) {
-        this.setData({ currentStep: 0, slideClass: '', totalSteps: (this.data.introContent || []).length });
-        wx.nextTick(() => {
-          this.setData({ animReady: true });
-        });
+        // 触发入场动画
+        const self = this;
+        self.setData({ animClass: '' });
+        setTimeout(function() {
+          self.setData({ animClass: 'modal-visible' });
+        }, 30);
       } else {
-        this.setData({ animReady: false, currentStep: 0, slideClass: '' });
+        this.setData({ animClass: '' });
       }
+    },
+
+    onClose() {
+      this.triggerEvent('close', { toolId: this.properties.toolId });
+    },
+
+    onMaskTap() {
+      this.onClose();
+    },
+
+    onEnter() {
+      this.triggerEvent('enter', { toolId: this.properties.toolId });
+    },
+
+    _noop() {
+      // 阻止遮罩层点击穿透到内容区
     }
   }
 });

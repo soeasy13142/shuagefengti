@@ -49,7 +49,10 @@ Page({
     stepIndex: -1,
     totalSteps: 0,
     stepDesc: '',
-    speed: 5
+    speed: 5,
+    // ℹ︎ 介绍
+    toolId: 'ds-viz',
+    showIntro: false
   },
 
   _canvasReady: false,
@@ -740,5 +743,16 @@ Page({
       this._initGraph();
     }
     this.setData({ steps: [], stepIndex: -1, totalSteps: 0, stepDesc: '', playing: false, paused: false, dragX: 0, dragY: 0 });
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro: function() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose: function() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter: function() {
+    this.setData({ showIntro: false });
   }
 });

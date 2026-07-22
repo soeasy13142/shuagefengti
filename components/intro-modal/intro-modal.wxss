@@ -1,52 +1,43 @@
-/* components/intro-modal/intro-modal.wxss */
-
-/* ── Mask ── */
+/* ── 遮罩层 ── */
 .modal-mask {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0);
-  z-index: 999;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.25s ease;
-  pointer-events: none;
-}
-
-.modal-mask.mask-visible {
-  background: rgba(0, 0, 0, 0.4);
-  pointer-events: auto;
-}
-
-/* ── Card ── */
-.modal-card {
-  width: 580rpx;
-  max-height: 80vh;
-  background: #efe9de;
-  border-radius: 24rpx;
-  padding: 48rpx 36rpx 36rpx;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: scale(0.92);
+  z-index: 1000;
   opacity: 0;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+  transition: opacity 200ms ease;
 }
-
-.modal-card.card-visible {
-  transform: scale(1);
+.modal-mask.modal-visible {
   opacity: 1;
 }
 
-/* ── Close Button ── */
+/* ── 弹窗卡片 ── */
+.modal-card {
+  width: 560rpx;
+  max-height: 85vh;
+  background: #efe9de;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-card.modal-visible {
+  transform: scale(1);
+}
+
+/* ── 关闭按钮 ── */
 .modal-close {
   position: absolute;
-  top: 16rpx;
-  right: 20rpx;
+  top: 24rpx;
+  right: 24rpx;
   width: 48rpx;
   height: 48rpx;
   display: flex;
@@ -54,150 +45,127 @@
   justify-content: center;
   z-index: 10;
 }
-
 .close-icon {
-  font-size: 32rpx;
-  color: #8e8b82;
-}
-
-.modal-close:active .close-icon {
+  font-size: 28rpx;
   color: #6c6a64;
+  line-height: 1;
 }
 
-/* ── Step Icon ── */
-.step-icon {
-  font-size: 64rpx;
-  line-height: 1.2;
-  margin-bottom: 16rpx;
-  text-align: center;
-}
-
-/* ── Step Title ── */
-.step-title {
-  font-family: Georgia, 'Songti SC', 'Noto Serif CJK SC', 'STSong', 'SimSun', serif;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #141413;
-  letter-spacing: -2rpx;
-  text-align: center;
-  margin-bottom: 28rpx;
-  width: 100%;
-}
-
-/* ── Content Carousel ── */
-.content-carousel {
-  width: 100%;
-  overflow: hidden;
-  border-radius: 16rpx;
-}
-
-.content-track {
-  display: flex;
-  width: 100%;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.step-panel {
-  flex: 0 0 100%;
-  width: 100%;
-  background: #faf9f5;
-  border-radius: 16rpx;
-  padding: 24rpx;
+/* ── 内容区域 ── */
+.modal-body {
+  padding: 40rpx 36rpx 0;
+  max-height: 60vh;
+  overflow-y: auto;
   box-sizing: border-box;
-  min-height: 200rpx;
 }
 
-.step-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
-  font-size: 26rpx;
+/* ── 工具名 ── */
+.modal-tool-name {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16rpx;
+  font-weight: 400;
+  color: #6c6a64;
+  margin-bottom: 12rpx;
+}
+
+/* ── tagline ── */
+.modal-tagline {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #141413;
+  line-height: 1.4;
+  margin-bottom: 16rpx;
+}
+
+/* ── valueProp ── */
+.modal-value-prop {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 14rpx;
   font-weight: 400;
   color: #141413;
-  line-height: 1.65;
-  white-space: pre-line;
-  word-break: break-word;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
 }
 
-/* ── Progress ── */
-.step-progress {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-  margin-top: 28rpx;
+/* ── 区块 ── */
+.modal-section {
+  margin-bottom: 20rpx;
 }
-
-.step-dot {
-  width: 16rpx;
-  height: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dot-inner {
-  font-size: 16rpx;
-  line-height: 1;
-  color: #ddd7cc;
-  transition: color 0.2s ease;
-}
-
-.step-dot.dot-active .dot-inner {
+.modal-section-title {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 12rpx;
+  font-weight: 600;
   color: #cc785c;
+  letter-spacing: 1rpx;
+  text-transform: uppercase;
+  margin-bottom: 8rpx;
+}
+.modal-section-body {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 14rpx;
+  font-weight: 400;
+  color: #141413;
+  line-height: 1.6;
 }
 
-.step-counter {
-  font-size: 24rpx;
-  color: #6c6a64;
-  margin-left: 8rpx;
-}
-
-/* ── Navigation ── */
-.step-nav {
+/* ── 列表 ── */
+.modal-list {
   display: flex;
-  gap: 24rpx;
-  width: 100%;
-  margin-top: 28rpx;
+  flex-direction: column;
+}
+.modal-list-item {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 4rpx;
+}
+.modal-bullet {
+  font-size: 14rpx;
+  color: #cc785c;
+  margin-right: 8rpx;
+  line-height: 1.8;
+}
+.modal-item-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 14rpx;
+  color: #141413;
+  line-height: 1.8;
+  flex: 1;
 }
 
-.nav-btn {
-  flex: 1;
-  height: 72rpx;
-  border-radius: 16rpx;
+/* ── 底部 ── */
+.modal-footer {
+  padding: 20rpx 36rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #cc785c;
+  border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 12rpx;
 }
-
-.nav-btn-text {
-  font-size: 28rpx;
-  font-weight: 500;
-}
-
-.nav-prev {
-  background: #efe9de;
-  border: 2rpx solid #ddd7cc;
-}
-
-.nav-prev:active {
-  background: #ddd7cc;
-}
-
-.nav-prev .nav-btn-text {
-  color: #6c6a64;
-}
-
-.nav-prev.nav-disabled {
-  opacity: 0.4;
-}
-
-.nav-next {
-  background: #cc785c;
-}
-
-.nav-next:active {
+.modal-btn-hover {
   background: #a9583e;
 }
-
-.nav-next-text {
-  color: #faf9f5;
+.modal-btn-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ffffff;
+}
+.modal-hint {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 12rpx;
+  color: #6c6a64;
 }

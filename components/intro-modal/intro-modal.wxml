@@ -1,45 +1,60 @@
-<!-- components/intro-modal/intro-modal.wxml -->
-<view class="modal-mask {{animReady ? 'mask-visible' : ''}}" bindtap="onMaskTap">
-  <view class="modal-card {{animReady ? 'card-visible' : ''}}" catchtap="noop">
+<view class="modal-mask {{animClass}}" wx:if="{{show}}" bindtap="onMaskTap">
+  <view class="modal-card {{animClass}}" catchtap="_noop">
+
     <!-- 关闭按钮 -->
     <view class="modal-close" bindtap="onClose">
       <text class="close-icon">✕</text>
     </view>
 
-    <!-- 步骤图标 -->
-    <view class="step-icon" wx:if="{{introContent.length > 0}}">{{introContent[currentStep].icon}}</view>
+    <!-- 内容区域（滚动） -->
+    <scroll-view class="modal-body" scroll-y>
 
-    <!-- 步骤标题 -->
-    <view class="step-title" wx:if="{{introContent.length > 0}}">{{introContent[currentStep].title}}</view>
+      <!-- 工具名称 -->
+      <text class="modal-tool-name">{{tool.name || ''}}</text>
 
-    <!-- 内容轮播 -->
-    <view class="content-carousel">
-      <view class="content-track" style="transform: translateX(-{{currentStep * 100}}%);">
-        <view class="step-panel" wx:for="{{introContent}}" wx:key="index">
-          <text class="step-body">{{item.body}}</text>
+      <!-- tagline -->
+      <text class="modal-tagline" wx:if="{{tool.tagline}}">{{tool.tagline}}</text>
+
+      <!-- valueProp -->
+      <text class="modal-value-prop" wx:if="{{toolData.valueProp}}">{{toolData.valueProp}}</text>
+
+      <!-- 功能列表 -->
+      <view class="modal-section" wx:if="{{toolData.features && toolData.features.length > 0}}">
+        <text class="modal-section-title">功能</text>
+        <view class="modal-list">
+          <view class="modal-list-item" wx:for="{{toolData.features}}" wx:key="*this">
+            <text class="modal-bullet">•</text>
+            <text class="modal-item-text">{{item}}</text>
+          </view>
         </view>
       </view>
+
+      <!-- 前置知识 -->
+      <view class="modal-section" wx:if="{{toolData.prerequisites}}">
+        <text class="modal-section-title">前置知识</text>
+        <text class="modal-section-body">{{toolData.prerequisites}}</text>
+      </view>
+
+      <!-- 适合场景 -->
+      <view class="modal-section" wx:if="{{toolData.useCases && toolData.useCases.length > 0}}">
+        <text class="modal-section-title">适合场景</text>
+        <view class="modal-list">
+          <view class="modal-list-item" wx:for="{{toolData.useCases}}" wx:key="*this">
+            <text class="modal-bullet">•</text>
+            <text class="modal-item-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+    </scroll-view>
+
+    <!-- CTA 按钮 -->
+    <view class="modal-footer">
+      <view class="modal-btn" bindtap="onEnter" hover-class="modal-btn-hover">
+        <text class="modal-btn-text">开始体验 →</text>
+      </view>
+      <text class="modal-hint">下次进入将直接打开工具</text>
     </view>
 
-    <!-- 进度指示 -->
-    <view class="step-progress" wx:if="{{introContent.length > 0}}">
-      <view class="step-dot {{index === currentStep ? 'dot-active' : ''}}"
-        wx:for="{{introContent}}" wx:key="index">
-        <text class="dot-inner">{{index === currentStep ? '●' : '○'}}</text>
-      </view>
-      <text class="step-counter">第 {{currentStep + 1}}/{{totalSteps}} 步</text>
-    </view>
-
-    <!-- 底部导航 -->
-    <view class="step-nav">
-      <view class="nav-btn nav-prev {{currentStep === 0 ? 'nav-disabled' : ''}}" bindtap="onPrev">
-        <text class="nav-btn-text">上一步</text>
-      </view>
-      <view class="nav-btn nav-next" bindtap="onNext">
-        <text class="nav-btn-text nav-next-text">
-          {{currentStep + 1 >= totalSteps ? '开始使用 ✓' : '下一步 →'}}
-        </text>
-      </view>
-    </view>
   </view>
 </view>

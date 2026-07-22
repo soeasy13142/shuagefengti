@@ -1,4 +1,16 @@
 <view class="tcp-page">
+  <!-- 工具介绍入口 -->
+  <view class="info-btn" bindtap="showIntro">
+    <text class="info-btn-icon">ℹ︎</text>
+  </view>
+
+  <!-- 模态弹窗 -->
+  <intro-modal
+    toolId="{{toolId}}"
+    show="{{showIntro}}"
+    bind:close="onIntroClose"
+    bind:enter="onIntroEnter"
+  />
 
   <!-- 模式选择 -->
   <view class="mode-tabs">

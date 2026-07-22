@@ -20,7 +20,10 @@ Page({
     speedOptions: SPEED_OPTIONS,
     speedIndex: 1,
     speedLabel: '1x',
-    avalanche: {}
+    avalanche: {},
+    // ℹ︎ 介绍
+    toolId: 'sha256-viz',
+    showIntro: false
   },
 
   _rounds: [],
@@ -234,5 +237,16 @@ Page({
       this._playTimer = null;
     }
     this.setData({ isPlaying: false });
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter() {
+    this.setData({ showIntro: false });
   }
 });

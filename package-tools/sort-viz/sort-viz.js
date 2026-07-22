@@ -23,7 +23,10 @@ Page({
     stepDesc: '就绪',
     compareCount: 0,
     swapCount: 0,
-    speed: 5
+    speed: 5,
+    // ℹ︎ 介绍
+    toolId: 'sort-viz',
+    showIntro: false
   },
 
   /* ========== 排序算法步骤生成器 ========== */
@@ -312,6 +315,17 @@ Page({
 
   onSpeedChange: function(e) {
     this.setData({ speed: e.detail.value });
+  },
+
+  // ℹ︎ 介绍入口
+  showIntro: function() {
+    this.setData({ showIntro: true });
+  },
+  onIntroClose: function() {
+    this.setData({ showIntro: false });
+  },
+  onIntroEnter: function() {
+    this.setData({ showIntro: false });
   },
 
   /* ========== 用户输入 ========== */

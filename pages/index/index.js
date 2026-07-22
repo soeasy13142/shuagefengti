@@ -20,7 +20,11 @@ Page({
     featuredTools: [],
 
     // ── 工具总数 ──
-    toolsCount: 0
+    toolsCount: 0,
+
+    // ── 介绍模态弹窗 ──
+    showIntro: false,
+    pendingToolId: null
   },
 
   onShow() {
@@ -152,9 +156,34 @@ Page({
     }
 
     const tool = registry.TOOLS.find(function(t) { return t.id === id; });
+    if (!tool || !tool.route) return;
+
+    // 首次访问：展示介绍模态弹窗
+    if (tool.intro) {
+      const seen = wx.getStorageSync('intro_v2_' + id);
+      if (!seen) {
+        this.setData({ pendingToolId: id, showIntro: true });
+        return;
+      }
+    }
+
+    wx.navigateTo({ url: tool.route });
+  },
+
+  // 点「开始体验」
+  onIntroEnter(e) {
+    const toolId = e.detail.toolId;
+    const tool = registry.TOOLS.find(function(t) { return t.id === toolId; });
+    wx.setStorageSync('intro_v2_' + toolId, true);
+    this.setData({ showIntro: false, pendingToolId: null });
     if (tool && tool.route) {
       wx.navigateTo({ url: tool.route });
     }
+  },
+
+  // 关闭模态
+  onIntroClose() {
+    this.setData({ showIntro: false, pendingToolId: null });
   },
 
   onHeroTap() {
