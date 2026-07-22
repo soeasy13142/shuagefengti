@@ -22,8 +22,8 @@ function isPrime(n) {
   if (n < 2) return false;
   if (n === 2 || n === 3) return true;
   if (n % 2 === 0) return false;
-  var limit = Math.floor(Math.sqrt(n));
-  for (var i = 3; i <= limit; i += 2) {
+  const limit = Math.floor(Math.sqrt(n));
+  for (let i = 3; i <= limit; i += 2) {
     if (n % i === 0) return false;
   }
   return true;
@@ -36,10 +36,10 @@ function isPrime(n) {
  * @returns {number}
  */
 function gcd(a, b) {
-  var aAbs = Math.abs(a);
-  var bAbs = Math.abs(b);
+  let aAbs = Math.abs(a);
+  let bAbs = Math.abs(b);
   while (bAbs) {
-    var t = bAbs;
+    const t = bAbs;
     bAbs = aAbs % bAbs;
     aAbs = t;
   }
@@ -56,21 +56,21 @@ function gcd(a, b) {
  */
 function extendedGcd(a, b) {
   if (b === 0) return { gcd: a, x: 1, y: 0 };
-  var _a = a;
-  var _b = b;
-  var x0 = 1, x1 = 0;
-  var y0 = 0, y1 = 1;
+  let _a = a;
+  let _b = b;
+  let x0 = 1, x1 = 0;
+  let y0 = 0, y1 = 1;
   while (_b !== 0) {
-    var q = Math.floor(_a / _b);
-    var temp = _b;
+    const q = Math.floor(_a / _b);
+    const temp = _b;
     _b = _a - q * _b;
     _a = temp;
 
-    var tx = x1;
+    const tx = x1;
     x1 = x0 - q * x1;
     x0 = tx;
 
-    var ty = y1;
+    const ty = y1;
     y1 = y0 - q * y1;
     y0 = ty;
   }
@@ -88,9 +88,9 @@ function extendedGcd(a, b) {
  */
 function modPow(base, exp, mod) {
   if (mod === 0) throw new Error('Modulus cannot be zero');
-  var result = 1;
-  var curBase = base % mod;
-  var curExp = exp;
+  let result = 1;
+  let curBase = base % mod;
+  let curExp = exp;
   while (curExp > 0) {
     if (curExp & 1) result = (result * curBase) % mod;
     curExp = curExp >>> 1;
@@ -108,13 +108,13 @@ function modPow(base, exp, mod) {
  */
 function modPowWithSteps(base, exp, mod) {
   if (mod === 0) throw new Error('Modulus cannot be zero');
-  var steps = [];
-  var binary = exp.toString(2);
-  var result = 1;
-  var curBase = base % mod;
-  var curExp = exp;
+  const steps = [];
+  const binary = exp.toString(2);
+  let result = 1;
+  let curBase = base % mod;
+  let curExp = exp;
   while (curExp > 0) {
-    var bit = curExp & 1 ? '1' : '0';
+    const bit = curExp & 1 ? '1' : '0';
     if (bit === '1') result = (result * curBase) % mod;
     steps.push({ bit: bit, value: curBase, result: result });
     curExp = curExp >>> 1;
@@ -141,7 +141,7 @@ function phi(p, q) {
  * @returns {number}
  */
 function modInverse(a, m) {
-  var eg = extendedGcd(a, m);
+  const eg = extendedGcd(a, m);
   if (eg.gcd !== 1) throw new Error('Modular inverse does not exist (gcd(a, m) != 1)');
   return ((eg.x % m) + m) % m;
 }
@@ -157,22 +157,22 @@ function generateKeypair(p, q) {
   if (!isPrime(q)) throw new Error('q is not prime');
   if (p === q) throw new Error('p and q must be different');
 
-  var n = p * q;
-  var phiVal = phi(p, q);
+  const n = p * q;
+  const phiVal = phi(p, q);
 
   // 公钥指数：从 3 开始寻找与 phi 互素的数（教学演示用小 e）
-  var e = 3;
+  let e = 3;
   while (gcd(e, phiVal) !== 1 && e < phiVal) {
     e++;
   }
   if (e >= phiVal) throw new Error('Cannot find e coprime to phi(n). Try different p/q');
 
   // 扩展欧几里得求 d
-  var egcd = extendedGcd(e, phiVal);
-  var d = ((egcd.x % phiVal) + phiVal) % phiVal;
+  const egcd = extendedGcd(e, phiVal);
+  const d = ((egcd.x % phiVal) + phiVal) % phiVal;
 
   // 步骤记录
-  var steps = {
+  const steps = {
     phiCalculation: {
       p: p,
       q: q,
