@@ -62,9 +62,9 @@ function extendedGcd(a, b) {
   let x0 = 1, x1 = 0;
   let y0 = 0, y1 = 1;
   const steps = [];
-  let stepNum = 0;
   while (_b !== 0) {
     const q = Math.floor(_a / _b);
+    const dividend = _a;
     const temp = _b;
     const remainder = _a - q * _b;
     _b = remainder;
@@ -72,11 +72,10 @@ function extendedGcd(a, b) {
 
     // Record Euclidean division step (skip trivial q=0 swap steps)
     if (q > 0) {
-      stepNum++;
       steps.push({
-        dividend: temp,
+        dividend: dividend,
         quotient: q,
-        divisor: _b === 0 ? temp : _b,
+        divisor: temp,
         remainder: remainder
       });
     }
@@ -88,13 +87,6 @@ function extendedGcd(a, b) {
     const ty = y1;
     y1 = y0 - q * y1;
     y0 = ty;
-  }
-  // Replace last step's divisor (which was set to temp before the update)
-  // with the actual divisor that produced remainder 0
-  if (steps.length > 0) {
-    const last = steps[steps.length - 1];
-    last.divisor = last.dividend;
-    last.remainder = 0;
   }
   return { gcd: _a, x: x0, y: y0, steps: steps };
 }
@@ -169,6 +161,50 @@ function modInverse(a, m) {
 }
 
 /**
+ * 弱密钥检测
+ *
+ * 检查以下弱密钥条件：
+ * 1. p/q 过小（单素数 < 11）
+ * 2. d 过小（Wiener 攻击条件：d < n^(1/4)/3）
+ * 3. 共模攻击（n 与已知密钥相同但 e 不同）
+ *
+ * @param {{ p: number, q: number, n: number, e: number, d: number }} key - 待检测密钥
+ * @param {{ knownKeys?: Array<{ n: number, e: number }> }} [options] - 可选项，用于共模检测
+ * @returns {string[]} - 弱密钥警告消息列表（空数组表示无警告）
+ */
+function detectWeakKey(key, options) {
+  const warnings = [];
+  const opts = options || {};
+
+  // 1. p/q 过小
+  if (key.p < 11) {
+    warnings.push('素数 p 过小（' + key.p + ' < 11），容易被因式分解');
+  }
+  if (key.q < 11) {
+    warnings.push('素数 q 过小（' + key.q + ' < 11），容易被因式分解');
+  }
+
+  // 2. Wiener 攻击条件：d < n^(1/4)/3
+  const nRoot4 = Math.pow(key.n, 0.25);
+  const wienerThreshold = nRoot4 / 3;
+  if (key.d < wienerThreshold) {
+    warnings.push('私钥 d 偏小（d=' + key.d + ' < n^(1/4)/3 ≈ ' + Math.round(wienerThreshold) + '），存在 Wiener 攻击风险');
+  }
+
+  // 3. 共模检测
+  const knownKeys = opts.knownKeys || [];
+  for (let i = 0; i < knownKeys.length; i++) {
+    const k = knownKeys[i];
+    if (k.n === key.n && k.e !== key.e) {
+      warnings.push('共模攻击风险：该 n（' + key.n + '）已与不同的 e（' + k.e + ' vs ' + key.e + '）配对使用');
+      break;
+    }
+  }
+
+  return warnings;
+}
+
+/**
  * 生成 RSA 密钥对
  * @param {number} p - 素数
  * @param {number} q - 素数
@@ -207,6 +243,7 @@ function generateKeypair(p, q) {
       gcd: egcd.gcd,
       x: egcd.x,
       y: egcd.y,
+      steps: egcd.steps,
       detail: e + '·x + ' + phiVal + '·y = 1 → x = ' + egcd.x + ', y = ' + egcd.y
     }
   };
@@ -245,6 +282,7 @@ module.exports = {
   phi: phi,
   modInverse: modInverse,
   generateKeypair: generateKeypair,
+  detectWeakKey: detectWeakKey,
   encrypt: encrypt,
   decrypt: decrypt
 };

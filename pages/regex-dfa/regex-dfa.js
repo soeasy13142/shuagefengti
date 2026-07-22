@@ -25,14 +25,25 @@ Page({
     nfa: null,
     nfaStates: [],
     nfaTransitions: [],
+    nfaDiagramStates: [],
+    nfaArrows: [],
 
     dfa: null,
     dfaStatesList: [],
     dfaAlphabet: [],
     dfaTableRows: [],
     dfaTransitions: [],
+    dfaDiagramStates: [],
+    dfaArrows: [],
 
     subsetSteps: [],
+
+    nfaStepIndex: 0,
+    subsetStepIndex: 0,
+    dfaStepIndex: 0,
+    nfaTotalSteps: 0,
+    subsetTotalSteps: 0,
+    dfaTotalSteps: 0,
 
     testInput: '',
     simResult: null
@@ -88,11 +99,15 @@ Page({
       nfa: null,
       nfaStates: [],
       nfaTransitions: [],
+      nfaDiagramStates: [],
+      nfaArrows: [],
       dfa: null,
       dfaStatesList: [],
       dfaAlphabet: [],
       dfaTableRows: [],
       dfaTransitions: [],
+      dfaDiagramStates: [],
+      dfaArrows: [],
       subsetSteps: [],
       simResult: null
     });
@@ -101,6 +116,97 @@ Page({
   onStepChange: function(e) {
     const step = parseInt(e.currentTarget.dataset.step, 10);
     this.setData({ activeStep: step });
+  },
+
+  // ── 步进控制 ──
+
+  onStepPrev: function(e) {
+    const tab = e.currentTarget.dataset.tab;
+    if (tab === 'nfa') {
+      let idx = this.data.nfaStepIndex;
+      if (idx > 0) {
+        idx--;
+        this.setData({ nfaStepIndex: idx });
+        this._updateNFAHighlight(idx);
+      }
+    } else if (tab === 'subset') {
+      let idx = this.data.subsetStepIndex;
+      if (idx > 0) {
+        idx--;
+        this.setData({ subsetStepIndex: idx });
+        this._updateSubsetHighlight(idx);
+      }
+    } else if (tab === 'dfa') {
+      let idx = this.data.dfaStepIndex;
+      if (idx > 0) {
+        idx--;
+        this.setData({ dfaStepIndex: idx });
+        this._updateDFAHighlight(idx);
+      }
+    }
+  },
+
+  onStepNext: function(e) {
+    const tab = e.currentTarget.dataset.tab;
+    if (tab === 'nfa') {
+      let idx = this.data.nfaStepIndex;
+      if (idx < this.data.nfaTotalSteps - 1) {
+        idx++;
+        this.setData({ nfaStepIndex: idx });
+        this._updateNFAHighlight(idx);
+      }
+    } else if (tab === 'subset') {
+      let idx = this.data.subsetStepIndex;
+      if (idx < this.data.subsetTotalSteps - 1) {
+        idx++;
+        this.setData({ subsetStepIndex: idx });
+        this._updateSubsetHighlight(idx);
+      }
+    } else if (tab === 'dfa') {
+      let idx = this.data.dfaStepIndex;
+      if (idx < this.data.dfaTotalSteps - 1) {
+        idx++;
+        this.setData({ dfaStepIndex: idx });
+        this._updateDFAHighlight(idx);
+      }
+    }
+  },
+
+  _updateNFAHighlight: function(idx) {
+    const arrows = this.data.nfaArrows.map(function(a, i) {
+      return Object.assign({}, a, { isHighlight: i === idx });
+    });
+    // Find which states are involved in the current transition
+    const highlightedFrom = idx >= 0 && idx < arrows.length ? arrows[idx].from : null;
+    const highlightedTo = idx >= 0 && idx < arrows.length ? arrows[idx].to : null;
+    const states = this.data.nfaDiagramStates.map(function(s) {
+      return Object.assign({}, s, {
+        isHighlighted: s.id === highlightedFrom || s.id === highlightedTo
+      });
+    });
+    this.setData({ nfaArrows: arrows, nfaDiagramStates: states });
+  },
+
+  _updateSubsetHighlight: function(idx) {
+    // Highlight current subset step by updating its visual
+    const steps = this.data.subsetSteps.map(function(s, i) {
+      return Object.assign({}, s, { isHighlight: i === idx });
+    });
+    this.setData({ subsetSteps: steps });
+  },
+
+  _updateDFAHighlight: function(idx) {
+    const arrows = this.data.dfaArrows.map(function(a, i) {
+      return Object.assign({}, a, { isHighlight: i === idx });
+    });
+    const highlightedFrom = idx >= 0 && idx < arrows.length ? arrows[idx].from : null;
+    const highlightedTo = idx >= 0 && idx < arrows.length ? arrows[idx].to : null;
+    const states = this.data.dfaDiagramStates.map(function(s) {
+      return Object.assign({}, s, {
+        isHighlighted: s.id === highlightedFrom || s.id === highlightedTo
+      });
+    });
+    this.setData({ dfaArrows: arrows, dfaDiagramStates: states });
   },
 
   // ── 核心构造 ──
@@ -131,20 +237,49 @@ Page({
       const dfaTableRows = this.buildDFATable(dfa);
       const dfaTransitions = this.buildDFATransitions(dfa);
 
+      // Build diagram data
+      const nfaLayout = this._computeLayoutFromStates(nfa.states, nfa.start);
+      const nfaPositions = this._layoutToPositions(nfaLayout, nfa.states.length);
+      const nfaDiagramStates = this._statesWithPositions(nfaStates, nfaPositions);
+      const nfaArrows = this._buildArrows(nfaTransitions, nfaPositions);
+
+      const dfaLayout = this._computeLayoutFromStates(dfa.states, dfa.start);
+      const dfaPositions = this._layoutToPositions(dfaLayout, dfa.states.length);
+      const dfaDiagramStates = this._statesWithPositions(dfaStatesList, dfaPositions);
+      const dfaArrows = this._buildArrows(dfaTransitions, dfaPositions);
+
+      const nfaArrowCount = nfaArrows.length;
+      const dfaArrowCount = dfaArrows.length;
+      const subsetCount = subsetSteps.length;
+
       this.setData({
         errorMessage: '',
         nfa: { start: nfa.start, accept: nfa.accept },
         nfaStates: nfaStates,
         nfaTransitions: nfaTransitions,
+        nfaDiagramStates: nfaDiagramStates,
+        nfaArrows: nfaArrows,
         dfa: { start: dfa.start, alphabet: dfa.alphabet },
         dfaStatesList: dfaStatesList,
         dfaAlphabet: dfa.alphabet,
         dfaTableRows: dfaTableRows,
         dfaTransitions: dfaTransitions,
+        dfaDiagramStates: dfaDiagramStates,
+        dfaArrows: dfaArrows,
         subsetSteps: subsetSteps,
         activeStep: 1,
-        simResult: null
+        simResult: null,
+        nfaStepIndex: 0,
+        subsetStepIndex: 0,
+        dfaStepIndex: 0,
+        nfaTotalSteps: nfaArrowCount,
+        subsetTotalSteps: subsetCount,
+        dfaTotalSteps: dfaArrowCount
       });
+      // Apply initial highlights
+      if (nfaArrowCount > 0) this._updateNFAHighlight(0);
+      if (subsetCount > 0) this._updateSubsetHighlight(0);
+      if (dfaArrowCount > 0) this._updateDFAHighlight(0);
     } catch (e) {
       this.setData({
         errorMessage: e.message || '构造失败',

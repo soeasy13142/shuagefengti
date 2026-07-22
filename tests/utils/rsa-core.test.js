@@ -1,4 +1,4 @@
-const { isPrime, gcd, extendedGcd, modPow, phi, modInverse, generateKeypair, encrypt, decrypt, modPowWithSteps } = require('../../utils/rsa-core');
+const { isPrime, gcd, extendedGcd, modPow, phi, modInverse, generateKeypair, encrypt, decrypt, modPowWithSteps, detectWeakKey } = require('../../utils/rsa-core');
 const { PRIMES_2_997 } = require('../../utils/rsa-primes');
 
 describe('PRIMES_2_997', () => {
@@ -46,6 +46,16 @@ describe('extendedGcd', () => {
   test('3x + 10y = 1', () => {
     const r = extendedGcd(3, 10);
     expect(r.gcd).toBe(1);
+  });
+  test('includes Euclidean division steps', () => {
+    const r = extendedGcd(5, 288);
+    expect(r.steps).toBeDefined();
+    expect(r.steps.length).toBeGreaterThanOrEqual(3);
+    // First real step: 288 = 57×5 + 3
+    expect(r.steps[0].dividend).toBe(288);
+    expect(r.steps[0].quotient).toBe(57);
+    expect(r.steps[0].divisor).toBe(5);
+    expect(r.steps[0].remainder).toBe(3);
   });
 });
 
@@ -100,6 +110,28 @@ describe('generateKeypair', () => {
     expect(key.steps).toBeDefined();
     expect(key.steps.phiCalculation).toBeDefined();
     expect(key.steps.extendedEuclid).toBeDefined();
+    expect(key.steps.extendedEuclid.steps).toBeDefined();
+    expect(key.steps.extendedEuclid.steps.length).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('detectWeakKey', () => {
+  test('returns empty warnings for normal key', () => {
+    const key = generateKeypair(17, 19);
+    const warnings = detectWeakKey(key);
+    expect(Array.isArray(warnings)).toBe(true);
+  });
+  test('detects small p/q', () => {
+    const key = generateKeypair(3, 7);
+    const warnings = detectWeakKey(key);
+    expect(warnings.length).toBeGreaterThanOrEqual(1);
+    expect(warnings.some(function(w) { return w.indexOf('p 过小') !== -1; })).toBe(true);
+  });
+  test('detects common modulus when same n different e', () => {
+    const key1 = { n: 323, e: 5, d: 173, p: 17, q: 19 };
+    const key2 = { n: 323, e: 7, d: 1, p: 17, q: 19 };
+    const warnings = detectWeakKey(key2, { knownKeys: [key1] });
+    expect(warnings.some(function(w) { return w.indexOf('共模') !== -1; })).toBe(true);
   });
 });
 

@@ -39,6 +39,11 @@ Page({
     discreteLogResult: null,
     discreteLogPct: '0.0',
 
+    // 面板间箭头状态（Alice↔Eve/Bob）
+    arrowState: { visible: false, direction: 'right', label: '', isMitm: false },
+    // 面板间箭头状态（Eve↔Bob，MITM 模式专用）
+    arrowEveState: { visible: false, direction: 'right', label: '', isMitm: false },
+
     // 状态
     hasExchanged: false
   },
@@ -240,6 +245,7 @@ Page({
       currentStep: prev,
       isPlaying: false
     });
+    this._updateArrowState();
   },
 
   onStepNext: function() {
@@ -249,6 +255,7 @@ Page({
       currentStep: next,
       isPlaying: false
     });
+    this._updateArrowState();
     if (next >= this.data.totalSteps) {
       this._onExchangeComplete();
     }
@@ -258,6 +265,7 @@ Page({
     const step = parseInt(e.detail.value, 10);
     this.setData({ currentStep: step, isPlaying: false });
     this._stopAutoPlay();
+    this._updateArrowState();
     if (step >= this.data.totalSteps) {
       this._onExchangeComplete();
     }
@@ -287,6 +295,57 @@ Page({
     this.setData({ discreteLogResult: result, discreteLogPct: pct.toFixed(1) });
   },
 
+  // ── 面板间箭头状态 ──
+
+  _updateArrowState: function() {
+    const { currentStep, steps, scene } = this.data;
+    let arrowState = { visible: false, direction: 'right', label: '', isMitm: false };
+    let arrowEveState = { visible: false, direction: 'right', label: '', isMitm: false };
+
+    if (!steps || steps.length === 0 || currentStep <= 0 || currentStep > steps.length) {
+      this.setData({ arrowState: arrowState, arrowEveState: arrowEveState });
+      return;
+    }
+
+    const step = steps[currentStep - 1];
+    const isMessageStep = step.type === 'sendPublicKey' || step.type === 'mitmIntercept';
+
+    if (!isMessageStep) {
+      this.setData({ arrowState: arrowState, arrowEveState: arrowEveState });
+      return;
+    }
+
+    const from = step.from;
+    const to = step.to;
+    const direction = (to === 'Bob' || to === 'Eve') ? 'right' : 'left';
+    const isMitm = scene === 'mitm';
+
+    // Build label
+    var label = '';
+    if (step.type === 'mitmIntercept') {
+      label = '✕ 拦截';
+    } else if (step.payload && step.payload.key !== undefined) {
+      var prefix = from === 'Alice' ? 'A' : from === 'Bob' ? 'B' : 'E';
+      label = prefix + '=' + step.payload.key;
+    }
+
+    var arrowData = { visible: true, direction: direction, label: label, isMitm: isMitm };
+
+    // Route arrow to the correct gap between panels
+    if (scene === 'mitm') {
+      if ((from === 'Alice' && to === 'Eve') || (from === 'Eve' && to === 'Alice')) {
+        arrowState = arrowData;
+      } else if ((from === 'Eve' && to === 'Bob') || (from === 'Bob' && to === 'Eve')) {
+        arrowEveState = arrowData;
+      }
+    } else {
+      // Normal mode: single arrow between Alice and Bob
+      arrowState = arrowData;
+    }
+
+    this.setData({ arrowState: arrowState, arrowEveState: arrowEveState });
+  },
+
   // ── 动画控制 ──
 
   _startAutoPlay: function() {
@@ -300,11 +359,13 @@ Page({
           currentStep: next,
           isPlaying: false
         });
+        this._updateArrowState();
         this._onExchangeComplete();
         this._stopAutoPlay();
         return;
       }
       this.setData({ currentStep: next });
+      this._updateArrowState();
     }, interval);
   },
 

@@ -60,6 +60,15 @@
       </view>
     </view>
 
+    <!-- 箭头：Alice ↔ Eve (MITM) / Alice ↔ Bob (正常) -->
+    <view class="arrow-viz {{arrowState.isMitm ? 'arrow-mitm' : ''}}" wx:if="{{arrowState.visible}}">
+      <view class="arrow-label">{{arrowState.label}}</view>
+      <view class="arrow-track {{arrowState.direction}}">
+        <view class="arrow-line"></view>
+        <view class="arrow-head"></view>
+      </view>
+    </view>
+
     <!-- MITM: Eve 中间面板 -->
     <view class="panel-eve" wx:if="{{scene === 'mitm' && eve}}">
       <view class="eve-body">
@@ -72,8 +81,15 @@
           <text>K_be = {{eve.sharedKeyBob}}</text>
         </view>
       </view>
-      <view class="eve-arrow-left">← 拦截 Alice</view>
-      <view class="eve-arrow-right">拦截 Bob →</view>
+    </view>
+
+    <!-- 箭头：Eve ↔ Bob (MITM 模式专用) -->
+    <view class="arrow-viz {{arrowEveState.isMitm ? 'arrow-mitm' : ''}}" wx:if="{{arrowEveState.visible}}">
+      <view class="arrow-label">{{arrowEveState.label}}</view>
+      <view class="arrow-track {{arrowEveState.direction}}">
+        <view class="arrow-line"></view>
+        <view class="arrow-head"></view>
+      </view>
     </view>
 
     <!-- Bob 面板 -->
