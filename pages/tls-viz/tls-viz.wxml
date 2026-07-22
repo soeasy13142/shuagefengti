@@ -1,0 +1,150 @@
+<view class="page">
+  <!-- 配置区 -->
+  <view class="config-band">
+    <text class="band-label">TLS 1.3 握手可视化</text>
+    <view class="config-row">
+      <text class="config-label">场景</text>
+      <picker mode="selector" range="{{scenarioNames}}" value="{{scenarioIndex}}" bindchange="onScenarioChange">
+        <view class="scenario-picker">
+          <text>{{scenarioNames[scenarioIndex]}}</text>
+          <text class="picker-arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+    <text class="scenario-desc">{{scenarioDescription}}</text>
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 客户端-服务器交互区 -->
+  <view class="diagram-band">
+    <view class="diagram-container">
+      <!-- Client 端 -->
+      <view class="endpoint endpoint-client">
+        <view class="endpoint-icon client-icon"></view>
+        <text class="endpoint-label">Client</text>
+      </view>
+
+      <!-- 中间动画区 -->
+      <view class="message-lane">
+        <view wx:if="{{activeMessage}}" class="message-arrow {{activeMessage.direction}}">
+          <view class="message-bubble {{activeMessage.type === 'alert' ? 'msg-alert' : (activeMessage.type === 'keyDerive' ? 'msg-key' : '')}}">
+            <text class="message-label">{{activeMessage.label}}</text>
+          </view>
+        </view>
+        <view wx:if="{{!activeMessage && steps.length === 0}}" class="message-placeholder">
+          <text class="placeholder-text">选择场景后点击 ▶ 开始</text>
+        </view>
+        <view wx:if="{{!activeMessage && steps.length > 0 && currentStep === null}}" class="message-placeholder">
+          <text class="placeholder-text">准备就绪，点击 ▶ 播放</text>
+        </view>
+        <view wx:if="{{!activeMessage && steps.length > 0 && currentStep !== null && !isPlaying}}" class="message-placeholder">
+          <text class="placeholder-text">已暂停于第 {{currentStep + 1}} / {{steps.length}} 步</text>
+        </view>
+      </view>
+
+      <!-- Server 端 -->
+      <view class="endpoint endpoint-server">
+        <view class="endpoint-icon server-icon"></view>
+        <text class="endpoint-label">Server</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 进度条 -->
+  <view class="progress-band" wx:if="{{steps.length > 0}}">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
+    </view>
+    <text class="step-counter">{{currentStep !== null ? currentStep + 1 : 0}} / {{steps.length}}</text>
+  </view>
+
+  <!-- 当前步骤 payload -->
+  <view class="detail-band" wx:if="{{currentStepObj}}">
+    <view class="detail-header">
+      <text class="detail-step-label">{{currentStepObj.payload.label}}</text>
+      <text class="detail-direction">{{currentStepObj.from === 'client' ? '客户端 → 服务端' : (currentStepObj.from === 'server' ? '服务端 → 客户端' : '')}}</text>
+    </view>
+    <view class="detail-explanation">{{currentStepObj.explanation}}</view>
+
+    <!-- 字段列表 -->
+    <view class="fields-list">
+      <view wx:for="{{currentStepObj.payload.fields}}" wx:key="index" class="field-row {{item.highlight ? 'field-highlight' : ''}}">
+        <text class="field-name">{{item.name}}</text>
+        <text class="field-value">{{item.value}}</text>
+        <text wx:if="{{item.note}}" class="field-note">{{item.note}}</text>
+      </view>
+    </view>
+
+    <!-- 证书链 -->
+    <view wx:if="{{currentStepObj.payload.extra && currentStepObj.payload.extra.certChain}}" class="cert-chain">
+      <text class="cert-chain-label">证书链</text>
+      <view wx:for="{{currentStepObj.payload.extra.certChain}}" wx:key="index" class="cert-item">
+        <text class="cert-indent">{{'  '.repeat(index)}}└─ </text>
+        <text class="cert-subject">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 密钥派生展示 -->
+    <view wx:if="{{currentStepObj.derivedKeys}}" class="key-derive-band">
+      <text class="key-derive-title">密钥派生</text>
+      <view class="key-grid">
+        <view class="key-row">
+          <text class="key-name">握手密钥 (HS)</text>
+          <text class="key-value">{{currentStepObj.derivedKeys.handshakeSecret}}</text>
+        </view>
+        <view class="key-row">
+          <text class="key-name">服务端密钥 (STK)</text>
+          <text class="key-value">{{currentStepObj.derivedKeys.serverTrafficKey}}</text>
+        </view>
+        <view class="key-row">
+          <text class="key-name">服务端 IV (SIV)</text>
+          <text class="key-value">{{currentStepObj.derivedKeys.serverTrafficIV}}</text>
+        </view>
+        <view class="key-row">
+          <text class="key-name">客户端密钥 (CTK)</text>
+          <text class="key-value">{{currentStepObj.derivedKeys.clientTrafficKey}}</text>
+        </view>
+        <view class="key-row">
+          <text class="key-name">客户端 IV (CIV)</text>
+          <text class="key-value">{{currentStepObj.derivedKeys.clientTrafficIV}}</text>
+        </view>
+        <view class="key-row">
+          <text class="key-name">应用密钥 (ATK)</text>
+          <text class="key-value">{{currentStepObj.derivedKeys.appTrafficKey}}</text>
+        </view>
+        <view class="key-row">
+          <text class="key-name">应用 IV (AIV)</text>
+          <text class="key-value">{{currentStepObj.derivedKeys.appTrafficIV}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 面试考点 -->
+    <view wx:if="{{currentStepObj.examTip}}" class="exam-tip">
+      <text class="exam-tip-label">面试考点</text>
+      <text class="exam-tip-text">{{currentStepObj.examTip}}</text>
+    </view>
+  </view>
+
+  <!-- 完成状态 -->
+  <view wx:if="{{isComplete}}" class="summary-band">
+    <text class="summary-title">安全连接已建立</text>
+    <text class="summary-text">TLS 1.3 握手完成，客户端和服务端已协商一致，开始加密通信。</text>
+  </view>
+
+  <!-- 控制栏 -->
+  <view class="ctrl-band">
+    <view class="ctrl-btn" bindtap="onReset">
+      <text class="ctrl-icon">重置</text>
+    </view>
+    <view class="ctrl-btn ctrl-play" bindtap="onTogglePlay">
+      <text class="ctrl-icon">{{isPlaying ? '暂停' : '▶'}}</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStepPrev">
+      <text class="ctrl-icon">◀</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStepNext">
+      <text class="ctrl-icon">⟩⟩</text>
+    </view>
+  </view>
+</view>
