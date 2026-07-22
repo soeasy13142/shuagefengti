@@ -23,24 +23,26 @@
     "pages/aes-viz/aes-viz",
     "pages/ast-builder/ast-builder"
   ],
-  "subPackages": [{
-    "root": "package-tools",
-    "pages": [
-      "bplus-viz/bplus-viz",
-      "cpu-sched/cpu-sched",
-      "dns-viz/dns-viz",
-      "subnet-calc/subnet-calc",
-      "sort-viz/sort-viz",
-      "tcp-viz/tcp-viz",
-      "ds-viz/ds-viz",
-      "sha256-viz/sha256-viz",
-      "deadlock/deadlock",
-      "disk-sched/disk-sched",
-      "mem-paging/mem-paging",
-      "nat-viz/nat-viz",
-      "nginx-gen/nginx-gen"
-    ]
-  }],
+  "subPackages": [
+    {
+      "root": "package-tools",
+      "pages": [
+        "bplus-viz/bplus-viz",
+        "cpu-sched/cpu-sched",
+        "dns-viz/dns-viz",
+        "subnet-calc/subnet-calc",
+        "sort-viz/sort-viz",
+        "tcp-viz/tcp-viz",
+        "ds-viz/ds-viz",
+        "sha256-viz/sha256-viz",
+        "deadlock/deadlock",
+        "disk-sched/disk-sched",
+        "mem-paging/mem-paging",
+        "nat-viz/nat-viz",
+        "nginx-gen/nginx-gen"
+      ]
+    }
+  ],
   "window": {
     "navigationBarBackgroundColor": "#faf9f5",
     "navigationBarTitleText": "刷个冯题",
@@ -52,6 +54,7 @@
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {
     "intro-modal": "/components/intro-modal/intro-modal",
-    "tool-help-panel": "/components/tool-help-panel/tool-help-panel"
+    "tool-help-panel": "/components/tool-help-panel/tool-help-panel",
+    "inline-collapse": "/components/inline-collapse/inline-collapse"
   }
 }

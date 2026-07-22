@@ -60,6 +60,8 @@
 
 ---
 
+- **新组件：inline-collapse** — 页面内联折叠面板，用于展开/收起说明内容。注册在 `app.json` usingComponents，已在 sha256-viz 和 ll1-parser 页面集成。
+
 ## Quick Start
 
 ```bash

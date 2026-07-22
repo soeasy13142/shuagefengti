@@ -1,0 +1,71 @@
+.collapse-wrap {
+  background: #efe9de;
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+.collapse-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  min-height: 48rpx;
+}
+
+.collapse-header:active {
+  background: #e8e0d2;
+}
+
+.collapse-title {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #141413;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.collapse-arrow {
+  display: block;
+  font-size: 28rpx;
+  color: #6c6a64;
+  transition: transform 0.25s ease;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.collapse-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.collapse-body {
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+  overflow: hidden;
+}
+
+.collapse-closed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.collapse-open {
+  max-height: 800rpx;
+  opacity: 1;
+}
+
+.collapse-content {
+  padding: 0 24rpx 24rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 24rpx;
+  color: #141413;
+  line-height: 1.6;
+}
+
+/* 插槽内容默认样式 */
+.collapse-content text {
+  display: block;
+  margin-bottom: 8rpx;
+}
