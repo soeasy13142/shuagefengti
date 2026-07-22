@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE
 **Working directory:** `/Users/charliepan/Downloads/my-miniapp`
-**Updated:** 2026-07-21
+**Updated:** 2026-07-22
 **变更日志：**[`docs/changelog.md`](/Users/charliepan/Downloads/my-miniapp/docs/changelog.md)
 
 ---
@@ -17,13 +17,17 @@
 ## Done
 
 - **刷题引擎闭环** — Markdown 导入、五题型（单选/多选/判断/填空/简答）、练习/考试模式、答题记录、错题本、历史统计
-- **已上线 16 个工具**（`utils/tool-registry.js`）：
+- **已上线 25 个工具**（`utils/tool-registry.js`）：
   - 驾驶舱 `dashboard` · 子网计算器 `subnet-calc` · TCP 动画机 `tcp-viz`
   - 数据结构可视化 `ds-viz` · 排序可视化 `sort-viz` · CPU 调度 `cpu-sched`
   - SHA-256 演示 `sha256-viz` · DNS 解析 `dns-viz` · B+ 树 `bplus-viz`
-  - Nginx 生成器 `nginx-gen` · 死锁模拟器 `deadlock` · **磁盘调度** `disk-sched`
-  - **内存分页** `mem-paging` · **HTTP 解析器** `http-parser`
-  - **IP 分片** `ip-fragment` · **NAT 模拟器** `nat-viz` · **TLS 动画机** `tls-viz`
+  - Nginx 生成器 `nginx-gen` · 死锁模拟器 `deadlock` · 磁盘调度 `disk-sched`
+  - 内存分页 `mem-paging` · HTTP 解析器 `http-parser` · IP 分片 `ip-fragment`
+  - NAT 模拟器 `nat-viz` · TLS 动画机 `tls-viz`
+  - **同步互斥演示** `sync-viz` · **RSA 演算器** `rsa-calc` · **AES 演示** `aes-viz`
+  - **DH 密钥交换** `dh-viz` · **密码工具箱** `crypto-tools`
+  - **Regex→DFA** `regex-dfa` · **LL(1) 分析器** `ll1-parser` · **词法分析器** `lexer-viz`
+  - **AST 构建器** `ast-builder`
 - **首页重设计** — 工具箱优先布局 · 分类标签栏 · 2 列网格 · 简洁/详细双模式
 - **设计系统** — Claude Design 暖奶油画布 · intro-modal 向导式分步组件 · 底部固定底栏
 - **工程规范** — var→const/let 清零 · 纯函数 + 不可变 · TDD（47 suites / 748 tests 全绿）
@@ -37,7 +41,7 @@
 | **Working** | 全部 12 个工具 + 刷题主链路。`npm test` 748 tests / 47 suites 全绿 |
 | **Broken** | 无已知问题 |
 | **Blocked** | 无 |
-| **待上线** | 9 个已设计未实现（`tool-registry.js` 中 `available: false`）：AES/RSA/DH/密码工具箱/同步互斥/编译原理 4 个 |
+| **待上线** | 已全部上线。25/25 工具 `available: true` |
 | **分包** | 10 个工具页已移入 `package-tools/` 分包，首包从 20 页降到 10 页 |
 | **Storage** | 6 个页面已改为异步读取 + loading-skeleton 骨架屏 |
 | **require** | 3 个可视化页面（ds-viz, deadlock, bplus-viz）改为动态 require |
