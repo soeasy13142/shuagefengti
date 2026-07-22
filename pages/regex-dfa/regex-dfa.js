@@ -3,7 +3,7 @@ const { epsilonClosure, move, nfaToDFA } = require('../../utils/nfa-dfa');
 const { simulateDFA } = require('../../utils/dfa-simulate');
 
 // 预置示例
-var PRESETS = [
+const PRESETS = [
   { label: '（自定义输入）', regex: '' },
   { label: 'a*', regex: 'a*' },
   { label: 'a|b', regex: 'a|b' },
@@ -57,13 +57,13 @@ Page({
   },
 
   onPresetChange: function(e) {
-    var idx = parseInt(e.detail.value, 10);
+    const idx = parseInt(e.detail.value, 10);
     this.loadPreset(idx);
   },
 
   loadPreset: function(idx) {
     if (idx < 0 || idx >= PRESETS.length) return;
-    var preset = PRESETS[idx];
+    const preset = PRESETS[idx];
     this.setData({
       regex: preset.regex,
       presetIndex: idx,
@@ -99,14 +99,14 @@ Page({
   },
 
   onStepChange: function(e) {
-    var step = parseInt(e.currentTarget.dataset.step, 10);
+    const step = parseInt(e.currentTarget.dataset.step, 10);
     this.setData({ activeStep: step });
   },
 
   // ── 核心构造 ──
 
   doConstruct: function() {
-    var regex = this.data.regex;
+    let regex = this.data.regex;
     if (!regex || regex.trim() === '') {
       this.setData({ errorMessage: '请输入正则表达式' });
       return;
@@ -117,19 +117,19 @@ Page({
       resetStateId();
 
       // Parse + NFA
-      var nfa = regexToNFA(regex);
+      const nfa = regexToNFA(regex);
 
       // Build DFA
-      var dfa = nfaToDFA(nfa);
+      const dfa = nfaToDFA(nfa);
 
       // Generate visualization data
-      var nfaStates = this.buildNFAStateList(nfa);
-      var nfaTransitions = this.buildNFATransitions(nfa);
+      const nfaStates = this.buildNFAStateList(nfa);
+      const nfaTransitions = this.buildNFATransitions(nfa);
 
-      var subsetSteps = this.buildSubsetSteps(nfa, dfa);
-      var dfaStatesList = this.buildDFAStateList(dfa);
-      var dfaTableRows = this.buildDFATable(dfa);
-      var dfaTransitions = this.buildDFATransitions(dfa);
+      const subsetSteps = this.buildSubsetSteps(nfa, dfa);
+      const dfaStatesList = this.buildDFAStateList(dfa);
+      const dfaTableRows = this.buildDFATable(dfa);
+      const dfaTransitions = this.buildDFATransitions(dfa);
 
       this.setData({
         errorMessage: '',
@@ -157,8 +157,8 @@ Page({
   // ── 模拟运行 ──
 
   onSimulate: function() {
-    var dfa = this.data.dfa;
-    var testInput = this.data.testInput;
+    const dfa = this.data.dfa;
+    const testInput = this.data.testInput;
     if (!dfa) {
       this.setData({ errorMessage: '请先构造 DFA' });
       return;
@@ -170,9 +170,9 @@ Page({
     try {
       // Rebuild DFA object with full states
       resetStateId();
-      var nfa = regexToNFA(this.data.regex);
-      var fullDfa = nfaToDFA(nfa);
-      var result = simulateDFA(fullDfa, testInput);
+      const nfa = regexToNFA(this.data.regex);
+      const fullDfa = nfaToDFA(nfa);
+      const result = simulateDFA(fullDfa, testInput);
       this.setData({
         errorMessage: '',
         simResult: {
@@ -188,9 +188,9 @@ Page({
   // ── 数据转换 ──
 
   buildNFAStateList: function(nfa) {
-    var result = [];
-    for (var i = 0; i < nfa.states.length; i++) {
-      var s = nfa.states[i];
+    const result = [];
+    for (let i = 0; i < nfa.states.length; i++) {
+      const s = nfa.states[i];
       result.push({
         id: s.id,
         isAccept: s.isAccept,
@@ -201,14 +201,14 @@ Page({
   },
 
   buildNFATransitions: function(nfa) {
-    var result = [];
-    for (var i = 0; i < nfa.states.length; i++) {
-      var s = nfa.states[i];
-      var keys = Object.keys(s.transitions);
-      for (var j = 0; j < keys.length; j++) {
-        var input = keys[j];
-        var targets = s.transitions[input];
-        for (var k = 0; k < targets.length; k++) {
+    const result = [];
+    for (let i = 0; i < nfa.states.length; i++) {
+      const s = nfa.states[i];
+      const keys = Object.keys(s.transitions);
+      for (let j = 0; j < keys.length; j++) {
+        const input = keys[j];
+        const targets = s.transitions[input];
+        for (let k = 0; k < targets.length; k++) {
           result.push({
             from: s.id,
             input: input,
@@ -221,13 +221,13 @@ Page({
   },
 
   buildSubsetSteps: function(nfa, dfa) {
-    var steps = [];
-    var seenKeys = {};
+    const steps = [];
+    const seenKeys = {};
 
     // Initial state
-    var initClosure = epsilonClosure(nfa, [nfa.start]);
-    var initKey = this.closureToKey(initClosure);
-    var initStr = this.closureToString(initClosure);
+    const initClosure = epsilonClosure(nfa, [nfa.start]);
+    const initKey = this.closureToKey(initClosure);
+    const initStr = this.closureToString(initClosure);
     seenKeys[initKey] = true;
     steps.push({
       label: '初始 DFA 状态 A',
@@ -237,21 +237,21 @@ Page({
       ]
     });
 
-    for (var si = 0; si < dfa.states.length; si++) {
-      var ds = dfa.states[si];
-      for (var ai = 0; ai < dfa.alphabet.length; ai++) {
-        var ch = dfa.alphabet[ai];
-        var nextId = ds.transitions[ch];
+    for (let si = 0; si < dfa.states.length; si++) {
+      const ds = dfa.states[si];
+      for (let ai = 0; ai < dfa.alphabet.length; ai++) {
+        const ch = dfa.alphabet[ai];
+        const nextId = ds.transitions[ch];
         if (!nextId) continue;
 
         // Find the NFA state set for this DFA state
-        var moveResult = move(nfa, ds.nfaStates, ch);
-        var closure = epsilonClosure(nfa, moveResult);
-        var key = this.closureToKey(closure);
+        const moveResult = move(nfa, ds.nfaStates, ch);
+        const closure = epsilonClosure(nfa, moveResult);
+        const key = this.closureToKey(closure);
         if (!seenKeys[key]) {
           seenKeys[key] = true;
-          var closureStr = this.closureToString(closure);
-          var nextState = dfa.states.find(function(s) { return s.id === nextId; });
+          const closureStr = this.closureToString(closure);
+          const nextState = dfa.states.find(function(s) { return s.id === nextId; });
           steps.push({
             label: 'DFA 状态 ' + nextId + '（来自 ' + ds.id + ' ─' + ch + '→）',
             lines: [
@@ -276,9 +276,9 @@ Page({
   },
 
   buildDFAStateList: function(dfa) {
-    var result = [];
-    for (var i = 0; i < dfa.states.length; i++) {
-      var ds = dfa.states[i];
+    const result = [];
+    for (let i = 0; i < dfa.states.length; i++) {
+      const ds = dfa.states[i];
       result.push({
         id: ds.id,
         isAccept: ds.isAccept,
@@ -290,13 +290,13 @@ Page({
   },
 
   buildDFATable: function(dfa) {
-    var rows = [];
-    for (var i = 0; i < dfa.states.length; i++) {
-      var ds = dfa.states[i];
-      var transitions = [];
-      for (var j = 0; j < dfa.alphabet.length; j++) {
-        var ch = dfa.alphabet[j];
-        var nextId = ds.transitions[ch];
+    const rows = [];
+    for (let i = 0; i < dfa.states.length; i++) {
+      const ds = dfa.states[i];
+      const transitions = [];
+      for (let j = 0; j < dfa.alphabet.length; j++) {
+        const ch = dfa.alphabet[j];
+        const nextId = ds.transitions[ch];
         transitions.push(nextId || '-');
       }
       rows.push({
@@ -310,11 +310,11 @@ Page({
   },
 
   buildDFATransitions: function(dfa) {
-    var result = [];
-    for (var i = 0; i < dfa.states.length; i++) {
-      var ds = dfa.states[i];
-      var keys = Object.keys(ds.transitions);
-      for (var j = 0; j < keys.length; j++) {
+    const result = [];
+    for (let i = 0; i < dfa.states.length; i++) {
+      const ds = dfa.states[i];
+      const keys = Object.keys(ds.transitions);
+      for (let j = 0; j < keys.length; j++) {
         result.push({
           from: ds.id,
           input: keys[j],

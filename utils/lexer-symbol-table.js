@@ -20,14 +20,17 @@
  * @returns {SymbolEntry[]}
  */
 function buildSymbolTable(tokens) {
+  if (!tokens) {
+    return [];
+  }
   /** @type {Map<string, { line: number, col: number }[]>} */
-  var entries = new Map();
+  const entries = new Map();
 
-  for (var i = 0; i < tokens.length; i++) {
-    var t = tokens[i];
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
     if (t.type !== 'ID') continue;
 
-    var existing = entries.get(t.lexeme) || [];
+    const existing = entries.get(t.lexeme) || [];
     existing.push({
       line: t.line,
       col: t.colStart
@@ -36,7 +39,7 @@ function buildSymbolTable(tokens) {
   }
 
   // 转换为数组，按首次出现行号排序
-  var result = [];
+  const result = [];
   entries.forEach(function(occurrences, name) {
     result.push({
       name: name,

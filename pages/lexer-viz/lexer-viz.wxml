@@ -37,7 +37,7 @@
   </view>
 
   <!-- 源码视图 -->
-  <view wx:if="{{hasResult && sourceSegments.length > 0}}" class="source-band">
+  <view wx:if="{{hasResult && sourceLines.length > 0}}" class="source-band">
     <text class="section-label">源码视图</text>
     <view class="source-block">
       <view class="source-line" wx:for="{{sourceLines}}" wx:key="idx">

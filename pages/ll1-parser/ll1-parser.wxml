@@ -36,7 +36,7 @@
     <!-- Error / warnings -->
     <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
     <text wx:if="{{hasLeftRecursion && parsed}}" class="warn-text">
-      ⚠️ 存在左递归: {{leftRecursiveSymbols.join(', ')}}。LL(1) 无法处理左递归，请消除左递归后再试。
+      ⚠️ 存在左递归: {{leftRecursiveSymbolsStr}}。LL(1) 无法处理左递归，请消除左递归后再试。
     </text>
   </view>
 
@@ -98,8 +98,8 @@
         </view>
         <view wx:for="{{firstFollowData}}" wx:key="nonTerminal" class="ff-row">
           <text class="ff-cell ff-cell-nt">{{item.nonTerminal}}</text>
-          <text class="ff-cell ff-cell-value">{ {{item.firstArray.join(', ')}} }</text>
-          <text class="ff-cell ff-cell-value">{ {{item.followArray.join(', ')}} }</text>
+          <text class="ff-cell ff-cell-value">{{item.firstStr}}</text>
+          <text class="ff-cell ff-cell-value">{{item.followStr}}</text>
         </view>
       </view>
     </view>

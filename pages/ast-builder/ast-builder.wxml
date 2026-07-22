@@ -93,10 +93,10 @@
   <!-- ── 求值结果 ── -->
   <view wx:if="{{evalResult !== null}}" class="card result-card">
     <text class="card-title">求值结果</text>
-    <text class="result-value {{typeof evalResult === 'string' ? 'result-error' : ''}}">
+    <text class="result-value {{isEvalError ? 'result-error' : ''}}">
       {{evalResult}}
     </text>
-    <text wx:if="{{typeof evalResult === 'string'}}" class="result-error-desc">
+    <text wx:if="{{isEvalError}}" class="result-error-desc">
       SDT 求值过程中检测到错误，请检查表达式。
     </text>
   </view>

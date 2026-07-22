@@ -44,24 +44,28 @@ const { TOKEN_RULES: DEFAULT_RULES } = require('./lexer-token');
  * @returns {{ tokens: Token[], errors: LexError[], steps: Step[] }}
  */
 function tokenize(source, rules) {
+  if (source === null || source === undefined) {
+    return { tokens: [], errors: [], steps: [] };
+  }
   const activeRules = rules || DEFAULT_RULES;
-  var tokens = [];
-  var errors = [];
-  var steps = [];
+  const tokens = [];
+  const errors = [];
+  const steps = [];
 
-  var pos = 0;
-  var line = 1;
-  var col = 1;
+  let pos = 0;
+  let line = 1;
+  let col = 1;
 
   while (pos < source.length) {
     // 记录当前步骤
-    var step = {
+    const step = {
       sourceIndex: pos,
       buffer: source.slice(Math.max(0, pos - 5), pos + 5)
     };
 
     // 跳过空白字符（空格、制表符、换行符、回车）
-    var ch = source[pos];
+    const ch = source[pos];
+
     if (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r') {
       if (ch === '\n') {
         line++;
@@ -82,17 +86,17 @@ function tokenize(source, rules) {
 
     // 检测未闭合的块注释：当前位置是 /* 但后方没有 */
     if (ch === '/' && pos + 1 < source.length && source[pos + 1] === '*') {
-      var closingIdx = source.indexOf('*/', pos + 2);
+      const closingIdx = source.indexOf('*/', pos + 2);
       if (closingIdx === -1) {
         // 未闭合的块注释 — 报错并跳过
-        var lexeme = source.slice(pos);
+        const lexeme = source.slice(pos);
         // 只贡献到行末
-        var lineEndIdx = lexeme.indexOf('\n');
+        let lineEndIdx = lexeme.indexOf('\n');
         if (lineEndIdx === -1) {
           lineEndIdx = lexeme.length;
         }
-        var errLexeme = lexeme.slice(0, lineEndIdx);
-        var err = {
+        const errLexeme = lexeme.slice(0, lineEndIdx);
+        const err = {
           line: line,
           col: col,
           char: source[pos],
@@ -111,15 +115,15 @@ function tokenize(source, rules) {
     }
 
     // 尝试匹配所有规则，使用最长匹配原则
-    var bestMatch = null;
-    var bestRule = null;
-    var bestLen = -1;
+    let bestMatch = null;
+    let bestRule = null;
+    let bestLen = -1;
 
-    for (var i = 0; i < activeRules.length; i++) {
-      var rule = activeRules[i];
-      var m = rule.pattern.exec(source.slice(pos));
+    for (let i = 0; i < activeRules.length; i++) {
+      const rule = activeRules[i];
+      const m = rule.pattern.exec(source.slice(pos));
       if (m) {
-        var matchLen = m[0].length;
+        const matchLen = m[0].length;
         // 最长匹配：选择匹配字符最多的规则
         // 相同长度：选择优先级高的规则
         if (matchLen > bestLen || (matchLen === bestLen && rule.priority > (bestRule ? bestRule.priority : -1))) {
@@ -131,12 +135,12 @@ function tokenize(source, rules) {
     }
 
     if (bestMatch && bestRule) {
-      var lexeme = bestMatch[0];
+      const lexeme = bestMatch[0];
 
       // 注释不产生 Token，直接跳过
       if (bestRule.category === 'comment') {
         // 更新位置
-        var newlines = countNewlines(lexeme);
+        const newlines = countNewlines(lexeme);
         if (newlines > 0) {
           line += newlines;
           col = lexeme.length - lexeme.lastIndexOf('\n');
@@ -149,7 +153,7 @@ function tokenize(source, rules) {
         continue;
       }
 
-      var token = {
+      const token = {
         type: bestRule.name,
         lexeme: lexeme,
         line: line,
@@ -163,7 +167,7 @@ function tokenize(source, rules) {
       step.matchedRule = bestRule.name;
 
       // 更新位置（处理多行 Token，如多行字符串）
-      var newlinesInToken = countNewlines(lexeme);
+      const newlinesInToken = countNewlines(lexeme);
       if (newlinesInToken > 0) {
         line += newlinesInToken;
         col = lexeme.length - lexeme.lastIndexOf('\n');
@@ -173,7 +177,7 @@ function tokenize(source, rules) {
       pos += lexeme.length;
     } else {
       // 非法字符
-      var err = {
+      const err = {
         line: line,
         col: col,
         char: source[pos],
@@ -197,7 +201,7 @@ function tokenize(source, rules) {
 
   // 添加终态步骤（光标在末尾）
   if (source.length > 0) {
-    var finalStep = {
+    const finalStep = {
       sourceIndex: source.length,
       buffer: source.slice(-5)
     };
@@ -217,8 +221,8 @@ function tokenize(source, rules) {
  * @returns {number}
  */
 function countNewlines(str) {
-  var count = 0;
-  for (var i = 0; i < str.length; i++) {
+  let count = 0;
+  for (let i = 0; i < str.length; i++) {
     if (str[i] === '\n') {
       count++;
     }

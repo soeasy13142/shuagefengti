@@ -24,7 +24,7 @@
  */
 
 /** @type {number} */
-var _nextId = 1;
+let _nextId = 1;
 
 /** Reset internal node ID counter (for testing) */
 function _resetIdCounter() {
@@ -39,7 +39,7 @@ function _resetIdCounter() {
  * @returns {ASTNode}
  */
 function createNode(type, lexeme, children) {
-  var id = _nextId++;
+  const id = _nextId++;
   return {
     id: id,
     type: type,
@@ -57,14 +57,13 @@ function createNode(type, lexeme, children) {
  * @returns {Token[]}
  */
 function tokenize(input) {
-  /** @type {Token[]} */
-  var tokens = [];
-  var i = 0;
-  var line = 1;
-  var col = 1;
+  const tokens = [];
+  let i = 0;
+  let line = 1;
+  let col = 1;
 
   function advance() {
-    var ch = input[i];
+    const ch = input[i];
     i++;
     if (ch === '\n') { line++; col = 1; } else { col++; }
     return ch;
@@ -75,7 +74,7 @@ function tokenize(input) {
   }
 
   while (i < input.length) {
-    var ch = input[i];
+    let ch = input[i];
 
     // Skip whitespace
     if (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r') {
@@ -85,8 +84,8 @@ function tokenize(input) {
 
     // Number
     if (ch >= '0' && ch <= '9') {
-      var startCol = col;
-      var numStr = '';
+      const startCol = col;
+      let numStr = '';
       while (i < input.length && peekCh() >= '0' && peekCh() <= '9') {
         numStr += advance();
       }
@@ -96,8 +95,8 @@ function tokenize(input) {
 
     // Identifier
     if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_') {
-      var startColId = col;
-      var idStr = '';
+      const startColId = col;
+      let idStr = '';
       while (i < input.length && ((peekCh() >= 'a' && peekCh() <= 'z') || (peekCh() >= 'A' && peekCh() <= 'Z') || (peekCh() >= '0' && peekCh() <= '9') || peekCh() === '_')) {
         idStr += advance();
       }
@@ -163,9 +162,9 @@ Parser.prototype._consume = function() {
 };
 
 Parser.prototype._expect = function(type) {
-  var tok = this._peek();
+  const tok = this._peek();
   if (tok.type !== type) {
-    var msg = tok.type === 'EOF'
+    const msg = tok.type === 'EOF'
       ? '语法错误：表达式不完整'
       : '语法错误：期望 ' + type + ' 但遇到 "' + tok.lexeme + '"';
     throw new Error(msg);
@@ -178,10 +177,10 @@ Parser.prototype._expect = function(type) {
  * Returns clean AST with operator/leaf nodes only
  */
 Parser.prototype.parseE = function() {
-  var stepIdx = this.steps.length;
+  const stepIdx = this.steps.length;
   this.steps.push({ action: 'parse', description: '应用 E → T E\'' });
-  var left = this.parseT();
-  var result = this.parseEprime(left);
+  const left = this.parseT();
+  const result = this.parseEprime(left);
   return result;
 };
 
@@ -191,14 +190,14 @@ Parser.prototype.parseE = function() {
  * @returns {ASTNode}
  */
 Parser.prototype.parseEprime = function(leftOp) {
-  var tok = this._peek();
+  const tok = this._peek();
 
   if (tok.type === 'ADD' || tok.type === 'SUB') {
     this._consume();
-    var opType = tok.type === 'ADD' ? 'ADD' : 'SUB';
-    var stepIdx = this.steps.length;
-    var right = this.parseT();
-    var node = createNode(opType, tok.lexeme, [leftOp, right]);
+    const opType = tok.type === 'ADD' ? 'ADD' : 'SUB';
+    const stepIdx = this.steps.length;
+    const right = this.parseT();
+    const node = createNode(opType, tok.lexeme, [leftOp, right]);
     node.production = 'E\' → ' + tok.lexeme + ' T E\'';
     node.stepCreated = stepIdx;
     this.steps.push({ action: 'parse', description: '应用 E\' → ' + tok.lexeme + ' T E\'', nodeId: node.id });
@@ -216,7 +215,7 @@ Parser.prototype.parseEprime = function(leftOp) {
  */
 Parser.prototype.parseT = function() {
   this.steps.push({ action: 'parse', description: '应用 T → F T\'' });
-  var left = this.parseF();
+  const left = this.parseF();
   return this.parseTprime(left);
 };
 
@@ -226,14 +225,14 @@ Parser.prototype.parseT = function() {
  * @returns {ASTNode}
  */
 Parser.prototype.parseTprime = function(leftOp) {
-  var tok = this._peek();
+  const tok = this._peek();
 
   if (tok.type === 'MUL' || tok.type === 'DIV') {
     this._consume();
-    var opType = tok.type === 'MUL' ? 'MUL' : 'DIV';
-    var stepIdx = this.steps.length;
-    var right = this.parseF();
-    var node = createNode(opType, tok.lexeme, [leftOp, right]);
+    const opType = tok.type === 'MUL' ? 'MUL' : 'DIV';
+    const stepIdx = this.steps.length;
+    const right = this.parseF();
+    const node = createNode(opType, tok.lexeme, [leftOp, right]);
     node.production = 'T\' → ' + tok.lexeme + ' F T\'';
     node.stepCreated = stepIdx;
     this.steps.push({ action: 'parse', description: '应用 T\' → ' + tok.lexeme + ' F T\'', nodeId: node.id });
@@ -250,12 +249,12 @@ Parser.prototype.parseTprime = function(leftOp) {
  * @returns {ASTNode}
  */
 Parser.prototype.parseF = function() {
-  var tok = this._peek();
+  const tok = this._peek();
 
   if (tok.type === 'NUM') {
     this._consume();
-    var stepIdx = this.steps.length;
-    var node = createNode('NUM', tok.lexeme);
+    const stepIdx = this.steps.length;
+    const node = createNode('NUM', tok.lexeme);
     node.production = 'F → num';
     node.stepCreated = stepIdx;
     node.attributes.val = parseInt(tok.lexeme, 10);
@@ -265,8 +264,8 @@ Parser.prototype.parseF = function() {
 
   if (tok.type === 'ID') {
     this._consume();
-    var stepIdx2 = this.steps.length;
-    var idNode = createNode('ID', tok.lexeme);
+    const stepIdx2 = this.steps.length;
+    const idNode = createNode('ID', tok.lexeme);
     idNode.production = 'F → id';
     idNode.stepCreated = stepIdx2;
     idNode.attributes.val = 0;
@@ -276,10 +275,10 @@ Parser.prototype.parseF = function() {
 
   if (tok.type === 'LPAREN') {
     this._consume();
-    var stepIdx3 = this.steps.length;
-    var inner = this.parseE();
+    const stepIdx3 = this.steps.length;
+    const inner = this.parseE();
     this._expect('RPAREN');
-    var parenNode = createNode('PAREN', '()', [inner]);
+    const parenNode = createNode('PAREN', '()', [inner]);
     parenNode.production = 'F → ( E )';
     parenNode.stepCreated = stepIdx3;
     this.steps.push({ action: 'parse', description: '应用 F → ( E )', nodeId: parenNode.id });
@@ -299,14 +298,14 @@ function parseExpression(input) {
     throw new Error('请输入表达式');
   }
 
-  var tokens = tokenize(input);
+  const tokens = tokenize(input);
 
   if (tokens.length > 50) {
     throw new Error('表达式过长，请简化（最多 50 个 Token）');
   }
 
-  var parser = new Parser(tokens);
-  var ast = parser.parseE();
+  const parser = new Parser(tokens);
+  const ast = parser.parseE();
 
   // Check all tokens consumed
   if (parser.pos < tokens.length) {

@@ -5,9 +5,9 @@
  * 所有函数为纯函数，无副作用。
  */
 
-var EPSILON = 'ε';
-var END_MARKER = '$';
-var MAX_ITERATIONS = 100;
+const EPSILON = 'ε';
+const END_MARKER = '$';
+const MAX_ITERATIONS = 100;
 
 /**
  * Compute FIRST sets for all symbols in grammar.
@@ -16,10 +16,10 @@ var MAX_ITERATIONS = 100;
  * @throws {Error} If fixed-point iteration does not converge
  */
 function computeFIRST(grammar) {
-  var FIRST = {};
-  var nonTerminals = grammar.nonTerminals;
-  var terminals = grammar.terminals;
-  var productions = grammar.productions;
+  const FIRST = {};
+  const nonTerminals = grammar.nonTerminals;
+  const terminals = grammar.terminals;
+  const productions = grammar.productions;
 
   // Initialize: terminals have FIRST = {terminal}
   nonTerminals.forEach(function(nt) {
@@ -29,19 +29,19 @@ function computeFIRST(grammar) {
     FIRST[t] = new Set([t]);
   });
 
-  var changed = true;
-  var iterations = 0;
+  let changed = true;
+  let iterations = 0;
 
   while (changed && iterations < MAX_ITERATIONS) {
     changed = false;
     iterations++;
 
-    for (var i = 0; i < productions.length; i++) {
-      var prod = productions[i];
-      var lhs = prod.lhs;
-      var rhs = prod.rhs;
+    for (let i = 0; i < productions.length; i++) {
+      const prod = productions[i];
+      const lhs = prod.lhs;
+      const rhs = prod.rhs;
 
-      var firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
+      const firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
 
       firstRHS.forEach(function(sym) {
         if (!FIRST[lhs].has(sym)) {
@@ -67,12 +67,12 @@ function computeFIRST(grammar) {
  * @returns {Set<string>}
  */
 function _computeFIRSTOfSequence(symbols, FIRST, nonTerminals) {
-  var result = new Set();
-  var allNullable = true;
+  const result = new Set();
+  let allNullable = true;
 
-  for (var i = 0; i < symbols.length; i++) {
-    var sym = symbols[i];
-    var symFirst = FIRST[sym];
+  for (let i = 0; i < symbols.length; i++) {
+    const sym = symbols[i];
+    const symFirst = FIRST[sym];
 
     if (!symFirst) {
       // Unknown symbol — treat as terminal
@@ -108,38 +108,38 @@ function _computeFIRSTOfSequence(symbols, FIRST, nonTerminals) {
  * @throws {Error} If fixed-point iteration does not converge
  */
 function computeFOLLOW(grammar, firstResult) {
-  var FIRST = firstResult.FIRST;
-  var nonTerminals = grammar.nonTerminals;
-  var productions = grammar.productions;
-  var startSymbol = grammar.startSymbol;
+  const FIRST = firstResult.FIRST;
+  const nonTerminals = grammar.nonTerminals;
+  const productions = grammar.productions;
+  const startSymbol = grammar.startSymbol;
 
-  var FOLLOW = {};
+  const FOLLOW = {};
   nonTerminals.forEach(function(nt) {
     FOLLOW[nt] = new Set();
   });
   FOLLOW[startSymbol].add(END_MARKER);
 
-  var changed = true;
-  var iterations = 0;
+  let changed = true;
+  let iterations = 0;
 
   while (changed && iterations < MAX_ITERATIONS) {
     changed = false;
     iterations++;
 
-    for (var p = 0; p < productions.length; p++) {
-      var prod = productions[p];
-      var lhs = prod.lhs;
-      var rhs = prod.rhs;
+    for (let p = 0; p < productions.length; p++) {
+      const prod = productions[p];
+      const lhs = prod.lhs;
+      const rhs = prod.rhs;
 
-      for (var i = 0; i < rhs.length; i++) {
-        var B = rhs[i];
+      for (let i = 0; i < rhs.length; i++) {
+        const B = rhs[i];
         if (!nonTerminals.has(B)) {
           continue;
         }
 
         // β = symbols after B in RHS
-        var beta = rhs.slice(i + 1);
-        var firstBeta = _computeFIRSTOfSequence(beta, FIRST, nonTerminals);
+        const beta = rhs.slice(i + 1);
+        const firstBeta = _computeFIRSTOfSequence(beta, FIRST, nonTerminals);
 
         // Add FIRST[β] - {ε} to FOLLOW[B]
         firstBeta.forEach(function(sym) {
@@ -177,22 +177,22 @@ function computeFOLLOW(grammar, firstResult) {
  * @returns {{ table: Object, conflicts: Object }}
  */
 function buildParseTable(grammar, firstResult, followResult) {
-  var FIRST = firstResult.FIRST;
-  var FOLLOW = followResult.FOLLOW;
-  var nonTerminals = grammar.nonTerminals;
-  var terminals = grammar.terminals;
-  var productions = grammar.productions;
+  const FIRST = firstResult.FIRST;
+  const FOLLOW = followResult.FOLLOW;
+  const nonTerminals = grammar.nonTerminals;
+  const terminals = grammar.terminals;
+  const productions = grammar.productions;
 
   // Build column set: all terminals + $
-  var columns = [];
+  const columns = [];
   terminals.forEach(function(t) { columns.push(t); });
   columns.push(END_MARKER);
 
-  var rows = [];
+  const rows = [];
   nonTerminals.forEach(function(nt) { rows.push(nt); });
 
-  var table = {};
-  var conflicts = {};
+  const table = {};
+  const conflicts = {};
 
   rows.forEach(function(nt) {
     table[nt] = {};
@@ -203,12 +203,12 @@ function buildParseTable(grammar, firstResult, followResult) {
     });
   });
 
-  for (var i = 0; i < productions.length; i++) {
-    var prod = productions[i];
-    var lhs = prod.lhs;
-    var rhs = prod.rhs;
+  for (let i = 0; i < productions.length; i++) {
+    const prod = productions[i];
+    const lhs = prod.lhs;
+    const rhs = prod.rhs;
 
-    var firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
+    const firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
 
     // For each a ∈ FIRST[RHS], a ≠ ε: table[lhs][a] = prod
     firstRHS.forEach(function(a) {
@@ -248,17 +248,17 @@ function buildParseTable(grammar, firstResult, followResult) {
  * @returns {{ steps: Object[], accepted: boolean }}
  */
 function parseInput(grammar, table, input) {
-  var startSymbol = grammar.startSymbol;
-  var nonTerminals = grammar.nonTerminals;
+  const startSymbol = grammar.startSymbol;
+  const nonTerminals = grammar.nonTerminals;
 
-  var stack = [END_MARKER, startSymbol];
-  var inputBuf = [];
-  for (var i = 0; i < input.length; i++) {
+  const stack = [END_MARKER, startSymbol];
+  const inputBuf = [];
+  for (let i = 0; i < input.length; i++) {
     inputBuf.push(input[i]);
   }
   inputBuf.push(END_MARKER);
-  var output = [];
-  var steps = [];
+  const output = [];
+  const steps = [];
 
   // Record initial state
   steps.push({
@@ -270,8 +270,8 @@ function parseInput(grammar, table, input) {
   });
 
   while (true) {
-    var top = stack[stack.length - 1];
-    var lookahead = inputBuf[0];
+    let top = stack[stack.length - 1];
+    let lookahead = inputBuf[0];
 
     // Accept
     if (top === END_MARKER && lookahead === END_MARKER) {
@@ -314,8 +314,8 @@ function parseInput(grammar, table, input) {
     }
 
     // Look up parse table
-    var row = table[top];
-    var prod = row ? row[lookahead] : null;
+    const row = table[top];
+    const prod = row ? row[lookahead] : null;
     if (!prod) {
       steps.push({
         stack: [].concat(stack),
@@ -330,12 +330,12 @@ function parseInput(grammar, table, input) {
 
     // Expand
     stack.pop();
-    var rhs = prod.rhs;
-    for (var j = rhs.length - 1; j >= 0; j--) {
+    const rhs = prod.rhs;
+    for (let j = rhs.length - 1; j >= 0; j--) {
       stack.push(rhs[j]);
     }
 
-    var prodStr = prod.lhs + ' → ';
+    let prodStr = prod.lhs + ' → ';
     if (rhs.length > 0) {
       prodStr += rhs.join(' ');
     } else {
@@ -352,7 +352,7 @@ function parseInput(grammar, table, input) {
     });
   }
 
-  var lastStep = steps[steps.length - 1];
+  const lastStep = steps[steps.length - 1];
   return {
     steps: steps,
     accepted: lastStep && lastStep.action === 'accept'
@@ -365,11 +365,11 @@ function parseInput(grammar, table, input) {
  * @returns {boolean}
  */
 function isLL1(conflicts) {
-  var nonTerminals = Object.keys(conflicts);
-  for (var i = 0; i < nonTerminals.length; i++) {
-    var nt = nonTerminals[i];
-    var cols = Object.keys(conflicts[nt]);
-    for (var j = 0; j < cols.length; j++) {
+  const nonTerminals = Object.keys(conflicts);
+  for (let i = 0; i < nonTerminals.length; i++) {
+    const nt = nonTerminals[i];
+    const cols = Object.keys(conflicts[nt]);
+    for (let j = 0; j < cols.length; j++) {
       if (conflicts[nt][cols[j]].length > 0) {
         return false;
       }

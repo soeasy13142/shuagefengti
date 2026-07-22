@@ -1,5 +1,5 @@
-var { parseGrammar, detectLeftRecursion } = require('../../utils/ll1-grammar');
-var {
+const { parseGrammar, detectLeftRecursion } = require('../../utils/ll1-grammar');
+const {
   computeFIRST,
   computeFOLLOW,
   buildParseTable,
@@ -7,7 +7,7 @@ var {
   isLL1
 } = require('../../utils/ll1-core');
 
-var PRESETS = [
+const PRESETS = [
   {
     label: '表达式文法',
     text: [
@@ -53,6 +53,7 @@ Page({
     productionList: [],
     hasLeftRecursion: false,
     leftRecursiveSymbols: [],
+    leftRecursiveSymbolsStr: '',
 
     // FIRST/FOLLOW display
     firstFollowData: [],
@@ -96,8 +97,8 @@ Page({
   },
 
   onPresetTap: function(e) {
-    var idx = parseInt(e.currentTarget.dataset.index, 10);
-    var preset = PRESETS[idx];
+    const idx = parseInt(e.currentTarget.dataset.index, 10);
+    const preset = PRESETS[idx];
     if (preset) {
       this.setData({
         grammarText: preset.text,
@@ -111,7 +112,7 @@ Page({
   // ── Computation ──
 
   onComputeTap: function() {
-    var text = this.data.grammarText;
+    const text = this.data.grammarText;
     if (!text || text.trim().length === 0) {
       this.setData({
         errorMessage: '请输入文法',
@@ -122,18 +123,18 @@ Page({
     }
 
     try {
-      var grammar = parseGrammar(text);
-      var leftRec = detectLeftRecursion(grammar);
+      const grammar = parseGrammar(text);
+      const leftRec = detectLeftRecursion(grammar);
 
-      var nonTerminalList = [];
+      const nonTerminalList = [];
       grammar.nonTerminals.forEach(function(nt) {
         nonTerminalList.push(nt);
       });
-      var terminalList = [];
+      const terminalList = [];
       grammar.terminals.forEach(function(t) {
         terminalList.push(t);
       });
-      var productionList = grammar.productions.map(function(p) {
+      const productionList = grammar.productions.map(function(p) {
         return {
           index: p.index,
           lhs: p.lhs,
@@ -141,35 +142,37 @@ Page({
         };
       });
 
-      var firstResult = computeFIRST(grammar);
-      var followResult = computeFOLLOW(grammar, firstResult);
-      var tableResult = buildParseTable(grammar, firstResult, followResult);
+      const firstResult = computeFIRST(grammar);
+      const followResult = computeFOLLOW(grammar, firstResult);
+      const tableResult = buildParseTable(grammar, firstResult, followResult);
 
       // Build FIRST/FOLLOW display data
-      var firstFollowData = [];
+      const firstFollowData = [];
       nonTerminalList.forEach(function(nt) {
-        var firstArr = [];
+        const firstArr = [];
         firstResult.FIRST[nt].forEach(function(s) { firstArr.push(s); });
-        var followArr = [];
+        const followArr = [];
         followResult.FOLLOW[nt].forEach(function(s) { followArr.push(s); });
         firstFollowData.push({
           nonTerminal: nt,
           firstArray: firstArr,
-          followArray: followArr
+          followArray: followArr,
+          firstStr: firstArr.join(', '),
+          followStr: followArr.join(', ')
         });
       });
 
       // Build parse table display data
-      var tableColumns = [];
+      const tableColumns = [];
       grammar.terminals.forEach(function(t) { tableColumns.push(t); });
       tableColumns.push('$');
 
-      var tableRows = nonTerminalList.map(function(nt) {
-        var cells = tableColumns.map(function(col) {
-          var prod = tableResult.table[nt] && tableResult.table[nt][col];
-          var conflictList = tableResult.conflicts[nt] && tableResult.conflicts[nt][col];
-          var hasConflict = conflictList && conflictList.length > 0;
-          var prodStr = null;
+      const tableRows = nonTerminalList.map(function(nt) {
+        const cells = tableColumns.map(function(col) {
+          const prod = tableResult.table[nt] && tableResult.table[nt][col];
+          const conflictList = tableResult.conflicts[nt] && tableResult.conflicts[nt][col];
+          const hasConflict = conflictList && conflictList.length > 0;
+          let prodStr = null;
           if (hasConflict) {
             prodStr = conflictList.map(function(p) {
               return p.lhs + ' → ' + (p.rhs.length > 0 ? p.rhs.join(' ') : 'ε');
@@ -195,6 +198,7 @@ Page({
         productionList: productionList,
         hasLeftRecursion: leftRec.hasLeftRecursion,
         leftRecursiveSymbols: leftRec.recursiveSymbols,
+        leftRecursiveSymbolsStr: leftRec.recursiveSymbols.join(', '),
         firstFollowData: firstFollowData,
         tableColumns: tableColumns,
         tableRows: tableRows,
@@ -234,6 +238,7 @@ Page({
       productionList: [],
       hasLeftRecursion: false,
       leftRecursiveSymbols: [],
+      leftRecursiveSymbolsStr: '',
       firstFollowData: [],
       tableColumns: [],
       tableRows: [],
@@ -252,36 +257,36 @@ Page({
   // ── Tab ──
 
   onTabTap: function(e) {
-    var idx = parseInt(e.currentTarget.dataset.index, 10);
+    const idx = parseInt(e.currentTarget.dataset.index, 10);
     this.setData({ activeTab: idx });
   },
 
   // ── Parse ──
 
   onParseStringTap: function() {
-    var _grammar = this.data._grammar;
-    var _tableResult = this.data._tableResult;
+    const _grammar = this.data._grammar;
+    const _tableResult = this.data._tableResult;
 
     if (!_grammar) {
       this.setData({ parseErrorMessage: '请先输入并计算文法' });
       return;
     }
 
-    var inputText = this.data.parseInputText.trim();
+    const inputText = this.data.parseInputText.trim();
     if (inputText.length === 0) {
       this.setData({ parseErrorMessage: '请输入待分析串' });
       return;
     }
 
     // Split input by whitespace
-    var tokens = inputText.split(/\s+/);
+    const tokens = inputText.split(/\s+/);
 
     // Validate tokens against grammar terminals
-    var _validTerminals = {};
+    const _validTerminals = {};
     _grammar.terminals.forEach(function(t) { _validTerminals[t] = true; });
 
-    var invalidTokens = [];
-    for (var i = 0; i < tokens.length; i++) {
+    const invalidTokens = [];
+    for (let i = 0; i < tokens.length; i++) {
       if (!_validTerminals[tokens[i]]) {
         invalidTokens.push(tokens[i]);
       }
@@ -295,7 +300,7 @@ Page({
     }
 
     try {
-      var parseResult = parseInput(_grammar, _tableResult.table, tokens);
+      const parseResult = parseInput(_grammar, _tableResult.table, tokens);
 
       this.setData({
         steps: parseResult.steps,
@@ -314,7 +319,7 @@ Page({
   // ── Step control ──
 
   onStepBackward: function() {
-    var idx = this.data.currentStepIndex;
+    const idx = this.data.currentStepIndex;
     if (idx > 0) {
       this.setData({
         currentStepIndex: idx - 1,
@@ -324,7 +329,7 @@ Page({
   },
 
   onStepForward: function() {
-    var idx = this.data.currentStepIndex;
+    const idx = this.data.currentStepIndex;
     if (idx < this.data.steps.length - 1) {
       this.setData({
         currentStepIndex: idx + 1,
@@ -334,7 +339,7 @@ Page({
   },
 
   onJumpEnd: function() {
-    var len = this.data.steps.length;
+    const len = this.data.steps.length;
     if (len > 0) {
       this.setData({
         currentStepIndex: len - 1,

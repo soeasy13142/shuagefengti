@@ -10,7 +10,7 @@ const { tokenTypeToClass } = require('../../utils/lexer-highlight');
 const { classifyToken } = require('../../utils/lexer-token');
 
 /** 预设示例 */
-var SAMPLES = [
+const SAMPLES = [
   {
     label: '变量声明与赋值',
     code: 'int x = 42;\nfloat pi = 3.14;\nchar c = \'a\';'
@@ -40,6 +40,7 @@ Page({
     sampleIndex: -1,
     inputTooLong: false,
     hasResult: false,
+    hasErrors: false,
 
     // Tokenization results
     tokens: [],
@@ -68,7 +69,7 @@ Page({
   _result: null,
 
   onLoad() {
-    var labels = SAMPLES.map(function(s) { return s.label; });
+    const labels = SAMPLES.map(function(s) { return s.label; });
     this.setData({
       sampleLabels: ['（自定义输入）', ...labels]
     });
@@ -77,18 +78,19 @@ Page({
   // ── Event Handlers ──
 
   onSampleChange(e) {
-    var idx = parseInt(e.detail.value, 10);
+    const idx = parseInt(e.detail.value, 10);
     if (idx === 0) {
       this.setData({ sampleIndex: 0 });
       return;
     }
-    var sample = SAMPLES[idx - 1];
+    const sample = SAMPLES[idx - 1];
     if (sample) {
       this.setData({
         rawInput: sample.code,
         sampleIndex: idx,
         inputTooLong: false,
         hasResult: false,
+        hasErrors: false,
         tokens: [],
         errors: [],
         steps: [],
@@ -104,7 +106,7 @@ Page({
   },
 
   onCodeInput(e) {
-    var val = e.detail.value;
+    const val = e.detail.value;
     if (val.length > 5000) {
       this.setData({ inputTooLong: true });
       return;
@@ -116,7 +118,7 @@ Page({
   },
 
   onTokenize() {
-    var source = this.data.rawInput;
+    const source = this.data.rawInput;
     if (!source || source.trim().length === 0) {
       wx.showToast({ title: '请输入代码', icon: 'none' });
       return;
@@ -126,13 +128,13 @@ Page({
       return;
     }
 
-    var result = tokenize(source);
+    const result = tokenize(source);
     this._result = result;
 
     // Build symbol table from all tokens
-    var symTable = buildSymbolTable(result.tokens);
+    const symTable = buildSymbolTable(result.tokens);
 
-    var totalSteps = result.steps.length;
+    const totalSteps = result.steps.length;
 
     this.setData({
       tokens: result.tokens,
@@ -140,6 +142,7 @@ Page({
       steps: result.steps,
       stepIndex: -1,
       hasResult: true,
+      hasErrors: result.errors.length > 0,
       displayTokens: this._buildTokenCards([]),
       symbolTable: this._buildSymbolDisplay(symTable),
       currentStepDisplay: '0 / ' + totalSteps,
@@ -151,8 +154,8 @@ Page({
 
   onStep() {
     if (!this._result) return;
-    var steps = this._result.steps;
-    var nextIdx = this.data.stepIndex + 1;
+    const steps = this._result.steps;
+    const nextIdx = this.data.stepIndex + 1;
 
     if (nextIdx >= steps.length) {
       wx.showToast({ title: '已到末尾', icon: 'none' });
@@ -167,8 +170,8 @@ Page({
 
   onStepAll() {
     if (!this._result) return;
-    var steps = this._result.steps;
-    var lastIdx = steps.length - 1;
+    const steps = this._result.steps;
+    const lastIdx = steps.length - 1;
 
     if (lastIdx < 0) return;
 
@@ -192,12 +195,12 @@ Page({
   },
 
   onTokenClick(e) {
-    var index = e.currentTarget.dataset.index;
-    var token = this.data.displayTokens[index];
+    const index = e.currentTarget.dataset.index;
+    const token = this.data.displayTokens[index];
     if (!token) return;
 
     // Build full detail
-    var detail = {
+    const detail = {
       type: token.type,
       lexeme: token.lexeme,
       line: token.line,
@@ -231,15 +234,15 @@ Page({
    * @param {number} stepIndex — -1 表示初始状态（全部未处理）
    */
   _updateSourceView(stepIndex) {
-    var source = this.data.rawInput;
+    const source = this.data.rawInput;
     if (!source) {
       this.setData({ sourceLines: [] });
       return;
     }
 
-    var tokens = this.data.tokens;
-    var steps = this.data.steps;
-    var cursorPos = 0;
+    const tokens = this.data.tokens;
+    const steps = this.data.steps;
+    let cursorPos = 0;
 
     // Determine cursor position based on current step
     if (stepIndex >= 0 && stepIndex < steps.length) {
@@ -251,53 +254,53 @@ Page({
     }
 
     // Determine which tokens are "revealed" (token's end <= cursorPos)
-    var revealedTokens = [];
-    for (var i = 0; i < tokens.length; i++) {
-      var t = tokens[i];
-      var tEnd = posToGlobalIndex(source, t.line, t.colEnd);
+    const revealedTokens = [];
+    for (let i = 0; i < tokens.length; i++) {
+      const t = tokens[i];
+      const tEnd = posToGlobalIndex(source, t.line, t.colEnd);
       if (tEnd !== -1 && tEnd <= cursorPos) {
         revealedTokens.push(t);
       }
     }
 
     // Build character-to-class mapping
-    var charClasses = new Array(source.length);
-    for (var i = 0; i < source.length; i++) {
+    const charClasses = new Array(source.length);
+    for (let i = 0; i < source.length; i++) {
       charClasses[i] = 'hl-unprocessed';
     }
 
-    for (var i = 0; i < revealedTokens.length; i++) {
-      var t = revealedTokens[i];
-      var tStart = posToGlobalIndex(source, t.line, t.colStart);
-      var tEnd = posToGlobalIndex(source, t.line, t.colEnd);
+    for (let i = 0; i < revealedTokens.length; i++) {
+      const t = revealedTokens[i];
+      const tStart = posToGlobalIndex(source, t.line, t.colStart);
+      const tEnd = posToGlobalIndex(source, t.line, t.colEnd);
       if (tStart === -1 || tEnd === -1) continue;
-      var cls = tokenTypeToClass(t.type) || 'hl-plain';
-      for (var j = tStart; j < tEnd && j < source.length; j++) {
+      const cls = tokenTypeToClass(t.type) || 'hl-plain';
+      for (let j = tStart; j < tEnd && j < source.length; j++) {
         charClasses[j] = cls;
       }
     }
 
     // Build lines with segments
-    var lines = source.split('\n');
-    var sourceLines = [];
-    var globalIdx = 0;
+    const lines = source.split('\n');
+    const sourceLines = [];
+    let globalIdx = 0;
 
-    for (var li = 0; li < lines.length; li++) {
-      var line = lines[li];
-      var segments = [];
-      var showCursor = false;
+    for (let li = 0; li < lines.length; li++) {
+      const line = lines[li];
+      const segments = [];
+      let showCursor = false;
 
-      for (var ci = 0; ci < line.length; ci++) {
+      for (let ci = 0; ci < line.length; ci++) {
         // Check if cursor should be shown before this character
         if (globalIdx === cursorPos && cursorPos < source.length) {
           showCursor = true;
         }
 
-        var cls = charClasses[globalIdx] || 'hl-plain';
-        var text = line[ci];
+        const cls = charClasses[globalIdx] || 'hl-plain';
+        const text = line[ci];
 
         // Merge consecutive chars with same class
-        var lastSeg = segments[segments.length - 1];
+        let lastSeg = segments[segments.length - 1];
         if (lastSeg && lastSeg.className === cls && !showCursor) {
           lastSeg.text += text;
         } else {
@@ -331,7 +334,7 @@ Page({
 
     // Handle cursor at end of source
     if (cursorPos >= source.length && sourceLines.length > 0) {
-      var lastLine = sourceLines[sourceLines.length - 1];
+      const lastLine = sourceLines[sourceLines.length - 1];
       if (lastLine.segments.length > 0) {
         lastLine.segments[lastLine.segments.length - 1].showCursor = true;
       }
@@ -345,15 +348,15 @@ Page({
    * @param {number} stepIndex
    */
   _updateTokenDisplay(stepIndex) {
-    var tokens = this.data.tokens;
-    var steps = this.data.steps;
+    const tokens = this.data.tokens;
+    const steps = this.data.steps;
     if (!tokens || !steps) return;
 
-    var visibleCount = 0;
+    let visibleCount = 0;
     if (stepIndex >= 0 && stepIndex < steps.length) {
-      var cursorPos = steps[stepIndex].sourceIndex;
-      for (var i = 0; i < tokens.length; i++) {
-        var tEnd = posToGlobalIndex(this.data.rawInput, tokens[i].line, tokens[i].colEnd);
+      const cursorPos = steps[stepIndex].sourceIndex;
+      for (let i = 0; i < tokens.length; i++) {
+        const tEnd = posToGlobalIndex(this.data.rawInput, tokens[i].line, tokens[i].colEnd);
         if (tEnd !== -1 && tEnd <= cursorPos) {
           visibleCount = i + 1;
         }
@@ -362,7 +365,7 @@ Page({
       visibleCount = tokens.length;
     }
 
-    var visibleTokens = tokens.slice(0, visibleCount);
+    const visibleTokens = tokens.slice(0, visibleCount);
     this.setData({
       displayTokens: this._buildTokenCards(visibleTokens)
     });
@@ -373,7 +376,7 @@ Page({
    * @param {number} stepIndex
    */
   _updateStatus(stepIndex) {
-    var steps = this.data.steps;
+    const steps = this.data.steps;
     if (!steps || stepIndex < 0 || stepIndex >= steps.length) {
       this.setData({
         currentStepDisplay: (stepIndex + 1) + ' / ' + (steps ? steps.length : 0),
@@ -382,8 +385,8 @@ Page({
       return;
     }
 
-    var step = steps[stepIndex];
-    var totalSteps = steps.length;
+    const step = steps[stepIndex];
+    const totalSteps = steps.length;
     this.setData({
       currentStepDisplay: (stepIndex + 1) + ' / ' + totalSteps,
       currentRule: step.matchedRule || ''
@@ -397,7 +400,7 @@ Page({
    */
   _buildTokenCards(tokens) {
     return tokens.map(function(t) {
-      var cls = tokenTypeToClass(t.type) || 'hl-plain';
+      const cls = tokenTypeToClass(t.type) || 'hl-plain';
       return {
         type: t.type,
         lexeme: t.lexeme,
@@ -417,7 +420,7 @@ Page({
    */
   _buildSymbolDisplay(symTable) {
     return symTable.map(function(entry) {
-      var occStr = entry.occurrences
+      const occStr = entry.occurrences
         .map(function(o) { return o.line + ':' + o.col; })
         .join(', ');
       return {
@@ -438,8 +441,8 @@ Page({
  */
 function posToGlobalIndex(source, line, col) {
   if (line < 1 || col < 1) return -1;
-  var currentLine = 1;
-  for (var i = 0; i < source.length; i++) {
+  let currentLine = 1;
+  for (let i = 0; i < source.length; i++) {
     if (currentLine === line) {
       return i + col - 1;
     }

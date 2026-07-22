@@ -18,9 +18,9 @@ function astDepth(node) {
   if (!node || !node.children || node.children.length === 0) {
     return 1;
   }
-  var maxDepth = 0;
-  for (var i = 0; i < node.children.length; i++) {
-    var d = astDepth(node.children[i]);
+  let maxDepth = 0;
+  for (let i = 0; i < node.children.length; i++) {
+    const d = astDepth(node.children[i]);
     if (d > maxDepth) { maxDepth = d; }
   }
   return maxDepth + 1;
@@ -33,8 +33,8 @@ function astDepth(node) {
  */
 function astNodeCount(node) {
   if (!node) { return 0; }
-  var count = 1;
-  for (var i = 0; i < node.children.length; i++) {
+  let count = 1;
+  for (let i = 0; i < node.children.length; i++) {
     count += astNodeCount(node.children[i]);
   }
   return count;
@@ -48,9 +48,9 @@ function astNodeCount(node) {
  */
 function walkAST(node, callback, depth) {
   if (!node) { return; }
-  var d = depth || 0;
+  const d = depth || 0;
   callback(node, d);
-  for (var i = 0; i < node.children.length; i++) {
+  for (let i = 0; i < node.children.length; i++) {
     walkAST(node.children[i], callback, d + 1);
   }
 }
@@ -73,8 +73,8 @@ function evaluateAST(node) {
 
     case 'ADD': {
       if (node.children.length < 2) { return 0; }
-      var l = evaluateAST(node.children[0]);
-      var r = evaluateAST(node.children[1]);
+      const l = evaluateAST(node.children[0]);
+      const r = evaluateAST(node.children[1]);
       if (typeof l === 'string') { return l; }
       if (typeof r === 'string') { return r; }
       return l + r;
@@ -82,8 +82,8 @@ function evaluateAST(node) {
 
     case 'SUB': {
       if (node.children.length < 2) { return 0; }
-      var ls = evaluateAST(node.children[0]);
-      var rs = evaluateAST(node.children[1]);
+      const ls = evaluateAST(node.children[0]);
+      const rs = evaluateAST(node.children[1]);
       if (typeof ls === 'string') { return ls; }
       if (typeof rs === 'string') { return rs; }
       return ls - rs;
@@ -91,8 +91,8 @@ function evaluateAST(node) {
 
     case 'MUL': {
       if (node.children.length < 2) { return 0; }
-      var lm = evaluateAST(node.children[0]);
-      var rm = evaluateAST(node.children[1]);
+      const lm = evaluateAST(node.children[0]);
+      const rm = evaluateAST(node.children[1]);
       if (typeof lm === 'string') { return lm; }
       if (typeof rm === 'string') { return rm; }
       return lm * rm;
@@ -100,8 +100,8 @@ function evaluateAST(node) {
 
     case 'DIV': {
       if (node.children.length < 2) { return 0; }
-      var ld = evaluateAST(node.children[0]);
-      var rd = evaluateAST(node.children[1]);
+      const ld = evaluateAST(node.children[0]);
+      const rd = evaluateAST(node.children[1]);
       if (typeof ld === 'string') { return ld; }
       if (typeof rd === 'string') { return rd; }
       if (rd === 0) {
@@ -129,7 +129,7 @@ function evaluateAST(node) {
 function annotateTypes(node) {
   if (!node) { return null; }
 
-  var newNode = {
+  const newNode = {
     id: node.id,
     type: node.type,
     lexeme: node.lexeme,
@@ -199,10 +199,10 @@ function getSdtRules() {
 function applySdtStep(node, stepIndex) {
   // Collect evaluatable nodes via post-order
   /** @type {ASTNode[]} */
-  var evalNodes = [];
+  const evalNodes = [];
   function collectPostOrder(n) {
     if (!n) { return; }
-    for (var i = 0; i < n.children.length; i++) {
+    for (let i = 0; i < n.children.length; i++) {
       collectPostOrder(n.children[i]);
     }
     if (n.type === 'NUM' || n.type === 'ID' || n.type === 'ADD' ||
@@ -217,9 +217,9 @@ function applySdtStep(node, stepIndex) {
     return { node: node, description: '所有节点已求值完毕' };
   }
 
-  var target = evalNodes[stepIndex];
-  var val = evaluateAST(target);
-  var desc = '节点 ' + target.id + ' (' + target.type +
+  const target = evalNodes[stepIndex];
+  const val = evaluateAST(target);
+  const desc = '节点 ' + target.id + ' (' + target.type +
     (target.lexeme ? ' ' + target.lexeme : '') + ')' + ' → ' + val;
 
   // Create updated tree with the target node's attributes set

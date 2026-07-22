@@ -5,7 +5,7 @@ const {
 } = require('../../utils/ast-eval');
 const { layoutTree, NODE_WIDTH, NODE_HEIGHT } = require('../../utils/ast-draw');
 
-var PRESETS = [
+const PRESETS = [
   { label: '简单加法', expr: '3 + 4' },
   { label: '乘法优先', expr: '3 + 4 * 2' },
   { label: '括号优先', expr: '(3 + 4) * 2' },
@@ -13,10 +13,10 @@ var PRESETS = [
   { label: '复杂嵌套', expr: '3 + 4 * (5 - 2)' }
 ];
 
-var PRESET_LABELS = PRESETS.map(function(p) { return p.label; });
+const PRESET_LABELS = PRESETS.map(function(p) { return p.label; });
 
 /** Node type to color mapping */
-var NODE_COLORS = {
+const NODE_COLORS = {
   NUM: '#6b8c3e',
   ID: '#996644',
   PAREN: '#5a7d9a',
@@ -43,6 +43,7 @@ Page({
     ast: null,
     astData: null,   // flat list for wxml rendering
     evalResult: null,
+    isEvalError: false,
     errorMessage: '',
 
     // 步骤
@@ -68,7 +69,7 @@ Page({
   },
 
   onLoad: function() {
-    var rules = getSdtRules();
+    const rules = getSdtRules();
     this.setData({
       sdtRules: rules,
       canvasWidth: this._getCanvasWidth()
@@ -77,7 +78,7 @@ Page({
 
   _getCanvasWidth: function() {
     try {
-      var sysInfo = wx.getSystemInfoSync();
+      const sysInfo = wx.getSystemInfoSync();
       return sysInfo.windowWidth || 375;
     } catch (e) {
       return 375;
@@ -95,7 +96,7 @@ Page({
   },
 
   onPresetChange: function(e) {
-    var idx = parseInt(e.detail.value, 10);
+    const idx = parseInt(e.detail.value, 10);
     if (idx >= 0 && idx < PRESETS.length) {
       this.setData({
         exprInput: PRESETS[idx].expr,
@@ -109,7 +110,7 @@ Page({
   // ── 构建 AST ──
 
   onBuild: function() {
-    var expr = this.data.exprInput.trim();
+    const expr = this.data.exprInput.trim();
     if (!expr) {
       this.setData({ showError: true, errorText: '请输入表达式' });
       return;
@@ -118,23 +119,23 @@ Page({
     _resetIdCounter();
 
     try {
-      var result = parseExpression(expr);
+      const result = parseExpression(expr);
     } catch (e) {
       this.setData({ showError: true, errorText: e.message || '解析错误' });
       return;
     }
 
-    var ast = result.ast;
-    var annotatedAst = annotateTypes(ast);
-    var evalVal = evaluateAST(ast);
-    var layout = layoutTree(annotatedAst, {
+    const ast = result.ast;
+    const annotatedAst = annotateTypes(ast);
+    const evalVal = evaluateAST(ast);
+    let layout = layoutTree(annotatedAst, {
       nodeWidth: NODE_WIDTH,
       nodeHeight: NODE_HEIGHT,
       hGap: 60,
       vGap: 100
     });
 
-    var flatTree = this._flattenTree(annotatedAst, layout.nodePositions);
+    let flatTree = this._flattenTree(annotatedAst, layout.nodePositions);
 
     this.setData({
       tokens: result.tokens,
@@ -142,6 +143,7 @@ Page({
       ast: annotatedAst,
       astData: flatTree,
       evalResult: evalVal,
+      isEvalError: typeof evalVal === 'string',
       steps: result.steps,
       currentStep: -1,
       totalSteps: result.steps.length,
@@ -164,6 +166,7 @@ Page({
       ast: null,
       astData: null,
       evalResult: null,
+      isEvalError: false,
       steps: [],
       currentStep: -1,
       totalSteps: 0,
@@ -188,7 +191,7 @@ Page({
     }
 
     if (this.data.parsePhase === 'tokens') {
-      var nextTok = this.data.highlightedToken + 1;
+      const nextTok = this.data.highlightedToken + 1;
       if (nextTok < this.data.tokens.length) {
         this.setData({ highlightedToken: nextTok });
         if (nextTok === this.data.tokens.length - 1) {
@@ -199,7 +202,7 @@ Page({
     }
 
     if (this.data.parsePhase === 'ast') {
-      var nextStep = this.data.currentStep + 1;
+      const nextStep = this.data.currentStep + 1;
       if (nextStep < this.data.totalSteps) {
         this.setData({ currentStep: nextStep, parsePhase: 'ast' });
         if (nextStep === this.data.totalSteps - 1) {
@@ -211,16 +214,17 @@ Page({
 
     if (this.data.parsePhase === 'sdt') {
       if (!this.data.ast) { return; }
-      var stepIdx = this.data.currentStep + 1;
-      var sdtResult = applySdtStep(this.data.ast, stepIdx);
+      const stepIdx = this.data.currentStep + 1;
+      const sdtResult = applySdtStep(this.data.ast, stepIdx);
       if (sdtResult.node) {
-        var layout = layoutTree(sdtResult.node, {
+        const layout = layoutTree(sdtResult.node, {
           nodeWidth: NODE_WIDTH,
           nodeHeight: NODE_HEIGHT,
           hGap: 60,
           vGap: 100
         });
-        var flatTree = this._flattenTree(sdtResult.node, layout.nodePositions);
+        const flatTree = this._flattenTree(sdtResult.node, layout.nodePositions);
+        const evalVal = evaluateAST(sdtResult.node);
         this.setData({
           ast: sdtResult.node,
           astData: flatTree,
@@ -228,7 +232,8 @@ Page({
           nodePositions: layout.nodePositions,
           treeWidth: layout.width,
           treeHeight: layout.height,
-          evalResult: evaluateAST(sdtResult.node)
+          evalResult: evalVal,
+          isEvalError: typeof evalVal === 'string'
         });
       }
       return;
@@ -239,7 +244,7 @@ Page({
     if (this.data.parsePhase === 'input') { return; }
 
     if (this.data.parsePhase === 'tokens') {
-      var prevTok = this.data.highlightedToken - 1;
+      const prevTok = this.data.highlightedToken - 1;
       if (prevTok < 0) {
         this.setData({ parsePhase: 'input', highlightedToken: -1 });
       } else {
@@ -249,7 +254,7 @@ Page({
     }
 
     if (this.data.parsePhase === 'ast') {
-      var prevStep = this.data.currentStep - 1;
+      const prevStep = this.data.currentStep - 1;
       if (prevStep < 0) {
         this.setData({
           parsePhase: 'tokens',
@@ -263,7 +268,7 @@ Page({
     }
 
     if (this.data.parsePhase === 'sdt') {
-      var prevSdt = this.data.currentStep - 1;
+      const prevSdt = this.data.currentStep - 1;
       if (prevSdt < 0) {
         this.setData({ parsePhase: 'ast', currentStep: this.data.totalSteps - 1 });
       } else {
@@ -273,24 +278,28 @@ Page({
   },
 
   _rebuildToSdtStep: function(targetStep) {
-    var expr = this.data.exprInput.trim();
+    const expr = this.data.exprInput.trim();
     if (!expr) { return; }
     _resetIdCounter();
     try {
-      var result = parseExpression(expr);
-    } catch (e) { return; }
-    var current = result.ast;
-    for (var i = 0; i <= targetStep; i++) {
-      var stepResult = applySdtStep(current, i);
+      const result = parseExpression(expr);
+    } catch (e) {
+      this.setData({ showError: true, errorText: e.message || '解析错误', parsePhase: 'input', currentStep: -1 });
+      return;
+    }
+    let current = result.ast;
+    for (let i = 0; i <= targetStep; i++) {
+      const stepResult = applySdtStep(current, i);
       if (stepResult.node) { current = stepResult.node; }
     }
-    var layout = layoutTree(current, {
+    const layout = layoutTree(current, {
       nodeWidth: NODE_WIDTH,
       nodeHeight: NODE_HEIGHT,
       hGap: 60,
       vGap: 100
     });
-    var flatTree = this._flattenTree(current, layout.nodePositions);
+    const flatTree = this._flattenTree(current, layout.nodePositions);
+    const evalVal = evaluateAST(current);
     this.setData({
       ast: current,
       astData: flatTree,
@@ -298,19 +307,20 @@ Page({
       nodePositions: layout.nodePositions,
       treeWidth: layout.width,
       treeHeight: layout.height,
-      evalResult: evaluateAST(current)
+      evalResult: evalVal,
+      isEvalError: typeof evalVal === 'string'
     });
   },
 
   // ── 折叠/展开 ──
 
   onToggleFold: function(e) {
-    var nodeIdStr = e.currentTarget.dataset.nodeId;
+    const nodeIdStr = e.currentTarget.dataset.nodeId;
     if (!nodeIdStr) { return; }
-    var nodeId = parseInt(nodeIdStr, 10);
+    const nodeId = parseInt(nodeIdStr, 10);
     if (isNaN(nodeId)) { return; }
 
-    var newData = this.data.astData.map(function(n) {
+    const newData = this.data.astData.map(function(n) {
       if (n.id === nodeId) {
         return Object.assign({}, n, { folded: !n.folded });
       }
@@ -327,10 +337,10 @@ Page({
   // ── 内部方法 ──
 
   _flattenTree: function(node, positions) {
-    var flat = [];
+    const flat = [];
     function flatten(n, depth) {
       if (!n) { return; }
-      var pos = positions[n.id] || { x: 0, y: 0, w: 120, h: 60 };
+      const pos = positions[n.id] || { x: 0, y: 0, w: 120, h: 60 };
       flat.push({
         id: n.id,
         type: n.type,
@@ -347,7 +357,7 @@ Page({
         folded: false,
         color: getNodeColor(n.type)
       });
-      for (var i = 0; i < n.children.length; i++) {
+      for (let i = 0; i < n.children.length; i++) {
         flatten(n.children[i], depth + 1);
       }
     }

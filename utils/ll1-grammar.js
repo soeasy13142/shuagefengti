@@ -77,7 +77,7 @@ function parseGrammar(text) {
       };
       productions.push(production);
 
-      for (var j = 0; j < symbols.length; j++) {
+      for (let j = 0; j < symbols.length; j++) {
         allSymbols.add(symbols[j]);
       }
     }
@@ -88,8 +88,8 @@ function parseGrammar(text) {
   }
 
   // Terminals: all symbols not in nonTerminals and not epsilon
-  var terminals = new Set();
-  var symbolIterator = allSymbols.values
+  const terminals = new Set();
+  const symbolIterator = allSymbols.values
     ? allSymbols.values()
     : Array.from(allSymbols);
 
@@ -100,11 +100,11 @@ function parseGrammar(text) {
   });
 
   // Build productionMap
-  var productionMap = {};
+  const productionMap = {};
   nonTerminals.forEach(function(nt) {
     productionMap[nt] = [];
   });
-  for (var p = 0; p < productions.length; p++) {
+  for (let p = 0; p < productions.length; p++) {
     productionMap[productions[p].lhs].push(productions[p]);
   }
 
@@ -123,11 +123,11 @@ function parseGrammar(text) {
  * @returns {string[]}
  */
 function _splitAlternatives(text) {
-  var parts = [];
-  var current = '';
-  var depth = 0;
-  for (var i = 0; i < text.length; i++) {
-    var ch = text[i];
+  const parts = [];
+  let current = '';
+  let depth = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
     if (ch === '(' || ch === '[') {
       depth++;
     } else if (ch === ')' || ch === ']') {
@@ -164,18 +164,18 @@ function _parseRHS(text) {
  * @returns {{ hasLeftRecursion: boolean, recursiveSymbols: string[] }}
  */
 function detectLeftRecursion(grammar) {
-  var recursive = [];
+  const recursive = [];
 
-  for (var i = 0; i < grammar.productions.length; i++) {
-    var prod = grammar.productions[i];
+  for (let i = 0; i < grammar.productions.length; i++) {
+    const prod = grammar.productions[i];
     if (prod.rhs.length > 0 && prod.rhs[0] === prod.lhs) {
       recursive.push(prod.lhs);
     }
   }
 
-  var unique = [];
-  var seen = {};
-  for (var j = 0; j < recursive.length; j++) {
+  const unique = [];
+  const seen = {};
+  for (let j = 0; j < recursive.length; j++) {
     if (!seen[recursive[j]]) {
       seen[recursive[j]] = true;
       unique.push(recursive[j]);

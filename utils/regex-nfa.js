@@ -170,10 +170,12 @@ function newState(isAccept) {
  * 添加 ε 转移
  */
 function addEps(state, targetId) {
-  if (!state.transitions['ε']) {
-    state.transitions['ε'] = [];
+  var transitions = Object.assign({}, state.transitions);
+  if (!transitions['ε']) {
+    transitions['ε'] = [];
   }
-  state.transitions['ε'].push(targetId);
+  transitions['ε'] = transitions['ε'].concat([targetId]);
+  state.transitions = transitions;
 }
 
 /**
@@ -190,9 +192,13 @@ function addEpsToState(states, stateId, targetId) {
  * 将指定状态设为非接受
  */
 function setNonAccept(states, stateId) {
-  const st = findState(states, stateId);
+  var st = findState(states, stateId);
   if (st) {
-    st.isAccept = false;
+    // Immutable: replace the state in the array
+    var idx = states.indexOf(st);
+    if (idx !== -1) {
+      states[idx] = Object.assign({}, st, { isAccept: false });
+    }
   }
 }
 

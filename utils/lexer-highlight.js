@@ -11,7 +11,7 @@ const { classifyToken } = require('./lexer-token');
  * Token 分类到 CSS class 的映射表。
  * @type {Object<string, string>}
  */
-var CATEGORY_CLASS_MAP = {
+const CATEGORY_CLASS_MAP = {
   'keyword': 'hl-keyword',
   'identifier': 'hl-identifier',
   'literal': 'hl-literal',
@@ -27,7 +27,7 @@ var CATEGORY_CLASS_MAP = {
  * @returns {string} — CSS class 名，未知类型返回空字符串
  */
 function tokenTypeToClass(tokenType) {
-  var category = classifyToken(tokenType);
+  const category = classifyToken(tokenType);
   if (!category) return '';
   return CATEGORY_CLASS_MAP[category] || '';
 }
@@ -43,17 +43,17 @@ function tokenTypeToClass(tokenType) {
  * @returns {Array<{ start: number, end: number, className: string, tokenType: string, lexeme: string }>}
  */
 function tokensToHighlightRanges(tokens, source) {
-  var ranges = [];
+  const ranges = [];
 
-  for (var i = 0; i < tokens.length; i++) {
-    var t = tokens[i];
-    var className = tokenTypeToClass(t.type);
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    const className = tokenTypeToClass(t.type);
     if (!className) continue;
 
     // 使用 Token 中的位置信息
     // 需要将行/列转为全局字符索引
-    var startIdx = posToIndex(source || '', t.line, t.colStart);
-    var endIdx = posToIndex(source || '', t.line, t.colEnd);
+    const startIdx = posToIndex(source || '', t.line, t.colStart);
+    const endIdx = posToIndex(source || '', t.line, t.colEnd);
 
     if (startIdx === -1 || endIdx === -1) continue;
 
@@ -82,8 +82,8 @@ function posToIndex(source, line, col) {
   if (line < 1 || col < 1) return -1;
   if (source.length === 0) return -1;
 
-  var currentLine = 1;
-  for (var i = 0; i < source.length; i++) {
+  let currentLine = 1;
+  for (let i = 0; i < source.length; i++) {
     if (currentLine === line) {
       return i + col - 1;
     }

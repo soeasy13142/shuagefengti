@@ -14,16 +14,16 @@
  */
 
 /** 节点宽度 (rpx) */
-var NODE_WIDTH = 120;
+const NODE_WIDTH = 120;
 
 /** 节点高度 (rpx) */
-var NODE_HEIGHT = 60;
+const NODE_HEIGHT = 60;
 
 /** 兄弟节点水平间距 (rpx) */
-var H_GAP = 60;
+const H_GAP = 60;
 
 /** 父子节点垂直间距 (rpx) */
-var V_GAP = 100;
+const V_GAP = 100;
 
 /**
  * @typedef {Object} LayoutResult
@@ -41,20 +41,20 @@ var V_GAP = 100;
  * @returns {LayoutResult}
  */
 function layoutTree(root, options) {
-  var nodeWidth = (options && options.nodeWidth) || NODE_WIDTH;
-  var nodeHeight = (options && options.nodeHeight) || NODE_HEIGHT;
-  var hGap = (options && options.hGap) || H_GAP;
-  var vGap = (options && options.vGap) || V_GAP;
+  const nodeWidth = (options && options.nodeWidth) || NODE_WIDTH;
+  const nodeHeight = (options && options.nodeHeight) || NODE_HEIGHT;
+  const hGap = (options && options.hGap) || H_GAP;
+  const vGap = (options && options.vGap) || V_GAP;
 
   if (!root) {
     return { nodePositions: {}, width: 0, height: 0 };
   }
 
   /** @type {Object<number, NodePosition>} */
-  var positions = {};
+  const positions = {};
 
   // First pass: assign preliminary x positions and mod values
-  var modifier = {};
+  const modifier = {};
 
   function firstPass(node, depth) {
     if (!node) { return; }
@@ -67,14 +67,14 @@ function layoutTree(root, options) {
     }
 
     // Process children recursively
-    for (var i = 0; i < node.children.length; i++) {
+    for (let i = 0; i < node.children.length; i++) {
       firstPass(node.children[i], depth + 1);
     }
 
     // Position this node based on children
     if (node.children.length === 1) {
       // Single child: center parent over child
-      var childPos = positions[node.children[0].id];
+      const childPos = positions[node.children[0].id];
       positions[node.id] = {
         x: childPos.x,
         y: depth * (nodeHeight + vGap),
@@ -84,21 +84,21 @@ function layoutTree(root, options) {
       modifier[node.id] = 0;
     } else {
       // Multiple children: average their positions
-      var minX = Infinity;
-      var maxX = -Infinity;
-      for (var j = 0; j < node.children.length; j++) {
-        var cp = positions[node.children[j].id];
+      let minX = Infinity;
+      let maxX = -Infinity;
+      for (let j = 0; j < node.children.length; j++) {
+        const cp = positions[node.children[j].id];
         if (cp.x < minX) { minX = cp.x; }
         if (cp.x > maxX) { maxX = cp.x; }
       }
-      var avgX = (minX + maxX) / 2;
+      let avgX = (minX + maxX) / 2;
       // Adjust for left-side contour (prevent overlaps)
-      var leftContour = minX - nodeWidth / 2;
-      var rightContour = maxX + nodeWidth / 2;
+      const leftContour = minX - nodeWidth / 2;
+      let rightContour = maxX + nodeWidth / 2;
       if (leftContour < 0) {
         // Shift entire subtree right
-        var shift = -leftContour;
-        for (var k = 0; k < node.children.length; k++) {
+        const shift = -leftContour;
+        for (let k = 0; k < node.children.length; k++) {
           positions[node.children[k].id].x += shift;
         }
         avgX += shift;
@@ -120,18 +120,18 @@ function layoutTree(root, options) {
   function resolveOverlaps(node, depth) {
     if (!node || node.children.length < 2) { return; }
 
-    for (var i = 0; i < node.children.length; i++) {
+    for (let i = 0; i < node.children.length; i++) {
       resolveOverlaps(node.children[i], depth + 1);
     }
 
     // Check each pair of adjacent children for overlap
-    for (var m = 0; m < node.children.length - 1; m++) {
+    for (let m = 0; m < node.children.length - 1; m++) {
       // Get right contour of left subtree
-      var rightmost = getRightContour(node.children[m], positions);
+      const rightmost = getRightContour(node.children[m], positions);
       // Get left contour of right subtree
-      var leftmost = getLeftContour(node.children[m + 1], positions);
+      const leftmost = getLeftContour(node.children[m + 1], positions);
 
-      var overlap = rightmost + nodeWidth / 2 + hGap - leftmost;
+      const overlap = rightmost + nodeWidth / 2 + hGap - leftmost;
       if (overlap > 0) {
         // Shift the right subtree right by overlap amount
         shiftSubtree(node.children[m + 1], overlap, positions);
@@ -139,10 +139,10 @@ function layoutTree(root, options) {
     }
 
     // Re-center parent over children
-    var minX = Infinity;
-    var maxX = -Infinity;
-    for (var n = 0; n < node.children.length; n++) {
-      var cp2 = positions[node.children[n].id];
+    let minX = Infinity;
+    let maxX = -Infinity;
+    for (let n = 0; n < node.children.length; n++) {
+      const cp2 = positions[node.children[n].id];
       if (cp2.x < minX) { minX = cp2.x; }
       if (cp2.x > maxX) { maxX = cp2.x; }
     }
@@ -152,27 +152,27 @@ function layoutTree(root, options) {
   resolveOverlaps(root, 0);
 
   // Calculate total width and height
-  var totalWidth = 0;
-  var totalHeight = 0;
-  var keys = Object.keys(positions);
-  for (var p = 0; p < keys.length; p++) {
-    var pos = positions[keys[p]];
-    var rightEdge = pos.x + nodeWidth / 2;
-    var bottomEdge = pos.y + nodeHeight;
+  let totalWidth = 0;
+  let totalHeight = 0;
+  const keys = Object.keys(positions);
+  for (let p = 0; p < keys.length; p++) {
+    const pos = positions[keys[p]];
+    const rightEdge = pos.x + nodeWidth / 2;
+    const bottomEdge = pos.y + nodeHeight;
     if (rightEdge > totalWidth) { totalWidth = rightEdge; }
     if (bottomEdge > totalHeight) { totalHeight = bottomEdge; }
   }
 
   // Get leftmost edge for offset
-  var leftmostX = Infinity;
-  for (var q = 0; q < keys.length; q++) {
-    var leftEdge = positions[keys[q]].x - nodeWidth / 2;
+  let leftmostX = Infinity;
+  for (let q = 0; q < keys.length; q++) {
+    const leftEdge = positions[keys[q]].x - nodeWidth / 2;
     if (leftEdge < leftmostX) { leftmostX = leftEdge; }
   }
 
   // Offset all positions to be non-negative
   if (leftmostX < 0) {
-    for (var r = 0; r < keys.length; r++) {
+    for (let r = 0; r < keys.length; r++) {
       positions[keys[r]].x -= leftmostX;
     }
     totalWidth -= leftmostX;
@@ -193,11 +193,11 @@ function layoutTree(root, options) {
  */
 function getRightContour(node, positions) {
   if (!node) { return -Infinity; }
-  var pos = positions[node.id];
+  const pos = positions[node.id];
   if (!pos) { return -Infinity; }
-  var rightmost = pos.x;
-  for (var i = 0; i < node.children.length; i++) {
-    var childRight = getRightContour(node.children[i], positions);
+  let rightmost = pos.x;
+  for (let i = 0; i < node.children.length; i++) {
+    const childRight = getRightContour(node.children[i], positions);
     if (childRight > rightmost) { rightmost = childRight; }
   }
   return rightmost;
@@ -211,11 +211,11 @@ function getRightContour(node, positions) {
  */
 function getLeftContour(node, positions) {
   if (!node) { return Infinity; }
-  var pos = positions[node.id];
+  const pos = positions[node.id];
   if (!pos) { return Infinity; }
-  var leftmost = pos.x;
-  for (var i = 0; i < node.children.length; i++) {
-    var childLeft = getLeftContour(node.children[i], positions);
+  let leftmost = pos.x;
+  for (let i = 0; i < node.children.length; i++) {
+    const childLeft = getLeftContour(node.children[i], positions);
     if (childLeft < leftmost) { leftmost = childLeft; }
   }
   return leftmost;
@@ -229,9 +229,9 @@ function getLeftContour(node, positions) {
  */
 function shiftSubtree(node, delta, positions) {
   if (!node) { return; }
-  var pos = positions[node.id];
+  const pos = positions[node.id];
   if (pos) { pos.x += delta; }
-  for (var i = 0; i < node.children.length; i++) {
+  for (let i = 0; i < node.children.length; i++) {
     shiftSubtree(node.children[i], delta, positions);
   }
 }
