@@ -20,7 +20,7 @@
       <!-- 分类标签栏（横向滚动） -->
       <scroll-view class="category-tabs" scroll-x show-scrollbar="{{false}}" enable-flex>
         <view class="category-tab {{activeCategory === 'all' ? 'active' : ''}}" data-id="all" bindtap="onCategoryTap">
-          <text>全部</text>
+          <text>推荐</text>
         </view>
         <view
           class="category-tab {{activeCategory === item.id ? 'active' : ''}}"
