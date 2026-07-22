@@ -1,0 +1,159 @@
+<view class="page">
+  <!-- 标题 -->
+  <text class="band-label">AES-128 加密演示</text>
+
+  <!-- ===== 输入区 ===== -->
+  <view class="input-band">
+    <view class="input-row">
+      <text class="input-label">明文 (32 hex)</text>
+      <input class="mono-input" type="text" value="{{hexPlaintext}}" maxlength="32" bindinput="onPlaintextInput" placeholder="001122334455..." />
+    </view>
+    <view class="input-row">
+      <text class="input-label">密钥 (32 hex)</text>
+      <input class="mono-input" type="text" value="{{hexKey}}" maxlength="32" bindinput="onKeyInput" placeholder="000102030405..." />
+    </view>
+
+    <view class="preset-row">
+      <picker bindchange="onPresetChange" value="{{presetIndex}}" range="{{presetRange}}">
+        <view class="picker-display">预设: {{presetRange[presetIndex]}} ▼</view>
+      </picker>
+    </view>
+
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onEncryptTap" hover-class="btn-hover">▶ 加密</button>
+      <button class="btn-secondary" bindtap="onResetTap" hover-class="btn-hover">↻ 重置</button>
+    </view>
+
+    <text wx:if="{{inputError}}" class="error-text">{{inputError}}</text>
+  </view>
+
+  <!-- ===== 步进控制 ===== -->
+  <view class="ctrl-band" wx:if="{{hasComputed}}">
+    <view class="ctrl-row">
+      <text class="ctrl-label">轮次</text>
+      <view class="ctrl-btn ctrl-sm" bindtap="onPrevRound">◀</view>
+      <text class="ctrl-value">{{currentRound}} / {{totalRounds}}</text>
+      <view class="ctrl-btn ctrl-sm" bindtap="onNextRound">▶</view>
+    </view>
+    <view class="ctrl-row">
+      <text class="ctrl-label">步骤</text>
+      <view class="ctrl-btn ctrl-sm" bindtap="onPrevStep">◀</view>
+      <text class="ctrl-value">{{currentStepName}}</text>
+      <view class="ctrl-btn ctrl-sm" bindtap="onNextStep">▶</view>
+    </view>
+    <view class="step-dots">
+      <view wx:for="{{stepSequence}}" wx:key="index" class="step-dot {{item.active ? 'dot-active' : ''}} {{item.done ? 'dot-done' : ''}}">
+        <text class="dot-num">{{index + 1}}</text>
+        <text class="dot-label">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 状态矩阵 4x4 ===== -->
+  <view class="matrix-band" wx:if="{{hasComputed && matrixCells.length > 0}}">
+    <text class="section-title">{{currentStepName}} · 第 {{currentRound}} 轮</text>
+    <view class="matrix-grid">
+      <view wx:for="{{matrixCells}}" wx:key="index" class="matrix-cell {{item.isModified ? 'cell-modified' : ''}}">
+        <text class="cell-hex">{{item.hex}}</text>
+      </view>
+    </view>
+
+    <!-- 步骤序号 -->
+    <view class="step-sequence">
+      <view wx:for="{{stepSequence}}" wx:key="index" class="seq-item {{item.active ? 'seq-active' : ''}} {{item.done ? 'seq-done' : ''}}">
+        <text class="seq-num">{{index + 1}}</text>
+        <text class="seq-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== SubBytes 详情 ===== -->
+  <view class="detail-band" wx:if="{{sboxDisplay.length > 0 && currentStep === 0}}">
+    <text class="section-title">SubBytes · S-box 逐字节替换</text>
+    <view class="sbox-table">
+      <view wx:for="{{sboxDisplay}}" wx:for-index="sidx" wx:key="index" class="sbox-row">
+        <text class="sbox-before">{{item.beforeHex}}</text>
+        <text class="sbox-arrow">→</text>
+        <text class="sbox-after">{{item.afterHex}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== ShiftRows 详情 ===== -->
+  <view class="detail-band" wx:if="{{shiftRowInfo.length > 0 && currentStep === 1}}">
+    <text class="section-title">ShiftRows · 行移位</text>
+    <view wx:for="{{shiftRowInfo}}" wx:key="index" class="shiftrow-line">
+      <text class="shiftrow-text">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- ===== MixColumns 详情 ===== -->
+  <view class="detail-band" wx:if="{{mixcolDisplay.length > 0 && currentStep === 2}}">
+    <text class="section-title">MixColumns · 列混合</text>
+    <view wx:for="{{mixcolDisplay}}" wx:for-index="mci" wx:key="index" class="mixcol-card">
+      <text class="mixcol-title">列 {{item.col}}</text>
+      <view class="mixcol-formula">
+        <text class="formula-line">s0' = (02·s0)⊕(03·s1)⊕s2⊕s3</text>
+      </view>
+      <view class="mixcol-detail">
+        <text wx:for="{{item.inputHexes}}" wx:for-index="ri" wx:key="index" class="mixcol-byte">
+          s{{ri}} = 0x{{item.inputHexes[ri]}}
+        </text>
+        <text class="mixcol-result-sign">→</text>
+        <text wx:for="{{item.outputHexes}}" wx:for-index="ri" wx:key="index" class="mixcol-byte mixcol-result">
+          s{{ri}}' = 0x{{item.outputHexes[ri]}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== AddRoundKey 详情 ===== -->
+  <view class="detail-band" wx:if="{{roundKeyDisplay && currentStep === 3}}">
+    <text class="section-title">AddRoundKey · 轮密钥加</text>
+    <view class="roundkey-card">
+      <text class="roundkey-text">轮密钥: {{roundKeyDisplay}}</text>
+      <text class="roundkey-note">状态与轮密钥逐字节 XOR</text>
+    </view>
+  </view>
+
+  <!-- ===== 加密结果 ===== -->
+  <view class="result-band" wx:if="{{ciphertextHex}}">
+    <text class="section-title">加密结果</text>
+    <view class="result-card">
+      <text class="result-label">初始轮密钥</text>
+      <text class="result-value mono result-key">{{initialRoundKey}}</text>
+    </view>
+    <view class="result-card">
+      <text class="result-label">最终密文 (64 hex)</text>
+      <text class="result-value mono result-ct">{{ciphertextHex}}</text>
+    </view>
+  </view>
+
+  <!-- ===== 密钥扩展面板（可折叠） ===== -->
+  <view class="keyexp-band" wx:if="{{keyWordsDisplay.length > 0}}">
+    <view class="keyexp-header" bindtap="onToggleKeyExpansion">
+      <text class="section-title">密钥扩展 W[0..43]</text>
+      <text class="keyexp-toggle">{{showKeyExpansion ? '▲' : '▼'}}</text>
+    </view>
+    <view wx:if="{{showKeyExpansion}}" class="keyexp-body">
+      <view wx:for="{{keyWordsDisplay}}" wx:for-index="wi" wx:key="index" class="keyexp-word {{item.isSpecial ? 'word-special' : ''}}">
+        <view class="word-header">
+          <text class="word-idx">W[{{item.index}}]</text>
+          <text class="word-type">{{item.type}}</text>
+        </view>
+        <text class="word-hex">{{item.hex}}</text>
+        <view wx:if="{{item.isSpecial}}" class="word-detail">
+          <text wx:if="{{item.inputHex}}" class="word-detail-text">Input: {{item.inputHex}}</text>
+          <text wx:if="{{item.rotatedHex}}" class="word-detail-text">RotWord: {{item.rotatedHex}}</text>
+          <text wx:if="{{item.subWordHex}}" class="word-detail-text">SubWord: {{item.subWordHex}}</text>
+          <text wx:if="{{item.rconHex}}" class="word-detail-text">Rcon: {{item.rconHex}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-band" wx:if="{{!hasComputed}}">
+    <text class="empty-text">输入 16 字节明文和密钥后点击「加密」</text>
+  </view>
+</view>

@@ -52,9 +52,9 @@ describe('tool-registry', () => {
       });
     });
 
-    test('返回当前已实现的 20 个工具', () => {
+    test('返回当前已实现的 21 个工具', () => {
       let result = getAvailableTools();
-      expect(result.length).toBe(20);
+      expect(result.length).toBe(21);
       let ids = result.map(function(t) { return t.id; });
       expect(ids).toContain('subnet-calc');
       expect(ids).toContain('tcp-viz');
@@ -76,6 +76,7 @@ describe('tool-registry', () => {
       expect(ids).toContain('crypto-tools');
       expect(ids).toContain('dh-viz');
       expect(ids).toContain('rsa-calc');
+      expect(ids).toContain('aes-viz');
     });
   });
 

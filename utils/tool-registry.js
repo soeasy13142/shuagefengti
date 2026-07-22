@@ -430,8 +430,26 @@ const TOOLS = [
     icon: '',
     description: '轮密钥 · 字节替换 · 列混合',
     route: '/pages/aes-viz/aes-viz',
-    available: false,
+    available: true,
     featured: false,
+    tagline: '128-bit 密钥，10 轮加密，4 步操作逐轮展示',
+    taglineDetail: '输入 16 字节明文和密钥，自动演示 SubBytes → ShiftRows → MixColumns → AddRoundKey 全过程，密钥扩展 W[0..43] 一步不落',
+    tags: ['#可视化', '#进阶'],
+    difficulty: 'advanced',
+    intro: {
+      valueProp: '输入 16 字节明文和密钥，看 AES 怎么把数据变成密文。',
+      features: [
+        '逐轮展示 SubBytes、ShiftRows、MixColumns、AddRoundKey 四步操作',
+        '状态矩阵 4×4 字节网格实时高亮被修改的字节',
+        '密钥扩展面板展示 W[0..43] 44 个字的生成过程'
+      ],
+      prerequisites: '知道 AES 是"对称加密算法"就够了。',
+      useCases: [
+        '密码学课程 AES 章节',
+        '理解 AES 四步操作和密钥扩展的工作原理',
+        '对照 FIPS 197 标准向量验证实现'
+      ]
+    },
     order: 2
   },
   {

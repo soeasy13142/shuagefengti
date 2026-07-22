@@ -16,7 +16,8 @@
     "pages/dh-viz/dh-viz",
     "pages/sync-viz/sync-viz",
     "pages/crypto-tools/crypto-tools",
-    "pages/rsa-calc/rsa-calc"
+    "pages/rsa-calc/rsa-calc",
+    "pages/aes-viz/aes-viz"
   ],
   "subPackages": [{
     "root": "package-tools",
