@@ -489,6 +489,7 @@ git commit -m "feat(cipher-freq): 字母频率统计（analyzeFrequency + 标准
    - 输入文本区
    - 密钥循环展示
    - 逐字母偏移对照表
+   - 字母频率分析（柱状图，可折叠，与凯撒同款）
    - 结果输出
 
 3. **栅栏密码 Tab**：
@@ -498,6 +499,8 @@ git commit -m "feat(cipher-freq): 字母频率统计（analyzeFrequency + 标准
    - 栅栏结构可视化（点阵表示）
    - 结果输出
    - 暴力枚举栏数面板（可折叠）
+
+**预设 picker 注意**：每个密码的 `<picker>` 需要 `range="{{tabNamePresets}}"` 和 `range-key="label"` 属性，否则点击不显示选项列表。`data-tab` 用于区分所属 tab 以正确填充输入框。
 
 - [ ] **Step 1: Write `pages/crypto-tools/crypto-tools.json`**
 

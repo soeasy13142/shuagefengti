@@ -5,6 +5,7 @@ var {
   buildParseTable,
   parseInput,
   isLL1,
+  buildParseTree,
   EPSILON,
   END_MARKER
 } = require('../../utils/ll1-core');

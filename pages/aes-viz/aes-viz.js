@@ -166,6 +166,21 @@ Page({
     const trace = [];
     let state = bytesToState(plaintext);
 
+    // Round 0: Initial AddRoundKey (plaintext XOR round key 0)
+    const roundKey0 = getRoundKey(w, 0);
+    const afterARK0 = addRoundKey(state, roundKey0);
+    const arkBytes0 = stateToBytes(afterARK0);
+    const beforeBytes0 = stateToBytes(state);
+
+    trace.push({
+      round: 0,
+      beforeBytes: beforeBytes0,
+      arkBytes: arkBytes0,
+      roundKey: roundKey0
+    });
+
+    state = afterARK0;
+
     for (let round = 1; round <= 10; round++) {
       const roundKey = getRoundKey(w, round);
 
@@ -214,13 +229,13 @@ Page({
     }
 
     const ciphertext = bytesToHex(stateToBytes(state));
-    const initialRoundKeyBytes = this._fmtWord(getRoundKey(w, 0));
+    const initialRoundKeyBytes = this._fmtWord(roundKey0);
 
     this.setData({
       trace: trace,
       keyTrace: keyTrace,
       hasComputed: true,
-      currentRound: 1,
+      currentRound: 0,
       currentStep: 0,
       ciphertextHex: ciphertext,
       initialRoundKey: initialRoundKeyBytes
@@ -259,7 +274,7 @@ Page({
   // ── 步进控制 ──
 
   onPrevRound: function() {
-    if (this.data.currentRound <= 1) return;
+    if (this.data.currentRound <= 0) return;
     this.setData({ currentRound: this.data.currentRound - 1, currentStep: 0 });
     this._renderCurrentStep();
   },
@@ -271,7 +286,9 @@ Page({
   },
 
   onPrevStep: function() {
+    const round = this.data.currentRound;
     const step = this.data.currentStep;
+    if (round === 0) return; // Round 0 has no sub-steps
     if (step > 0) {
       this.setData({ currentStep: step - 1 });
       this._renderCurrentStep();
@@ -279,7 +296,9 @@ Page({
   },
 
   onNextStep: function() {
+    const round = this.data.currentRound;
     const step = this.data.currentStep;
+    if (round === 0) return; // Round 0 has no sub-steps
     if (step < 3) {
       this.setData({ currentStep: step + 1 });
       this._renderCurrentStep();
@@ -292,7 +311,8 @@ Page({
     const trace = this.data.trace;
     if (!trace || trace.length === 0) return;
 
-    const entry = trace[round - 1];
+    // trace is now 0-indexed: trace[0] = Round 0, trace[1..10] = Rounds 1-10
+    const entry = trace[round];
     if (!entry) return;
 
     let stateBytes;
@@ -302,7 +322,16 @@ Page({
     let shiftRowInfo = [];
     let roundKeyDisplay = '';
 
-    if (step === 0) {
+    if (round === 0) {
+      // Round 0: initial AddRoundKey (single operation)
+      stateBytes = entry.arkBytes;
+      for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 4; col++) {
+          modifiedRowCols.push({ row: row, col: col });
+        }
+      }
+      roundKeyDisplay = this._fmtWord(entry.roundKey);
+    } else if (step === 0) {
       // SubBytes: show before state, all cells modified
       stateBytes = entry.beforeBytes;
       for (let row = 0; row < 4; row++) {

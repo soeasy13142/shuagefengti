@@ -29,7 +29,7 @@
 
     <view class="card">
       <view class="section-title">输入文本</view>
-      <picker class="preset-picker" bindchange="onPresetSelect" data-tab="caesar">
+      <picker class="preset-picker" range="{{caesarPresets}}" range-key="label" bindchange="onPresetSelect" data-tab="caesar">
         <view class="preset-trigger">选择预设文本 ›</view>
       </picker>
       <textarea class="text-input" value="{{caesarInput}}" bindinput="onCaesarInput" placeholder="输入要加密/解密的文本..." maxlength="{{maxInputLength}}" auto-height />
@@ -103,7 +103,7 @@
 
     <view class="card">
       <view class="section-title">输入文本</view>
-      <picker class="preset-picker" bindchange="onPresetSelect" data-tab="vigenere">
+      <picker class="preset-picker" range="{{vigenerePresets}}" range-key="label" bindchange="onPresetSelect" data-tab="vigenere">
         <view class="preset-trigger">选择预设文本 ›</view>
       </picker>
       <textarea class="text-input" value="{{vigenereInput}}" bindinput="onVigenereInput" placeholder="输入要加密/解密的文本..." maxlength="{{maxInputLength}}" auto-height />
@@ -146,6 +146,33 @@
         </scroll-view>
       </view>
     </view>
+
+    <!-- 字母频率分析 -->
+    <view class="card collapsible">
+      <view class="collapsible-header" bindtap="onVigenereToggleFreq">
+        <text class="collapsible-icon">{{vigenereShowFreq ? '▼' : '▶'}}</text>
+        <text>字母频率分析</text>
+      </view>
+      <view wx:if="{{vigenereShowFreq}}" class="collapsible-body">
+        <view class="freq-chart">
+          <view wx:for="{{vigenereFreqResults}}" wx:key="letter" class="freq-row">
+            <text class="freq-letter">{{item.letter}}</text>
+            <view class="freq-bar-bg">
+              <view class="freq-bar" style="width: {{item.pct * 6}}px;"></view>
+            </view>
+            <text class="freq-pct">{{item.pct}}%</text>
+            <!-- 标准频率对比 -->
+            <view class="freq-bar-bg freq-std-bg">
+              <view class="freq-bar freq-std-bar" style="width: {{vigenereStdFreq[item.letter].pct * 6}}px;"></view>
+            </view>
+          </view>
+        </view>
+        <view class="freq-legend">
+          <view class="legend-item"><view class="legend-swatch legend-input"></view>输入文本</view>
+          <view class="legend-item"><view class="legend-swatch legend-std"></view>标准英文</view>
+        </view>
+      </view>
+    </view>
   </view>
 
   <!-- === 栅栏密码 Tab === -->
@@ -164,7 +191,7 @@
 
     <view class="card">
       <view class="section-title">输入文本</view>
-      <picker class="preset-picker" bindchange="onPresetSelect" data-tab="railfence">
+      <picker class="preset-picker" range="{{railfencePresets}}" range-key="label" bindchange="onPresetSelect" data-tab="railfence">
         <view class="preset-trigger">选择预设文本 ›</view>
       </picker>
       <textarea class="text-input" value="{{railFenceInput}}" bindinput="onRailFenceInput" placeholder="输入要加密/解密的文本..." maxlength="{{maxInputLength}}" auto-height />

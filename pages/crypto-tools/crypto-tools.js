@@ -76,6 +76,9 @@ Page({
     vigenereResult: '',
     vigenereShowSteps: false,
     vigenereStepData: null,
+    vigenereShowFreq: false,
+    vigenereFreqResults: [],
+    vigenereStdFreq: STANDARD_ENGLISH_FREQ_BY_LETTER,
 
     // Rail Fence
     railFenceRails: 3,
@@ -85,6 +88,11 @@ Page({
     railFenceStructureData: null,
     railFenceShowBruteForce: false,
     railFenceBruteForceResults: [],
+
+    // Preset data arrays for picker range binding
+    caesarPresets: PRESETS.caesar,
+    vigenerePresets: PRESETS.vigenere,
+    railfencePresets: PRESETS.railfence,
 
     // Common
     maxInputLength: MAX_INPUT_LENGTH
@@ -261,6 +269,19 @@ Page({
     this.setData({
       vigenereShowSteps: show,
       vigenereStepData: show ? stepData : this.data.vigenereStepData
+    });
+  },
+
+  /** Toggle frequency analysis panel for Vigenere */
+  onVigenereToggleFreq: function () {
+    const show = !this.data.vigenereShowFreq;
+    let results = this.data.vigenereFreqResults;
+    if (show && results.length === 0 && this.data.vigenereInput) {
+      results = analyzeFrequency(this.data.vigenereInput);
+    }
+    this.setData({
+      vigenereShowFreq: show,
+      vigenereFreqResults: results
     });
   },
 

@@ -378,12 +378,147 @@ function isLL1(conflicts) {
   return true;
 }
 
+/**
+ * Build a parse tree data structure from parse steps.
+ * Takes the leftmost derivation (expand steps) and constructs a tree.
+ * @param {Object[]} steps - Parse steps from parseInput()
+ * @param {Object} grammar - Grammar from parseGrammar()
+ * @returns {{ root: Object, flatNodes: Object[] }}
+ */
+function buildParseTree(steps, grammar) {
+  if (!steps || steps.length === 0) {
+    return { root: null, flatNodes: [] };
+  }
+
+  var root = {
+    symbol: grammar.startSymbol,
+    children: [],
+    isNonTerminal: true,
+    depth: 0,
+    isLastChild: true
+  };
+
+  // Collect only expand steps
+  var expandSteps = [];
+  for (var i = 0; i < steps.length; i++) {
+    if (steps[i].action === 'expand') {
+      expandSteps.push(steps[i]);
+    }
+  }
+
+  for (var e = 0; e < expandSteps.length; e++) {
+    var step = expandSteps[e];
+    // Parse production string: "E → T E'" or "E' → ε"
+    var arrowIdx = step.production.indexOf(' → ');
+    if (arrowIdx < 0) continue;
+    var lhs = step.production.substring(0, arrowIdx);
+    var rhsStr = step.production.substring(arrowIdx + 3);
+    var rhs = rhsStr === EPSILON ? ['ε'] : rhsStr.split(' ');
+
+    // Find the leftmost unexpanded non-terminal
+    var target = _findLeftmostUnexpanded(root);
+    if (target) {
+      for (var j = 0; j < rhs.length; j++) {
+        var sym = rhs[j];
+        target.children.push({
+          symbol: sym,
+          children: [],
+          isNonTerminal: grammar.nonTerminals.has(sym),
+          depth: target.depth + 1,
+          isLastChild: j === rhs.length - 1
+        });
+      }
+    }
+  }
+
+  // Mark isLastChild for all children (fix after tree build)
+  _markLastChild(root);
+
+  // Flatten tree for WXML rendering
+  var flatNodes = _flattenTree(root);
+
+  return { root: root, flatNodes: flatNodes };
+}
+
+/**
+ * Find the leftmost non-terminal that has no children yet (unexpanded).
+ * @param {Object} node - Tree node
+ * @returns {Object|null}
+ */
+function _findLeftmostUnexpanded(node) {
+  if (node.children.length === 0) {
+    return node;
+  }
+  for (var i = 0; i < node.children.length; i++) {
+    var result = _findLeftmostUnexpanded(node.children[i]);
+    if (result) return result;
+  }
+  return null;
+}
+
+/**
+ * Recursively mark isLastChild on all children.
+ * @param {Object} node
+ */
+function _markLastChild(node) {
+  for (var i = 0; i < node.children.length; i++) {
+    node.children[i].isLastChild = (i === node.children.length - 1);
+    _markLastChild(node.children[i]);
+  }
+}
+
+/**
+ * Flatten tree into ordered list with prefix indicators for WXML rendering.
+ * @param {Object} node - Root node
+ * @returns {Object[]}
+ */
+function _flattenTree(node) {
+  var result = [];
+  var ancestorIsLast = [];
+  _flattenNode(node, result, ancestorIsLast);
+  return result;
+}
+
+/**
+ * Recursive helper for _flattenTree.
+ * @param {Object} node
+ * @param {Object[]} result
+ * @param {boolean[]} ancestorIsLast - Track whether each ancestor is the last child
+ */
+function _flattenNode(node, result, ancestorIsLast) {
+  // Build prefix string
+  var prefix = '';
+  for (var i = 0; i < ancestorIsLast.length; i++) {
+    if (i === ancestorIsLast.length - 1) {
+      prefix += node.isLastChild ? '└── ' : '├── ';
+    } else {
+      prefix += ancestorIsLast[i] ? '    ' : '│   ';
+    }
+  }
+
+  result.push({
+    symbol: node.symbol,
+    depth: node.depth,
+    isNonTerminal: node.isNonTerminal,
+    isLastChild: node.isLastChild,
+    hasChildren: node.children.length > 0,
+    prefix: prefix
+  });
+
+  var newAncestorIsLast = ancestorIsLast.concat([node.isLastChild]);
+
+  for (var i = 0; i < node.children.length; i++) {
+    _flattenNode(node.children[i], result, newAncestorIsLast);
+  }
+}
+
 module.exports = {
   computeFIRST: computeFIRST,
   computeFOLLOW: computeFOLLOW,
   buildParseTable: buildParseTable,
   parseInput: parseInput,
   isLL1: isLL1,
+  buildParseTree: buildParseTree,
   EPSILON: EPSILON,
   END_MARKER: END_MARKER
 };
