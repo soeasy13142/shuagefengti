@@ -39,6 +39,8 @@
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {
     "intro-modal": "/components/intro-modal/intro-modal",
-    "tool-help-panel": "/components/tool-help-panel/tool-help-panel"
+    "tool-help-panel": "/components/tool-help-panel/tool-help-panel",
+    "quick-tip-bubble": "/components/quick-tip-bubble/quick-tip-bubble",
+    "inline-collapse": "/components/inline-collapse/inline-collapse"
   }
 }
