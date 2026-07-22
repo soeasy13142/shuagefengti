@@ -1,0 +1,110 @@
+.tip-bubble-wrap {
+  position: fixed;
+  z-index: 50;
+}
+
+/* 默认右下角 */
+.tip-bubble-wrap {
+  bottom: 120rpx;
+  right: 24rpx;
+}
+
+.tip-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #cc785c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.tip-btn:active,
+.tip-btn.active {
+  background: #a9583e;
+  transform: scale(0.92);
+}
+
+.tip-btn-icon {
+  font-family: Georgia, serif;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.tip-card {
+  position: absolute;
+  bottom: 88rpx;
+  right: 0;
+  width: 340rpx;
+  background: #efe9de;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.08);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.tip-card-closed {
+  opacity: 0;
+  transform: translateY(16rpx) scale(0.95);
+  pointer-events: none;
+}
+
+.tip-card-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.tip-card-close {
+  position: absolute;
+  top: 12rpx;
+  right: 16rpx;
+  padding: 8rpx;
+}
+
+.tip-card-close-icon {
+  font-size: 24rpx;
+  color: #6c6a64;
+}
+
+.tip-card-title {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #141413;
+  margin-bottom: 16rpx;
+  padding-right: 32rpx;
+}
+
+.tip-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.tip-card-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8rpx;
+}
+
+.tip-card-bullet {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 24rpx;
+  color: #cc785c;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.tip-card-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 24rpx;
+  color: #141413;
+  line-height: 1.4;
+}
