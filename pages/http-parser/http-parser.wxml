@@ -1,0 +1,143 @@
+<view class="page">
+  <!-- 页面标题 & 示例选择 -->
+  <view class="input-band">
+    <text class="band-label">HTTP 解析器</text>
+    <text class="band-subtitle">粘贴原始报文或选择预置示例，逐字段理解 HTTP 协议</text>
+
+    <view class="sample-row">
+      <text class="section-label">预置示例</text>
+      <picker mode="selector" range="{{sampleLabels}}" value="{{sampleIndex}}" bindchange="onSampleChange">
+        <view class="sample-picker">
+          <text class="sample-picker-text">{{sampleLabels[sampleIndex] || '选择示例...'}}</text>
+          <text class="picker-arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="input-row">
+      <textarea class="raw-input" placeholder="在此粘贴或输入 HTTP 报文&#10;例如：&#10;GET / HTTP/1.1&#10;Host: example.com&#10;&#10;" value="{{rawInput}}" bindinput="onRawInput" maxlength="5000" auto-height />
+    </view>
+
+    <view class="action-row">
+      <button class="btn-primary" bindtap="onParseTap" hover-class="btn-hover">解析</button>
+      <button class="btn-secondary" bindtap="onClearTap" hover-class="btn-hover">清空</button>
+    </view>
+
+    <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 原始报文展示 -->
+  <view wx:if="{{rawInput && parsed}}" class="raw-band">
+    <text class="section-label">原始报文</text>
+    <view class="raw-block">
+      <view wx:for="{{rawLines}}" wx:key="index" class="raw-line {{item.hasError ? 'line-error' : ''}}">
+        <text class="raw-line-num">{{item.num}}</text>
+        <text class="raw-line-text">{{item.text}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{!parsed}}" class="empty-band">
+    <text class="empty-text">输入 HTTP 报文后点击「解析」查看结构化结果</text>
+  </view>
+
+  <!-- 解析结果 -->
+  <view wx:if="{{parsed}}" class="result-band">
+    <text class="section-label">解析结果</text>
+
+    <!-- 请求行 -->
+    <view wx:if="{{parsed.type === 'request' && parsed.method}}" class="result-card">
+      <text class="result-card-title">🔷 请求行</text>
+      <view class="field-row">
+        <text class="field-label">方法</text>
+        <text class="field-value">{{parsed.method.raw}}</text>
+        <text class="field-info">{{parsed.method.info}}</text>
+      </view>
+      <view class="field-row">
+        <text class="field-label">URI</text>
+        <text class="field-value mono">{{parsed.uri.raw}}</text>
+        <text class="field-info">{{parsed.uri.info}}</text>
+      </view>
+      <view class="field-row">
+        <text class="field-label">版本</text>
+        <text class="field-value mono">{{parsed.version.raw}}</text>
+        <text class="field-info">{{parsed.version.info}}</text>
+      </view>
+    </view>
+
+    <!-- 状态行 -->
+    <view wx:if="{{parsed.type === 'response' && parsed.statusCode}}" class="result-card">
+      <text class="result-card-title">🔷 状态行</text>
+      <view class="field-row">
+        <text class="field-label">版本</text>
+        <text class="field-value mono">{{parsed.version.raw}}</text>
+        <text class="field-info">{{parsed.version.info}}</text>
+      </view>
+      <view class="field-row">
+        <text class="field-label">状态码</text>
+        <text class="field-value status-code">{{parsed.statusCode.code}}</text>
+        <text class="field-value">{{parsed.statusCode.phrase}}</text>
+        <text class="field-info">{{parsed.statusCode.info}}</text>
+      </view>
+    </view>
+
+    <!-- 头部 -->
+    <view wx:if="{{parsed.headers.length > 0}}" class="result-card">
+      <text class="result-card-title">🔷 头部（{{parsed.headers.length}} 个）</text>
+      <view wx:for="{{parsed.headers}}" wx:key="name" class="header-row">
+        <view class="header-name-row">
+          <text class="header-name">{{item.name}}:</text>
+          <text class="header-value">{{item.value}}</text>
+          <text wx:if="{{item.required}}" class="header-badge">必需</text>
+        </view>
+        <text wx:if="{{item.info}}" class="header-info">{{item.info}}</text>
+        <text wx:if="{{item.examTip}}" class="header-exam">{{item.examTip}}</text>
+      </view>
+    </view>
+
+    <!-- 报文体 -->
+    <view class="result-card">
+      <text class="result-card-title">🔷 报文体</text>
+      <text wx:if="{{parsed.body.isEmpty}}" class="field-info">（空）</text>
+      <text wx:else class="body-text mono">{{parsed.body.raw}}</text>
+      <text wx:if="{{!parsed.body.isEmpty}}" class="field-info">长度: {{parsed.body.length}} 字节</text>
+    </view>
+
+    <!-- 错误提示 -->
+    <view wx:if="{{parsed.errors.length > 0}}" class="result-card card-error">
+      <text class="result-card-title">❌ 解析错误</text>
+      <view wx:for="{{parsed.errors}}" wx:key="line" class="error-item">
+        <text class="error-item-text">第 {{item.line}} 行: {{item.message}}</text>
+      </view>
+    </view>
+
+    <!-- 警告 -->
+    <view wx:if="{{parsed.notes.length > 0}}" class="result-card card-warn">
+      <text class="result-card-title">⚠️ 注意事项</text>
+      <view wx:for="{{parsed.notes}}" wx:key="line" class="warn-item">
+        <text class="warn-item-text">{{item.message}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 状态码速查 -->
+  <view class="status-band">
+    <text class="section-label">状态码速查</text>
+    <view class="status-tabs">
+      <view wx:for="{{statusCategories}}" wx:key="cat" class="status-tab {{activeStatusCat === item.cat ? 'status-tab-active' : ''}}" bindtap="onStatusCatTap" data-cat="{{item.cat}}">
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+    <view wx:if="{{activeStatusCodes.length > 0}}" class="status-list">
+      <view wx:for="{{activeStatusCodes}}" wx:key="code" class="status-item">
+        <view class="status-header">
+          <text class="status-code-value">{{item.code}}</text>
+          <text class="status-phrase">{{item.phrase}}</text>
+        </view>
+        <text class="status-info">{{item.info}}</text>
+        <text wx:if="{{item.examTip}}" class="status-exam">{{item.examTip}}</text>
+      </view>
+    </view>
+  </view>
+</view>
