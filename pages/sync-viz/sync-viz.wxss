@@ -1,0 +1,470 @@
+/* ======================== 页面基础 ======================== */
+.page {
+  min-height: 100vh;
+  background: #faf9f5;
+  padding: 20rpx 24rpx 40rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Georgia', serif;
+  color: #141413;
+}
+
+.band-label {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32rpx;
+  font-weight: 400;
+  letter-spacing: -3rpx;
+  color: #141413;
+  margin-bottom: 6rpx;
+}
+
+.band-subtitle {
+  display: block;
+  font-size: 22rpx;
+  color: #6c6a64;
+  margin-bottom: 20rpx;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0;
+}
+
+/* ======================== 参数配置 ======================== */
+.config-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.config-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.config-item {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+}
+
+.config-label {
+  display: block;
+  font-size: 24rpx;
+  color: #6c6a64;
+  margin-bottom: 4rpx;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.config-slider {
+  flex: 1;
+  margin: 0;
+}
+
+.slider-value {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #141413;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  width: 56rpx;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ======================== 主体区 ======================== */
+.main-band {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+@media (min-width: 600px) {
+  .main-band {
+    flex-direction: row;
+  }
+}
+
+.section-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #141413;
+  font-family: Georgia, serif;
+  margin-bottom: 16rpx;
+}
+
+/* ======================== 缓冲区 ======================== */
+.buffer-section {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  flex: 1;
+}
+
+.buffer-grid {
+  display: flex;
+  gap: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.buffer-slot {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+  min-height: 100rpx;
+}
+
+.buffer-slot-empty {
+  background: #faf9f5;
+  border: 2rpx dashed #d4cfc2;
+}
+
+.buffer-slot-filled {
+  background: #e8dccb;
+  border: 2rpx solid #cc785c;
+  box-shadow: 0 0 0 2rpx rgba(204, 120, 92, 0.15);
+}
+
+.buffer-item {
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+.buffer-empty-indicator {
+  font-size: 24rpx;
+  color: #d4cfc2;
+}
+
+.slot-index {
+  position: absolute;
+  bottom: 4rpx;
+  right: 8rpx;
+  font-size: 16rpx;
+  color: #8e8b82;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+/* ======================== 指针行 ======================== */
+.pointer-row {
+  margin-bottom: 12rpx;
+}
+
+.pointer-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 4rpx;
+  height: 36rpx;
+}
+
+.pointer-label {
+  font-size: 20rpx;
+  color: #6c6a64;
+  flex-shrink: 0;
+  width: 96rpx;
+}
+
+.pointer-arrow {
+  font-size: 24rpx;
+  color: #cc785c;
+  transition: margin-left 0.3s ease;
+}
+
+.consumer-arrow {
+  color: #8d99ae;
+}
+
+/* ======================== 阻塞指示 ======================== */
+.waiting-banner {
+  margin-top: 8rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.waiting-text {
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  text-align: center;
+}
+
+.producer-waiting {
+  background: #fde8d6;
+  color: #a9583e;
+}
+
+.consumer-waiting {
+  background: #d6e4f0;
+  color: #4a6fa5;
+}
+
+/* ======================== 信号量 ======================== */
+.semaphore-section {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  flex: 1;
+}
+
+.semaphore-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.semaphore-item {
+  background: #faf9f5;
+  border-radius: 16rpx;
+  padding: 16rpx;
+}
+
+.semaphore-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.semaphore-name {
+  font-size: 24rpx;
+  font-weight: 600;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.semaphore-value {
+  font-size: 22rpx;
+  color: #6c6a64;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.semaphore-track {
+  height: 24rpx;
+  background: #e6dfd8;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.semaphore-bar {
+  height: 100%;
+  border-radius: 12rpx;
+  min-width: 0;
+  transition: width 0.3s ease;
+}
+
+/* ======================== 等待队列 ======================== */
+.wait-queue {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.wait-queue-title {
+  font-size: 22rpx;
+  color: #6c6a64;
+}
+
+.wait-queue-item {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  background: #faf9f5;
+  color: #a9583e;
+  border: 2rpx solid #cc785c;
+}
+
+/* ======================== 操作日志 ======================== */
+.log-band {
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.log-count {
+  font-size: 20rpx;
+  color: #8e8b82;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.log-scroll {
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.log-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120rpx;
+}
+
+.log-empty-text {
+  font-size: 24rpx;
+  color: #8e8b82;
+}
+
+.log-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 12rpx;
+  border-radius: 8rpx;
+  margin-bottom: 4rpx;
+  font-size: 22rpx;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  flex-wrap: wrap;
+}
+
+.log-producer {
+  background: rgba(252, 232, 218, 0.5);
+  border-left: 4rpx solid #cc785c;
+}
+
+.log-consumer {
+  background: rgba(214, 228, 240, 0.4);
+  border-left: 4rpx solid #8d99ae;
+}
+
+.log-time {
+  color: #8e8b82;
+  flex-shrink: 0;
+}
+
+.log-actor {
+  font-weight: 600;
+  color: #141413;
+  flex-shrink: 0;
+}
+
+.log-action {
+  color: #141413;
+  flex-shrink: 0;
+}
+
+.log-action-blocked {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+.log-semaphore {
+  color: #6c6a64;
+  font-size: 20rpx;
+}
+
+.log-blocked-badge {
+  font-size: 18rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 6rpx;
+  background: #f5d9d3;
+  color: #c0392b;
+}
+
+.log-woken-badge {
+  font-size: 18rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 6rpx;
+  background: #d4edda;
+  color: #27ae60;
+}
+
+/* ======================== 控制栏 ======================== */
+.ctrl-band {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #efe9de;
+  border-radius: 24rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 40rpx;
+}
+
+.ctrl-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #faf9f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctrl-btn:active { background: #e8e0d2; }
+
+.ctrl-play {
+  background: #cc785c;
+  width: 88rpx;
+  height: 88rpx;
+}
+
+.ctrl-playing {
+  background: #a9583e;
+}
+
+.ctrl-play:active { background: #a9583e; }
+
+.ctrl-play .ctrl-icon { color: #fff; font-size: 32rpx; }
+
+.ctrl-icon {
+  font-size: 28rpx;
+  color: #141413;
+}
+
+.ctrl-reset {
+  background: #faf9f5;
+}
+
+.speed-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-left: 8rpx;
+}
+
+.speed-label {
+  font-size: 22rpx;
+  color: #6c6a64;
+  flex-shrink: 0;
+}
+
+.speed-buttons {
+  display: flex;
+  gap: 6rpx;
+  flex: 1;
+}
+
+.speed-btn {
+  flex: 1;
+  padding: 12rpx 16rpx;
+  background: #faf9f5;
+  border-radius: 12rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #6c6a64;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.speed-active {
+  background: #cc785c;
+  color: #fff;
+}

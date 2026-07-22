@@ -1,0 +1,150 @@
+<view class="page">
+
+  <!-- 参数配置 -->
+  <view class="config-band">
+    <text class="band-label">同步互斥演示</text>
+    <text class="band-subtitle">生产者-消费者 · 信号量 PV 操作</text>
+    <view class="config-sliders">
+      <view class="config-item">
+        <text class="config-label">缓冲区大小</text>
+        <view class="slider-row">
+          <slider class="config-slider" min="2" max="8" step="1" value="{{bufferSize}}"
+                  activeColor="#cc785c" backgroundColor="#e6dfd8" bindchange="onBufferSizeChange" />
+          <text class="slider-value">{{bufferSize}}</text>
+        </view>
+      </view>
+      <view class="config-item">
+        <text class="config-label">生产间隔</text>
+        <view class="slider-row">
+          <slider class="config-slider" min="1" max="8" step="1" value="{{producerInterval}}"
+                  activeColor="#cc785c" backgroundColor="#e6dfd8" bindchange="onProducerIntervalChange" />
+          <text class="slider-value">{{producerInterval}}s</text>
+        </view>
+      </view>
+      <view class="config-item">
+        <text class="config-label">消费间隔</text>
+        <view class="slider-row">
+          <slider class="config-slider" min="1" max="8" step="1" value="{{consumerInterval}}"
+                  activeColor="#cc785c" backgroundColor="#e6dfd8" bindchange="onConsumerIntervalChange" />
+          <text class="slider-value">{{consumerInterval}}s</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主体区：缓冲区 + 信号量 -->
+  <view class="main-band">
+    <!-- 左侧：缓冲区 -->
+    <view class="buffer-section">
+      <text class="section-title">缓冲区</text>
+      <view class="buffer-grid">
+        <view wx:for="{{buffer}}" wx:key="index" wx:for-index="idx"
+              class="buffer-slot {{item ? 'buffer-slot-filled' : 'buffer-slot-empty'}}"
+              style="transition-delay: {{idx * 50}}ms">
+          <text wx:if="{{item}}" class="buffer-item">{{item}}</text>
+          <text wx:else class="buffer-empty-indicator">.</text>
+          <text class="slot-index">{{idx}}</text>
+        </view>
+      </view>
+      <!-- 生产者 / 消费者指针 -->
+      <view class="pointer-row">
+        <view class="pointer-item pointer-producer">
+          <text class="pointer-label">生产者-></text>
+          <text class="pointer-arrow" style="margin-left: {{producerIndex * (100 / bufferSize)}}%">V</text>
+        </view>
+        <view class="pointer-item pointer-consumer">
+          <text class="pointer-label">消费者-></text>
+          <text class="pointer-arrow consumer-arrow" style="margin-left: {{consumerIndex * (100 / bufferSize)}}%">^</text>
+        </view>
+      </view>
+      <!-- 阻塞状态 -->
+      <view wx:if="{{waiting.producer || waiting.consumer}}" class="waiting-banner">
+        <text wx:if="{{waiting.producer}}" class="waiting-text producer-waiting">等待 empty</text>
+        <text wx:if="{{waiting.consumer}}" class="waiting-text consumer-waiting">等待 full</text>
+      </view>
+    </view>
+
+    <!-- 右侧：信号量 -->
+    <view class="semaphore-section">
+      <text class="section-title">信号量</text>
+      <view class="semaphore-list">
+        <view class="semaphore-item">
+          <view class="semaphore-header">
+            <text class="semaphore-name" style="color: {{semaphoreBars.full.color}}">full</text>
+            <text class="semaphore-value">{{semaphores.full}} / {{bufferSize}}</text>
+          </view>
+          <view class="semaphore-track">
+            <view class="semaphore-bar" style="width: {{semaphoreBars.full.percent}}%; background: {{semaphoreBars.full.color}}; transition: width 0.3s ease"></view>
+          </view>
+        </view>
+        <view class="semaphore-item">
+          <view class="semaphore-header">
+            <text class="semaphore-name" style="color: {{semaphoreBars.empty.color}}">empty</text>
+            <text class="semaphore-value">{{semaphores.empty}} / {{bufferSize}}</text>
+          </view>
+          <view class="semaphore-track">
+            <view class="semaphore-bar" style="width: {{semaphoreBars.empty.percent}}%; background: {{semaphoreBars.empty.color}}; transition: width 0.3s ease"></view>
+          </view>
+        </view>
+        <view class="semaphore-item">
+          <view class="semaphore-header">
+            <text class="semaphore-name" style="color: {{semaphoreBars.mutex.color}}">mutex</text>
+            <text class="semaphore-value">{{semaphores.mutex}} / 1</text>
+          </view>
+          <view class="semaphore-track">
+            <view class="semaphore-bar" style="width: {{semaphoreBars.mutex.percent}}%; background: {{semaphoreBars.mutex.color}}; transition: width 0.3s ease"></view>
+          </view>
+        </view>
+      </view>
+      <!-- 等待队列 -->
+      <view wx:if="{{waiting.producer || waiting.consumer}}" class="wait-queue">
+        <text class="wait-queue-title">等待队列：</text>
+        <text wx:if="{{waiting.producer}}" class="wait-queue-item">生产者</text>
+        <text wx:if="{{waiting.consumer}}" class="wait-queue-item">消费者</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作日志 -->
+  <view class="log-band">
+    <view class="log-header">
+      <text class="section-title">操作日志</text>
+      <text class="log-count">{{steps.length}} 条</text>
+    </view>
+    <scroll-view class="log-scroll" scroll-y scroll-into-view="log-{{steps.length > 0 ? steps.length - 1 : 0}}">
+      <view wx:if="{{steps.length === 0}}" class="log-empty">
+        <text class="log-empty-text">点击 ▶ 或步进开始模拟</text>
+      </view>
+      <view wx:for="{{steps}}" wx:key="id" wx:for-index="idx" class="log-row {{item.actor === 'producer' ? 'log-producer' : 'log-consumer'}}" id="log-{{idx}}">
+        <text class="log-time">[t={{item.timestamp}}]</text>
+        <text class="log-actor">{{item.actor === 'producer' ? '生产者' : '消费者'}}</text>
+        <text class="log-action {{item.action.indexOf('阻塞') !== -1 ? 'log-action-blocked' : ''}}">{{item.action}}</text>
+        <text wx:if="{{item.semaphoreName !== undefined}}" class="log-semaphore">{{item.semaphoreName}}: {{item.semaphoreBefore}}>{{item.semaphoreAfter}}</text>
+        <text wx:if="{{item.blocked}}" class="log-blocked-badge">阻塞</text>
+        <text wx:if="{{item.woken}}" class="log-woken-badge">唤醒</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 控制栏 -->
+  <view class="ctrl-band">
+    <view class="ctrl-btn ctrl-reset" bindtap="onReset">
+      <text class="ctrl-icon">R</text>
+    </view>
+    <view class="ctrl-btn ctrl-play {{running ? 'ctrl-playing' : ''}}" bindtap="onTogglePlay">
+      <text class="ctrl-icon">{{running && paused ? '>' : running ? '||' : '>'}}</text>
+    </view>
+    <view class="ctrl-btn" bindtap="onStep">
+      <text class="ctrl-icon">>></text>
+    </view>
+    <view class="speed-area">
+      <text class="speed-label">速度</text>
+      <view class="speed-buttons">
+        <view class="speed-btn {{speedIndex === 0 ? 'speed-active' : ''}}" bindtap="onSpeedChange" data-index="0">0.5x</view>
+        <view class="speed-btn {{speedIndex === 1 ? 'speed-active' : ''}}" bindtap="onSpeedChange" data-index="1">1x</view>
+        <view class="speed-btn {{speedIndex === 2 ? 'speed-active' : ''}}" bindtap="onSpeedChange" data-index="2">2x</view>
+      </view>
+    </view>
+  </view>
+
+</view>
