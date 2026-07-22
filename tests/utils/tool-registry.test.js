@@ -79,6 +79,7 @@ describe('tool-registry', () => {
       expect(ids).toContain('aes-viz');
       expect(ids).toContain('ll1-parser');
       expect(ids).toContain('ast-builder');
+      expect(ids).toContain('lexer-viz');
     });
   });
 
