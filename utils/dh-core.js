@@ -80,18 +80,25 @@ function isPrimitiveRoot(g, p) {
   return true;
 }
 
+// 模块级缓存：避免重复计算同一素数下的本原根列表
+const _rootCache = {};
+
 /**
  * 找出模 p 的所有本原根
  * @param {number} p - 素数
  * @returns {number[]}
  */
 function findPrimitiveRoots(p) {
+  if (_rootCache[p] !== undefined) {
+    return _rootCache[p].slice();
+  }
   const roots = [];
   for (let g = 2; g < p; g++) {
     if (isPrimitiveRoot(g, p)) {
       roots.push(g);
     }
   }
+  _rootCache[p] = roots;
   return roots;
 }
 
