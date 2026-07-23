@@ -134,7 +134,11 @@ Page({
   },
 
   // 导航加载动画兜底：300ms 延迟后显示 loading，避免快速加载闪一下
-  _navigateWithLoading: function(url) {
+  _navigateWithLoading: function(url, showLoading) {
+    if (!showLoading) {
+      wx.navigateTo({ url: url });
+      return;
+    }
     const loadingTimer = setTimeout(function() {
       wx.showLoading({ title: '加载中...', mask: true });
     }, 300);
@@ -179,7 +183,7 @@ Page({
       }
     }
 
-    this._navigateWithLoading(tool.route);
+    this._navigateWithLoading(tool.route, tool.hasSlowStartup);
   },
 
   // 点「开始体验」
@@ -189,7 +193,7 @@ Page({
     wx.setStorageSync('intro_v2_' + toolId, true);
     this.setData({ showIntro: false, pendingToolId: null });
     if (tool && tool.route) {
-      this._navigateWithLoading(tool.route);
+      this._navigateWithLoading(tool.route, tool.hasSlowStartup);
     }
   },
 
