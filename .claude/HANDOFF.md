@@ -137,6 +137,7 @@ git status --short              # 检查未提交变更
   - **Task 1**：`utils/dh-core.js` 添加 `_rootCache` 模块级缓存，`findPrimitiveRoots` 结果复用。返回 `.slice()` 保持不可变风格。996 tests 全绿。
   - **Task 2**：`pages/regex-dfa/regex-dfa.js` 重计算从 `onLoad` 移到 `onReady`，首次构造不阻塞渲染。996 tests 全绿。
   - **Task 3**：`pages/index/index.js` 添加 `_navigateWithLoading` 导航加载动画（300ms 延迟显示，`complete` 回调关闭）。996 tests 全绿。
+- **Task 5**：加载动画改为按工具复杂度条件触发。`tool-registry.js` 中 4 个复杂工具（ll1-parser、subnet-calc、nat-viz、deadlock）加 `hasSlowStartup: true` 标记，仅这些工具导航时显示 loading。其余 21 个轻量工具无加载动画。
 - **Plan**：`docs/superpowers/plans/2026-07-23-startup-lag-fix.md`
 - **分支**：`perf/tools-startup-optimization`（基于 master）
 
