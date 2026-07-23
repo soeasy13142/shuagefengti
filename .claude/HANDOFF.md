@@ -126,6 +126,20 @@ git status --short              # 检查未提交变更
 | **决策记录** | `docs/handoff/decisions.md` |
 | **架构文档** | `docs/handoff/architecture.md` |
 
+### 2026-07-23 工具点击卡顿优化（分支：perf/tools-startup-optimization）
+
+- **问题**：首页点击工具卡片后页面跳转有卡顿感，随工具数量增加愈发明显。
+- **分析结果**：主瓶颈在目标页面 `onLoad` 中的重计算阻塞首次渲染，而非首页本身。
+  - **DH-viz**：`findPrimitiveRoots(997)` 跑 925 次 modPow（~10,000 次算术运算），旧设备阻塞 ~10-50ms
+  - **Regex→DFA**：`onLoad` 执行完整 Thompson 构造 + 子集构造 + 布局计算 + 20+ 字段 setData
+  - 13 个主包页面 JS 共 ~146KB，子包工具首次导航有下载延迟
+- **改动**：
+  - **Task 1**：`utils/dh-core.js` 添加 `_rootCache` 模块级缓存，`findPrimitiveRoots` 结果复用。返回 `.slice()` 保持不可变风格。996 tests 全绿。
+  - **Task 2**：`pages/regex-dfa/regex-dfa.js` 重计算从 `onLoad` 移到 `onReady`，首次构造不阻塞渲染。996 tests 全绿。
+  - **Task 3**：`pages/index/index.js` 添加 `_navigateWithLoading` 导航加载动画（300ms 延迟显示，`complete` 回调关闭）。996 tests 全绿。
+- **Plan**：`docs/superpowers/plans/2026-07-23-startup-lag-fix.md`
+- **分支**：`perf/tools-startup-optimization`（基于 master）
+
 ### 2026-07-22 新增 D9: Karpathy Guidelines 按需启用
 
 - **新增** CLAUDE.md D9 规则 — 大型任务（specs/plans/superpowers 全流程/大型 code review）必须调用 `andrej-karpathy-skills:karpathy-guidelines`；日常琐碎修改禁止触发
