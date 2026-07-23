@@ -45,25 +45,25 @@ const TOOLS = [
     category: 'network',
     name: '子网计算器',
     icon: '',
-    description: 'IP/CIDR 计算 · 二进制位可视化',
+    description: 'IP 和掩码一块儿算，二进制也有',
     route: '/package-tools/subnet-calc/subnet-calc',
     available: true,
     featured: true,
-    tagline: 'IP 和掩码计算，可视化逐位拆解',
-    taglineDetail: '输入 IP 和前缀长度，网络号、广播地址、可用主机范围自动算好，二进制十进制逐位对照',
+    tagline: '输个 IP 和子网，结果一把算完',
+    taglineDetail: '填个 IP 和前缀长度，网络号、广播地址、可用主机范围全给你摆出来。想看看二进制怎么对的？一段段对照着看',
     tags: ['#可视化', '#交互式'],
     difficulty: 'medium',
     intro: {
-      valueProp: '输入 IP 和前缀长度，工具自动算出网络号、广播地址和可用主机范围，二进制位也逐段展示。',
+      valueProp: '给个 IP 和子网长度，网络号、广播地址、可用主机范围一把算好，二进制位也摊开给你看。',
       features: [
-        '输入 IP 和前缀长度，实时算出网络号、广播地址、可用主机范围',
-        '32 位二进制逐段展示，理解 CIDR 编址和 AND 运算的原理'
+        '输个 IP 和掩码，网络号、广播地址、主机范围全自动算好',
+        '32 位二进制一段段摆出来，CIDR 怎么编址、AND 怎么算的，一眼就明白'
       ],
-      prerequisites: '知道 IP 和掩码是什么就够了。',
+      prerequisites: '知道 IP 和子网掩码是干嘛的就够了。',
       useCases: [
-        '计网面试准备',
-        '排障时确认 IP 配置是否正确',
-        '学习二进制 AND 运算'
+        '面试前刷一下子网划分',
+        '排查 IP 配得合不合理',
+        '搞懂二进制 AND 到底怎么算的'
       ]
     },
     order: 1
@@ -77,22 +77,22 @@ const TOOLS = [
     route: '/package-tools/tcp-viz/tcp-viz',
     available: true,
     featured: true,
-    tagline: '三次握手、四次挥手、丢包重传，动效一步一步讲清楚',
-    taglineDetail: '从三次握手建立连接到四次挥手释放连接，中间模拟丢包重传，SEQ/ACK 号和状态变化每一步都标清楚',
+    tagline: '三次握手、四次挥手、丢包重传，看动画就能记住',
+    taglineDetail: '建连、断连、丢包重传——整个 TCP 过程串起来走一遍。SEQ/ACK 号和状态变到哪，每一帧都标着，看看就记住了',
     tags: ['#可视化', '#交互式', '#面试必考'],
     difficulty: 'medium',
     intro: {
-      valueProp: 'TCP 连接怎么建立、怎么断开、丢了包怎么重传——动画一步步演给你看。',
+      valueProp: 'TCP 怎么建连、怎么断连、丢包了怎么重传——动画一步一步放给你看。',
       features: [
-        '三次握手与四次挥手的完整交互过程',
-        '数据传输和丢包重传的模拟',
-        'SEQ/ACK 号变化和状态迁移的标注'
+        '三次握手和四次挥手的完整过程，看动画就能记住',
+        '传输过程模拟丢包，看 TCP 怎么重传',
+        'SEQ/ACK 号和连接状态每一步都标着，复习就对着看'
       ],
       prerequisites: '大概知道 TCP 是"面向连接"的就行。',
       useCases: [
-        '计网面试复习',
-        '理解状态机和序列号机制',
-        '给别人讲 TCP 工作原理'
+        '计网面试前过一遍 TCP 流程',
+        '搞懂状态机和序列号到底怎么回事',
+        '给别人讲 TCP，有个动画指着讲'
       ]
     },
     order: 2
@@ -106,22 +106,22 @@ const TOOLS = [
     route: '/pages/tls-viz/tls-viz',
     available: true,
     featured: false,
-    tagline: 'TLS 1.3 握手协议 step-by-step 动画，看完就懂',
-    taglineDetail: '3 种握手场景切换（初次握手/PSK 恢复/中间人警告），客户端-服务器交互动画，报文 payload 逐字段展示，ECDHE→HKDF 密钥派生全过程',
+    tagline: 'TLS 1.3 握手协议，看完动画就懂了',
+    taglineDetail: '初次握手、PSK 恢复、中间人警告——三种场景来回切，看客户端和服务器之间报文怎么飞来飞去。payload 拆到字段级，密钥从 ECDHE 到 HKDF 怎么一步步派生的，追着看就明白了',
     tags: ['#可视化', '#交互式', '#计算机网络'],
     difficulty: 'medium',
     intro: {
-      valueProp: 'TLS 1.3 握手三步一歇走给你看，证书和密钥交换不再黑盒。',
+      valueProp: 'TLS 1.3 握手三步走给你看，证书和密钥交换不再是个黑盒。',
       features: [
-        '3 种握手场景：初次握手、PSK 会话恢复、中间人攻击告警',
-        '客户端-服务器双向动画，报文 payload 逐字段展示',
-        'ECDHE→HKDF 密钥派生链路可视化（4 组对称密钥 + IV）'
+        '三种握手场景：初次握手、PSK 恢复、中间人告警，来回切着看',
+        '客户端和服务器双向动画，报文里每个字段都标出来了',
+        'ECDHE→HKDF 密钥派生的全链路，4 组密钥 + IV 怎么来的都清楚'
       ],
-      prerequisites: '知道 HTTPS 和"握手"的概念就够了。',
+      prerequisites: '知道 HTTPS 和"握手"大概是什么就够了。',
       useCases: [
-        '计网面试 TLS 章节复习',
-        '理解 ECDHE 密钥交换和 HKDF 派生的流程',
-        '对比完整握手与 PSK 恢复的性能差异'
+        '面试前弄懂 TLS 到底怎么握手的',
+        '搞清楚 ECDHE 密钥交换和 HKDF 派生的流程',
+        '对比一下完整握手和 PSK 恢复差在哪'
       ]
     },
     order: 3
@@ -135,22 +135,22 @@ const TOOLS = [
     route: '/package-tools/dns-viz/dns-viz',
     available: true,
     featured: false,
-    tagline: '输入域名，追踪从根到权威服务器的完整路径',
-    taglineDetail: '从根域名服务器到权威服务器逐级查询，缓存命中与 CNAME 链也能模拟追踪',
+    tagline: '输入域名，看它从根一路查到权威',
+    taglineDetail: '输个域名进去，从根服务器一路追到权威——哪一步踩了缓存、哪一步碰上了 CNAME 别名链，都给你标出来',
     tags: ['#可视化', '#交互式'],
     difficulty: 'medium',
     intro: {
-      valueProp: '输入一个域名，看它从根服务器一路查到权威服务器。',
+      valueProp: '输个域名进去，看它从根服务器一路查到权威服务器，每一步都看得到。',
       features: [
-        '模拟完整递归查询：根→顶级域→权威服务器',
-        '展示缓存如何加速解析',
-        '支持普通查询、缓存命中、CNAME 链三种场景'
+        '递归查询完整走一遍：根→顶级域→权威服务器',
+        '看看缓存怎么让解析变快的',
+        '三种场景：普通查询、缓存命中、CNAME 链'
       ],
-      prerequisites: '知道域名有层级（如 .com → example.com）就行。',
+      prerequisites: '知道域名有层级（.com → example.com）就行。',
       useCases: [
-        '计网面试复习',
-        '排查 DNS 解析延迟的根源',
-        '对比递归和迭代查询的区别'
+        '面试前复习 DNS 怎么工作的',
+        '排查 DNS 解析慢到底慢在哪一步',
+        '弄懂递归查询和迭代查询的区别'
       ]
     },
     order: 4
@@ -164,23 +164,23 @@ const TOOLS = [
     route: '/pages/http-parser/http-parser',
     available: true,
     featured: false,
-    tagline: '粘贴 HTTP 报文，逐字段拆解请求行/状态行、头部和报文体',
-    taglineDetail: '输入或选择预置 HTTP 报文，自动识别请求/响应类型，拆解为请求行（方法/URI/版本）、状态行（状态码/短语）、头部字段（含 inline 说明与面试考点）和报文体，内置 16 个核心状态码速查卡',
+    tagline: '粘一段 HTTP 报文，自动拆给你看',
+    taglineDetail: '粘一段 HTTP 报文进去——或者直接选个现成的例子——它自动认出是请求还是响应，然后一行行拆开：请求行、状态行、头部字段（每个都标了干啥用的、面试爱考啥）。还送了 16 个状态码速查',
     tags: ['#可视化', '#交互式', '#计算机网络'],
     difficulty: 'easy',
     intro: {
-      valueProp: '粘贴一段 HTTP 报文，自动拆解为结构化展示，每个字段都有说明。',
+      valueProp: '粘一段 HTTP 报文，自动分解成结构化的展示，每个字段都有说明，不用自己去翻文档。',
       features: [
-        '自动识别请求/响应类型，拆解首行、头部和报文体',
-        '每个字段附 inline 说明（用途、语义、面试考点）',
-        '内置 8 个预置示例，覆盖 GET/POST/200/404/500/重定向',
-        '16 个核心状态码速查卡，按分类快速浏览'
+        '粘报文进去，自动认出是请求还是响应，拆成首行/头部/报文体',
+        '每个字段都有 inline 说明——干什么用的、面试爱考啥',
+        '8 个预置例子：GET、POST、200、404、500、重定向……直接选',
+        '16 个状态码速查卡，按分类翻'
       ],
-      prerequisites: '知道 HTTP 是"超文本传输协议"就行。',
+      prerequisites: '知道 HTTP 是干嘛的就行。',
       useCases: [
-        '计网面试复习',
-        '学习 HTTP 报文格式',
-        '快速查阅状态码含义'
+        '面试前对着报文熟悉格式',
+        '查一个状态码到底啥意思',
+        '学 HTTP 协议的时候，有一个实际报文拆开看'
       ]
     },
     order: 5
@@ -194,23 +194,23 @@ const TOOLS = [
     route: '/pages/ip-fragment/ip-fragment',
     available: true,
     featured: false,
-    tagline: '调整报文大小和 MTU，看 IP 层怎么切分和重组数据报',
-    taglineDetail: '双滑块调整报文大小和 MTU，自动计算分片列表（ID/MF/偏移量），可折叠展示偏移量计算过程，从最后一片开始逐步回放重组过程',
+    tagline: '调调报文大小和 MTU，看 IP 层怎么切又怎么拼',
+    taglineDetail: '两个滑块调报文大小和 MTU，分片列表跟着自动算（ID/MF/偏移量）。算偏移量那步能展开看过程，最后还有重组动画——从最后一片往前播，看怎么拼回去的',
     tags: ['#可视化', '#交互式'],
     difficulty: 'medium',
     intro: {
-      valueProp: '拖到滑块调参数，看 IP 层怎么把大报文切成小片、接收端又怎么拼回来。',
+      valueProp: '拖拽滑块调参数，看 IP 层怎么把大报文切成小片、接收端又怎么一片片拼回来。',
       features: [
-        '双滑块调节报文大小和 MTU，实时显示头部/载荷/分片数',
+        '两个滑块调报文大小和 MTU，头部/载荷/分片数实时更新',
         '分片列表逐片展示 ID、MF 标志、片偏移、数据范围',
-        '偏移量计算过程可折叠展开',
-        '自后向前逐步回放重组动画'
+        '偏移量怎么算的，点一下就展开了',
+        '重组动画从最后一片往前播，看怎么拼回去的'
       ],
       prerequisites: '了解 IP 协议的基本概念（头部、MTU）。',
       useCases: [
-        '计网课程 IP 协议章节',
-        '理解片偏移的 8 字节对齐规则',
-        '面试前复习分片与重组机制'
+        '计网课程学 IP 协议的时候对着看',
+        '搞懂片偏移那个 8 字节对齐到底是啥意思',
+        '面试前复习一下分片和重组的过程'
       ]
     },
     order: 6
@@ -224,22 +224,22 @@ const TOOLS = [
     route: '/package-tools/nat-viz/nat-viz',
     available: true,
     featured: false,
-    tagline: 'SNAT/DNAT 模拟，看报文如何穿越 NAT 路由器',
-    taglineDetail: '单台主机外出、多台主机共享公网 IP、端口映射三种场景，报文在 3 个区域间流向动画，NAT 映射表实时更新',
+    tagline: 'SNAT/DNAT 模拟，看报文怎么穿 NAT',
+    taglineDetail: '单机上网、多机挤一个公网 IP、端口映射——三种场景随便玩。报文在 LAN/NAT/WAN 三个区域之间飞来飞去，NAT 映射表跟着实时变',
     tags: ['#可视化', '#交互式', '#计算机网络'],
     difficulty: 'medium',
     intro: {
-      valueProp: '选择 NAT 场景，观察内网报文怎么经过 NAT 转换到达外网，响应又如何回送。',
+      valueProp: '选个 NAT 场景，看内网报文怎么经过 NAT 转换到达外网，回来的响应又是怎么找到你的。',
       features: [
-        '三种预设场景：单主机、多主机共享 IP、端口映射 Web 服务器',
-        '报文在 LAN / NAT 路由器 / WAN 三区间流向动画',
-        'NAT 映射表实时更新，理解端口复用的原理'
+        '三种场景：单主机、多主机共享 IP、端口映射 Web 服务器',
+        '报文在 LAN/NAT 路由器/WAN 三个区域之间跑动画',
+        'NAT 映射表实时刷新，看端口复用在干啥'
       ],
-      prerequisites: '知道 IP 地址和端口是什么，了解"内网"和"外网"的区别。',
+      prerequisites: '知道 IP 和端口是什么，了解"内网""外网"的区别。',
       useCases: [
-        '计网面试复习',
-        '理解 NAPT 如何解决 IPv4 地址短缺',
-        '对比 SNAT 和 DNAT（端口映射）的不同工作方式'
+        '面试前搞懂 NAT 到底转了个啥',
+        '理解 NAPT 怎么用一个公网 IP 带多台设备的',
+        '对比 SNAT 和 DNAT（端口映射）分别怎么工作的'
       ]
     },
     order: 7
@@ -253,22 +253,22 @@ const TOOLS = [
     route: '/package-tools/nginx-gen/nginx-gen',
     available: true,
     featured: true,
-    tagline: '填表即出 nginx 配置，复制就能用',
-    taglineDetail: '输入域名、端口、SSL 证书路径等必要信息，自动生成格式化 nginx server block 配置，支持 HTTPS 站点、反向代理、HTTP→HTTPS 跳转等场景，一键复制部署',
+    tagline: '填个表，nginx 配置就出来了',
+    taglineDetail: '把域名、端口、证书路径往表里一填，格式排好的 nginx server block 就出来了。HTTPS、反向代理、HTTP→HTTPS 跳转——常用的都有，复制就能往服务器贴',
     tags: ['#实用工具'],
     difficulty: 'easy',
     intro: {
-      valueProp: '配 nginx 不用查文档手写，填表即出。',
+      valueProp: '配 nginx 不用查文档手写了，填个表就出来。',
       features: [
-        '输入域名、端口、证书路径，自动生成完整 server block',
+        '填域名、端口、证书路径，自动生成完整的 server block',
         '支持 HTTPS、HTTP、反向代理、HTTP→HTTPS 跳转四种场景',
-        '一键复制配置，粘贴即用'
+        '一键复制，粘到服务器就能用'
       ],
-      prerequisites: '知道 server block、SSL 配置是什么就够了。',
+      prerequisites: '知道 server block、SSL 配置大概是什么就行。',
       useCases: [
-        '配置新站点的 nginx 和 SSL',
-        '给后端服务生成反向代理配置',
-        '学 nginx server block 的常用指令'
+        '新站点配 nginx 和 SSL',
+        '给后端服务配反向代理',
+        '学 nginx server block 有哪些常用指令'
       ]
     },
     order: 8
@@ -284,22 +284,22 @@ const TOOLS = [
     route: '/package-tools/cpu-sched/cpu-sched',
     available: true,
     featured: false,
-    tagline: '4 种调度算法，Gantt 图对比周转时间和等待时间',
-    taglineDetail: 'FCFS、SJF、RR、MFQ 四种算法切换，Gantt 图逐步动画回放，平均周转时间、平均等待时间、CPU 利用率、吞吐量四维指标 vs FCFS 对比',
+    tagline: '4 种调度算法用甘特图对比，看看哪个快',
+    taglineDetail: '四种调度算法来回切，甘特图一步一步回放。周转时间、等待时间、CPU 利用率、吞吐量直接跟 FCFS 基准放在一起比，哪个快哪个慢用不着猜',
     tags: ['#可视化', '#交互式', '#操作系统'],
     difficulty: 'medium',
     intro: {
-      valueProp: '四种调度算法来回切，Gantt 图逐单位回放，指标实时对比 FCFS 基准。',
+      valueProp: '四种调度算法来回切，甘特图逐单位回放，指标直接对比 FCFS 基准，哪个快哪个慢一眼看清。',
       features: [
-        '四种调度算法：FCFS、SJF、RR（量子可配）、MFQ（三层降级）',
-        '甘特图逐单位动画回放，速度可调',
-        '计算 avg TAT、avg WT、CPU 利用率、吞吐量，对比 FCFS 基准'
+        '四种算法：FCFS、SJF、RR（时间片可调）、MFQ（三层降级）',
+        '甘特图逐单位回放，速度可以调快调慢',
+        '实时算 avg TAT、avg WT、CPU 利用率、吞吐量，和 FCFS 基准放一起比'
       ],
-      prerequisites: '知道 pid、到达时间、CPU 突发时间就够了。',
+      prerequisites: '知道 pid、到达时间、CPU 突发时间是啥就行。',
       useCases: [
-        'OS 课程调度算法章节',
-        '面试前对比各算法的周转和等待时间',
-        '用甘特图直观展示算法差异'
+        'OS 课学到调度算法了，对比看看差异',
+        '面试前比一比各算法的周转和等待时间',
+        '用甘特图直观跟别人讲明白调度区别'
       ]
     },
     order: 1
@@ -313,8 +313,8 @@ const TOOLS = [
     route: '/package-tools/mem-paging/mem-paging',
     available: true,
     featured: false,
-    tagline: '逻辑地址到物理地址转换，缺页中断与置换算法动画',
-    taglineDetail: '配置页大小/帧数，输入逻辑地址序列，逐步骤动画展示地址分解、页表查询、缺页中断、LRU/FIFO 置换过程，实时计算缺页率',
+    tagline: '逻辑地址到物理地址，缺页中断和置换，走一遍就懂了',
+    taglineDetail: '调好页大小和帧数，输一串逻辑地址进去——地址怎么拆、页表怎么查、缺页了怎么置换，动画一步步播。缺页率实时算，LRU 和 FIFO 换着看哪个缺页少',
     tags: ['#可视化', '#交互式', '#操作系统'],
     difficulty: 'medium',
     order: 2
@@ -328,22 +328,22 @@ const TOOLS = [
     route: '/package-tools/deadlock/deadlock',
     available: true,
     featured: false,
-    tagline: '构建资源分配图，检测死锁；输入矩阵，运行银行家算法',
-    taglineDetail: '添加进程和资源节点，拖拽建立分配边和请求边，一键检测死锁；切换到银行家算法模式，输入 Max/Allocation/Available 矩阵，自动计算 Need 并检查安全状态',
+    tagline: '画资源分配图，跑银行家算法，死锁不藏着',
+    taglineDetail: '往图上加进程和资源节点，拖拽画分配边和请求边，一键检测死锁——死锁进程和环路高亮标出来。切到银行家算法模式，输个矩阵进去 Need 自动就算好了，安不安全一眼看见',
     tags: ['#可视化', '#交互式', '#操作系统'],
     difficulty: 'medium',
     intro: {
-      valueProp: '画资源分配图、跑银行家算法，死锁检测和安全判断一次看懂。',
+      valueProp: '画资源分配图、跑银行家算法，死锁检测和安全判断一次看懂，不用死记硬背。',
       features: [
-        '可视化资源分配图（RAG），自由编辑节点与边',
-        '一键检测死锁，高亮死锁进程与环路',
-        '银行家算法：矩阵输入 → Need 自动计算 → 安全状态判断'
+        '可视化资源分配图（RAG），自由拖拽加点加边',
+        '一键检测死锁，死锁进程和环路高亮标出来',
+        '银行家算法：矩阵输进去 → Need 自动算 → 判断是否安全'
       ],
-      prerequisites: '知道进程和资源是什么就行。',
+      prerequisites: '知道进程和资源是啥就行。',
       useCases: [
-        'OS 课程死锁章节',
-        '理解死锁检测和银行家算法的工作流程',
-        '用 RAG 图展示循环等待条件'
+        'OS 课学死锁的时候动手试试',
+        '搞懂死锁检测和银行家算法到底怎么工作的',
+        '画 RAG 图直观看看循环等待条件长啥样'
       ]
     },
     order: 3
@@ -357,8 +357,8 @@ const TOOLS = [
     route: '/package-tools/disk-sched/disk-sched',
     available: true,
     featured: false,
-    tagline: '4 种磁盘调度算法，可视化磁头移动',
-    taglineDetail: 'SCAN、C-SCAN、LOOK、C-LOOK 四种算法切换，磁头移动动画回放，总寻道长度/平均寻道长度实时计算，多算法一键对比',
+    tagline: '4 种磁盘调度算法，看磁头怎么跑的',
+    taglineDetail: 'SCAN、C-SCAN、LOOK、C-LOOK 四种算法来回切，看磁头在盘面上来来回回。总寻道长度和平均寻道长度实时算，想比几个算法一键拉一起看',
     tags: ['#可视化', '#交互式', '#操作系统'],
     difficulty: 'medium',
     order: 4
@@ -372,22 +372,22 @@ const TOOLS = [
     route: '/pages/sync-viz/sync-viz',
     available: true,
     featured: false,
-    tagline: '生产者-消费者问题，信号量 P/V 操作可视化',
-    taglineDetail: '信号量（full/empty/mutex）数值实时变化，缓冲区 slot 逐格展示生产与消费，完整 P/V 操作序列日志，支持自动播放/步进/速度调节',
+    tagline: '生产者-消费者问题，信号量 P/V 操作的每一步都给你看',
+    taglineDetail: 'full/empty/mutex 三个信号量实时蹦数字，缓冲区每个格子里生产了什么、消费了什么，每一步都看得见。P/V 操作日志一条不落，自动播、一步一走、调速都行',
     tags: ['#可视化', '#交互式', '#操作系统'],
     difficulty: 'medium',
     intro: {
-      valueProp: '通过生产者-消费者问题，可视化信号量 P/V 操作控制进程同步的过程。',
+      valueProp: '用生产者-消费者问题来演示信号量 P/V 操作怎么控制同步，看完就懂了。',
       features: [
-        '三个信号量（full / empty / mutex）数值实时变化条',
-        '环形缓冲区逐格展示物品的生产与消费',
-        '完整 P/V 操作序列日志，阻塞/唤醒高亮标识'
+        '三个信号量 full / empty / mutex 数值实时变化，一眼看清',
+        '环形缓冲区逐格展示物品怎么生产、怎么消费',
+        'P/V 操作序列完整日志，阻塞和唤醒高亮标出来'
       ],
       prerequisites: '知道进程同步和信号量的基本概念。',
       useCases: [
-        'OS 课程信号量与进程同步章节',
-        '理解 P/V 操作如何控制临界区访问',
-        '区分计数信号量与互斥信号量的作用'
+        'OS 课学信号量的时候动手试试',
+        '搞懂 P/V 操作是怎么控制临界区访问的',
+        '区分计数信号量和互斥信号量分别干啥的'
       ]
     },
     order: 5
@@ -403,22 +403,22 @@ const TOOLS = [
     route: '/pages/rsa-calc/rsa-calc',
     available: true,
     featured: false,
-    tagline: '输入素数 p/q，生成密钥对，加密解密，数论过程一步步展示',
-    taglineDetail: '三步走：选素数→生成密钥→加密/解密。欧拉函数、模逆、快速幂的中间过程每一步都展开给你看',
+    tagline: '输两个素数，看 RSA 从头算到尾',
+    taglineDetail: '三步走完：选两个素数→生成密钥→加密解密。欧拉函数怎么算的、模逆怎么求的、幂运算怎么拆的，中间每一步都敞开给你看',
     tags: ['#交互式', '#进阶'],
     difficulty: 'advanced',
     intro: {
-      valueProp: '输入两个小素数，看 RSA 的密钥生成、加密和解密的完整计算过程。',
+      valueProp: '输两个小素数，RSA 的密钥生成、加密和解密整个过程算给你看，中间一步都不省略。',
       features: [
-        '内置素数表（2-997），下拉选择或手动输入',
-        '密钥生成展示欧拉函数、扩展欧几里得求模逆的逐行推导',
-        '加密/解密展示模幂运算的快速幂二进制分解过程'
+        '内置素数表（2-997），下拉选或者手输都行',
+        '密钥生成过程逐行展示：欧拉函数、扩展欧几里得求模逆，一步不落',
+        '加密/解密展示模幂运算，快速幂二进制分解过程清清楚楚'
       ],
       prerequisites: '知道 RSA 是"非对称加密"就够了。',
       useCases: [
-        '密码学课程辅助学习',
-        '理解模幂和扩展欧几里得算法的实际应用',
-        '面试 RSA 原理前快速实操'
+        '密码学课上学到 RSA 了，跟着算一遍',
+        '搞懂模幂和扩展欧几里得算法到底怎么用的',
+        '面试 RSA 原理前实操一下'
       ]
     },
     order: 1
@@ -432,22 +432,22 @@ const TOOLS = [
     route: '/pages/aes-viz/aes-viz',
     available: true,
     featured: false,
-    tagline: '128-bit 密钥，10 轮加密，4 步操作逐轮展示',
-    taglineDetail: '输入 16 字节明文和密钥，自动演示 SubBytes → ShiftRows → MixColumns → AddRoundKey 全过程，密钥扩展 W[0..43] 一步不落',
+    tagline: '128-bit 密钥，10 轮加密，每步都拆给你看',
+    taglineDetail: '输 16 个字节的明文和密钥进去，SubBytes、ShiftRows、MixColumns、AddRoundKey 每轮四步自动走完。密钥扩展那边 W[0] 到 W[43] 一共 44 个字，一个字都没落下',
     tags: ['#可视化', '#进阶'],
     difficulty: 'advanced',
     intro: {
-      valueProp: '输入 16 字节明文和密钥，看 AES 怎么把数据变成密文。',
+      valueProp: '输 16 字节明文和密钥，看 AES 怎么把数据一步一步变成密文的。',
       features: [
-        '逐轮展示 SubBytes、ShiftRows、MixColumns、AddRoundKey 四步操作',
-        '状态矩阵 4×4 字节网格实时高亮被修改的字节',
-        '密钥扩展面板展示 W[0..43] 44 个字的生成过程'
+        '每轮展示 SubBytes、ShiftRows、MixColumns、AddRoundKey 四步，一步不落',
+        '4×4 字节网格实时高亮，哪些字节被改了看得清清楚楚',
+        '密钥扩展面板展示 W[0..43] 44 个字怎么一步步生成的'
       ],
       prerequisites: '知道 AES 是"对称加密算法"就够了。',
       useCases: [
-        '密码学课程 AES 章节',
-        '理解 AES 四步操作和密钥扩展的工作原理',
-        '对照 FIPS 197 标准向量验证实现'
+        '密码学课上学到 AES 的时候对着看',
+        '搞懂 AES 四步操作和密钥扩展到底在干嘛',
+        '对照 FIPS 197 标准向量验证实现是否正确'
       ]
     },
     order: 2
@@ -461,22 +461,22 @@ const TOOLS = [
     route: '/pages/dh-viz/dh-viz',
     available: true,
     featured: false,
-    tagline: 'Alice 和 Bob 怎么在不安全信道上约定密钥？DH 密钥交换一步一步看',
-    taglineDetail: '设定素数和本原根，Alice 和 Bob 自动生成私钥→交换公钥→计算共享密钥；切换 MITM 模式看 Eve 怎么拦截篡改',
+    tagline: 'Alice 和 Bob 在不安全信道上怎么约定密钥？',
+    taglineDetail: '设好素数和生成元，Alice 和 Bob 自己就跑起来了——生私钥、换公钥、算共享密钥。切到 MITM 模式还能看 Eve 怎么在中间捣鬼',
     tags: ['#可视化', '#进阶'],
     difficulty: 'advanced',
     intro: {
-      valueProp: '选一个素数和一个本原根，看 Alice 和 Bob 怎么在不安全信道上约定共享密钥。',
+      valueProp: '选个素数和本原根，看 Alice 和 Bob 在全程被窃听的信道上怎么约好一个只有他俩知道的密钥。',
       features: [
-        'Alice/Bob 双方面板，私钥可手输可随机，公钥自动计算',
-        '公钥交换过程动画展示（含模幂展开）',
-        'MITM 攻击模拟：Eve 拦截篡改，密钥不一致警示'
+        'Alice 和 Bob 双方面板，私钥可以手输也可以随机，公钥自动算',
+        '公钥交换过程动画展示，模幂展开也给你看',
+        'MITM 攻击模拟：Eve 拦截篡改，密钥不一样了会有警示'
       ],
       prerequisites: '知道"密钥交换"的概念，了解模幂运算基本知识。',
       useCases: [
-        '密码学课程密钥交换章节',
-        '理解 DH 协议如何防止窃听',
-        '演示中间人攻击的工作原理和危害'
+        '密码学课上学密钥交换的时候跟着看',
+        '搞懂 DH 协议到底怎么防止窃听的',
+        '演示中间人攻击怎么工作，为什么有危害'
       ]
     },
     order: 3
@@ -490,22 +490,22 @@ const TOOLS = [
     route: '/package-tools/sha256-viz/sha256-viz',
     available: true,
     featured: false,
-    tagline: '输入文本，跟踪 SHA-256 每轮压缩函数的运算过程',
-    taglineDetail: '输入任意消息，演示 64 轮压缩函数的完整运算——消息填充、轮常数应用、雪崩效应，逐步追踪',
+    tagline: '输段文本，跟踪 SHA-256 每轮压缩函数怎么算的',
+    taglineDetail: '输一段话进去，64 轮压缩函数全部走一遍——消息怎么填充、轮常数怎么对上去的、改一个 bit 摘要怎么面目全非的，一路追到底',
     tags: ['#可视化', '#进阶'],
     difficulty: 'advanced',
     intro: {
-      valueProp: '输入一段文本，跟踪 SHA-256 全部 64 轮压缩函数的运算过程。',
+      valueProp: '输一段文本，跟踪 SHA-256 全部 64 轮压缩函数的运算过程，看输入怎么变成那个固定长度的摘要。',
       features: [
-        '展示 64 轮压缩函数运算的全过程',
-        '雪崩效应对比：改 1 bit 如何扩散到整个摘要',
-        '逐字节显示消息填充、初始向量和轮常数的变化'
+        '完整展示 64 轮压缩函数的全部运算过程',
+        '雪崩效应对比：改 1 bit 看它怎么扩散到整个摘要的',
+        '消息填充、初始向量、轮常数的变化逐字节展示'
       ],
       prerequisites: '了解哈希函数（输入→固定长度摘要），能读十六进制。',
       useCases: [
-        '密码学课程辅助学习',
-        '理解 SHA-256 的内部工作机制',
-        '感受雪崩效应和迭代压缩的过程'
+        '密码学课上学哈希的时候跟着算一遍',
+        '搞懂 SHA-256 内部到底怎么工作的',
+        '感受一下雪崩效应和迭代压缩的过程'
       ]
     },
     order: 4
@@ -519,22 +519,22 @@ const TOOLS = [
     route: '/pages/crypto-tools/crypto-tools',
     available: true,
     featured: false,
-    tagline: '凯撒/维吉尼亚/栅栏——三种古典密码加密/解密/暴力破解',
-    taglineDetail: '三种密码一键切换。凯撒移位破解所有 25 种可能，维吉尼亚密钥循环逐字母展示，栅栏密码点阵结构可视化，附带字母频率柱状图',
+    tagline: '凯撒/维吉尼亚/栅栏——加密、解密、暴力破解',
+    taglineDetail: '三种密码一键切换。凯撒 25 种移位全列出来，维吉尼亚密钥怎么逐字母循环给你看，栅栏的点阵结构直接画出来。还带个字母频率柱状图，能跟英文标准频率叠在一起比',
     tags: ['#交互式', '#实用工具'],
     difficulty: 'easy',
     intro: {
       valueProp: '凯撒、维吉尼亚、栅栏——三种古典密码的加密/解密/暴力破解，频率分析一眼看清。',
       features: [
         '三种密码一键切换：凯撒（1-25 移位）、维吉尼亚（密钥循环）、栅栏（2-20 栏）',
-        '暴力破解：凯撒展示全部 25 种移位结果，栅栏枚举所有栏数',
-        '字母频率柱状图，对比标准英文频率'
+        '暴力破解：凯撒全部 25 种结果列出来，栅栏枚举所有栏数',
+        '字母频率柱状图，跟标准英文频率放一起对比'
       ],
       prerequisites: '知道"加密就是把字母变一下"就够了。',
       useCases: [
-        '密码学入门学习',
-        '理解古典密码的移位和替换原理',
-        '认识字母频率分析在破译中的作用'
+        '密码学入门，试一下古典密码',
+        '搞懂凯撒、维吉尼亚、栅栏分别怎么加密的',
+        '看看字母频率分析怎么帮助破解'
       ]
     },
     order: 5
@@ -550,22 +550,22 @@ const TOOLS = [
     route: '/package-tools/sort-viz/sort-viz',
     available: true,
     featured: true,
-    tagline: '选择、冒泡、快排——动画对比三种排序的执行过程',
-    taglineDetail: '选择排序、冒泡排序、快速排序逐步骤动画演示，看清每一步的比较和交换，播放速度可调节',
+    tagline: '选择、冒泡、快排——动画对比排序过程',
+    taglineDetail: '选排、冒泡、快排——三种排序一步步动画演示，每一步在比什么、换了谁都看得见。速度还能调，想慢放细看就慢放',
     tags: ['#可视化', '#交互式'],
     difficulty: 'easy',
     intro: {
-      valueProp: '选择、冒泡、快排——三种排序逐步骤动画演示，看清每一步的比较和交换。',
+      valueProp: '选择、冒泡、快排——三种排序一步步动画回放，看清每一步是怎么比较和交换的。',
       features: [
-        '三种排序逐步骤动画演示',
-        '可调速播放，看清比较和交换的过程',
-        '直观对比不同算法的时间复杂度和行为差异'
+        '三种排序一步步动画演示',
+        '播放速度可以调，慢放看清比较和交换',
+        '直观对比不同排序算法的时间复杂度差异'
       ],
-      prerequisites: '知道数组是什么就够了。',
+      prerequisites: '知道数组是啥就够了。',
       useCases: [
-        '数据结构课程辅助学习',
-        '理解时间复杂度和算法稳定性',
-        '给初学者演示排序过程'
+        '数据结构课上学排序的时候跟着看',
+        '理解时间复杂度和算法稳定性到底啥意思',
+        '给初学者演示排序过程，指着动画讲'
       ]
     },
     order: 1
@@ -579,22 +579,22 @@ const TOOLS = [
     route: '/package-tools/ds-viz/ds-viz',
     available: true,
     featured: true,
-    tagline: 'BST 到图搜索，动手试每一步的内部状态变化',
-    taglineDetail: 'BST、栈队列、哈希表、图四种结构交互操作，插入删除后实时展示内部状态变化，BFS 与 DFS 可视化对比',
+    tagline: 'BST 到图搜索，每一步内部状态都看得见',
+    taglineDetail: 'BST、栈、队列、哈希表、图——四种结构上手操作，插个数据或删个数据，内部状态跟着实时变。BFS 和 DFS 还能拉到一起比着看',
     tags: ['#可视化', '#交互式', '#面试必考'],
     difficulty: 'medium',
     intro: {
-      valueProp: 'BST、栈、队列、哈希表、图——交互操作，实时展示内部状态变化。',
+      valueProp: 'BST、栈、队列、哈希表、图——动手操作，每一步内部状态变化都实时展示，不靠想象。',
       features: [
         '交互操作 BST、栈、队列、哈希表、图四种结构',
-        '每一步操作后实时展示内部状态变化',
-        '图搜索支持 BFS 和 DFS 的可视化对比'
+        '每一步操作后内部状态实时刷新，能看到数据的移动',
+        '图搜索支持 BFS 和 DFS 放一起对比'
       ],
-      prerequisites: '大概知道树、栈、队列、哈希表、图是什么即可。',
+      prerequisites: '大概知道树、栈、队列、哈希表、图是啥就行。',
       useCases: [
-        '数据结构课程实操练习',
-        '复习各数据结构的核心操作',
-        '建立数据结构的空间直觉'
+        '数据结构课上动手实操',
+        '复习各数据结构的增删查改核心操作',
+        '建立空间直觉，不用全靠背'
       ]
     },
     order: 2
@@ -608,22 +608,22 @@ const TOOLS = [
     route: '/package-tools/bplus-viz/bplus-viz',
     available: true,
     featured: false,
-    tagline: '调整阶数，看 B+ 树节点怎么分裂和合并',
-    taglineDetail: '4~32 阶可调，观察节点分裂与合并的完整过程，支持 Key 查询与范围查询的路径高亮',
+    tagline: '调调阶数，看 B+ 树节点怎么分裂合并',
+    taglineDetail: '阶数从 4 到 32 随便调，节点什么时候分裂、什么时候合并，过程全摊在眼前。查单个 key 或者查范围都行，查询路径高亮跟着走',
     tags: ['#可视化', '#进阶'],
     difficulty: 'advanced',
     intro: {
-      valueProp: '阶数可调，看 B+ 树节点怎么分裂和合并，支持范围查询路径高亮。',
+      valueProp: '阶数可调，看 B+ 树节点怎么分裂和合并，范围查询路径高亮，数据库索引原理一下就看懂了。',
       features: [
-        '4~32 阶可调，观察不同阶数下的树形变化',
-        '插入时展示节点分裂的完整过程',
-        '单 key 查询和范围查询的路径高亮'
+        '4~32 阶可调，不同阶数树形变化一目了然',
+        '插入数据时展示节点分裂的完整过程',
+        '单 key 查询和范围查询的路径都能高亮'
       ],
-      prerequisites: '建议先了解二叉搜索树（BST）是什么，知道「阶数」的含义。',
+      prerequisites: '建议先了解二叉搜索树（BST）是啥，知道"阶数"的意思。',
       useCases: [
-        '数据库索引原理学习',
-        '系统设计面试准备',
-        '可视化树形结构的平衡机制'
+        '学数据库索引原理的时候对着看',
+        '系统设计面试前过一遍 B+ 树',
+        '可视化看看树形结构怎么保持平衡的'
       ]
     },
     order: 3
@@ -639,23 +639,23 @@ const TOOLS = [
     route: '/pages/regex-dfa/regex-dfa',
     available: true,
     featured: false,
-    tagline: '输入正则表达式，看 Thompson 构造法生成 NFA，再转化为 DFA 状态图',
-    taglineDetail: '支持正则语法（* | . () ? +），三步展示：NFA 状态图 ← 子集构造过程 ← DFA 转移表 + 状态图，支持 DFA 模拟运行验证输入串是否匹配',
+    tagline: '输入正则，看它怎么变成 NFA 再变成 DFA',
+    taglineDetail: '支持 * | . () ? + 这些常用正则语法。三阶段走：先生成 NFA 状态图，再一步步子集构造变成 DFA，最后给出转移表和状态图。还能在 DFA 上输个字符串跑跑，看匹不匹配',
     tags: ['#可视化', '#交互式', '#编译原理'],
     difficulty: 'advanced',
     intro: {
-      valueProp: '输入正则表达式，逐步观察 Thompson 构造法生成 NFA、子集构造法转化为 DFA 的完整过程。',
+      valueProp: '输个正则表达式，看 Thompson 构造法怎么生成 NFA、子集构造法怎么转成 DFA，整个过程不靠想象。',
       features: [
-        '支持常用正则语法：* 克林闭包、| 选择、. 连接、() 分组、? 可选、+ 一次或多次',
-        'NFA 状态图与转移列表，清晰的 Thompson 构造法展示',
+        '支持常用正则语法：* / | / . / () / ? / +',
+        'NFA 状态图和转移列表，Thompson 构造法一步不省',
         '子集构造过程逐步骤展开：ε-闭包 → move → 新 DFA 状态',
-        'DFA 转移表与状态图，接受态醒目标注',
-        'DFA 模拟运行：输入测试串，逐字符追踪转移路径'
+        'DFA 转移表和状态图，接受态醒目标出来',
+        'DFA 模拟运行：输个测试串，逐字符追踪路径，看看匹不匹配'
       ],
       prerequisites: '了解正则表达式的基本语法，知道 NFA 和 DFA 是"有限自动机"就够了。',
       useCases: [
-        '编译原理课程辅助学习',
-        '理解 Thompson 构造法和子集构造法的实际运行过程',
+        '编译原理课上学到词法分析了，跟着走一遍',
+        '搞懂 Thompson 构造法和子集构造法到底怎么工作的',
         '面试前复习正则表达式到 DFA 的转化流程'
       ]
     },
@@ -670,23 +670,23 @@ const TOOLS = [
     route: '/pages/ll1-parser/ll1-parser',
     available: true,
     featured: false,
-    tagline: '输入文法，计算 FIRST/FOLLOW 集，构造 LL(1) 预测分析表，逐步骤演示串分析过程',
-    taglineDetail: '支持产生式输入（→ 分隔，| 多选，ε 空串），自动计算 FIRST 与 FOLLOW 集，构造预测分析表并检测 LL(1) 冲突，可逐步回放预测分析器栈/输入缓冲/输出序列的变化',
+    tagline: '输文法，算 FIRST/FOLLOW，构造预测分析表',
+    taglineDetail: '输个文法进去（→ 分隔，| 多选，ε 空串），FIRST 和 FOLLOW 集自动就算好了，预测分析表也给你画出来，有 LL(1) 冲突的地方高亮标着。再输个字符串一步步走分析器，看栈怎么动、输入怎么吃、输出怎么吐',
     tags: ['#可视化', '#交互式', '#编译原理'],
     difficulty: 'advanced',
     intro: {
-      valueProp: '输入上下文无关文法，自动完成 LL(1) 分析的完整工作流：FIRST/FOLLOW → 分析表 → 串分析。',
+      valueProp: '输个上下文无关文法，自动走完 LL(1) 分析全流程：FIRST/FOLLOW → 分析表 → 串分析。',
       features: [
         '支持产生式输入（→ 分隔，| 多选，ε 空串）',
-        '自动计算 FIRST 集（含 ε 传播链）和 FOLLOW 集（含 start 符号的 $）',
-        '构造 LL(1) 预测分析表，检测并高亮冲突格子',
-        '逐步骤回放预测分析过程：栈、输入缓冲、输出序列同步展示'
+        '自动算 FIRST 集（含 ε 传播链）和 FOLLOW 集（含 start 符号的 $）',
+        '构造 LL(1) 预测分析表，检测冲突格子并高亮',
+        '一步步回放预测分析过程：栈、输入缓冲、输出序列同步展示'
       ],
-      prerequisites: '了解上下文无关文法的基本概念，知道 FIRST/FOLLOW 集是什么。',
+      prerequisites: '了解上下文无关文法的基本概念，知道 FIRST/FOLLOW 集是啥。',
       useCases: [
-        '编译原理课程 LL(1) 分析章节',
-        '验证文法是否为 LL(1)',
-        '理解预测分析器的工作机制'
+        '编译原理课上学 LL(1) 的时候跟着走一遍',
+        '验证自己的文法是不是 LL(1) 的',
+        '搞懂预测分析器到底怎么工作的'
       ]
     },
     order: 2
@@ -700,24 +700,24 @@ const TOOLS = [
     route: '/pages/lexer-viz/lexer-viz',
     available: true,
     featured: false,
-    tagline: '输入代码，逐字符观察 Token 化过程和符号表构建',
-    taglineDetail: '输入类 C 代码或选择预设示例，自动执行词法分析：源码视图逐字符高亮 Token 类型，Token 流卡片可点击查看详情，符号表汇总标识符出现位置，步进模式可单步/全部/重置。展示最长匹配原则和关键字优先规则',
+    tagline: '输段代码，看它怎么变成 Token 流',
+    taglineDetail: '输一段类 C 代码（或者选个现成的例子），自动做词法分析——源码里面 Token 按类型着色，点开 Token 卡片看详情，符号表汇总每个标识符在哪出现过。可以步进模式一步步走，也能一下子跑完。最长匹配 >= 怎么认的、关键字优先级怎么处理的，边看边明白',
     tags: ['#可视化', '#编译原理'],
     difficulty: 'medium',
     intro: {
-      valueProp: '输入一段类 C 代码，看词法分析器怎么把字符流变成 Token 流，符号表怎么构建。',
+      valueProp: '输一段类 C 代码，看词法分析器怎么把字符流变成 Token 流、符号表怎么构建的。',
       features: [
-        '源码视图逐字符高亮，已识别 Token 按类型着色（关键字/标识符/数字/运算符等）',
-        'Token 流卡片可点击查看详情（类型、词素、行列号、匹配规则）',
+        '源码视图逐字符高亮，Token 按类型着色（关键字/标识符/数字/运算符等）',
+        'Token 卡片可点击查看详情——类型、词素、行列号、匹配规则',
         '符号表自动汇总标识符出现位置和次数',
-        '步进模式：单步前进、一键全部、重置，观察光标在源码上的移动',
-        '最长匹配原则演示（>= 识别为一个运算符而非 > + =）'
+        '步进模式：单步、一键全跑、重置，看光标在源码上移动',
+        '最长匹配原则演示：>= 被识别为一个运算符，不是 > + ='
       ],
       prerequisites: '知道"词法分析"是编译前端的第一步就够了。',
       useCases: [
-        '编译原理课程词法分析章节',
-        '理解正则匹配和最长匹配原则',
-        '观察词法分析器如何处理注释、字符串和非法字符'
+        '编译原理课上学词法分析的时候跟着看',
+        '搞懂正则匹配和最长匹配原则',
+        '看看词法分析器怎么处理注释、字符串和非法字符'
       ]
     },
     order: 3
@@ -731,23 +731,23 @@ const TOOLS = [
     route: '/pages/ast-builder/ast-builder',
     available: true,
     featured: false,
-    tagline: '输入算术表达式，看它怎么一步步变成抽象语法树',
-    taglineDetail: '词法分析 → LL(1) 递归下降解析 → AST 树视图 → SDT 求值，三步递进展示表达式的语法树构建和语义计算全过程',
+    tagline: '输入一个算术表达式，看它怎么变成 AST',
+    taglineDetail: '从词法分析到 LL(1) 解析到 AST 树再到 SDT 求值——三步走完一个表达式从输入到算出结果的全过程。Token 流高亮着走，递归下降用了哪个产生式每一步都记下来了，AST 树带节点颜色编码，还能步进看求值过程',
     tags: ['#可视化', '#交互式', '#编译原理'],
     difficulty: 'medium',
     intro: {
-      valueProp: '输入一个算术表达式，跟踪它从 Token 流到抽象语法树的完整构建过程。',
+      valueProp: '输个算术表达式，跟踪它从字符到 Token 流、再到抽象语法树的完整构建过程。',
       features: [
         '词法分析展示 Token 流，逐步高亮当前 Token',
-        'LL(1) 递归下降解析，完整记录每一步产生式应用',
+        'LL(1) 递归下降解析，每一步用了哪个产生式都记下来',
         'AST 树视图带节点颜色编码（数字/操作符/标识符）',
-        '语法制导翻译（SDT）步进求值，节点属性实时标注'
+        '语法制导翻译（SDT）步进求值，节点属性实时标出来'
       ],
-      prerequisites: '知道什么是表达式和四则运算就行。',
+      prerequisites: '知道表达式和四则运算就行。',
       useCases: [
-        '编译原理课程辅助学习',
-        '理解 LL(1) 自顶向下解析的工作方式',
-        '学习语法制导翻译（SDT）求值过程'
+        '编译原理课上学语法分析的时候跟着走',
+        '搞懂 LL(1) 自顶向下解析怎么工作的',
+        '看看语法制导翻译（SDT）怎么边解析边求值'
       ]
     },
     order: 4

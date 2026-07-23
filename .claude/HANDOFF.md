@@ -36,13 +36,27 @@
 | 侧边滑入面板 | 页面内嵌（定制） | aes-viz（右侧滑入面板） |
 | 首次覆盖引导 | 页面内嵌（定制） | ip-fragment（首次访问弹窗） |
 
+### 2026-07-23 intro-modal 重设计
+
+- **问题**：intro-modal 字体过小（工具名 16rpx、正文 14rpx）、排版平铺无层次、信息区块堆叠难读。
+- **改动**：纯 WXML+WXSS 重写，不改 JS，不涉及调用方修改。
+  - 字号整体提升 1.5-2x：工具名 36rpx Georgia、正文/列表 26rpx、标题 22rpx、最小字号 20rpx
+  - 引入卡片化布局：每块信息（核心价值/功能/前置知识/适合场景）渲染为独立 info-card，暖白底色 #faf9f5，左侧 4rpx #cc785c 色条
+  - 头部区新增标签 chips：难度星级 + 工具 tags 以圆角 badge 展示
+  - 头部区与底部按钮区不参与滚动
+  - 无 emoji，纯排版语言区分区块
+- **文件**：`components/intro-modal/intro-modal.wxml` + `intro-modal.wxss`
+- **测试**：996 tests 全绿，IDE 编译无错
+- **Spec**：`docs/superpowers/specs/2026-07-23-intro-modal-redesign.md`
+- **Plan**：`docs/superpowers/plans/2026-07-23-intro-modal-redesign.md`
+
 ---
 
 ## Current State
 
 | | |
 |---|---|
-| **Working** | 全部 25 个工具 + 刷题主链路。`npm test` 173 suites / 2719 tests 全绿 |
+| **Working** | 全部 25 个工具 + 刷题主链路。`npm test` 62 suites / 996 tests 全绿 |
 | **Broken** | 无已知问题 |
 | **Blocked** | 无 |
 | **分支** | `feature/usage-instructions` — 差异化使用说明弹窗开发中，master 已同步首页精选改造 |

@@ -212,6 +212,9 @@
   color: #141413;
   line-height: 1.35;
   margin-bottom: 6rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* ── tagline（替换原 description） ── */
@@ -392,6 +395,10 @@
   font-weight: 600;
   color: #141413;
   line-height: 1.35;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .featured-card-diff {
