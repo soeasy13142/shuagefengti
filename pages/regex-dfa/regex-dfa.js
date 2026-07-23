@@ -76,12 +76,17 @@ Page({
   },
 
   onLoad: function() {
-    this.loadPreset(1);
+    // 只检查引导弹窗，不做正则构造（延迟到 onReady 以优化首屏渲染）
     let showIntro = false;
     try {
       showIntro = !wx.getStorageSync('intro_seen_regex_dfa');
     } catch(e) {}
     this.setData({ showRegexIntro: showIntro });
+  },
+
+  onReady: function() {
+    // 首次绘制完成后，再触发正则构造
+    this.loadPreset(1);
   },
 
   // ── 输入事件 ──
