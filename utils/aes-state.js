@@ -6,6 +6,10 @@
  */
 
 const { sBox, xtime, gfMul } = require('./aes-core');
+const { getRoundKey } = require('./aes-key-expansion');
+
+const AES_ROWS = 4;
+const AES_COLS = 4;
 
 const AES_ROWS = 4;
 const AES_COLS = 4;
@@ -156,7 +160,6 @@ function addRoundKey(state, roundKey) {
  * @returns {State} final encrypted state
  */
 function encryptBlock(plaintext, w) {
-  const { getRoundKey } = require('./aes-key-expansion');
 
   // Initial AddRoundKey
   let state = addRoundKey(bytesToState(plaintext), getRoundKey(w, 0));

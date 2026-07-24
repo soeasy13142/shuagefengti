@@ -1,3 +1,5 @@
+const { modPow } = require('./math-utils');
+
 /**
  * RSA 教学演示核心数论模块
  *
@@ -89,28 +91,6 @@ function extendedGcd(a, b) {
     y0 = ty;
   }
   return { gcd: _a, x: x0, y: y0, steps: steps };
-}
-
-/**
- * 快速幂取模（快速幂算法 - Square-and-Multiply）
- *
- * 参考：CLRS, "Introduction to Algorithms", 3rd ed., Section 31.6
- * @param {number} base
- * @param {number} exp
- * @param {number} mod
- * @returns {number}
- */
-function modPow(base, exp, mod) {
-  if (mod === 0) throw new Error('Modulus cannot be zero');
-  let result = 1;
-  let curBase = base % mod;
-  let curExp = exp;
-  while (curExp > 0) {
-    if (curExp & 1) result = (result * curBase) % mod;
-    curExp = curExp >>> 1;
-    curBase = (curBase * curBase) % mod;
-  }
-  return result;
 }
 
 /**

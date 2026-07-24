@@ -15,26 +15,28 @@ function generateSteps(scenarioId) {
   }
 }
 
-function _buildFullHandshake() {
-  const ecdhe = simulateEcdhe();
-  const keys = deriveTrafficKeys(ecdhe.sharedSecret);
+// ======================== 完整握手 (Full Handshake) ========================
 
-  return [
-    {
-      step: 0, from: 'client', to: 'server', type: 'handshake',
-      payload: {
-        label: 'ClientHello',
-        fields: [
-          { name: 'version', value: 'TLS 1.3 (0x0304)', highlight: true },
-          { name: 'cipher_suites', value: CIPHER_SUITES.map(c => c.code + ' ' + c.name).join('; ') },
-          { name: 'key_share', value: 'X25519: ' + ecdhe.clientPublic },
-          { name: 'supported_groups', value: SUPPORTED_GROUPS.map(g => g.name).join(', ') },
-          { name: 'random', value: 'e2:3a:4f:8b:1c:7d:9a:2e...', note: '客户端随机数' }
-        ]
-      },
-      explanation: '客户端发起握手，提供支持的密码套件列表和密钥交换参数。',
-      examTip: 'TLS 1.3 在 ClientHello 中直接携带 key_share，减少 1-RTT'
+function _buildClientHello(ecdhe) {
+  return [{
+    step: 0, from: 'client', to: 'server', type: 'handshake',
+    payload: {
+      label: 'ClientHello',
+      fields: [
+        { name: 'version', value: 'TLS 1.3 (0x0304)', highlight: true },
+        { name: 'cipher_suites', value: CIPHER_SUITES.map(function(c) { return c.code + ' ' + c.name; }).join('; ') },
+        { name: 'key_share', value: 'X25519: ' + ecdhe.clientPublic },
+        { name: 'supported_groups', value: SUPPORTED_GROUPS.map(function(g) { return g.name; }).join(', ') },
+        { name: 'random', value: 'e2:3a:4f:8b:1c:7d:9a:2e...', note: '客户端随机数' }
+      ]
     },
+    explanation: '客户端发起握手，提供支持的密码套件列表和密钥交换参数。',
+    examTip: 'TLS 1.3 在 ClientHello 中直接携带 key_share，减少 1-RTT'
+  }];
+}
+
+function _buildServerHelloAndCert(ecdhe) {
+  return [
     {
       step: 1, from: 'server', to: 'client', type: 'handshake',
       payload: {
@@ -69,9 +71,7 @@ function _buildFullHandshake() {
           { name: 'certificate_type', value: 'X.509 v3' },
           { name: 'cert_chain_length', value: String(CERT_TEMPLATES.length) }
         ],
-        extra: {
-          certChain: CERT_TEMPLATES.map(t => t.subject)
-        }
+        extra: { certChain: CERT_TEMPLATES.map(function(t) { return t.subject; }) }
       },
       explanation: '服务端发送证书链，包含站点证书和中间 CA 证书。',
       examTip: 'TLS 1.3 的 Certificate 消息始终被加密，提升了握手阶段的隐私性'
@@ -96,7 +96,12 @@ function _buildFullHandshake() {
         ]
       },
       explanation: '服务端发送 Finished 消息，提供整个握手过程的 MAC 校验值。'
-    },
+    }
+  ];
+}
+
+function _buildFinishedAndKeys(keys) {
+  return [
     {
       step: 6, from: 'client', to: 'server', type: 'handshake',
       payload: {
@@ -178,7 +183,20 @@ function _buildFullHandshake() {
   ];
 }
 
-function _buildPskResumption() {
+function _buildFullHandshake() {
+  const ecdhe = simulateEcdhe();
+  const keys = deriveTrafficKeys(ecdhe.sharedSecret);
+
+  return [].concat(
+    _buildClientHello(ecdhe),
+    _buildServerHelloAndCert(ecdhe),
+    _buildFinishedAndKeys(keys)
+  );
+}
+
+// ======================== PSK 快速恢复 ========================
+
+function _buildPskHelloSteps() {
   return [
     {
       step: 0, from: 'client', to: 'server', type: 'handshake',
@@ -206,7 +224,12 @@ function _buildPskResumption() {
       },
       explanation: '服务端确认使用 PSK 模式，跳过证书交换与验证。',
       note: 'PSK 模式无证书交换'
-    },
+    }
+  ];
+}
+
+function _buildPskRemainingSteps() {
+  return [
     {
       step: 2, from: 'server', to: 'client', type: 'handshake',
       payload: {
@@ -280,7 +303,16 @@ function _buildPskResumption() {
   ];
 }
 
-function _buildMitmWarning() {
+function _buildPskResumption() {
+  return [].concat(
+    _buildPskHelloSteps(),
+    _buildPskRemainingSteps()
+  );
+}
+
+// ======================== 中间人攻击告警 ========================
+
+function _buildMitmHandshakeSteps() {
   return [
     {
       step: 0, from: 'client', to: 'server', type: 'handshake',
@@ -304,7 +336,12 @@ function _buildMitmWarning() {
         ]
       },
       explanation: '服务端响应握手。'
-    },
+    }
+  ];
+}
+
+function _buildMitmAlertSteps() {
+  return [
     {
       step: 2, from: 'server', to: 'client', type: 'handshake',
       payload: {
@@ -313,9 +350,7 @@ function _buildMitmWarning() {
           { name: 'certificate_type', value: 'X.509 v3' },
           { name: 'subject', value: 'CN=evil-proxy.com', highlight: true, note: '⚠ 证书域名与请求不匹配' }
         ],
-        extra: {
-          certChain: ['CN=evil-proxy.com', 'CN=Fake CA']
-        }
+        extra: { certChain: ['CN=evil-proxy.com', 'Fake CA'] }
       },
       explanation: '服务端返回的证书域名与客户端请求的域名不匹配，可能正在遭受中间人攻击。',
       examTip: '浏览器遇到证书域名不匹配时会显示安全警告，但低层 API 可能直接拒绝连接'
@@ -368,6 +403,13 @@ function _buildMitmWarning() {
       examTip: '中间人攻击是 TLS 最经典的威胁场景，证书颁发机构（CA）是信任链的基石'
     }
   ];
+}
+
+function _buildMitmWarning() {
+  return [].concat(
+    _buildMitmHandshakeSteps(),
+    _buildMitmAlertSteps()
+  );
 }
 
 module.exports = { generateSteps };

@@ -9,13 +9,13 @@
  * - Range query: inclusive lo and hi; lo > hi returns error
  */
 
-var {
+const {
   createLeafNode,
   createInternalNode,
   isLeaf,
   isInternal
 } = require('./bplus-node');
-var { splitLeaf, splitInternal, MAX_KEYS } = require('./bplus-split');
+const { splitLeaf, splitInternal, MAX_KEYS } = require('./bplus-split');
 
 function BPlusTree(m) {
   if (!Number.isInteger(m) || m < 3) {
@@ -31,11 +31,11 @@ function BPlusTree(m) {
  * @returns {{ root: object, steps: Array }}
  */
 BPlusTree.prototype.insert = function(key) {
-  var steps = [];
-  var splitResult = this._insertIntoLeaf(this.root, key, steps, null, -1);
+  const steps = [];
+  const splitResult = this._insertIntoLeaf(this.root, key, steps, null, -1);
   if (splitResult) {
     // Root split: create new root
-    var newRoot = createInternalNode(
+    const newRoot = createInternalNode(
       [splitResult.promotedKey],
       [splitResult.leftNode, splitResult.rightNode]
     );
@@ -60,14 +60,14 @@ BPlusTree.prototype._insertIntoLeaf = function(node, key, steps, parent, childIn
     return this._insertIntoGivenLeaf(node, key, steps, parent, childIndex);
   }
   // Internal node: find next child
-  var childIdx = this._findChildIndex(node, key);
+  const childIdx = this._findChildIndex(node, key);
   steps.push({
     type: 'compare',
     nodeKeys: node.keys.slice(),
     childIndex: childIdx,
     explanation: 'In internal node [' + node.keys.join(', ') + '], descend to child #' + childIdx
   });
-  var childSplit = this._insertIntoLeaf(node.children[childIdx], key, steps, node, childIdx);
+  const childSplit = this._insertIntoLeaf(node.children[childIdx], key, steps, node, childIdx);
   if (childSplit) {
     // Child split: keep leftNode in place, insert rightNode at children[childIdx+1]
     // Insert promotedKey at keys[childIdx]
@@ -92,7 +92,7 @@ BPlusTree.prototype._insertIntoLeaf = function(node, key, steps, parent, childIn
 
 BPlusTree.prototype._insertIntoGivenLeaf = function(leaf, key, steps, parent, childIndex) {
   // Duplicate key: overwrite
-  var existingIdx = leaf.keys.indexOf(key);
+  const existingIdx = leaf.keys.indexOf(key);
   if (existingIdx >= 0) {
     leaf.keys[existingIdx] = key;
     steps.push({
@@ -117,7 +117,7 @@ BPlusTree.prototype._insertIntoGivenLeaf = function(leaf, key, steps, parent, ch
 
 BPlusTree.prototype._splitAndPromote = function(node, steps) {
   if (isLeaf(node)) {
-    var split = splitLeaf(node, this.m);
+    const split = splitLeaf(node, this.m);
     // Rewire leaf linked list
     split.leftNode.next = split.rightNode;
     split.rightNode.prev = split.leftNode;
@@ -136,7 +136,7 @@ BPlusTree.prototype._splitAndPromote = function(node, steps) {
     });
     return split;
   }
-  var split = splitInternal(node, this.m);
+  const split = splitInternal(node, this.m);
   steps.push({
     type: 'split',
     promotedKey: split.promotedKey,
@@ -149,7 +149,7 @@ BPlusTree.prototype._splitAndPromote = function(node, steps) {
 
 BPlusTree.prototype._findChildIndex = function(internal, key) {
   // Find first i where keys[i] > key; descend to children[i]; if all <= key, use children[keys.length]
-  for (var i = 0; i < internal.keys.length; i++) {
+  for (let i = 0; i < internal.keys.length; i++) {
     if (key < internal.keys[i]) return i;
   }
   return internal.keys.length;
@@ -161,8 +161,8 @@ BPlusTree.prototype._findChildIndex = function(internal, key) {
  * @returns {{ found: number|null, steps: Array }}
  */
 BPlusTree.prototype.search = function(key) {
-  var steps = [];
-  var found = this._search(this.root, key, steps);
+  const steps = [];
+  const found = this._search(this.root, key, steps);
   steps.push({
     type: found === null ? 'not-found' : 'found',
     found: found,
@@ -178,11 +178,11 @@ BPlusTree.prototype._search = function(node, key, steps) {
       leafKeys: node.keys.slice(),
       explanation: '到达叶子 [' + node.keys.join(',') + ']，查找 ' + key
     });
-    var idx = node.keys.indexOf(key);
+    const idx = node.keys.indexOf(key);
     if (idx >= 0) return node.keys[idx];
     return null;
   }
-  var childIdx = this._findChildIndex(node, key);
+  const childIdx = this._findChildIndex(node, key);
   steps.push({
     type: 'compare',
     nodeKeys: node.keys.slice(),
@@ -202,23 +202,21 @@ BPlusTree.prototype.rangeQuery = function(lo, hi) {
   if (lo > hi) {
     return { result: [], leaves: [], steps: [{ type: 'error', explanation: 'lo 必须 ≤ hi' }], error: 'lo must be <= hi' };
   }
-  var steps = [];
-  var startLeaf = this._findLeaf(this.root, lo);
+  const steps = [];
+  const startLeaf = this._findLeaf(this.root, lo);
   steps.push({
     type: 'findLeaf',
     leafKeys: startLeaf.keys.slice(),
     explanation: '找到包含 lo=' + lo + ' 的叶子 [' + startLeaf.keys.join(',') + ']'
   });
 
-  var result = [];
-  var visitedLeaves = [];
-  var cursor = startLeaf;
-  var walkCount = 0;
+  const result = [];
+  const visitedLeaves = [];
+  let cursor = startLeaf;
   while (cursor) {
-    walkCount++;
     visitedLeaves.push(cursor);
-    var addedThisLeaf = 0;
-    for (var i = 0; i < cursor.keys.length; i++) {
+    let addedThisLeaf = 0;
+    for (let i = 0; i < cursor.keys.length; i++) {
       if (cursor.keys[i] >= lo && cursor.keys[i] <= hi) {
         result.push(cursor.keys[i]);
         addedThisLeaf++;
@@ -250,7 +248,7 @@ BPlusTree.prototype.rangeQuery = function(lo, hi) {
 
 BPlusTree.prototype._findLeaf = function(node, key) {
   if (isLeaf(node)) return node;
-  var childIdx = this._findChildIndex(node, key);
+  const childIdx = this._findChildIndex(node, key);
   return this._findLeaf(node.children[childIdx], key);
 };
 

@@ -19,7 +19,8 @@
 
 /* ── 弹窗卡片 ── */
 .modal-card {
-  width: 560rpx;
+  width: 90%;
+  max-width: 560rpx;
   max-height: 85vh;
   background: #efe9de;
   border-radius: 24rpx;

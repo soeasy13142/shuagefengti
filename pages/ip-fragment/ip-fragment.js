@@ -39,7 +39,7 @@ Page({
     this._updateParams();
 
     // 首次访问检测
-    var showGuide = false;
+    let showGuide = false;
     try {
       showGuide = !wx.getStorageSync('guide_seen_ip_fragment');
       if (showGuide) {

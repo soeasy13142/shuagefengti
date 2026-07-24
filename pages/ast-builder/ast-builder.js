@@ -118,8 +118,9 @@ Page({
 
     _resetIdCounter();
 
+    let result;
     try {
-      const result = parseExpression(expr);
+      result = parseExpression(expr);
     } catch (e) {
       this.setData({ showError: true, errorText: e.message || '解析错误' });
       return;

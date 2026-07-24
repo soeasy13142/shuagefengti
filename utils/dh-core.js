@@ -1,3 +1,5 @@
+const { modPow } = require('./math-utils');
+
 /**
  * Diffie-Hellman 密钥交换核心函数
  *
@@ -9,29 +11,6 @@
  * - computeSharedKey: 计算共享密钥
  * - bruteForceDiscreteLog: 暴力搜索离散对数
  */
-
-/**
- * 快速模幂运算（二进制指数扫描法）
- * 计算 (base^exp) % mod
- * @param {number} base
- * @param {number} exp
- * @param {number} mod
- * @returns {number}
- */
-function modPow(base, exp, mod) {
-  if (mod <= 1) return 0;
-  let result = 1;
-  let b = base % mod;
-  let e = exp;
-  while (e > 0) {
-    if (e & 1) {
-      result = (result * b) % mod;
-    }
-    e = e >> 1;
-    b = (b * b) % mod;
-  }
-  return result;
-}
 
 /**
  * 获取 n 的所有素因子（去重）

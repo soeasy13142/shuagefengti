@@ -220,7 +220,7 @@ Page({
   // ── 首次访问帮助面板 ──
 
   _checkFirstVisit: function() {
-    var seen = false;
+    let seen = false;
     try { seen = wx.getStorageSync('help_seen_mem_paging'); } catch(e) { console.warn('[mem-paging] failed to read storage', e); }
     if (!seen) {
       this.setData({ helpVisible: true });

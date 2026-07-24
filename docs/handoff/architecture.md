@@ -4,10 +4,9 @@
 
 ## 1. 产品定位与现状
 
-`刷个冯题` 是一个微信小程序学习工具箱。
+`刷个冯题` 是一个微信小程序计算机科学教育工具集。
 - **MVP**：Markdown 试题导入 → 练习/考试刷题 → 答题记录 → 错题本
-- **已扩展**：学习驾驶舱、子网计算器、TCP 状态机动画、数据结构可视化、排序可视化
-- **未实现**：单词记忆（首页预留 `available: false`）
+- **已扩展**：25 个交互式教学工具，涵盖计算机网络（8 个）、操作系统（5 个）、密码学（5 个）、算法与数据结构（3 个）、编译原理（4 个）五大门类
 
 ## 2. 技术路线
 
@@ -67,29 +66,57 @@ records / record-detail / wrong-questions 用于复盘
 ```text
 my-miniapp/
 ├── app.js / app.json / app.wxss
-├── pages/
-│   ├── index/                首页（Hero + 工具箱）
-│   ├── quiz-list/            试卷列表 + 导入入口
-│   ├── import-preview/       导入预览（含题型统计）
-│   ├── quiz/                 刷题核心（支持 practice / exam 模式）
-│   ├── result/               成绩结果
-│   ├── records/              答题记录列表
-│   ├── record-detail/        记录详情（逐题复盘）
-│   ├── wrong-questions/      错题本
-│   ├── dashboard/            学习驾驶舱
-│   ├── subnet-calc/          子网计算器
-│   ├── sort-viz/             排序可视化
-│   ├── tcp-viz/              TCP 状态机动画
-│   └── ds-viz/               数据结构可视化
-├── utils/                    11 个工具模块（纯 JS）
-├── tests/                    Jest
-├── docs/                     设计 / 文档规范
-└── PROJECT_HANDOFF.md        索引（≤100 行，详见本目录各专题）
+├── pages/                   22 个主包页面
+│   ├── index/               首页（Hero + 工具箱）
+│   ├── quiz-list/           试卷列表 + 导入入口
+│   ├── import-preview/      导入预览（含题型统计）
+│   ├── quiz/                刷题核心
+│   ├── result/              成绩结果
+│   ├── records/             答题记录列表
+│   ├── record-detail/       记录详情（逐题复盘）
+│   ├── wrong-questions/     错题本
+│   ├── dashboard/           学习驾驶舱
+│   ├── tls-viz/             TLS 动画机
+│   ├── tools-all/           全部工具（分类视图）
+│   ├── http-parser/         HTTP 解析器
+│   ├── ip-fragment/         IP 分片可视化
+│   ├── lexer-viz/           词法分析器
+│   ├── ll1-parser/          LL(1) 分析器
+│   ├── regex-dfa/           Regex→DFA
+│   ├── dh-viz/              DH 密钥交换
+│   ├── sync-viz/            同步互斥演示
+│   ├── crypto-tools/        密码工具箱
+│   ├── rsa-calc/            RSA 演算器
+│   ├── aes-viz/             AES 演示
+│   └── ast-builder/         AST 构建器
+├── package-tools/           13 个分包页面
+│   ├── subnet-calc/         子网计算器
+│   ├── tcp-viz/             TCP 动画机
+│   ├── dns-viz/             DNS 解析器
+│   ├── sort-viz/            排序可视化
+│   ├── ds-viz/              数据结构可视化
+│   ├── bplus-viz/           B+ 树可视化
+│   ├── cpu-sched/           进程调度可视化
+│   ├── mem-paging/          内存分页可视化
+│   ├── deadlock/            死锁模拟器
+│   ├── disk-sched/          磁盘调度可视化
+│   ├── nat-viz/             NAT 模拟器
+│   ├── nginx-gen/           Nginx 配置生成器
+│   └── sha256-viz/          SHA-256 演示
+├── components/              5 个公共组件
+│   ├── inline-collapse/     内联折叠
+│   ├── intro-modal/         功能介绍弹窗
+│   ├── loading-skeleton/    骨架屏加载
+│   ├── quick-tip-bubble/    快捷提示气泡
+│   └── tool-help-panel/     工具帮助面板
+├── utils/                   65+ 工具模块（纯 JS）
+├── tests/                   Jest（62 suites / 977+ tests）
+├── docs/                    设计 / 文档规范
 ```
 
 `utils/` 下各模块的详细描述见 `docs/handoff/modules/<module>.md`。
 
-## 6. 页面注册（app.json 共 13 个）
+## 6. 页面注册（app.json 共 22 个主包页面 + 13 个分包页面）
 
 参见 `app.json` 的 `pages` 数组：
 
@@ -104,18 +131,29 @@ my-miniapp/
   "pages/record-detail/record-detail",
   "pages/wrong-questions/wrong-questions",
   "pages/dashboard/dashboard",
-  "pages/subnet-calc/subnet-calc",
-  "pages/sort-viz/sort-viz",
-  "pages/tcp-viz/tcp-viz",
-  "pages/ds-viz/ds-viz"
+  "pages/tls-viz/tls-viz",
+  "pages/tools-all/tools-all",
+  "pages/http-parser/http-parser",
+  "pages/ip-fragment/ip-fragment",
+  "pages/lexer-viz/lexer-viz",
+  "pages/ll1-parser/ll1-parser",
+  "pages/regex-dfa/regex-dfa",
+  "pages/dh-viz/dh-viz",
+  "pages/sync-viz/sync-viz",
+  "pages/crypto-tools/crypto-tools",
+  "pages/rsa-calc/rsa-calc",
+  "pages/aes-viz/aes-viz",
+  "pages/ast-builder/ast-builder"
 ]
 ```
+
+以及 `subPackages` 中的 13 个分包页面（见 `package-tools/`）。
 
 `window.navigationBarBackgroundColor` 已经是 `#faf9f5`（暖奶油）。
 
 ## 7. 测试状态
 
 - **测试命令**：`cd /Users/charliepan/Downloads/my-miniapp && npm test`
-- **当前结果**：12 suites / 236 tests，全部通过（2026-07-10 整理时核对）
+- **当前结果**：62 suites / 977+ tests，全部通过（2026-07-22 整理时核对）
 - **覆盖**：utils 全覆盖；pages 引擎逻辑部分覆盖；WXML/WXSS 渲染无自动化测试
 - **不在覆盖范围**：`wx.chooseMessageFile` 等小程序 API 真实调用、UI 渲染、文件存储容量错误

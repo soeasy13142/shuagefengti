@@ -3,7 +3,7 @@
 
     <!-- 关闭按钮 -->
     <view class="modal-close" bindtap="onClose">
-      <text class="close-icon">✕</text>
+      <text class="close-icon">×</text>
     </view>
 
     <!-- 头部区 -->

@@ -71,7 +71,7 @@ function isSafeState(max, allocation, available) {
         }
       }
 
-      var stepRecord = {
+      const stepRecord = {
         process: 'P' + (i + 1),
         need: need[i].slice(),
         work: work.slice(),

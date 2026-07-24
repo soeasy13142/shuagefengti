@@ -10,34 +10,7 @@
 const { sha256, _K, _H_INIT } = require('./sha256');
 const { utf8Encode } = require('./encoding');
 
-/* ── Padding helper ──
-
-function _utf8Encode(str) {
-  const bytes = [];
-  for (let i = 0; i < str.length; i++) {
-    let code = str.charCodeAt(i);
-    if (code < 0x80) {
-      bytes.push(code);
-    } else if (code < 0x800) {
-      bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
-    } else if (code >= 0xd800 && code <= 0xdbff && i + 1 < str.length) {
-      const low = str.charCodeAt(i + 1);
-      if (low >= 0xdc00 && low <= 0xdfff) {
-        code = 0x10000 + (((code & 0x3ff) << 10) | (low & 0x3ff));
-        i++;
-        bytes.push(
-          0xf0 | (code >> 18), 0x80 | ((code >> 12) & 0x3f),
-          0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f)
-        );
-      } else {
-        bytes.push(0xef, 0xbf, 0xbd);
-      }
-    } else {
-      bytes.push(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
-    }
-  }
-  return new Uint8Array(bytes);
-}
+/* ── Padding helper (uses shared utf8Encode) ── */
 
 function _rotr(x, n) { return ((x >>> n) | (x << (32 - n))) >>> 0; }
 function _Ch(x, y, z)  { return ((x & y) ^ ((~x) & z)) >>> 0; }
@@ -139,7 +112,7 @@ function trace(message, encoding) {
   if (encoding && encoding !== 'utf-8') {
     throw new Error('Only utf-8 encoding is supported');
   }
-  const msgBytes = _utf8Encode(String(message === undefined ? '' : message));
+  const msgBytes = utf8Encode(String(message === undefined ? '' : message));
   const padded = _padMessage(msgBytes);
 
   let lastRounds = [];

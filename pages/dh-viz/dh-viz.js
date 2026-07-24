@@ -331,15 +331,15 @@ Page({
     const isMitm = scene === 'mitm';
 
     // Build label
-    var label = '';
+    let label = '';
     if (step.type === 'mitmIntercept') {
       label = '✕ 拦截';
     } else if (step.payload && step.payload.key !== undefined) {
-      var prefix = from === 'Alice' ? 'A' : from === 'Bob' ? 'B' : 'E';
+      const prefix = from === 'Alice' ? 'A' : from === 'Bob' ? 'B' : 'E';
       label = prefix + '=' + step.payload.key;
     }
 
-    var arrowData = { visible: true, direction: direction, label: label, isMitm: isMitm };
+    const arrowData = { visible: true, direction: direction, label: label, isMitm: isMitm };
 
     // Route arrow to the correct gap between panels
     if (scene === 'mitm') {
@@ -414,8 +414,8 @@ Page({
   // ── DH 提示浮层 ──
 
   onDhTipTap: function(e) {
-    var tipKey = e.currentTarget.dataset.tip;
-    var tip = this.data.dhTips[tipKey];
+    const tipKey = e.currentTarget.dataset.tip;
+    const tip = this.data.dhTips[tipKey];
     if (!tip) return;
     this.setData({
       dhTipTitle: tip.title,

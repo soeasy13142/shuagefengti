@@ -35,6 +35,16 @@ function _makeFlags(overrides) {
   return Object.assign({ SYN: false, ACK: false, FIN: false, RST: false, PSH: false, URG: false }, overrides);
 }
 
+function _makeDataStep(opts) {
+  return Object.assign({
+    type: 'data',
+    flags: _makeFlags({ ACK: true }),
+    seq: null, ack: null, dataLen: null,
+    explanation: '',
+    highlight: []
+  }, opts);
+}
+
 // ======================== 三次握手 ========================
 
 function getHandshakeSteps() {
@@ -194,154 +204,113 @@ function generateDataScenario(type) {
 function getDataTransferSteps(scenario) {
   const steps = [];
   let stepNum = 0;
-  let base = scenario.initialSeq;
   const windowSize = scenario.windowSize;
   const segSize = scenario.segmentSize;
 
   if (scenario.type === 'normal') {
-    scenario.segments.forEach(function(seg) {
-      stepNum++;
-      steps.push({
-        step: stepNum,
-        type: 'data',
-        name: '发送报文段',
-        direction: 'client→server',
-        flags: _makeFlags({ PSH: true, ACK: true }),
-        seq: seg.seq,
-        ack: null,
-        dataLen: seg.dataLen,
-        senderWindow: { base: base, nextSeq: seg.seq + seg.dataLen, size: windowSize },
-        receiverWindow: { expectedSeq: base },
-        explanation: '发送方发送数据，seq=' + seg.seq + '，数据长度 ' + seg.dataLen + ' 字节。发送窗口 [' + base + ', ' + (base + windowSize) + ')。',
-        highlight: ['seq', 'dataLen', 'PSH']
-      });
-    });
-
-    scenario.segments.forEach(function(seg) {
-      stepNum++;
-      const ackNum = seg.seq + seg.dataLen;
-      base = Math.max(base, ackNum - windowSize + segSize);
-      steps.push({
-        step: stepNum,
-        type: 'data',
-        name: '接收确认（ACK）',
-        direction: 'server→client',
-        flags: _makeFlags({ ACK: true }),
-        seq: null,
-        ack: ackNum,
-        dataLen: null,
-        senderWindow: { base: base, nextSeq: ackNum, size: windowSize },
-        receiverWindow: { expectedSeq: ackNum },
-        explanation: '接收方返回 ACK=' + ackNum + '（累积确认）。发送窗口滑动到 [' + base + ', ' + (base + windowSize) + ')。',
-        highlight: ['ACK', 'ack']
-      });
-    });
-
+    stepNum = _buildNormalTransferSteps(scenario, steps, stepNum, scenario.initialSeq, windowSize, segSize);
   } else if (scenario.type === 'loss') {
-    scenario.segments.forEach(function(seg) {
-      stepNum++;
-      steps.push({
-        step: stepNum,
-        type: 'data',
-        name: seg.lost ? '发送报文段（丢失！）' : '发送报文段',
-        direction: 'client→server',
-        flags: _makeFlags({ PSH: true, ACK: true }),
-        seq: seg.seq,
-        ack: null,
-        dataLen: seg.dataLen,
-        senderWindow: { base: base, nextSeq: seg.seq + seg.dataLen, size: windowSize },
-        receiverWindow: { expectedSeq: base },
-        explanation: seg.lost
-          ? '发送方发送数据，seq=' + seg.seq + '。但该报文在网络中丢失！接收方不会收到。'
-          : '发送方发送数据，seq=' + seg.seq + '，数据长度 ' + seg.dataLen + ' 字节。',
-        highlight: seg.lost ? ['seq'] : ['seq', 'dataLen', 'PSH']
-      });
-    });
-
-    stepNum++;
-    steps.push({
-      step: stepNum,
-      type: 'data',
-      name: '接收确认（ACK）',
-      direction: 'server→client',
-      flags: _makeFlags({ ACK: true }),
-      seq: null,
-      ack: 200,
-      dataLen: null,
-      senderWindow: { base: base, nextSeq: 500, size: windowSize },
-      receiverWindow: { expectedSeq: 200 },
-      explanation: '接收方收到 seq=100 的报文，返回 ACK=200（累积确认）。但 seq=200 的报文已丢失，后续报文被接收方缓存但不交付。',
-      highlight: ['ACK', 'ack']
-    });
-
-    stepNum++;
-    steps.push({
-      step: stepNum,
-      type: 'data',
-      name: '重复确认（第 2 个重复 ACK）',
-      direction: 'server→client',
-      flags: _makeFlags({ ACK: true }),
-      seq: null,
-      ack: 200,
-      dataLen: null,
-      senderWindow: { base: base, nextSeq: 500, size: windowSize },
-      receiverWindow: { expectedSeq: 200 },
-      explanation: '接收方收到 seq=300，但因为 seq=200 缺失，返回重复的 ACK=200。这是第 2 个重复 ACK。',
-      highlight: ['ACK', 'ack']
-    });
-
-    stepNum++;
-    steps.push({
-      step: stepNum,
-      type: 'data',
-      name: '重复确认（第 3 个重复 ACK）',
-      direction: 'server→client',
-      flags: _makeFlags({ ACK: true }),
-      seq: null,
-      ack: 200,
-      dataLen: null,
-      senderWindow: { base: base, nextSeq: 500, size: windowSize },
-      receiverWindow: { expectedSeq: 200 },
-      explanation: '接收方收到 seq=400，返回第 3 个重复 ACK=200。发送方收到 3 个重复 ACK，触发快重传（Fast Retransmit）。',
-      highlight: ['ACK', 'ack'],
-      examTip: '快重传：收到 3 个重复 ACK 立即重传，不用等超时。这比等待 RTO 超时更快恢复。'
-    });
-
-    stepNum++;
-    steps.push({
-      step: stepNum,
-      type: 'data',
-      name: '超时重传',
-      direction: 'client→server',
-      flags: _makeFlags({ PSH: true, ACK: true }),
-      seq: 200,
-      ack: null,
-      dataLen: 100,
-      senderWindow: { base: base, nextSeq: 500, size: windowSize },
-      receiverWindow: { expectedSeq: 200 },
-      explanation: '发送方定时器超时，重传 seq=200 的报文。超时时间 RTO 基于 RTT 动态计算。重传后发送方将窗口缩小（拥塞控制）。',
-      highlight: ['seq', 'dataLen'],
-      examTip: '快重传：收到 3 个重复 ACK 立即重传，不用等超时。快恢复：窗口减半而非从 1 开始。'
-    });
-
-    stepNum++;
-    steps.push({
-      step: stepNum,
-      type: 'data',
-      name: '累积确认（全部到达）',
-      direction: 'server→client',
-      flags: _makeFlags({ ACK: true }),
-      seq: null,
-      ack: 500,
-      dataLen: null,
-      senderWindow: { base: 500, nextSeq: 500, size: windowSize },
-      receiverWindow: { expectedSeq: 500 },
-      explanation: '接收方收到重传的 seq=200，所有报文段完整，返回 ACK=500（累积确认）。窗口滑动到 [500, 900)。',
-      highlight: ['ACK', 'ack']
-    });
+    stepNum = _buildLossTransferSteps(scenario, steps, stepNum, scenario.initialSeq, windowSize);
   }
 
   return steps;
+}
+
+function _buildNormalTransferSteps(scenario, steps, stepNum, base, windowSize, segSize) {
+  scenario.segments.forEach(function(seg) {
+    stepNum++;
+    steps.push({
+      step: stepNum, type: 'data', name: '发送报文段', direction: 'client→server',
+      flags: _makeFlags({ PSH: true, ACK: true }), seq: seg.seq, ack: null, dataLen: seg.dataLen,
+      senderWindow: { base: base, nextSeq: seg.seq + seg.dataLen, size: windowSize },
+      receiverWindow: { expectedSeq: base },
+      explanation: '发送方发送数据，seq=' + seg.seq + '，数据长度 ' + seg.dataLen + ' 字节。发送窗口 [' + base + ', ' + (base + windowSize) + ')。',
+      highlight: ['seq', 'dataLen', 'PSH']
+    });
+  });
+
+  scenario.segments.forEach(function(seg) {
+    stepNum++;
+    const ackNum = seg.seq + seg.dataLen;
+    base = Math.max(base, ackNum - windowSize + segSize);
+    steps.push({
+      step: stepNum, type: 'data', name: '接收确认（ACK）', direction: 'server→client',
+      flags: _makeFlags({ ACK: true }), seq: null, ack: ackNum, dataLen: null,
+      senderWindow: { base: base, nextSeq: ackNum, size: windowSize },
+      receiverWindow: { expectedSeq: ackNum },
+      explanation: '接收方返回 ACK=' + ackNum + '（累积确认）。发送窗口滑动到 [' + base + ', ' + (base + windowSize) + ')。',
+      highlight: ['ACK', 'ack']
+    });
+  });
+
+  return stepNum;
+}
+
+function _buildLossTransferSteps(scenario, steps, stepNum, base, windowSize) {
+  scenario.segments.forEach(function(seg) {
+    stepNum++;
+    steps.push(_makeDataStep({
+      step: stepNum, name: seg.lost ? '发送报文段（丢失！）' : '发送报文段',
+      direction: 'client→server', flags: _makeFlags({ PSH: true, ACK: true }),
+      seq: seg.seq, dataLen: seg.dataLen,
+      senderWindow: { base: base, nextSeq: seg.seq + seg.dataLen, size: windowSize },
+      receiverWindow: { expectedSeq: base },
+      explanation: seg.lost
+        ? '发送方发送数据，seq=' + seg.seq + '。但该报文在网络中丢失！接收方不会收到。'
+        : '发送方发送数据，seq=' + seg.seq + '，数据长度 ' + seg.dataLen + ' 字节。',
+      highlight: seg.lost ? ['seq'] : ['seq', 'dataLen', 'PSH']
+    }));
+  });
+
+  stepNum++;
+  steps.push(_makeDataStep({
+    step: stepNum, name: '接收确认（ACK）', direction: 'server→client',
+    ack: 200, senderWindow: { base, nextSeq: 500, size: windowSize },
+    receiverWindow: { expectedSeq: 200 },
+    explanation: '接收方收到 seq=100 的报文，返回 ACK=200（累积确认）。但 seq=200 的报文已丢失，后续报文被接收方缓存但不交付。',
+    highlight: ['ACK', 'ack']
+  }));
+
+  stepNum++;
+  steps.push(_makeDataStep({
+    step: stepNum, name: '重复确认（第 2 个重复 ACK）', direction: 'server→client',
+    ack: 200, senderWindow: { base, nextSeq: 500, size: windowSize },
+    receiverWindow: { expectedSeq: 200 },
+    explanation: '接收方收到 seq=300，但因为 seq=200 缺失，返回重复的 ACK=200。这是第 2 个重复 ACK。',
+    highlight: ['ACK', 'ack']
+  }));
+
+  stepNum++;
+  steps.push(_makeDataStep({
+    step: stepNum, name: '重复确认（第 3 个重复 ACK）', direction: 'server→client',
+    ack: 200, senderWindow: { base, nextSeq: 500, size: windowSize },
+    receiverWindow: { expectedSeq: 200 },
+    explanation: '接收方收到 seq=400，返回第 3 个重复 ACK=200。发送方收到 3 个重复 ACK，触发快重传（Fast Retransmit）。',
+    highlight: ['ACK', 'ack'],
+    examTip: '快重传：收到 3 个重复 ACK 立即重传，不用等超时。这比等待 RTO 超时更快恢复。'
+  }));
+
+  stepNum++;
+  steps.push(_makeDataStep({
+    step: stepNum, name: '超时重传', direction: 'client→server',
+    flags: _makeFlags({ PSH: true, ACK: true }), seq: 200, dataLen: 100,
+    senderWindow: { base, nextSeq: 500, size: windowSize },
+    receiverWindow: { expectedSeq: 200 },
+    explanation: '发送方定时器超时，重传 seq=200 的报文。超时时间 RTO 基于 RTT 动态计算。重传后发送方将窗口缩小（拥塞控制）。',
+    highlight: ['seq', 'dataLen'],
+    examTip: '快重传：收到 3 个重复 ACK 立即重传，不用等超时。快恢复：窗口减半而非从 1 开始。'
+  }));
+
+  stepNum++;
+  steps.push(_makeDataStep({
+    step: stepNum, name: '累积确认（全部到达）', direction: 'server→client',
+    ack: 500, senderWindow: { base: 500, nextSeq: 500, size: windowSize },
+    receiverWindow: { expectedSeq: 500 },
+    explanation: '接收方收到重传的 seq=200，所有报文段完整，返回 ACK=500（累积确认）。窗口滑动到 [500, 900)。',
+    highlight: ['ACK', 'ack']
+  }));
+
+  return stepNum;
 }
 
 // ======================== 完整连接生命周期 ========================

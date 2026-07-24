@@ -9,7 +9,7 @@
  *   promoted = keys[splitIdx-1] (removed), right node = keys[splitIdx..m-1].
  */
 
-var { createLeafNode, createInternalNode } = require('./bplus-node');
+const { createLeafNode, createInternalNode } = require('./bplus-node');
 
 function MAX_KEYS(m) {
   return m - 1;
@@ -33,14 +33,14 @@ function splitLeaf(leaf, m) {
   if (leaf.keys.length !== m) {
     throw new Error('splitLeaf called with ' + leaf.keys.length + ' keys, expected ' + m);
   }
-  var splitIdx = Math.ceil(m / 2);
-  var sortedKeys = leaf.keys.slice().sort(function(a, b) { return a - b; });
-  var leftKeys = sortedKeys.slice(0, splitIdx);
-  var rightKeys = sortedKeys.slice(splitIdx);
-  var promotedKey = rightKeys[0];
+  const splitIdx = Math.ceil(m / 2);
+  const sortedKeys = leaf.keys.slice().sort(function(a, b) { return a - b; });
+  const leftKeys = sortedKeys.slice(0, splitIdx);
+  const rightKeys = sortedKeys.slice(splitIdx);
+  const promotedKey = rightKeys[0];
 
-  var leftNode = createLeafNode(leftKeys);
-  var rightNode = createLeafNode(rightKeys);
+  const leftNode = createLeafNode(leftKeys);
+  const rightNode = createLeafNode(rightKeys);
 
   return { leftNode: leftNode, rightNode: rightNode, promotedKey: promotedKey };
 }
@@ -59,15 +59,15 @@ function splitInternal(node, m) {
   if (node.keys.length !== m) {
     throw new Error('splitInternal called with ' + node.keys.length + ' keys, expected ' + m);
   }
-  var splitIdx = Math.ceil(m / 2);
-  var leftKeys = node.keys.slice(0, splitIdx - 1);
-  var leftChildren = node.children.slice(0, splitIdx);
-  var promotedKey = node.keys[splitIdx - 1];
-  var rightKeys = node.keys.slice(splitIdx);
-  var rightChildren = node.children.slice(splitIdx);
+  const splitIdx = Math.ceil(m / 2);
+  const leftKeys = node.keys.slice(0, splitIdx - 1);
+  const leftChildren = node.children.slice(0, splitIdx);
+  const promotedKey = node.keys[splitIdx - 1];
+  const rightKeys = node.keys.slice(splitIdx);
+  const rightChildren = node.children.slice(splitIdx);
 
-  var leftNode = createInternalNode(leftKeys, leftChildren);
-  var rightNode = createInternalNode(rightKeys, rightChildren);
+  const leftNode = createInternalNode(leftKeys, leftChildren);
+  const rightNode = createInternalNode(rightKeys, rightChildren);
 
   return { leftNode: leftNode, rightNode: rightNode, promotedKey: promotedKey };
 }

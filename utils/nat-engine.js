@@ -23,6 +23,7 @@
  * @property {number} externalPort
  * @property {string} remoteHost
  * @property {'TCP'|'UDP'} protocol
+ * @property {number} time
  * @property {number} timeout
  * @property {'Active'|'Expired'} state
  */
@@ -56,6 +57,7 @@ function createMappingEntry(internalIp, internalPort, externalPort, remoteHost, 
     externalPort,
     remoteHost,
     protocol,
+    time: Math.floor(Date.now() / 1000),
     timeout: 60,
     state: 'Active'
   };
@@ -153,7 +155,7 @@ function dnat(packet, staticMapping) {
  */
 function removeExpiredEntries(table, now) {
   return table.filter(function(e) {
-    return e.timeout > now;
+    return e.time + e.timeout > now;
   });
 }
 

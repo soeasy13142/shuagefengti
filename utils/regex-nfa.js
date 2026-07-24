@@ -34,6 +34,7 @@ function parseRegex(regex) {
 
   let pos = 0;
 
+  // ── Recursive Descent Parser ──
   function parseExpr(depth) {
     if (depth > RECURSION_LIMIT) {
       throw new Error('Regex too deeply nested (max ' + RECURSION_LIMIT + ' levels)');
@@ -50,6 +51,7 @@ function parseRegex(regex) {
     return left;
   }
 
+  // ── AST Combinators ──
   function parseTerm(depth) {
     const nodes = [];
     while (pos < regex.length && regex[pos] !== '|' && regex[pos] !== ')') {
@@ -170,12 +172,11 @@ function newState(isAccept) {
  * 添加 ε 转移
  */
 function addEps(state, targetId) {
-  var transitions = Object.assign({}, state.transitions);
-  if (!transitions['ε']) {
-    transitions['ε'] = [];
-  }
-  transitions['ε'] = transitions['ε'].concat([targetId]);
-  state.transitions = transitions;
+  const oldTransitions = state.transitions;
+  const epsList = (oldTransitions['ε'] || []).concat([targetId]);
+  return Object.assign({}, state, {
+    transitions: Object.assign({}, oldTransitions, { 'ε': epsList })
+  });
 }
 
 /**
@@ -184,7 +185,10 @@ function addEps(state, targetId) {
 function addEpsToState(states, stateId, targetId) {
   const st = findState(states, stateId);
   if (st) {
-    addEps(st, targetId);
+    const idx = states.indexOf(st);
+    if (idx !== -1) {
+      states[idx] = addEps(st, targetId);
+    }
   }
 }
 
@@ -192,14 +196,15 @@ function addEpsToState(states, stateId, targetId) {
  * 将指定状态设为非接受
  */
 function setNonAccept(states, stateId) {
-  var st = findState(states, stateId);
+  const st = findState(states, stateId);
   if (st) {
-    // Immutable: replace the state in the array
-    var idx = states.indexOf(st);
+    const idx = states.indexOf(st);
     if (idx !== -1) {
-      states[idx] = Object.assign({}, st, { isAccept: false });
+      const newState = Object.assign({}, st, { isAccept: false });
+      return states.slice(0, idx).concat([newState]).concat(states.slice(idx + 1));
     }
   }
+  return states;
 }
 
 /**
@@ -217,104 +222,118 @@ function findState(states, id) {
  * @param {object} ast
  * @returns {{ start: number, accept: number, states: object[] }}
  */
+// ── Per-Operator NFA Builders ──
+
+function _buildLiteralNFA(ast) {
+  const start = newState(false);
+  const accept = newState(true);
+  start.transitions[ast.char] = [accept.id];
+  return { start: start.id, accept: accept.id, states: [start, accept] };
+}
+
+function _buildEpsilonNFA() {
+  const start = newState(false);
+  const accept = newState(true);
+  const startWithEps = addEps(start, accept.id);
+  return { start: startWithEps.id, accept: accept.id, states: [startWithEps, accept] };
+}
+
+function _buildAltNFA(ast) {
+  const left = astToNFA(ast.left);
+  const right = astToNFA(ast.right);
+  const start0 = newState(false);
+  const accept = newState(true);
+  const start1 = addEps(start0, left.start);
+  const start2 = addEps(start1, right.start);
+  left.states = setNonAccept(left.states, left.accept);
+  right.states = setNonAccept(right.states, right.accept);
+  addEpsToState(left.states, left.accept, accept.id);
+  addEpsToState(right.states, right.accept, accept.id);
+  return {
+    start: start2.id,
+    accept: accept.id,
+    states: [start2, accept].concat(left.states).concat(right.states)
+  };
+}
+
+function _buildConcatNFA(ast) {
+  const left = astToNFA(ast.left);
+  const right = astToNFA(ast.right);
+  left.states = setNonAccept(left.states, left.accept);
+  addEpsToState(left.states, left.accept, right.start);
+  return {
+    start: left.start,
+    accept: right.accept,
+    states: left.states.concat(right.states)
+  };
+}
+
+function _buildStarNFA(ast) {
+  const child = astToNFA(ast.child);
+  const start0 = newState(false);
+  const accept = newState(true);
+  const start1 = addEps(start0, child.start);
+  const start2 = addEps(start1, accept.id);
+  child.states = setNonAccept(child.states, child.accept);
+  addEpsToState(child.states, child.accept, child.start);
+  addEpsToState(child.states, child.accept, accept.id);
+  return {
+    start: start2.id,
+    accept: accept.id,
+    states: [start2, accept].concat(child.states)
+  };
+}
+
+function _buildPlusNFA(ast) {
+  // a+ = one or more: like star but no direct ε from start to accept
+  var child = astToNFA(ast.child);
+  var start0 = newState(false);
+  var accept = newState(true);
+  var start1 = addEps(start0, child.start);
+  child.states = setNonAccept(child.states, child.accept);
+  addEpsToState(child.states, child.accept, child.start);
+  addEpsToState(child.states, child.accept, accept.id);
+  return {
+    start: start1.id,
+    accept: accept.id,
+    states: [start1, accept].concat(child.states)
+  };
+}
+
+function _buildOptionalNFA(ast) {
+  // a? = zero or one: a|ε
+  var child = astToNFA(ast.child);
+  var start0 = newState(false);
+  var accept = newState(true);
+  var start1 = addEps(start0, child.start);
+  var start2 = addEps(start1, accept.id);
+  child.states = setNonAccept(child.states, child.accept);
+  addEpsToState(child.states, child.accept, accept.id);
+  return {
+    start: start2.id,
+    accept: accept.id,
+    states: [start2, accept].concat(child.states)
+  };
+}
+
+/**
+ * AST → ε-NFA（Thompson 构造法）
+ * @param {object} ast
+ * @returns {{ start: number, accept: number, states: object[] }}
+ */
 function astToNFA(ast) {
   if (!ast || !ast.type) {
     throw new Error('Invalid AST node');
   }
 
   switch (ast.type) {
-    case AST_LITERAL: {
-      const start = newState(false);
-      const accept = newState(true);
-      start.transitions[ast.char] = [accept.id];
-      return { start: start.id, accept: accept.id, states: [start, accept] };
-    }
-
-    case AST_EPSILON: {
-      const start = newState(false);
-      const accept = newState(true);
-      addEps(start, accept.id);
-      return { start: start.id, accept: accept.id, states: [start, accept] };
-    }
-
-    case AST_ALT: {
-      const left = astToNFA(ast.left);
-      const right = astToNFA(ast.right);
-      const start = newState(false);
-      const accept = newState(true);
-      addEps(start, left.start);
-      addEps(start, right.start);
-      setNonAccept(left.states, left.accept);
-      setNonAccept(right.states, right.accept);
-      addEpsToState(left.states, left.accept, accept.id);
-      addEpsToState(right.states, right.accept, accept.id);
-      return {
-        start: start.id,
-        accept: accept.id,
-        states: [start, accept].concat(left.states).concat(right.states)
-      };
-    }
-
-    case AST_CONCAT: {
-      const left = astToNFA(ast.left);
-      const right = astToNFA(ast.right);
-      setNonAccept(left.states, left.accept);
-      addEpsToState(left.states, left.accept, right.start);
-      return {
-        start: left.start,
-        accept: right.accept,
-        states: left.states.concat(right.states)
-      };
-    }
-
-    case AST_STAR: {
-      const child = astToNFA(ast.child);
-      const start = newState(false);
-      const accept = newState(true);
-      addEps(start, child.start);
-      addEps(start, accept.id);
-      setNonAccept(child.states, child.accept);
-      addEpsToState(child.states, child.accept, child.start);
-      addEpsToState(child.states, child.accept, accept.id);
-      return {
-        start: start.id,
-        accept: accept.id,
-        states: [start, accept].concat(child.states)
-      };
-    }
-
-    case AST_PLUS: {
-      // a+ = one or more: like star but no direct ε from start to accept
-      const child = astToNFA(ast.child);
-      const start = newState(false);
-      const accept = newState(true);
-      addEps(start, child.start);
-      setNonAccept(child.states, child.accept);
-      addEpsToState(child.states, child.accept, child.start);
-      addEpsToState(child.states, child.accept, accept.id);
-      return {
-        start: start.id,
-        accept: accept.id,
-        states: [start, accept].concat(child.states)
-      };
-    }
-
-    case AST_OPTIONAL: {
-      // a? = zero or one: a|ε
-      const child = astToNFA(ast.child);
-      const start = newState(false);
-      const accept = newState(true);
-      addEps(start, child.start);
-      addEps(start, accept.id);
-      setNonAccept(child.states, child.accept);
-      addEpsToState(child.states, child.accept, accept.id);
-      return {
-        start: start.id,
-        accept: accept.id,
-        states: [start, accept].concat(child.states)
-      };
-    }
-
+    case AST_LITERAL: return _buildLiteralNFA(ast);
+    case AST_EPSILON: return _buildEpsilonNFA();
+    case AST_ALT: return _buildAltNFA(ast);
+    case AST_CONCAT: return _buildConcatNFA(ast);
+    case AST_STAR: return _buildStarNFA(ast);
+    case AST_PLUS: return _buildPlusNFA(ast);
+    case AST_OPTIONAL: return _buildOptionalNFA(ast);
     default:
       throw new Error('Unknown AST node type: ' + ast.type);
   }

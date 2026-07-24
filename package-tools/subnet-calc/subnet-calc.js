@@ -2,6 +2,8 @@ const subnet = require('../../utils/subnet');
 
 // 快捷 CIDR 按钮
 const QUICK_CIDRS = [8, 16, 24, 25, 26, 27, 28, 29, 30];
+const IP_BIT_COUNT = 32;
+const BITS_PER_OCTET = 8;
 
 Page({
   data: {
@@ -130,11 +132,11 @@ Page({
   _buildBits(binaryArr, cidr) {
     const bits = [];
     const fullStr = binaryArr.join('');
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < IP_BIT_COUNT; i++) {
       bits.push({
         value: fullStr[i],
         isNetwork: i < cidr,
-        isOctetEnd: (i + 1) % 8 === 0 && i < 31
+        isOctetEnd: (i + 1) % BITS_PER_OCTET === 0 && i < IP_BIT_COUNT - 1
       });
     }
     return bits;
@@ -159,7 +161,7 @@ Page({
     const andIpDisplay = [];
     const andMaskDisplay = [];
     const andResultDisplay = [];
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < IP_BIT_COUNT; i++) {
       andIpDisplay.push({ value: ipFull[i], state: 'and-bit-dim' });
       andMaskDisplay.push({ value: maskFull[i], state: 'and-bit-dim' });
       andResultDisplay.push({ value: '?', state: 'and-bit-dim' });
@@ -177,65 +179,74 @@ Page({
     });
   },
 
-  // 应用单步到显示数据
-  _applyAndStep(step, allSteps, targetIdx) {
+  // 构建全新显示数组
+  _buildDisplayArrays() {
     const ipFull = this.data.result.ipBinary.join('');
     const maskFull = this.data.result.maskBinary.join('');
-
-    // 重置所有格子到 dim
     const andIpDisplay = [];
     const andMaskDisplay = [];
     const andResultDisplay = [];
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < IP_BIT_COUNT; i++) {
       andIpDisplay.push({ value: ipFull[i], state: 'and-bit-dim' });
       andMaskDisplay.push({ value: maskFull[i], state: 'and-bit-dim' });
       andResultDisplay.push({ value: '?', state: 'and-bit-dim' });
     }
+    return { andIpDisplay: andIpDisplay, andMaskDisplay: andMaskDisplay, andResultDisplay: andResultDisplay };
+  },
 
-    // 回放到 targetIdx，标记已完成的位
+  // 回放历史步骤到 targetIdx，标记已完成的位
+  _applyHistory(allSteps, targetIdx, display) {
     for (let s = 0; s <= targetIdx; s++) {
       const st = allSteps[s];
       if (st.type === 'and-octet') {
-        for (let b = 0; b < 8; b++) {
-          const idx = st.octetIndex * 8 + b;
-          andIpDisplay[idx].state = 'and-bit-done';
-          andMaskDisplay[idx].state = 'and-bit-done';
-          andResultDisplay[idx] = { value: st.resultBits[b], state: st.resultBits[b] === '1' ? 'and-bit-done-1' : 'and-bit-done-0' };
+        for (let b = 0; b < BITS_PER_OCTET; b++) {
+          const idx = st.octetIndex * BITS_PER_OCTET + b;
+          display.andIpDisplay[idx].state = 'and-bit-done';
+          display.andMaskDisplay[idx].state = 'and-bit-done';
+          display.andResultDisplay[idx] = { value: st.resultBits[b], state: st.resultBits[b] === '1' ? 'and-bit-done-1' : 'and-bit-done-0' };
         }
       } else if (st.type === 'and-bit') {
         const idx = st.bitIndex;
-        andIpDisplay[idx].state = 'and-bit-done';
-        andMaskDisplay[idx].state = 'and-bit-done';
-        andResultDisplay[idx] = { value: st.resultBit, state: st.resultBit === '1' ? 'and-bit-done-1' : 'and-bit-done-0' };
+        display.andIpDisplay[idx].state = 'and-bit-done';
+        display.andMaskDisplay[idx].state = 'and-bit-done';
+        display.andResultDisplay[idx] = { value: st.resultBit, state: st.resultBit === '1' ? 'and-bit-done-1' : 'and-bit-done-0' };
       } else if (st.type === 'done') {
-        for (let d = 0; d < 32; d++) {
-          andResultDisplay[d] = { value: st.resultBinary[Math.floor(d / 8)][d % 8], state: 'and-bit-done-1' };
+        for (let d = 0; d < IP_BIT_COUNT; d++) {
+          display.andResultDisplay[d] = { value: st.resultBinary[Math.floor(d / BITS_PER_OCTET)][d % BITS_PER_OCTET], state: 'and-bit-done-1' };
         }
       }
     }
+  },
 
-    // 高亮当前操作位
+  // 高亮当前操作位
+  _highlightCurrentStep(step, display) {
     if (step.type === 'and-octet') {
-      for (let b = 0; b < 8; b++) {
-        const idx = step.octetIndex * 8 + b;
-        andIpDisplay[idx].state = 'and-bit-active';
-        andMaskDisplay[idx].state = 'and-bit-active';
-        andResultDisplay[idx].state = 'and-bit-active';
+      for (let b = 0; b < BITS_PER_OCTET; b++) {
+        const idx = step.octetIndex * BITS_PER_OCTET + b;
+        display.andIpDisplay[idx].state = 'and-bit-active';
+        display.andMaskDisplay[idx].state = 'and-bit-active';
+        display.andResultDisplay[idx].state = 'and-bit-active';
       }
     } else if (step.type === 'and-bit') {
-      andIpDisplay[step.bitIndex].state = 'and-bit-active';
-      andMaskDisplay[step.bitIndex].state = 'and-bit-active';
-      andResultDisplay[step.bitIndex].state = 'and-bit-active';
+      display.andIpDisplay[step.bitIndex].state = 'and-bit-active';
+      display.andMaskDisplay[step.bitIndex].state = 'and-bit-active';
+      display.andResultDisplay[step.bitIndex].state = 'and-bit-active';
     } else if (step.type === 'done') {
-      for (let d = 0; d < 32; d++) {
-        andResultDisplay[d].state = 'and-bit-done-1';
+      for (let d = 0; d < IP_BIT_COUNT; d++) {
+        display.andResultDisplay[d].state = 'and-bit-done-1';
       }
     }
+  },
 
+  // 应用单步到显示数据
+  _applyAndStep(step, allSteps, targetIdx) {
+    const display = this._buildDisplayArrays();
+    this._applyHistory(allSteps, targetIdx, display);
+    this._highlightCurrentStep(step, display);
     this.setData({
-      andIpDisplay: andIpDisplay,
-      andMaskDisplay: andMaskDisplay,
-      andResultDisplay: andResultDisplay
+      andIpDisplay: display.andIpDisplay,
+      andMaskDisplay: display.andMaskDisplay,
+      andResultDisplay: display.andResultDisplay
     });
   },
 

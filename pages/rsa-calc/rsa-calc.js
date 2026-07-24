@@ -44,7 +44,6 @@ Page({
     textModePlain: '',
     textModeResult: null,
     textModeType: 'encrypt', // 'encrypt' | 'decrypt'
-    textModeOutput: ''
     textModeOutput: '',
 
     // 引导弹窗
@@ -70,7 +69,7 @@ Page({
 
   onLoad: function() {
     this._updateFromInputs();
-    var showIntro = false;
+    let showIntro = false;
     try {
       showIntro = !wx.getStorageSync('intro_seen_rsa');
     } catch(e) {}
@@ -89,16 +88,16 @@ Page({
 
     if (pStr === '' || isNaN(p)) {
       pError = '请输入数值';
-    } else if (p < 2 || p > 997) {
-      pError = 'p 应在 2~997 之间（演示限制）';
+    } else if (p <= 2 || p > 997) {
+      pError = 'p 应在 3~997 之间（演示限制，p=2 会导致 n 可被轻易分解）';
     } else if (!isPrime(p)) {
       pError = 'p 不是素数';
     }
 
     if (qStr === '' || isNaN(q)) {
       qError = '请输入数值';
-    } else if (q < 2 || q > 997) {
-      qError = 'q 应在 2~997 之间（演示限制）';
+    } else if (q <= 2 || q > 997) {
+      qError = 'q 应在 3~997 之间（演示限制，q=2 会导致 n 可被轻易分解）';
     } else if (!isPrime(q)) {
       qError = 'q 不是素数';
     }
@@ -183,8 +182,9 @@ Page({
         }
       }
 
-      // 记录已知密钥（用于共模检测）
+      // 记录已知密钥（用于共模检测），上限 50 条
       knownKeys.push({ n: key.n, e: key.e });
+      if (knownKeys.length > 50) knownKeys.shift();
 
       this.setData({
         keypair: key,
