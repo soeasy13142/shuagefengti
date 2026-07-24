@@ -120,4 +120,97 @@ describe('async storage methods', () => {
     const paper = await storage.getPaperByIdAsync('nonexistent');
     expect(paper).toBeNull();
   });
+
+  test('getRecordsAsync returns empty array when no records exist', async () => {
+    const records = await storage.getRecordsAsync();
+    expect(records).toEqual([]);
+  });
+
+  test('saveRecordAsync and getRecordsAsync round-trips a record', async () => {
+    const record = { id: 'r1', paperId: 'p1', accuracy: 80 };
+    await storage.saveRecordAsync(record);
+    const records = await storage.getRecordsAsync();
+    expect(records).toHaveLength(1);
+    expect(records[0].id).toBe('r1');
+  });
+
+  test('getRecordsByPaperIdAsync filters correctly', async () => {
+    await storage.saveRecordAsync({ id: 'r1', paperId: 'p1' });
+    await storage.saveRecordAsync({ id: 'r2', paperId: 'p2' });
+    await storage.saveRecordAsync({ id: 'r3', paperId: 'p1' });
+    const result = await storage.getRecordsByPaperIdAsync('p1');
+    expect(result).toHaveLength(2);
+    expect(result.map(r => r.id).sort()).toEqual(['r1', 'r3']);
+  });
+
+  test('getWrongQuestionsAsync returns empty array initially', async () => {
+    const wrongs = await storage.getWrongQuestionsAsync();
+    expect(wrongs).toEqual([]);
+  });
+
+  test('addWrongQuestionAsync adds a wrong question', async () => {
+    await storage.addWrongQuestionAsync({ questionId: 'q1', paperId: 'p1', question: { stem: 'test' } });
+    const wrongs = await storage.getWrongQuestionsAsync();
+    expect(wrongs).toHaveLength(1);
+    expect(wrongs[0].wrongCount).toBe(1);
+    expect(wrongs[0].mastered).toBe(false);
+  });
+
+  test('addWrongQuestionAsync increments count on duplicate', async () => {
+    await storage.addWrongQuestionAsync({ questionId: 'q1', paperId: 'p1', question: {} });
+    await storage.addWrongQuestionAsync({ questionId: 'q1', paperId: 'p1', question: {} });
+    const wrongs = await storage.getWrongQuestionsAsync();
+    expect(wrongs[0].wrongCount).toBe(2);
+  });
+
+  test('markMasteredAsync marks question as mastered', async () => {
+    await storage.addWrongQuestionAsync({ questionId: 'q1', paperId: 'p1', question: {} });
+    const result = await storage.markMasteredAsync('q1');
+    expect(result).toBe(true);
+    const wrongs = await storage.getWrongQuestionsAsync();
+    expect(wrongs[0].mastered).toBe(true);
+  });
+
+  test('markMasteredAsync returns false for unknown questionId', async () => {
+    const result = await storage.markMasteredAsync('nonexistent');
+    expect(result).toBe(false);
+  });
+
+  describe('temp import data async', () => {
+    test('setTempImportDataAsync and getTempImportDataAsync round-trips', async () => {
+      const data = { questions: [{ stem: 'test' }] };
+      await storage.setTempImportDataAsync(data);
+      const result = await storage.getTempImportDataAsync();
+      expect(result).toEqual(data);
+    });
+
+    test('clearTempImportDataAsync removes data', async () => {
+      await storage.setTempImportDataAsync({ foo: 'bar' });
+      await storage.clearTempImportDataAsync();
+      const result = await storage.getTempImportDataAsync();
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('clearTempImportData (sync)', () => {
+    test('clears stored temp import data', () => {
+      storage.setTempImportData({ foo: 'bar' });
+      storage.clearTempImportData();
+      expect(storage.getTempImportData()).toBeNull();
+    });
+  });
+
+  describe('error handling in _get', () => {
+    test('returns empty array when JSON.parse throws on records key', () => {
+      wx.setStorageSync('records', 'not-valid-json');
+      const records = storage.getRecords();
+      expect(records).toEqual([]);
+    });
+
+    test('returns empty array when JSON.parse throws on papers key', () => {
+      wx.setStorageSync('papers', '{invalid json}');
+      const papers = storage.getPapers();
+      expect(papers).toEqual([]);
+    });
+  });
 });
