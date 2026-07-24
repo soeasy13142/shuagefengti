@@ -286,10 +286,10 @@ function _buildStarNFA(ast) {
 
 function _buildPlusNFA(ast) {
   // a+ = one or more: like star but no direct ε from start to accept
-  var child = astToNFA(ast.child);
-  var start0 = newState(false);
-  var accept = newState(true);
-  var start1 = addEps(start0, child.start);
+  const child = astToNFA(ast.child);
+  const start0 = newState(false);
+  const accept = newState(true);
+  const start1 = addEps(start0, child.start);
   child.states = setNonAccept(child.states, child.accept);
   addEpsToState(child.states, child.accept, child.start);
   addEpsToState(child.states, child.accept, accept.id);
@@ -302,11 +302,11 @@ function _buildPlusNFA(ast) {
 
 function _buildOptionalNFA(ast) {
   // a? = zero or one: a|ε
-  var child = astToNFA(ast.child);
-  var start0 = newState(false);
-  var accept = newState(true);
-  var start1 = addEps(start0, child.start);
-  var start2 = addEps(start1, accept.id);
+  const child = astToNFA(ast.child);
+  const start0 = newState(false);
+  const accept = newState(true);
+  const start1 = addEps(start0, child.start);
+  const start2 = addEps(start1, accept.id);
   child.states = setNonAccept(child.states, child.accept);
   addEpsToState(child.states, child.accept, accept.id);
   return {
