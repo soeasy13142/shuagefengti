@@ -31,7 +31,7 @@ description: >-
 
 ### login
 
-`login` 只表示二维码已就绪，不代表已登录。仅当异步任务最终为 `success` 才继续后续操作；其他终态均应停止并如实告知用户。
+`login` 只表示二维码已就绪，不代表已登录。返回 `pending + taskId` 后按根 SKILL「异步任务（全局）」与 [异步任务与轮询](../../references/async-task-polling.md) **主动轮询**（`login` 为会阻塞后续的派生任务）。仅当最终为 `success` 才继续；其他终态停止并如实告知用户。
 
 ### open_project_window
 
@@ -51,7 +51,7 @@ wechatide -c <clientName> open_project_window --project <project> [--window-mode
 | 情况 | 处理 |
 |------|------|
 | `PROJECT_*` / `APPID_ERROR` | [project-tool-error-guide.md](../../wechatide-tools/references/project-tool-error-guide.md) |
-| `login` 已出码但 `loginExpired: true` | 等待用户扫码；勿声称已登录 |
+| `login` 已出码但 `loginExpired: true` | 按全局规则主动轮询至终态；勿声称已登录 |
 | 开窗失败且路径/配置无误 | 原样抛错；勿反复无差别 `open_project_window` |
 
 ## 移交

@@ -2,10 +2,22 @@
 
 import https from 'node:https'
 
+import {
+  compareVersions,
+  MIN_COMPATIBLE_VERSION,
+  MIN_COMPATIBLE_VERSION_NUMBER,
+  normalizePlatform,
+  versionToNumber
+} from './install-root.mjs'
+
 const DOWNLOAD_PAGE = 'https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html'
 const REQUEST_TIMEOUT = 20_000
-const MIN_DOWNLOAD_VERSION = '2.02.2607152'
-const MIN_DOWNLOAD_VERSION_NUMBER = 2022607152n
+const WXQCLOUD_ORIGIN = 'https://devtools.wxqcloud.qq.com.cn'
+const KIND_PRIORITY = {
+  stable: 0,
+  rc: 1,
+  nightly: 2
+}
 
 function getText(url, redirects = 0) {
   if (redirects > 5) {
@@ -129,30 +141,31 @@ function parseArgs() {
     throw new Error(`不支持的 channel：${options.channel}，仅支持 stable、latest 或 nightly`)
   }
 
+  try {
+    options.platform = normalizePlatform(options.platform)
+  } catch {
+    throw new Error(`官方下载页不提供该系统安装包：${options.platform}`)
+  }
+
   return options
 }
 
 function getPreferredTypes(platform, arch) {
-  const normalizedPlatform = platform.toLowerCase()
   const normalizedArch = arch.toLowerCase()
 
-  if (['darwin', 'mac', 'macos'].includes(normalizedPlatform)) {
+  if (platform === 'darwin') {
     return ['arm64', 'aarch64'].includes(normalizedArch)
       ? ['darwin_arm64', 'darwin_arm']
       : ['darwin_x64']
   }
 
-  if (['win32', 'windows', 'win'].includes(normalizedPlatform)) {
+  if (platform === 'win32') {
     return ['x64', 'amd64'].includes(normalizedArch)
       ? ['win32_x64']
       : ['win32_ia32']
   }
 
   throw new Error(`官方下载页不提供该系统安装包：${platform}/${arch}`)
-}
-
-function isMacPlatform(platform) {
-  return ['darwin', 'mac', 'macos'].includes(platform.toLowerCase())
 }
 
 function extractScriptUrls(html) {
@@ -180,24 +193,33 @@ function extractConfigUrls(contents) {
   return [...urls]
 }
 
-function isAllowedDownloadUrl(value, channel) {
+function isRedirectDownloadUrl(url) {
+  return url.origin === 'https://servicewechat.com'
+    && url.pathname === '/wxa-dev-logic/download_redirect'
+}
+
+function isReleaseDownloadUrl(url) {
+  return url.origin === WXQCLOUD_ORIGIN
+    && url.pathname.startsWith('/WechatWebDev/release/')
+}
+
+function isNightlyDownloadUrl(url) {
+  return url.origin === WXQCLOUD_ORIGIN
+    && url.pathname.startsWith('/WechatWebDev/nightly/')
+}
+
+function isAllowedDownloadUrl(value) {
   try {
     const url = new URL(value)
-    if (channel === 'latest') {
-      return url.origin === 'https://devtools.wxqcloud.qq.com.cn'
-        && url.pathname.startsWith('/WechatWebDev/nightly/')
-    }
-
-    return url.origin === 'https://servicewechat.com'
-      && url.pathname === '/wxa-dev-logic/download_redirect'
+    return isRedirectDownloadUrl(url) || isReleaseDownloadUrl(url) || isNightlyDownloadUrl(url)
   } catch {
     return false
   }
 }
 
-function collectUrls(value, channel, result = []) {
+function collectUrls(value, result = []) {
   if (typeof value === 'string') {
-    if (isAllowedDownloadUrl(value, channel)) {
+    if (isAllowedDownloadUrl(value)) {
       result.push(value)
     }
     return result
@@ -205,35 +227,15 @@ function collectUrls(value, channel, result = []) {
 
   if (Array.isArray(value)) {
     for (const item of value) {
-      collectUrls(item, channel, result)
+      collectUrls(item, result)
     }
   } else if (value && typeof value === 'object') {
     for (const item of Object.values(value)) {
-      collectUrls(item, channel, result)
+      collectUrls(item, result)
     }
   }
 
   return result
-}
-
-function selectStableDownload(urls, preferredTypes) {
-  const candidates = urls
-    .map(value => new URL(value))
-    .filter(url => preferredTypes.includes(url.searchParams.get('type')))
-    .filter(url => /^\d+$/.test(url.searchParams.get('download_version') || ''))
-    .filter(url => BigInt(url.searchParams.get('download_version')) > MIN_DOWNLOAD_VERSION_NUMBER)
-    .sort((left, right) => {
-      const leftVersion = BigInt(left.searchParams.get('download_version'))
-      const rightVersion = BigInt(right.searchParams.get('download_version'))
-      return leftVersion === rightVersion ? 0 : leftVersion > rightVersion ? -1 : 1
-    })
-
-  const selected = candidates[0] || null
-  if (!selected) {
-    return null
-  }
-  selected.searchParams.set('from', 'skillauto')
-  return selected
 }
 
 function getPathVersion(url) {
@@ -241,46 +243,135 @@ function getPathVersion(url) {
   return match ? match[1] : ''
 }
 
-function compareVersions(left, right) {
-  const leftParts = left.split('.').map(Number)
-  const rightParts = right.split('.').map(Number)
-  const length = Math.max(leftParts.length, rightParts.length)
-
-  for (let index = 0; index < length; index += 1) {
-    const difference = (rightParts[index] || 0) - (leftParts[index] || 0)
-    if (difference) {
-      return difference
-    }
+function getCandidateVersion(url) {
+  if (isRedirectDownloadUrl(url)) {
+    const downloadVersion = url.searchParams.get('download_version') || ''
+    return /^\d+$/.test(downloadVersion) ? downloadVersion : ''
   }
 
-  return 0
-}
-
-function isVersionGreater(candidate, baseline) {
-  return compareVersions(candidate, baseline) < 0
+  return getPathVersion(url)
 }
 
 function isAboveMinimumVersion(version) {
-  const normalized = version.replace(/\./g, '')
-  return /^\d+$/.test(normalized) && BigInt(normalized) > MIN_DOWNLOAD_VERSION_NUMBER
+  const number = versionToNumber(version)
+  return number !== null && number > MIN_COMPATIBLE_VERSION_NUMBER
 }
 
-function selectNightlyDownload(urls, preferredTypes, requirePkg = false) {
-  const candidates = urls
+function getVersionKind(version) {
+  const lastDigit = version.replace(/\./g, '').slice(-1)
+  if (lastDigit === '0') {
+    return 'stable'
+  }
+  if (lastDigit === '1') {
+    return 'rc'
+  }
+  if (lastDigit === '2') {
+    return 'nightly'
+  }
+  return null
+}
+
+function matchPreferredType(url, preferredTypes) {
+  if (isRedirectDownloadUrl(url)) {
+    return preferredTypes.includes(url.searchParams.get('type'))
+  }
+
+  return preferredTypes.some(type => url.pathname.includes(`_${type}.`))
+}
+
+function getMatchedType(url, preferredTypes) {
+  if (isRedirectDownloadUrl(url)) {
+    return url.searchParams.get('type')
+  }
+
+  return preferredTypes.find(type => url.pathname.includes(`_${type}.`)) || null
+}
+
+function isPkgUrl(url) {
+  return url.pathname.toLowerCase().endsWith('.pkg')
+}
+
+function prepareRedirectUrl(url) {
+  const next = new URL(url.toString())
+  next.searchParams.set('from', 'skillauto')
+  return next
+}
+
+function buildCandidates(urls, preferredTypes, requirePkg) {
+  return urls
     .map(value => new URL(value))
-    .filter(url => preferredTypes.some(type => url.pathname.includes(`_${type}.`)))
-    .filter(url => !requirePkg || url.pathname.toLowerCase().endsWith('.pkg'))
-    .filter(url => getPathVersion(url))
-    .filter(url => isAboveMinimumVersion(getPathVersion(url)))
-    .sort((left, right) => compareVersions(getPathVersion(left), getPathVersion(right)))
+    .filter(url => matchPreferredType(url, preferredTypes))
+    .map(url => {
+      const version = getCandidateVersion(url)
+      const kind = version ? getVersionKind(version) : null
+      return {
+        url: isRedirectDownloadUrl(url) ? prepareRedirectUrl(url) : url,
+        version,
+        kind,
+        isRedirect: isRedirectDownloadUrl(url)
+      }
+    })
+    .filter(candidate => candidate.version && candidate.kind)
+    .filter(candidate => isAboveMinimumVersion(candidate.version))
+    .filter(candidate => {
+      if (!requirePkg || candidate.isRedirect) {
+        return true
+      }
+      return isPkgUrl(candidate.url)
+    })
+}
+
+function sortCandidates(left, right) {
+  const kindDiff = KIND_PRIORITY[left.kind] - KIND_PRIORITY[right.kind]
+  if (kindDiff) {
+    return kindDiff
+  }
+  try {
+    // 同 kind 内版本高的在前
+    return compareVersions(right.version, left.version)
+  } catch {
+    return 0
+  }
+}
+
+async function selectDownload(urls, preferredTypes, options) {
+  const requirePkg = options.platform === 'darwin'
+  const candidates = buildCandidates(urls, preferredTypes, requirePkg)
+    .filter(candidate => options.channel !== 'latest' || candidate.kind === 'nightly')
+    .sort(sortCandidates)
 
   if (!candidates.length) {
     throw new Error(
-      `未找到版本大于 ${MIN_DOWNLOAD_VERSION} 的匹配安装包：${preferredTypes.join(', ')}`
+      `未找到版本大于 ${MIN_COMPATIBLE_VERSION} 的匹配安装包：${preferredTypes.join(', ')}`
     )
   }
 
-  return candidates[0]
+  const rejected = []
+  for (const candidate of candidates) {
+    if (!requirePkg || !candidate.isRedirect) {
+      return candidate
+    }
+
+    const redirectTarget = await resolveRedirectTarget(candidate.url.toString())
+    if (isPkgUrl(redirectTarget)) {
+      return candidate
+    }
+
+    rejected.push(
+      `${candidate.version} 重定向为 ${redirectTarget.pathname.split('.').pop() || 'unknown'}`
+    )
+  }
+
+  throw new Error(
+    `未找到可用的 macOS PKG（已跳过：${rejected.join('；')}）`
+  )
+}
+
+function toOutputChannel(kind) {
+  if (kind === 'nightly') {
+    return 'latest'
+  }
+  return kind
 }
 
 async function main() {
@@ -308,51 +399,15 @@ async function main() {
   }
 
   const preferredTypes = getPreferredTypes(options.platform, options.arch)
-  const isLatest = options.channel === 'latest'
-  const urls = configs.flatMap(config => collectUrls(config, options.channel))
-  let selected = isLatest
-    ? selectNightlyDownload(urls, preferredTypes, isMacPlatform(options.platform))
-    : selectStableDownload(urls, preferredTypes)
-  let selectedChannel = options.channel
-  let fallbackReason
-
-  if (!selected) {
-    const latestUrls = configs.flatMap(config => collectUrls(config, 'latest'))
-    selected = selectNightlyDownload(
-      latestUrls,
-      preferredTypes,
-      isMacPlatform(options.platform)
-    )
-    selectedChannel = 'latest'
-    fallbackReason = `稳定版版本不大于 ${MIN_DOWNLOAD_VERSION}，改用更高版本`
-  }
-
-  if (!isLatest && isMacPlatform(options.platform)) {
-    if (selectedChannel === 'stable') {
-      const redirectTarget = await resolveRedirectTarget(selected.toString())
-      if (!redirectTarget.pathname.toLowerCase().endsWith('.pkg')) {
-        const latestUrls = configs.flatMap(config => collectUrls(config, 'latest'))
-        const pkgCandidate = selectNightlyDownload(latestUrls, preferredTypes, true)
-        const redirectVersion = getPathVersion(redirectTarget)
-        const pkgVersion = getPathVersion(pkgCandidate)
-
-        if (!redirectVersion || !isVersionGreater(pkgVersion, redirectVersion)) {
-          throw new Error(`稳定版重定向为非 PKG，且未找到更高版本的 macOS PKG：${redirectTarget}`)
-        }
-
-        selected = pkgCandidate
-        selectedChannel = 'latest'
-        fallbackReason = `稳定版重定向为 ${redirectTarget.pathname.split('.').pop()}，改用更高版本 PKG`
-      }
-    }
-  }
-
-  const version = selectedChannel === 'latest'
-    ? getPathVersion(selected)
-    : selected.searchParams.get('download_version')
+  const urls = configs.flatMap(config => collectUrls(config))
+  const selected = await selectDownload(urls, preferredTypes, options)
+  const selectedChannel = toOutputChannel(selected.kind)
+  const fallbackReason = options.channel === 'stable' && selected.kind !== 'stable'
+    ? `无合格稳定版，改用 ${selected.kind === 'rc' ? 'RC' : 'Nightly'} 版本`
+    : undefined
 
   if (options.urlOnly) {
-    console.log(selected.toString())
+    console.log(selected.url.toString())
     return
   }
 
@@ -361,12 +416,11 @@ async function main() {
     arch: options.arch,
     requestedChannel: options.channel,
     channel: selectedChannel,
-    type: selectedChannel === 'latest'
-      ? preferredTypes.find(type => selected.pathname.includes(`_${type}.`))
-      : selected.searchParams.get('type'),
-    downloadVersion: version,
-    minimumDownloadVersion: MIN_DOWNLOAD_VERSION,
-    url: selected.toString(),
+    kind: selected.kind,
+    type: getMatchedType(selected.url, preferredTypes),
+    downloadVersion: selected.version,
+    minimumDownloadVersion: MIN_COMPATIBLE_VERSION,
+    url: selected.url.toString(),
     ...(fallbackReason ? { fallbackReason } : {}),
     source: DOWNLOAD_PAGE
   }, null, 2))

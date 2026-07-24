@@ -7,145 +7,100 @@ description: >-
 
 # installer
 
+本 scene 负责更新提醒、获取安装包和安装指引，不调用 `wechatide` 业务工具。安装缺失或不兼容时无需执行根 SKILL 的可用状态检查。
+
+安装诊断结果处理 → **只读** [运行前检查](../../references/environment-readiness.md)，本文不复述细则。
+
+## 选包决策（先看这里）
+
+```text
+用户要「手动下载」？
+  → 打开官方下载页，不跑解析脚本
+否则，兼容修复？（下列任一）
+  · 已装但仍 mustEnterInstaller（NW.js / Electron 过旧 / CLI 不可用等）
+  · agent_ahead 后出现明确工具/参数兼容 blocker
+  · 已是稳定版或 RC 仍不兼容，且用户同意为兼容而更新
+  → --channel latest（只选 Nightly，末位 2）
+否则，用户原话要「最新开发版 / 开发版 / Nightly / 最新版」？
+  → --channel latest
+否则（只说下载 / 安装 / 更新 / 稳定版）
+  → --channel stable（末位 0→1→2 选满足门槛的最大版本）
+```
+
+兼容修复硬约束：
+
+- **禁止**把「继续用当前 RC + 开 CLI 端口」说成与升级对等
+- **禁止**在已装 RC 仍不兼容时让用户在 RC / Nightly 间二选一；应直接建议 Nightly，用户拒绝再保留 blocker
+- 所有渠道只下载版本号**严格大于** `install-root.mjs` 的 `MIN_COMPATIBLE_VERSION`（以该常量为准）；macOS 只允许 `.pkg`
+
+版本末位：`0` 稳定、`1` RC、`2` Nightly。不要猜测或拼接未在官方下载配置中出现的链接。
+
 ## 触发条件
 
-以下任一情况进入本 scene：
+以下任一进入本 scene：
 
-- 用户要求下载、安装或更新微信开发者工具
-- 当前系统没有微信开发者工具
-- 已安装开发者工具，但 `wechatide -h` 不可用, 返回 `command not found`、`not recognized` 或等价的命令不存在错误
-- 安装目录存在 NW.js 版的 `package.nw/package.json`
-- Electron 版 `app.asar.unpacked/package.json` 的 `version` 低于 `2.02.2607152`
-- `versionRelation: agent_ahead`，且后续任务因工具或参数不受支持等明确版本兼容问题无法继续
+- 用户要求下载、安装或更新
+- **`wechatide` 调用不了**，经 `check-installation.mjs` 诊断后需安装或更新
+- 诊断结果为 NW.js、Electron 版本过低、或 `cli_unavailable` 等 `mustEnterInstaller: true`
+- `versionRelation: agent_ahead` 且后续因工具/参数不受支持等**明确兼容 blocker**无法继续
 
-安装缺失或不兼容时无需执行根 SKILL 的登录与版本检查。安装检查结果优先于 `versionRelation`：NW.js、Electron 版本过低或 CLI 不可用时，即使 `agent_ahead` 也必须进入本 scene。仅有 `agent_ahead` 不进入；发生明确版本兼容 blocker 后再进入，且不要重复调用 `check_wechatide_status`。
-
-本 scene 负责更新提醒、获取安装包和安装指引，不调用 `wechatide` 业务工具。
+**不要**在业务会话开头主动跑安装检查。进入后不要重复 `check_wechatide_status`（安装完成前也无需根 SKILL 可用状态门禁）。
 
 ## 安装状态检查
 
-在本 skill 目录执行：
-
 ```bash
 node skills/installer/scripts/check-installation.mjs
-```
-
-检查顺序：
-
-1. macOS 检查标准应用目录；Windows 优先从卸载信息和 App Paths 注册表定位安装目录，再检查常见目录
-2. 检查 NW.js 标记，存在即返回 `nw_runtime_incompatible`
-3. 检查 Electron `package.json` 并读取 `version`
-4. 版本低于 `2.02.2607152` 时返回 `electron_version_too_old`
-5. 执行 `wechatide -h`；已安装但命令不可用时返回 `cli_unavailable`
-6. 仅 Electron 版本不低于门槛且 CLI 可用时返回 `compatible: true`
-
-标准文件位置：
-
-| 系统 | NW.js 标记 | Electron 版本文件 |
-|------|-------------|-------------------|
-| macOS | `/Applications/wechatwebdevtools.app/Contents/Resources/package.nw/package.json` | `/Applications/wechatwebdevtools.app/Contents/Resources/app.asar.unpacked/package.json` |
-| Windows | `%Program Files(x86)%\Tencent\微信web开发者工具\code\package.nw\package.json` | `%Program Files(x86)%\Tencent\微信web开发者工具\resources\app.asar.unpacked\package.json` |
-
-Windows 安装目录可自定义；脚本会从注册表读取 `InstallLocation`、`DisplayIcon`、`UninstallString` 和 App Paths，并向上定位运行时标记。`%ProgramFiles(x86)%` / `%ProgramFiles%` 仅作为注册表未命中时的备用目录。未注册的便携安装无法自动发现，用户提供路径后用以下命令重查：
-
-```bash
+# 非默认安装路径：
 node skills/installer/scripts/check-installation.mjs --install-root "<安装目录>"
 ```
 
-## 决策
-
-1. 用户明确要求手动下载：打开官方下载页并引导选择，不运行解析脚本。
-2. 其他情况默认主动解析并下载；失败后回退手动下载。
-3. 按用户原话选择版本：
-   - 只说“下载”“安装”“更新”或“稳定版” → `stable`
-   - 说“最新开发版”“开发版”“Nightly”或“最新版” → `latest`
-
-所有平台只下载版本号**严格大于** `2.02.2607152` 的安装包；比较无点号版本时门槛为 `2022607152`。`stable` 在满足门槛的候选中选择最大的 `download_version`，并把 `from` 改为 `skillauto`；没有合格稳定版时改选更高版本的开发版。`latest` 选择满足门槛且版本号最大的开发版。macOS 只允许下载 `.pkg`；若稳定版重定向最终指向 `.dmg`，拒绝该链接并从页面配置中改选版本更高的 `.pkg`。不要猜测或拼接未在官方下载配置中出现的链接。
+检查顺序：定位安装目录 → NW.js 标记 → Electron `version` → PATH / 安装目录 `wechatide` → 版本达标且 CLI 可用才 `compatible: true`（成功时带 `command`）。结果处理见 [运行前检查](../../references/environment-readiness.md)。
 
 ## 主动下载
 
-脚本只依赖 Node.js 内置模块。在本 skill 目录执行：
+脚本只依赖 Node 内置模块，在本 skill 目录执行：
 
 ```bash
-node skills/installer/scripts/resolve-download.mjs --channel stable
+# 日常
+node skills/installer/scripts/resolve-download.mjs --channel stable --url-only
+# 兼容修复 / 用户要 Nightly
+node skills/installer/scripts/resolve-download.mjs --channel latest --url-only
 ```
 
-脚本会：
-
-1. 获取官方下载页及页面加载的脚本
-2. 从页面脚本定位下载配置
-3. 根据用户意图只接受稳定版或最新开发版的规定链接前缀
-4. 按本机系统与架构筛选，并排除版本号不大于 `2.02.2607152`（`2022607152`）的安装包
-5. 稳定版将查询参数 `from` 改为 `skillauto`
-6. macOS 探测重定向最终文件；非 `.pkg` 时改选更高版本的官方 `.pkg`
-
-架构优先级：
+脚本：拉官方下载页与配置 → 只接受规定前缀 → 按本机筛选并排除不大于门槛的包 → `stable` 按末位 `0→1→2`，`latest` 只选末位 `2` → `download_redirect` 的 `from` 改为 `skillauto`；macOS 探测重定向，非 `.pkg` 则跳过。
 
 | 系统 | 架构 | `type` |
 |------|------|--------|
 | macOS | Apple Silicon / arm64 | 优先 `darwin_arm64`，兼容 `darwin_arm` |
 | macOS | Intel / x64 | `darwin_x64` |
-| Windows | x64 | `win32_x64` |
-| Windows | x86 | `win32_ia32` |
+| Windows | x64 / x86 | `win32_x64` / `win32_ia32` |
 
-以下载配置中的实际 `type` 为准，不因固定映射与页面不一致而改写官方下载链接。
-
-稳定版仅输出 URL：
-
-```bash
-node skills/installer/scripts/resolve-download.mjs --channel stable --url-only
-```
-
-用户要求最新开发版或最新版时：
-
-```bash
-node skills/installer/scripts/resolve-download.mjs --channel latest
-# 仅输出 URL
-node skills/installer/scripts/resolve-download.mjs --channel latest --url-only
-```
-
-拿到 URL 后，下载到用户指定目录；未指定时使用系统 Downloads 目录。把 shell 工作目录切换到目标目录后执行：
+拿到 URL 后切到目标目录（默认系统 Downloads）下载：
 
 ```bash
 curl --fail --location --remote-header-name --remote-name "<resolvedUrl>"
 ```
 
-下载完成后报告安装包绝对路径、版本、渠道和架构。用户只要求下载时不要自动运行安装包；用户明确要求安装或更新时，再启动安装包并说明需要完成的系统确认。
+报告安装包绝对路径、版本、渠道、架构。用户只要求下载时不要自动运行安装包；明确要求安装/更新时再启动并说明系统确认。
 
 ## 手动下载
 
-打开：
+打开 `https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html`。按本机选 macOS Apple Silicon / Intel 或 Windows x64；macOS 只选 `.pkg`。选包规则同上方决策树。无法开浏览器时返回可点链接并写清系统、架构、版本。
 
-```text
-https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html
-```
+## 安装后与 agent_ahead
 
-根据本机选择 macOS Apple Silicon、macOS Intel 或 Windows x64。macOS 只选择 `.pkg`，不要下载 `.dmg`。稳定版适合日常使用；用户要求最新版或开发版时选择开发版，不要误选预发布版。
+下载完成后提示退出正在运行的开发者工具，再覆盖安装。不要因本机已有旧版就降低目标版本；兼容修复不要再解析出同级或更旧的 RC。
 
-如果不能直接打开浏览器，返回可点击链接并清楚写出应选择的系统、架构和版本。
+`agent_ahead` / 明确兼容 blocker：先确认失败确实与旧版缺工具/参数/能力相关 → 引导 Nightly → 用户同意后下载；暂不更新则保留**具体**兼容问题作 blocker，不要只写 `agent_ahead`。
 
-## 更新场景
+不得把 agent 侧 skill 写回安装目录；对齐只能从新安装目录的 `skillPath` 单向导入。
 
-更新与首次下载使用相同的选包规则。不要仅因本机已有旧版本就降低 `download_version`；下载完成后提示用户退出正在运行的微信开发者工具，再运行安装包覆盖更新。
-
-`agent_ahead` 时：
-
-1. 先确认失败与旧版开发者工具缺少对应工具、参数或能力直接相关；不要把普通业务错误归因于版本。
-2. 建议用户尝试更新，并说明原任务卡在哪项兼容能力；用户同意后再按本 scene 规则解析和下载安装包。
-3. 用户暂不更新时，保留具体兼容性问题作为 blocker，不要只写 `agent_ahead`。
-
-不得把 agent 侧 skill 复制、覆盖或写回微信开发者工具安装目录。内置 skill 只能随开发者工具安装包更新；更新完成后，如需对齐 agent 侧内容，只能从新安装目录返回的 `skillPath` 单向导入到 agent。
-
-安装完成后先重新执行 `check-installation.mjs`；只有 `compatible: true` 才进入根 SKILL 的登录与 skill 版本检查。再执行一次 `check_wechatide_status --skill-version <skillVersion>`，确认 `loginExpired: false` 后返回原业务 scene 重试一次。`versionRelation: equal` 可直接继续，仍为 `agent_ahead` 时按根 SKILL 的兼容规则继续尝试。若新版本已安装但命令仍不存在，保留 `cli_unavailable` blocker 并提示检查 PATH；不要循环重复下载安装。
+安装后重跑 `check-installation.mjs`；仅 `compatible: true` 后再做根 SKILL 可用状态检查（`check_wechatide_status`），确认 `loginExpired: false` 后回原业务 scene 重试一次。CLI 仍不存在则按 [运行前检查](../../references/environment-readiness.md) 定位 PATH（勿循环下载）。
 
 ## 失败处理
 
-- 页面、脚本或下载配置请求失败：转手动下载
-- 参数缺失或 `channel` 不是 `stable` / `latest` / `nightly`：修正参数后重试一次
-- 没有版本号严格大于 `2.02.2607152` 的匹配安装包：不要下载，转手动下载并说明最低版本要求
-- 没有对应系统/架构的官方重定向链接：转手动下载并说明缺少的目标
-- 稳定版链接不以 `https://servicewechat.com/wxa-dev-logic/download_redirect` 开头：拒绝下载
-- 最新开发版链接不以 `https://devtools.wxqcloud.qq.com.cn/WechatWebDev/nightly/` 开头：拒绝下载
-- macOS 候选是 `.dmg`，且页面配置中没有版本更高的 `.pkg`：不要下载，转手动下载并说明原因
-- 下载中断：保留错误信息，允许重试；不要把部分文件声称为成功安装包
-- Linux 或其他未提供桌面安装包的平台：不要选择 Windows/macOS 包，改为提供官方下载页
+- 页面/脚本/下载配置失败，或无合格安装包 / 无对应架构链接 / macOS 全非 `.pkg`：转手动下载并说明原因
+- `channel` 非法：修正后重试一次
+- 链接不是规定前缀：拒绝下载
+- 下载中断：保留错误，允许重试；勿把部分文件称为成功包
+- Linux 等无桌面包平台：只给官方下载页，勿选 Win/mac 包

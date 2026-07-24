@@ -23,7 +23,7 @@ description: >-
 1. 确定 `appid`：使用用户提供或上游已确认的 AppID；只有本地项目路径时，可调用 `cloud_env_list --project <project>` 从项目配置解析
 2. 确定 `env`：已有用户确认的环境 ID 时复用；否则先调用 `cloud_env_list`，多环境时让用户选择
 3. 将选定的环境 ID 作为后续 `cloud_fn_*`、`cloud_db_*`、`cloud_query_storage`、`cloud_manage_storage` 的 `env`
-4. 再执行目标操作；写操作返回 `pending + taskId` 时按通用异步流程查询结果
+4. 再执行目标操作
 
 目标名称或路径不明确时，先读后写：
 
@@ -72,6 +72,8 @@ wechatide -c <clientName> cloud_query_storage --appid <appid> --env <envId> --ac
 | 部署/写库部分成功 | 原样保留返回结构，说明已成功与失败项 |
 
 ## 移交
+
+遵循根 SKILL「跨 scene 移交」。
 
 | 目标 | 还需 |
 |------|------|

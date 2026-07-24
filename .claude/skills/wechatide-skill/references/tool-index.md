@@ -6,7 +6,7 @@
 
 | id | scene | 摘要 |
 |----|-------|------|
-| `check_wechatide_status` | initializer | 只读获取登录态（loginExpired）、当前用户（loginUser）和 skill 版本关系（versionRelation）；不触发登录。 |
+| `check_wechatide_status` | initializer | 只读获取登录态（loginExpired）、当前用户（loginUser）、skill 版本关系（versionRelation）以及是否启用 CLI 令... |
 | `close_project_window` | initializer | 关闭包含模拟器的项目窗口，不等于完全退出微信开发者工具 |
 | `open_project_window` | initializer | 打开包含模拟器的项目窗口。如果之前窗口已存在，则不打开新窗口，直接返回已打开的窗口 ID |
 | `quit` | initializer | 关闭 WechatIDE。 |
