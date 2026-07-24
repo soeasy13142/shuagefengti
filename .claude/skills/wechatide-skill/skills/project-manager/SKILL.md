@@ -37,10 +37,12 @@ wechatide -c <clientName> project_remove --project <absPath>
 | 情况 | 处理 |
 |------|------|
 | `PROJECT_*` / `APPID_ERROR`（import） | [project-tool-error-guide.md](../../wechatide-tools/references/project-tool-error-guide.md) |
-| 用户拒绝移除 | 勿自动再删 |
+| `project_remove` 待确认（`pending`）或用户拒绝 / 取消 | 勿自动再删；pending 按 [异步任务与轮询](../../references/async-task-polling.md)（根 SKILL「异步任务（全局）」） |
 | 列表为空 | 说明未导入；创建流程走 create-project-guide |
 
 ## 移交
+
+遵循根 SKILL「跨 scene 移交」。
 
 | 目标 | 还需 |
 |------|------|

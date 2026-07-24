@@ -45,8 +45,8 @@ function isInternal(node) {
 function leafCount(root) {
   if (!root) return 0;
   if (isLeaf(root)) return 1;
-  var count = 0;
-  for (var i = 0; i < root.children.length; i++) {
+  let count = 0;
+  for (let i = 0; i < root.children.length; i++) {
     count += leafCount(root.children[i]);
   }
   return count;
@@ -61,9 +61,9 @@ function leafCount(root) {
 function buildLayout(root) {
   if (!root) return { levels: [], edges: [], leaves: [], width: 0, height: 0 };
 
-  var levels = [];
-  var edges = [];
-  var leaves = [];
+  const levels = [];
+  const edges = [];
+  const leaves = [];
 
   // Pass 1: collect leaves in left-to-right order via in-order tree traversal
   function collectLeavesInOrder(node) {
@@ -72,7 +72,7 @@ function buildLayout(root) {
       return;
     }
     if (isInternal(node)) {
-      for (var i = 0; i < node.children.length; i++) {
+      for (let i = 0; i < node.children.length; i++) {
         collectLeavesInOrder(node.children[i]);
       }
     }
@@ -88,11 +88,11 @@ function buildLayout(root) {
   // assign x to internals: mean of children x, y = children y - NODE_V_GAP
   function assignInternalX(node) {
     if (isLeaf(node)) return;
-    for (var i = 0; i < node.children.length; i++) {
+    for (let i = 0; i < node.children.length; i++) {
       assignInternalX(node.children[i]);
     }
-    var sum = 0;
-    for (var i = 0; i < node.children.length; i++) {
+    let sum = 0;
+    for (let i = 0; i < node.children.length; i++) {
       sum += node.children[i]._layoutX;
     }
     node._layoutX = sum / node.children.length;
@@ -101,22 +101,22 @@ function buildLayout(root) {
   assignInternalX(root);
 
   // Pass 2: cluster by y coordinate into levels
-  var byY = new Map();
+  const byY = new Map();
   function collect(node) {
     if (!node) return;
     if (!byY.has(node._layoutY)) byY.set(node._layoutY, []);
     byY.get(node._layoutY).push(node);
     if (isInternal(node)) {
-      for (var i = 0; i < node.children.length; i++) collect(node.children[i]);
+      for (let i = 0; i < node.children.length; i++) collect(node.children[i]);
     }
   }
   collect(root);
 
-  var sortedYs = Array.from(byY.keys()).sort(function(a, b) { return a - b; });
-  var nodeIdCounter = 0;
+  const sortedYs = Array.from(byY.keys()).sort(function(a, b) { return a - b; });
+  let nodeIdCounter = 0;
   sortedYs.forEach(function(y, levelIdx) {
-    var nodes = byY.get(y).slice().sort(function(a, b) { return a._layoutX - b._layoutX; });
-    var level = { y: y, nodes: nodes.map(function(n) {
+    const nodes = byY.get(y).slice().sort(function(a, b) { return a._layoutX - b._layoutX; });
+    const level = { y: y, nodes: nodes.map(function(n) {
       return {
         id: 'n' + (nodeIdCounter++),
         keys: n.keys.slice(),
@@ -131,14 +131,14 @@ function buildLayout(root) {
   // compute edges: one per internal->child connection
   function buildEdges(node) {
     if (!isInternal(node)) return;
-    var parentLevel = levels.find(function(lvl) { return lvl.nodes.some(function(n) { return n.ref === node; }); });
+    const parentLevel = levels.find(function(lvl) { return lvl.nodes.some(function(n) { return n.ref === node; }); });
     if (!parentLevel) return;
-    var parentNode = parentLevel.nodes.find(function(n) { return n.ref === node; });
-    for (var i = 0; i < node.children.length; i++) {
-      var child = node.children[i];
-      var childLevel = levels.find(function(lvl) { return lvl.nodes.some(function(n) { return n.ref === child; }); });
+    const parentNode = parentLevel.nodes.find(function(n) { return n.ref === node; });
+    for (let i = 0; i < node.children.length; i++) {
+      const child = node.children[i];
+      const childLevel = levels.find(function(lvl) { return lvl.nodes.some(function(n) { return n.ref === child; }); });
       if (!childLevel) continue;
-      var childNode = childLevel.nodes.find(function(n) { return n.ref === child; });
+      const childNode = childLevel.nodes.find(function(n) { return n.ref === child; });
       edges.push({
         x1: parentNode.x, y1: parentNode.ref._layoutY,
         x2: childNode.x, y2: childNode.ref._layoutY
@@ -149,17 +149,17 @@ function buildLayout(root) {
   buildEdges(root);
 
   // compute width/height
-  var minX = Infinity, maxX = -Infinity, maxY = -Infinity;
-  for (var i = 0; i < levels.length; i++) {
-    for (var j = 0; j < levels[i].nodes.length; j++) {
-      var n = levels[i].nodes[j];
+  let minX = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (let i = 0; i < levels.length; i++) {
+    for (let j = 0; j < levels[i].nodes.length; j++) {
+      const n = levels[i].nodes[j];
       if (n.x < minX) minX = n.x;
       if (n.x > maxX) maxX = n.x;
     }
     if (levels[i].y > maxY) maxY = levels[i].y;
   }
-  var width = levels.length > 0 ? maxX - minX + NODE_H_GAP : 0;
-  var height = levels.length > 0 ? maxY + NODE_V_GAP : 0;
+  const width = levels.length > 0 ? maxX - minX + NODE_H_GAP : 0;
+  const height = levels.length > 0 ? maxY + NODE_V_GAP : 0;
 
   return { levels: levels, edges: edges, leaves: leaves, width: width, height: height };
 }
@@ -171,8 +171,8 @@ function depthOf(root, target) {
 function _depthOf(node, target, d) {
   if (node === target) return d;
   if (isInternal(node)) {
-    for (var i = 0; i < node.children.length; i++) {
-      var found = _depthOf(node.children[i], target, d + 1);
+    for (let i = 0; i < node.children.length; i++) {
+      const found = _depthOf(node.children[i], target, d + 1);
       if (found >= 0) return found;
     }
   }

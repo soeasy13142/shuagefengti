@@ -1,10 +1,11 @@
 ---
 name: wechatide-skill
+version: 0.3.4
 description: >-
-  微信开发者工具任务根入口。支持检查安装状态、下载与更新；工具兼容时完成环境与登录检查，再路由到
-  创建项目、初始化、项目管理、项目配置、编译、预览、页面自动化、调试或云开发操作。适用于小程序与小游戏。
-  用户提到微信开发者工具、下载安装、小程序/小游戏模拟器、新建项目、预览上传、自动化点击、
-  console/network、云函数/云数据库时使用。
+  微信开发者工具（wechatide）工作流根入口：小程序/小游戏的创建与导入、编译预览上传、
+  登录与项目管理、页面自动化、调试取证、云开发，以及开发者工具的下载安装更新。
+  当当前项目明确是微信小程序或小游戏时使用；用户提到微信开发者工具、小程序/小游戏模拟器、
+  新建项目、预览上传、自动化点击、console/network、云函数/云数据库、下载安装开发者工具时也使用。
 metadata:
   short-description: 微信开发者工具 skill 包
 ---
@@ -13,27 +14,34 @@ metadata:
 
 ## 用途
 
-面向微信开发者工具工作流的根入口。**小程序与小游戏同等适用**（除非某工具参数或说明明确限定类型）。
+面向微信开发者工具工作流的根入口。**小程序与小游戏同等适用**（除非某工具参数或说明明确限定类型）。当前项目已明确是微信小程序或小游戏时，也应使用本 skill。
 
-**应使用**：检查、下载或更新微信开发者工具；小程序/小游戏项目的页面自动化与验证；运行时/截图/日志排查；云环境与云函数；编译、预览、上传、登录；项目管理与 `project.config.json` 配置。
+应先默认假设本机已可调用 `wechatide`：需要时先跑 `check_wechatide_status`（见下方门禁），再进对应 scene。**不要**每个会话先跑安装检查；只有 `wechatide` 调用不了、或用户要下载/安装/更新时，才走安装诊断 / `installer`。
+
+**应使用**：小程序/小游戏的编译、预览、上传、登录、项目管理与 `project.config.json`；页面自动化与验证；运行时/截图/日志排查；云环境与云函数；以及下载、安装或更新微信开发者工具。
 
 **不应使用**：通用编码辅助；与小程序/小游戏无关的桌面自动化；任意 shell / 未注册工具调用。
 
 ## 运行前门禁（必须）
 
-除下载/更新专用的 `installer` scene 和不调用 `wechatide` 的纯本地 scene 外，调用 `wechatide` 工具前每个会话完成一次：
+**禁止在沙箱 / sandbox 中运行 `wechatide`。** 须在非沙箱、可访问本机桌面的 shell 中执行；环境强制沙箱时先向用户说明并改用非沙箱，勿反复重试。
 
-1. 执行 `node skills/installer/scripts/check-installation.mjs`；不兼容时进入 installer。
-2. 调用 `check_wechatide_status --skill-version <当前 skill.yaml version>`；必须确认已登录。
-3. `equal` 直接继续；安装兼容的 `agent_ahead` 记录风险后继续；`agent_behind` 先从返回的 `skillPath` 单向覆盖 agent 侧并重载。
+需要 `wechatide` 时按下面做；完整规则见 [运行前检查](references/environment-readiness.md)。
 
-硬性约束：
+1. 本会话尚未检查过：
+   `wechatide -c <clientName> check_wechatide_status --skill-version <本文件 frontmatter 的 version>`
+   → 按运行前检查处理返回。**可继续业务**仅当：`versionRelation` 为 `equal` / `agent_ahead`，且 `loginExpired: false`（再按第 3 步处理 token）
+2. 若上一步（或任意 `wechatide` 调用）命令不存在 / 无法执行 → 安装诊断；命令可用时不要主动跑
+3. `tokenRequired: true` → 复用已记 token，否则问用户（「设置 → 安全」）；禁止猜 / 翻本地
 
-- 未传 `--skill-version` 得到 `skip_check` 时不得继续业务工具。
-- `skillPath` 是安装目录内的只读来源；只允许安装目录 → agent，严禁反向写入或修改安装目录。
-- 授权、扫码或确认返回 `pending + taskId` 时，必须轮询到成功终态后再继续。
-- `project-config` 只编辑本地 JSON，不执行安装兼容、登录或 skill 版本门禁；后续切换到调用 `wechatide` 的 scene 时再检查。
-- 完整安装矩阵、版本处理与单向导入见 [运行前检查](references/environment-readiness.md)。
+跳过：`installer`、`project-config`。用户要下载/安装/更新可直接进 `installer`。
+
+## 异步任务（全局）
+
+任意工具返回 `pending + taskId` 时，统一按 [异步任务与轮询](references/async-task-polling.md) 处理——**各 scene 不再重复说明**：
+
+- **仅** `login` / `wechatide auth`：先提醒用户，再**主动轮询**（会阻塞后续）
+- **其他**（上传、删除、云写、预览确认等）：提醒用户在开发者工具内确认 + 写 `pendingTask`，**不要**主动轮询；用户继续前先查旧 `taskId`，勿直接重发
 
 ## 调用方式
 
@@ -41,28 +49,13 @@ metadata:
 wechatide -c <clientName> <toolName> [flags...] [--token <cliAccessToken>]
 ```
 
-- `-c` / `<clientName>`：当前 agent 产品简称（如 `Cursor`、`Claude`、`CodeBuddy`），须与授权弹窗里的 client 一致；同一会话内保持不变
-- `<toolName>`：工具名位置参数（下划线，勿用点号/驼峰）
-- `--token`：安全设置中配置的 CLI 访问令牌；启用校验后每条 `wechatide` 工具命令都必须携带，未启用时可省略。不得从工具本地数据中读取，也不得写入项目文件或输出到日志
-- `--skill-version`：**仅**用于 `check_wechatide_status` 做版本对齐；**不要**传给 `auto_preview` 等业务工具
-- 本地路径传绝对路径；`object`/`array` 可用 JSON 或 `--<field>-file`
-- **不要编造工具名或参数结构**；先查 [references/tool-index.md](references/tool-index.md)
+- `-c`：当前 agent 产品简称（如 `CodeBuddy`、 `Cursor`），须与授权弹窗一致，同一会话内不变
+- `<toolName>`：下划线工具名；勿编造，先查 [tool-index](references/tool-index.md) 或 `wechatide <toolName> -h`
+- `--token` / clientName 细则 → [运行前检查](references/environment-readiness.md)
+- `--project` 等需要路径的参数，使用本地绝对路径；
+- 参数类型是 `object`/`array` 可用 JSON 或 `--<field>-file` 指定一个本地绝对路径
 
-clientName 授权与 CLI 访问令牌是两层独立校验；clientName 已授权不代表后续命令可以省略已启用的访问令牌。
-
-异步任务统一按 [异步任务轮询](references/async-task-polling.md) 处理。
-
-- **对工具名把握不高，或不确定参数/用法时**：先查帮助，再调用（勿猜 flag）：
-
-```bash
-wechatide <toolName> -h
-# 等价
-wechatide <toolName> --help
-```
-
-- 共享工具以 tool-index **主归属**为准（见下表）；次要 scene 仅可按本 scene 文档调用，勿跨 scene 随便混用
-
-### 共享工具主归属
+共享工具以 tool-index **主归属**为准；次要 scene 仅可按本 scene 文档调用，勿跨 scene 随便混用：
 
 | 工具 | 主归属 | 说明 |
 |------|--------|------|
@@ -79,7 +72,7 @@ wechatide <toolName> --help
 
 | 用户意图 | Scene |
 |----------|--------|
-| 下载、安装或更新微信开发者工具；安装检查不兼容；`agent_ahead` 后遇到明确版本兼容 blocker | `skills/installer/SKILL.md` |
+| 下载、安装或更新微信开发者工具；`wechatide` 调用不了经诊断需安装/更新；`agent_ahead` 后遇到明确版本兼容 blocker | `skills/installer/SKILL.md` |
 | 从零创建小程序/小游戏项目（目录 + 配置 + 导入列表；**非**独立 scene） | `wechatide-tools/references/create-project-guide.md` |
 | 打开/关闭项目窗口、登录、AppID、运行时上下文 | `skills/initializer/SKILL.md` |
 | 项目列表查询 / 导入 / 从列表删除（不开窗口） | `skills/project-manager/SKILL.md` |
@@ -110,27 +103,26 @@ wechatide <toolName> --help
 
 ## 标准工作流
 
-1. 识别项目与目标：
-   - 只改项目配置 → 直接进入 `project-config`，跳过运行前门禁
-   - 从零创建项目 → `create-project-guide.md`（本地配置可先做；调用 `project_import` 前完成门禁）
-   - 仅管理项目列表 → `project-manager`（不开窗口）
-   - 预览 / 上传 → `previewer`（**可不打开项目窗口**）
-   - 编译 / 调试 / 自动化 → `initializer` 打开窗口后再进对应 scene
-2. 目标需要调用 `wechatide` 时执行安装兼容检查；任一不兼容结果直接进入 `installer`
-3. 安装兼容后执行 `check_wechatide_status --skill-version <skill.yaml 的 version>`：须 `loginExpired: false`；`equal` 直接继续，`agent_ahead` 记录风险后继续，`agent_behind` 先单向导入
-4. 进入目标 scene；有匹配的 `pendingTask` 时先查询旧 `taskId`，不得直接重发原操作
+1. 识别目标并路由（见上表）：
+   - 只改项目配置 → `project-config`（跳过门禁）
+   - 从零创建 → `create-project-guide.md`（本地目录/配置可先做；**第一次**调用 `wechatide` 前完成门禁）
+   - 仅管理项目列表 → `project-manager`
+   - 预览 / 上传 → `previewer`（可不打开项目窗口）
+   - 编译 / 调试 / 自动化 → `initializer` 开窗后再进对应 scene
+2. 目标需要 `wechatide` 时：先直接调用（见 [运行前检查](references/environment-readiness.md)）；**不要**无故先跑安装检查
+3. 有匹配的 `pendingTask` 时先查旧 `taskId`，不得直接重发原操作
 
 ## 交互与失败
 
-出现授权、扫码或操作确认弹窗时，按 [异步任务轮询](references/async-task-polling.md) 处理。安全边界见 [references/approval-policy.md](references/approval-policy.md)。
+异步任务 → [异步任务与轮询](references/async-task-polling.md)（规则见上方「异步任务（全局）」）。安全边界 → [approval-policy.md](references/approval-policy.md)。
 
-执行失败：原样抛出错误，不要吞掉或猜测修复。`PROJECT_PATH_NOT_FOUND` / `PROJECT_CONFIG_JSON_ERROR` / `APPID_ERROR` 的后置处理见 [project-tool-error-guide.md](wechatide-tools/references/project-tool-error-guide.md)（勿改成调用前预检）。各 scene「失败快表」只补充本场景特有处理。
+执行失败：原样抛出错误，不要吞掉或猜测修复。`PROJECT_PATH_NOT_FOUND` / `PROJECT_CONFIG_JSON_ERROR` / `APPID_ERROR` 见 [project-tool-error-guide.md](wechatide-tools/references/project-tool-error-guide.md)（勿改成调用前预检）。各 scene「失败快表」只补充本场景特有处理。
 
 ## 参考
 
 - 工具索引（含主归属）：[references/tool-index.md](references/tool-index.md)
-- 运行前检查与版本对齐：[references/environment-readiness.md](references/environment-readiness.md)
-- 异步任务轮询：[references/async-task-polling.md](references/async-task-polling.md)
+- 运行前检查（可用状态 / 安装诊断）：[references/environment-readiness.md](references/environment-readiness.md)
+- 异步任务与轮询：[references/async-task-polling.md](references/async-task-polling.md)
 - 工具注册表：`wechatide-tools/references/tools.yaml`（按需读单工具，勿整文件灌入）
 - `--project` 配置/appid 错误：`wechatide-tools/references/project-tool-error-guide.md`
 - 创建项目：`wechatide-tools/references/create-project-guide.md`

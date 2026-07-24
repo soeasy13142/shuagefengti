@@ -2,6 +2,8 @@
    全部工具列表页 — 复用首页工具箱样式
    ═══════════════════════════════════════════ */
 
+@import "../../styles/tools-shared.wxss";
+
 .page {
   min-height: 100vh;
   background: #faf9f5;
@@ -52,108 +54,6 @@
   margin-bottom: 32rpx;
 }
 
-/* ── 工具网格（同首页） ── */
-.tool-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.tool-card {
-  flex: 0 0 48%;
-  margin-bottom: 20rpx;
-  background: #efe9de;
-  border-radius: 24rpx;
-  padding: 28rpx 24rpx 20rpx;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-sizing: border-box;
-}
-
-.tool-card:active {
-  background: #e8e0d2;
-}
-
-.tool-hover {
-  background: #e8e0d2;
-}
-
-.tool-card-preview {
-  opacity: 0.45;
-}
-.tool-card-preview:active {
-  background: #efe9de;
-}
-
-.tool-name {
-  display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', sans-serif;
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #141413;
-  line-height: 1.35;
-  margin-bottom: 6rpx;
-}
-
-/* ── tagline（替换原 description） ── */
-.tool-tagline {
-  display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
-  font-size: 20rpx;
-  font-weight: 400;
-  color: #6c6a64;
-  line-height: 1.4;
-  margin-bottom: 12rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-/* 详细模式：tagline 较长，不截断 */
-.tool-tagline-detail {
-  overflow: visible;
-  display: block;
-  -webkit-line-clamp: unset;
-}
-
-/* ── 详细模式：tags 纯文字 ── */
-.tool-tags-inline {
-  display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
-  font-size: 18rpx;
-  font-weight: 400;
-  color: #6c6a64;
-  line-height: 1.4;
-}
-
-.tool-difficulty-stars {
-  display: inline-block;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
-  font-size: 18rpx;
-  font-weight: 400;
-  color: #8e8b82;
-  line-height: 1.4;
-  margin-left: 8rpx;
-}
-
-.tool-meta-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-top: 8rpx;
-}
-
-.tool-tag {
-  display: block;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
-  font-size: 22rpx;
-  font-weight: 400;
-  color: #6c6a64;
-  margin-top: auto;
-}
 
 /* ── 全空状态 ── */
 .empty-cat {

@@ -19,7 +19,8 @@
 
 /* ── 弹窗卡片 ── */
 .modal-card {
-  width: 560rpx;
+  width: 90%;
+  max-width: 560rpx;
   max-height: 85vh;
   background: #efe9de;
   border-radius: 24rpx;
@@ -60,7 +61,7 @@
   display: block;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 36rpx;
-  font-weight: 700;
+  font-weight: 400;
   color: #141413;
   margin-bottom: 8rpx;
   padding-right: 48rpx;

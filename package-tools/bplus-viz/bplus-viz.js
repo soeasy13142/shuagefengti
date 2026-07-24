@@ -1,5 +1,5 @@
-var { BPlusTree } = require('../../utils/bplus-tree');
-var { buildLayout, leafCount } = require('../../utils/bplus-node');
+const { BPlusTree } = require('../../utils/bplus-tree');
+const { buildLayout, leafCount } = require('../../utils/bplus-node');
 
 Page({
   data: {
@@ -30,7 +30,7 @@ Page({
   },
 
   onMChange: function(e) {
-    var newM = Number(e.detail.value);
+    const newM = Number(e.detail.value);
     if (newM === this.data.m) return;
     this._tree = new BPlusTree(newM);
     this.setData({
@@ -63,22 +63,22 @@ Page({
 
   onExecute: function() {
     if (this.data.operation === 'insert') {
-      var key = parseInt(this.data.keyInput, 10);
+      const key = parseInt(this.data.keyInput, 10);
       if (isNaN(key)) {
         this.setData({ errorMessage: '请输入数字 key' });
         return;
       }
       this._doInsert(key);
     } else if (this.data.operation === 'search') {
-      var key = parseInt(this.data.keyInput, 10);
+      const key = parseInt(this.data.keyInput, 10);
       if (isNaN(key)) {
         this.setData({ errorMessage: '请输入数字 key' });
         return;
       }
       this._doSearch(key);
     } else if (this.data.operation === 'range') {
-      var lo = parseInt(this.data.loInput, 10);
-      var hi = parseInt(this.data.hiInput, 10);
+      const lo = parseInt(this.data.loInput, 10);
+      const hi = parseInt(this.data.hiInput, 10);
       if (isNaN(lo) || isNaN(hi)) {
         this.setData({ errorMessage: '请输入数字 lo / hi' });
         return;
@@ -88,22 +88,22 @@ Page({
   },
 
   _doInsert: function(key) {
-    var result = this._tree.insert(key);
+    const result = this._tree.insert(key);
     this._refreshRender();
     this._appendLog('插入 key=' + key + '：' + this._summarizeSteps(result.steps));
     this.setData({ keyInput: '', errorMessage: '' });
   },
 
   _doSearch: function(key) {
-    var result = this._tree.search(key);
+    const result = this._tree.search(key);
     this._refreshRender({ highlightKey: key, highlightType: 'search' });
-    var foundText = result.found === null ? '未找到' : '找到 key=' + result.found;
+    const foundText = result.found === null ? '未找到' : '找到 key=' + result.found;
     this._appendLog('查询 key=' + key + '：' + foundText + '。' + this._summarizeSteps(result.steps));
     this.setData({ keyInput: '', errorMessage: '' });
   },
 
   _doRange: function(lo, hi) {
-    var result = this._tree.rangeQuery(lo, hi);
+    const result = this._tree.rangeQuery(lo, hi);
     if (result.error) {
       this.setData({ errorMessage: result.error });
       return;
@@ -127,15 +127,15 @@ Page({
   },
 
   onRandomInsert: function() {
-    var key = this._randomKey();
+    const key = this._randomKey();
     this.setData({ keyInput: String(key) });
     this._doInsert(key);
   },
 
   onBatchInsert: function() {
-    var inserted = [];
-    for (var i = 0; i < 5; i++) {
-      var key = this._randomKey();
+    const inserted = [];
+    for (let i = 0; i < 5; i++) {
+      const key = this._randomKey();
       this._tree.insert(key);
       inserted.push(key);
     }
@@ -149,8 +149,8 @@ Page({
 
   _refreshRender: function(opts) {
     opts = opts || {};
-    var layout = buildLayout(this._tree.root);
-    var levels = layout.levels.map(function(level) {
+    const layout = buildLayout(this._tree.root);
+    const levels = layout.levels.map(function(level) {
       return {
         y: level.y,
         nodes: level.nodes.map(function(n) {
@@ -164,16 +164,16 @@ Page({
         }, this)
       };
     }, this);
-    var edges = layout.edges.map(function(e) { return this._computeEdgeStyle(e); }, this);
-    var leaves = layout.leaves.map(function(leaf, idx) {
+    const edges = layout.edges.map(function(e) { return this._computeEdgeStyle(e); }, this);
+    const leaves = layout.leaves.map(function(leaf, idx) {
       return {
         id: 'lf' + idx,
         keys: leaf.keys,
         state: this._leafState(leaf, opts)
       };
     }, this);
-    var canvasWidth = Math.max(600, layout.width + 100);
-    var canvasHeight = Math.max(300, layout.height + 60);
+    const canvasWidth = Math.max(600, layout.width + 100);
+    const canvasHeight = Math.max(300, layout.height + 60);
     this.setData({
       levels: levels,
       edges: edges,
@@ -198,20 +198,20 @@ Page({
 
   _leafState: function(leaf, opts) {
     if (!opts.rangeQuery) return '';
-    var leaves = opts.rangeQuery.leaves;
+    const leaves = opts.rangeQuery.leaves;
     if (leaves.length === 0) return '';
     if (leaves.length === 1) return 'start';
-    var idx = leaves.indexOf(leaf);
+    const idx = leaves.indexOf(leaf);
     if (idx === 0) return 'start';
     if (idx === leaves.length - 1) return 'end';
     return 'middle';
   },
 
   _computeEdgeStyle: function(e) {
-    var dx = e.x2 - e.x1;
-    var dy = e.y2 - e.y1;
-    var len = Math.sqrt(dx * dx + dy * dy);
-    var angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    const dx = e.x2 - e.x1;
+    const dy = e.y2 - e.y1;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
     return {
       lenX: Math.abs(dx),
       lenY: 2,
@@ -224,26 +224,26 @@ Page({
   _countNodes: function(node) {
     if (!node) return 0;
     if (node.type === 'leaf') return 1;
-    var count = 1;
-    for (var i = 0; i < node.children.length; i++) {
+    let count = 1;
+    for (let i = 0; i < node.children.length; i++) {
       count += this._countNodes(node.children[i]);
     }
     return count;
   },
 
   _appendLog: function(text) {
-    var now = new Date();
-    var time = now.getHours().toString().padStart(2, '0') + ':' +
+    const now = new Date();
+    const time = now.getHours().toString().padStart(2, '0') + ':' +
                now.getMinutes().toString().padStart(2, '0') + ':' +
                now.getSeconds().toString().padStart(2, '0');
-    var log = this.data.log.slice();
+    const log = this.data.log.slice();
     log.unshift({ time: time, text: text });
     if (log.length > 50) log.pop();
     this.setData({ log: log });
   },
 
   _summarizeSteps: function(steps) {
-    var splitCount = steps.filter(function(s) { return s.type === 'split' || s.type === 'rootSplit'; }).length;
+    const splitCount = steps.filter(function(s) { return s.type === 'split' || s.type === 'rootSplit'; }).length;
     return splitCount > 0 ? '触发 ' + splitCount + ' 次分裂' : '无分裂';
   },
 

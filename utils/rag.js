@@ -96,14 +96,14 @@ function addEdge(rag, from, to, type, count) {
 
   // Validate edge direction semantics
   if (type === 'request') {
-    var isFromProcess = rag.processes.some(function(p) { return p.id === from; });
-    var isToResource = rag.resources.some(function(r) { return r.id === to; });
+    const isFromProcess = rag.processes.some(function(p) { return p.id === from; });
+    const isToResource = rag.resources.some(function(r) { return r.id === to; });
     if (!isFromProcess || !isToResource) {
       throw new Error('Request edge must go from process to resource');
     }
   } else if (type === 'allocation') {
-    var isFromResource = rag.resources.some(function(r) { return r.id === from; });
-    var isToProcess = rag.processes.some(function(p) { return p.id === to; });
+    const isFromResource = rag.resources.some(function(r) { return r.id === from; });
+    const isToProcess = rag.processes.some(function(p) { return p.id === to; });
     if (!isFromResource || !isToProcess) {
       throw new Error('Allocation edge must go from resource to process');
     }
@@ -229,7 +229,9 @@ function detectCycle(graph) {
   const adjList = {};
   graph.nodes.forEach(function(n) { adjList[n] = []; });
   graph.edges.forEach(function(e) {
-    if (adjList[e.from]) adjList[e.from].push(e.to);
+    if (adjList[e.from]) {
+      adjList[e.from] = [...adjList[e.from], e.to];
+    }
   });
 
   const WHITE = 0, GRAY = 1, BLACK = 2;
@@ -253,7 +255,7 @@ function detectCycle(graph) {
           cur = parent[cur];
           cycle.push(cur);
         }
-        cycles.push(cycle.reverse());
+        cycles.push([...cycle].reverse());
       } else if (color[neighbor] === WHITE) {
         parent[neighbor] = node;
         dfs(neighbor);
@@ -281,7 +283,7 @@ function detectDeadlock(rag) {
   const wfg = toWaitForGraph(rag);
   const result = detectCycle(wfg);
   let deadlocked = [];
-  var processIdMap = {};
+  const processIdMap = {};
   rag.processes.forEach(function(p) { processIdMap[p.id] = true; });
 
   if (result.hasCycle) {

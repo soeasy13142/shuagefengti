@@ -50,111 +50,156 @@ function layoutTree(root, options) {
     return { nodePositions: {}, width: 0, height: 0 };
   }
 
-  /** @type {Object<number, NodePosition>} */
-  const positions = {};
+  const positions = _firstPass(root, 0, nodeWidth, nodeHeight, vGap);
+  const resolvedPositions = _resolveOverlaps(root, 0, positions, nodeWidth, nodeHeight, hGap);
+  const { positions: finalPositions, width: totalWidth, height: totalHeight } = _calculateBounds(resolvedPositions, nodeWidth, nodeHeight);
 
-  // First pass: assign preliminary x positions and mod values
-  const modifier = {};
+  return {
+    nodePositions: finalPositions,
+    width: Math.ceil(totalWidth + nodeWidth / 2),
+    height: Math.ceil(totalHeight)
+  };
+}
 
-  function firstPass(node, depth) {
-    if (!node) { return; }
+/**
+ * First pass: assign preliminary x positions using a simplified Reingold-Tilford approach.
+ * Returns a new positions object (immutable pattern).
+ *
+ * @param {ASTNode} node
+ * @param {number} depth
+ * @param {number} nodeWidth
+ * @param {number} nodeHeight
+ * @param {number} vGap
+ * @returns {Object<number, NodePosition>}
+ * @private
+ */
+function _firstPass(node, depth, nodeWidth, nodeHeight, vGap) {
+  if (!node) { return {}; }
 
-    if (node.children.length === 0) {
-      // Leaf node
-      positions[node.id] = { x: 0, y: depth * (nodeHeight + vGap), w: nodeWidth, h: nodeHeight };
-      modifier[node.id] = 0;
-      return;
-    }
+  if (node.children.length === 0) {
+    // Leaf node
+    return { [node.id]: { x: 0, y: depth * (nodeHeight + vGap), w: nodeWidth, h: nodeHeight } };
+  }
 
-    // Process children recursively
-    for (let i = 0; i < node.children.length; i++) {
-      firstPass(node.children[i], depth + 1);
-    }
+  // Process children recursively, merging their positions immutably
+  let positions = {};
+  for (let i = 0; i < node.children.length; i++) {
+    const childPositions = _firstPass(node.children[i], depth + 1, nodeWidth, nodeHeight, vGap);
+    positions = { ...positions, ...childPositions };
+  }
 
-    // Position this node based on children
-    if (node.children.length === 1) {
-      // Single child: center parent over child
-      const childPos = positions[node.children[0].id];
-      positions[node.id] = {
+  // Position this node based on children
+  if (node.children.length === 1) {
+    // Single child: center parent over child
+    const childPos = positions[node.children[0].id];
+    return {
+      ...positions,
+      [node.id]: {
         x: childPos.x,
         y: depth * (nodeHeight + vGap),
         w: nodeWidth,
         h: nodeHeight
-      };
-      modifier[node.id] = 0;
-    } else {
-      // Multiple children: average their positions
-      let minX = Infinity;
-      let maxX = -Infinity;
-      for (let j = 0; j < node.children.length; j++) {
-        const cp = positions[node.children[j].id];
-        if (cp.x < minX) { minX = cp.x; }
-        if (cp.x > maxX) { maxX = cp.x; }
       }
-      let avgX = (minX + maxX) / 2;
-      // Adjust for left-side contour (prevent overlaps)
-      const leftContour = minX - nodeWidth / 2;
-      let rightContour = maxX + nodeWidth / 2;
-      if (leftContour < 0) {
-        // Shift entire subtree right
-        const shift = -leftContour;
-        for (let k = 0; k < node.children.length; k++) {
-          positions[node.children[k].id].x += shift;
-        }
-        avgX += shift;
-        rightContour += shift;
-      }
-      positions[node.id] = {
-        x: avgX,
-        y: depth * (nodeHeight + vGap),
-        w: nodeWidth,
-        h: nodeHeight
-      };
-      modifier[node.id] = 0;
+    };
+  }
+
+  // Multiple children: average their positions
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (let j = 0; j < node.children.length; j++) {
+    const cp = positions[node.children[j].id];
+    if (cp.x < minX) { minX = cp.x; }
+    if (cp.x > maxX) { maxX = cp.x; }
+  }
+  let avgX = (minX + maxX) / 2;
+  // Adjust for left-side contour (prevent overlaps)
+  const leftContour = minX - nodeWidth / 2;
+  if (leftContour < 0) {
+    // Shift entire subtree right (immutable: create new position objects)
+    const shift = -leftContour;
+    for (let k = 0; k < node.children.length; k++) {
+      const childId = node.children[k].id;
+      const cp = positions[childId];
+      positions = { ...positions, [childId]: { ...cp, x: cp.x + shift } };
+    }
+    avgX += shift;
+  }
+
+  return {
+    ...positions,
+    [node.id]: {
+      x: avgX,
+      y: depth * (nodeHeight + vGap),
+      w: nodeWidth,
+      h: nodeHeight
+    }
+  };
+}
+
+/**
+ * Second pass: detect and resolve overlapping subtrees.
+ * Returns a new positions object (immutable pattern).
+ *
+ * @param {ASTNode} node
+ * @param {number} depth
+ * @param {Object<number, NodePosition>} positions
+ * @param {number} nodeWidth
+ * @param {number} nodeHeight
+ * @param {number} hGap
+ * @returns {Object<number, NodePosition>}
+ * @private
+ */
+function _resolveOverlaps(node, depth, positions, nodeWidth, nodeHeight, hGap) {
+  if (!node || node.children.length < 2) { return positions; }
+
+  let newPositions = positions;
+
+  for (let i = 0; i < node.children.length; i++) {
+    newPositions = _resolveOverlaps(node.children[i], depth + 1, newPositions, nodeWidth, nodeHeight, hGap);
+  }
+
+  // Check each pair of adjacent children for overlap
+  for (let m = 0; m < node.children.length - 1; m++) {
+    // Get right contour of left subtree
+    const rightmost = getRightContour(node.children[m], newPositions);
+    // Get left contour of right subtree
+    const leftmost = getLeftContour(node.children[m + 1], newPositions);
+
+    const overlap = rightmost + nodeWidth / 2 + hGap - leftmost;
+    if (overlap > 0) {
+      // Shift the right subtree right by overlap amount (returns new positions)
+      newPositions = shiftSubtree(node.children[m + 1], overlap, newPositions);
     }
   }
 
-  firstPass(root, 0);
-
-  // Second pass: detect and resolve overlapping subtrees
-  function resolveOverlaps(node, depth) {
-    if (!node || node.children.length < 2) { return; }
-
-    for (let i = 0; i < node.children.length; i++) {
-      resolveOverlaps(node.children[i], depth + 1);
-    }
-
-    // Check each pair of adjacent children for overlap
-    for (let m = 0; m < node.children.length - 1; m++) {
-      // Get right contour of left subtree
-      const rightmost = getRightContour(node.children[m], positions);
-      // Get left contour of right subtree
-      const leftmost = getLeftContour(node.children[m + 1], positions);
-
-      const overlap = rightmost + nodeWidth / 2 + hGap - leftmost;
-      if (overlap > 0) {
-        // Shift the right subtree right by overlap amount
-        shiftSubtree(node.children[m + 1], overlap, positions);
-      }
-    }
-
-    // Re-center parent over children
-    let minX = Infinity;
-    let maxX = -Infinity;
-    for (let n = 0; n < node.children.length; n++) {
-      const cp2 = positions[node.children[n].id];
-      if (cp2.x < minX) { minX = cp2.x; }
-      if (cp2.x > maxX) { maxX = cp2.x; }
-    }
-    positions[node.id].x = (minX + maxX) / 2;
+  // Re-center parent over children (immutable: create new parent position)
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (let n = 0; n < node.children.length; n++) {
+    const cp2 = newPositions[node.children[n].id];
+    if (cp2.x < minX) { minX = cp2.x; }
+    if (cp2.x > maxX) { maxX = cp2.x; }
   }
+  const parentPos = newPositions[node.id];
+  return { ...newPositions, [node.id]: { ...parentPos, x: (minX + maxX) / 2 } };
+}
 
-  resolveOverlaps(root, 0);
+/**
+ * Calculate total width and height, and offset all positions to be non-negative.
+ * Returns a new positions object (immutable pattern).
+ *
+ * @param {Object<number, NodePosition>} positions
+ * @param {number} nodeWidth
+ * @param {number} nodeHeight
+ * @returns {{ positions: Object<number, NodePosition>, width: number, height: number }}
+ * @private
+ */
+function _calculateBounds(positions, nodeWidth, nodeHeight) {
+  const keys = Object.keys(positions);
 
   // Calculate total width and height
   let totalWidth = 0;
   let totalHeight = 0;
-  const keys = Object.keys(positions);
   for (let p = 0; p < keys.length; p++) {
     const pos = positions[keys[p]];
     const rightEdge = pos.x + nodeWidth / 2;
@@ -170,19 +215,18 @@ function layoutTree(root, options) {
     if (leftEdge < leftmostX) { leftmostX = leftEdge; }
   }
 
-  // Offset all positions to be non-negative
+  // Offset all positions to be non-negative (immutable: create new position objects)
+  let finalPositions = positions;
   if (leftmostX < 0) {
+    finalPositions = {};
     for (let r = 0; r < keys.length; r++) {
-      positions[keys[r]].x -= leftmostX;
+      const key = keys[r];
+      finalPositions[key] = { ...positions[key], x: positions[key].x - leftmostX };
     }
     totalWidth -= leftmostX;
   }
 
-  return {
-    nodePositions: positions,
-    width: Math.ceil(totalWidth + nodeWidth / 2),
-    height: Math.ceil(totalHeight)
-  };
+  return { positions: finalPositions, width: totalWidth, height: totalHeight };
 }
 
 /**
@@ -222,18 +266,24 @@ function getLeftContour(node, positions) {
 }
 
 /**
- * Shift an entire subtree by a delta
+ * Shift an entire subtree by a delta (immutable: returns new positions object).
+ *
  * @param {ASTNode} node
  * @param {number} delta
  * @param {Object<number, NodePosition>} positions
+ * @returns {Object<number, NodePosition>}
  */
 function shiftSubtree(node, delta, positions) {
-  if (!node) { return; }
-  const pos = positions[node.id];
-  if (pos) { pos.x += delta; }
-  for (let i = 0; i < node.children.length; i++) {
-    shiftSubtree(node.children[i], delta, positions);
+  if (!node) { return positions; }
+  let newPositions = positions;
+  const pos = newPositions[node.id];
+  if (pos) {
+    newPositions = { ...newPositions, [node.id]: { ...pos, x: pos.x + delta } };
   }
+  for (let i = 0; i < node.children.length; i++) {
+    newPositions = shiftSubtree(node.children[i], delta, newPositions);
+  }
+  return newPositions;
 }
 
 module.exports = {

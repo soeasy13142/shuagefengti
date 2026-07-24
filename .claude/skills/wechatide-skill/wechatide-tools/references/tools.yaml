@@ -6,7 +6,7 @@
     {
       "id": "check_wechatide_status",
       "name": "读取微信开发者工具状态",
-      "summary": "只读获取登录态（loginExpired）、当前用户（loginUser）和 skill 版本关系（versionRelation）；不触发登录。",
+      "summary": "只读获取登录态（loginExpired）、当前用户（loginUser）、skill 版本关系（versionRelation）以及是否启用 CLI 令牌（tokenRequired）；不触发登录。tokenRequired 为 true 时后续业务工具须带令牌。",
       "group": "ide",
       "source": {
         "type": "wechatide"
@@ -15,7 +15,7 @@
         "initializer"
       ],
       "inputSchema": {
-        "version": {
+        "skill-version": {
           "type": "string",
           "required": false,
           "description": "调用侧加载的 wechatide-skill 版本；会话首次必须传，不传时 versionRelation 为 skip_check"
@@ -362,7 +362,7 @@
           "type": "string",
           "required": true
         },
-        "version": {
+        "upload-version": {
           "type": "string",
           "required": true,
           "description": "上传的代码版本号。如 1.0.0"

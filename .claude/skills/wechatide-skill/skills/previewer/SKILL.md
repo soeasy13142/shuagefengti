@@ -26,8 +26,6 @@ wechatide -c <clientName> create_preview_qrcode --project <project> --qr-format 
 wechatide -c <clientName> upload --project <project> --upload-version 1.0.0 [--desc "备注"]
 ```
 
-注意：`upload` 的 schema 字段名是 `version`，CLI flag 是 `--upload-version`（不是 `--version`）。
-
 `auto_preview` **不要**传本地输出路径类参数；需要落地二维码/信息文件时用 `create_preview_qrcode`。
 
 ## 边界
@@ -40,11 +38,13 @@ wechatide -c <clientName> upload --project <project> --upload-version 1.0.0 [--d
 | 情况 | 处理 |
 |------|------|
 | `PROJECT_*` / `APPID_ERROR` | [project-tool-error-guide.md](../../wechatide-tools/references/project-tool-error-guide.md) |
-| 用户拒绝上传 | **不要**自动再 `upload` |
+| 用户拒绝上传 / 确认取消 | **不要**自动再 `upload` |
 | 预览/上传权限或账号问题 | 说明需开发者权限或重新 `login`；勿死循环重试 |
 | 超时 | 原样报告；可问用户是否重试一次，勿静默连打 |
 
 ## 移交
+
+遵循根 SKILL「跨 scene 移交」。
 
 | 目标 | 还需 |
 |------|------|

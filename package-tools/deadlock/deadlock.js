@@ -159,7 +159,7 @@ Page({
   },
 
   onLoad: function() {
-    var rag = require('../../utils/rag');
+    const rag = require('../../utils/rag');
     this._rag = rag;
     this.setData({ rag: this._rag.createRag() });
     this._computeNodePositions();

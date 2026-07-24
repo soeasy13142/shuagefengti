@@ -82,3 +82,39 @@ describe('avalancheReport', () => {
     expect(report.diffRatio).toBeCloseTo(report.bitDistance / 256, 5);
   });
 });
+
+describe('flipFirstBit with multi-byte UTF-8', () => {
+  test('2-byte UTF-8 character (ñ = 0xC3 0xB1) flips first byte bit 0', () => {
+    const result = flipFirstBit('ñ', 'utf-8');
+    expect(result.original[0]).toBe(0xC3);
+    expect(result.flipped[0]).toBe(0xC2);
+    expect(result.flippedBitOffset).toBe(0);
+  });
+
+  test('3-byte UTF-8 character (你 = 0xE4 0xBD 0xA0) flips first byte', () => {
+    const result = flipFirstBit('你', 'utf-8');
+    expect(result.original[0]).toBe(0xE4);
+    expect(result.flipped[0]).toBe(0xE5);
+    expect(result.flippedBitOffset).toBe(0);
+  });
+
+  test('encoding !== utf-8 throws error', () => {
+    expect(() => flipFirstBit('hello', 'latin-1')).toThrow('Only utf-8 encoding is supported');
+  });
+});
+
+describe('avalancheReport with multi-byte UTF-8', () => {
+  test('2-byte characters produce avalanche around 50%', () => {
+    const report = avalancheReport('mañana', 'ma�ana');
+    expect(report.bitDistance).toBeGreaterThanOrEqual(80);
+    expect(report.bitDistance).toBeLessThanOrEqual(180);
+  });
+
+  test('3-byte characters produce avalanche around 50%', () => {
+    const report = avalancheReport('你好世界', '你好世');
+    expect(report.originalHash).not.toBe(report.flippedHash);
+    expect(report.diffRatio).toBeGreaterThan(0.3);
+    expect(report.diffRatio).toBeLessThanOrEqual(1);
+  });
+});
+

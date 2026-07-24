@@ -226,6 +226,8 @@ Page({
   },
 
   _doFinishQuiz() {
+    if (this._submitting) return;
+    this._submitting = true;
     const { answers, questions, paper, mode } = this.data;
     const startTime = this.data.startTime || Date.now();
     const endTime = Date.now();
@@ -252,18 +254,25 @@ Page({
       answers,
       questionTypes: questions.map(q => ({ id: q.id, type: q.type }))
     };
-    storage.saveRecord(record);
 
-    questions.forEach(q => {
-      const a = answers[q.id];
-      if (a && !a.correct) {
-        storage.addWrongQuestion({
-          questionId: q.id,
-          paperId: paper.id,
-          question: q
-        });
-      }
-    });
+    try {
+      storage.saveRecord(record);
+
+      questions.forEach(q => {
+        const a = answers[q.id];
+        if (a && !a.correct) {
+          storage.addWrongQuestion({
+            questionId: q.id,
+            paperId: paper.id,
+            question: q
+          });
+        }
+      });
+    } catch (e) {
+      this._submitting = false;
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+      return;
+    }
 
     const resultData = JSON.stringify({
       paperName: paper.name,

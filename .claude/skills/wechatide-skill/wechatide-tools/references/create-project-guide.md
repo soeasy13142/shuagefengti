@@ -6,7 +6,7 @@
 
 ## 前置条件
 
-进入本流程前，须已由根入口完成环境就绪检查；本流程不重复登录、版本或 CLI 检查。
+进入本流程前，须已能调用 `wechatide` 并完成可用状态检查（见根入口 / [运行前检查](../../references/environment-readiness.md)）；本流程不重复这些检查。`wechatide` 命令不存在时先走 installer，不要在本流程里猜安装状态。
 
 ## 第一步：获取 AppID
 

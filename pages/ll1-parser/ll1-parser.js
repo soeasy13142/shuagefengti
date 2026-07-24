@@ -312,7 +312,7 @@ Page({
       const parseResult = parseInput(_grammar, _tableResult.table, tokens);
 
       // Build parse tree for visualization
-      var treeResult = buildParseTree(parseResult.steps, _grammar);
+      const treeResult = buildParseTree(parseResult.steps, _grammar);
 
       this.setData({
         steps: parseResult.steps,

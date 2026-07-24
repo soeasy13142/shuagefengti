@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "磁盘调度可视化",
   "navigationBarBackgroundColor": "#faf9f5",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "quick-tip-bubble": "/components/quick-tip-bubble/quick-tip-bubble"
+  }
 }

@@ -230,16 +230,12 @@ Page({
   // ── Internal ──
 
   /**
-   * 根据当前步骤索引更新源码视图。
-   * @param {number} stepIndex — -1 表示初始状态（全部未处理）
+   * 计算字符高亮信息：光标位置、已揭示 Token、字符 CSS 类。
+   * @param {number} stepIndex
+   * @returns {{ cursorPos: number, charClasses: string[] }}
    */
-  _updateSourceView(stepIndex) {
+  _computeCharHighlighting(stepIndex) {
     const source = this.data.rawInput;
-    if (!source) {
-      this.setData({ sourceLines: [] });
-      return;
-    }
-
     const tokens = this.data.tokens;
     const steps = this.data.steps;
     let cursorPos = 0;
@@ -280,7 +276,17 @@ Page({
       }
     }
 
-    // Build lines with segments
+    return { cursorPos: cursorPos, charClasses: charClasses };
+  },
+
+  /**
+   * 从字符高亮信息构建源码行数组。
+   * @param {string} source
+   * @param {number} cursorPos
+   * @param {string[]} charClasses
+   * @returns {object[]}
+   */
+  _buildSourceLines(source, cursorPos, charClasses) {
     const lines = source.split('\n');
     const sourceLines = [];
     let globalIdx = 0;
@@ -317,9 +323,6 @@ Page({
 
       // Check for cursor at end of line
       if (globalIdx === cursorPos && cursorPos < source.length) {
-        // Cursor at end of this line (beginning of next line's content)
-        // We handle this by adding cursor to the last segment or as a line property
-        // The cursor is shown between chars - for end of line it's after the last char
         if (segments.length > 0) {
           segments[segments.length - 1].showCursor = true;
         }
@@ -340,6 +343,22 @@ Page({
       }
     }
 
+    return sourceLines;
+  },
+
+  /**
+   * 根据当前步骤索引更新源码视图。
+   * @param {number} stepIndex — -1 表示初始状态（全部未处理）
+   */
+  _updateSourceView(stepIndex) {
+    const source = this.data.rawInput;
+    if (!source) {
+      this.setData({ sourceLines: [] });
+      return;
+    }
+
+    const { cursorPos, charClasses } = this._computeCharHighlighting(stepIndex);
+    const sourceLines = this._buildSourceLines(source, cursorPos, charClasses);
     this.setData({ sourceLines: sourceLines });
   },
 

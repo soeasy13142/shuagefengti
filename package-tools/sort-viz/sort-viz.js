@@ -308,9 +308,6 @@ Page({
       }
       return values;
     }
-    for (let j = 0; j < initBars.length; j++) {
-      values.push(initBars[j].value);
-    }
     return values;
   },
 

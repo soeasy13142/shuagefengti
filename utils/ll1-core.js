@@ -107,7 +107,7 @@ function _computeFIRSTOfSequence(symbols, FIRST, nonTerminals) {
  * @param {string} B - Current non-terminal in RHS
  * @param {string[]} beta - Symbols after B in the RHS
  * @param {string} lhs - Left-hand side of the production
- * @param {Object} FOLLOW - FOLLOW sets
+ * @param {Object} FOLLOW - FOLLOW sets (mutated in-place during fixed-point)
  * @param {Object} FIRST - FIRST sets
  * @param {Set<string>} nonTerminals
  * @returns {boolean} Whether FOLLOW was modified
@@ -223,8 +223,8 @@ function computeFOLLOW(grammar, firstResult) {
 /**
  * Fill parse table entry for one production.
  * @param {Object} prod - Production object
- * @param {Object} table - Parse table
- * @param {Object} conflicts - Conflict tracker
+ * @param {Object} table - Parse table (mutated in-place)
+ * @param {Object} conflicts - Conflict tracker (mutated in-place)
  * @param {Object} FIRST - FIRST sets
  * @param {Object} FOLLOW - FOLLOW sets
  * @param {Set<string>} nonTerminals
@@ -234,11 +234,8 @@ function _fillParseTableEntry(prod, table, conflicts, FIRST, FOLLOW, nonTerminal
   const rhs = prod.rhs;
   const firstRHS = _computeFIRSTOfSequence(rhs, FIRST, nonTerminals);
 
-  // For each a ∈ FIRST[RHS], a ≠ ε: table[lhs][a] = prod
   firstRHS.forEach(function(a) {
-    if (a === EPSILON) {
-      return;
-    }
+    if (a === EPSILON) return;
 
     if (table[lhs][a] === null) {
       table[lhs][a] = prod;
@@ -248,7 +245,6 @@ function _fillParseTableEntry(prod, table, conflicts, FIRST, FOLLOW, nonTerminal
     }
   });
 
-  // If ε ∈ FIRST[RHS]: for each b ∈ FOLLOW[lhs]: table[lhs][b] = prod
   if (firstRHS.has(EPSILON)) {
     FOLLOW[lhs].forEach(function(b) {
       if (table[lhs][b] === null) {
@@ -307,122 +303,36 @@ function buildParseTable(grammar, firstResult, followResult) {
   const { table, conflicts } = _initializeTable(terminals, nonTerminals);
 
   for (let i = 0; i < productions.length; i++) {
-    _fillParseTableEntry(productions[i], table, conflicts, FIRST, FOLLOW, nonTerminals);
+    const prod = productions[i];
+    _fillParseTableEntry(prod, table, conflicts, FIRST, FOLLOW, nonTerminals);
   }
 
   return { table: table, conflicts: conflicts };
 }
 
 /**
- * Record initial parsing state.
- * @param {string[]} stack
- * @param {string[]} inputBuf
- * @returns {Object[]}
+ * Build input buffer from input tokens, appending end marker.
+ * @param {string[]} input - Input tokens
+ * @returns {string[]}
  */
-function _pushInitialState(stack, inputBuf) {
-  return [{
-    stack: [].concat(stack),
-    input: [].concat(inputBuf),
-    output: [],
-    action: null,
-    production: null
-  }];
-}
-
-/**
- * Handle accept condition (stack top and lookahead both END_MARKER).
- * @param {string[]} stack
- * @param {string[]} inputBuf
- * @param {string[]} output
- * @returns {{ type: string, step: Object }}
- */
-function _handleAccept(stack, inputBuf, output) {
-  return {
-    type: 'accept',
-    step: {
-      stack: [].concat(stack),
-      input: [].concat(inputBuf),
-      output: [].concat(output),
-      action: 'accept',
-      production: null
-    }
-  };
-}
-
-/**
- * Handle terminal match (stack top equals lookahead).
- * @param {string} top
- * @param {string[]} stack
- * @param {string[]} inputBuf
- * @param {string[]} output
- * @returns {{ type: string, step: Object }}
- */
-function _handleMatch(top, stack, inputBuf, output) {
-  stack.pop();
-  inputBuf.shift();
-  return {
-    type: 'match',
-    step: {
-      stack: [].concat(stack),
-      input: [].concat(inputBuf),
-      output: [].concat(output),
-      action: 'match',
-      production: null,
-      matched: top
-    }
-  };
-}
-
-/**
- * Handle terminal mismatch (top is a terminal but does not match lookahead).
- * @param {string} top
- * @param {string} lookahead
- * @param {string[]} stack
- * @param {string[]} inputBuf
- * @param {string[]} output
- * @returns {{ type: string, step: Object }}
- */
-function _handleError(top, lookahead, stack, inputBuf, output) {
-  return {
-    type: 'error',
-    step: {
-      stack: [].concat(stack),
-      input: [].concat(inputBuf),
-      output: [].concat(output),
-      action: 'error',
-      production: null,
-      error: '期望 "' + top + '"，但遇到 "' + lookahead + '"'
-    }
-  };
-}
-
-/**
- * Look up parse table and expand non-terminal.
- * @param {string} top
- * @param {string} lookahead
- * @param {Object} table
- * @param {string[]} stack
- * @param {string[]} inputBuf
- * @param {string[]} output
- * @returns {{ type: string, step: Object }}
- */
-function _handleExpand(top, lookahead, table, stack, inputBuf, output) {
-  const row = table[top];
-  const prod = row ? row[lookahead] : null;
-  if (!prod) {
-    return {
-      type: 'error',
-      step: {
-        stack: [].concat(stack),
-        input: [].concat(inputBuf),
-        output: [].concat(output),
-        action: 'error',
-        production: null,
-        error: '表项 M[' + top + ', ' + lookahead + '] 为空，无法展开'
-      }
-    };
+function _buildInputBuffer(input) {
+  const inputBuf = [];
+  for (let i = 0; i < input.length; i++) {
+    inputBuf.push(input[i]);
   }
+  inputBuf.push(END_MARKER);
+  return inputBuf;
+}
 
+/**
+ * Perform expand operation: pop non-terminal, push RHS symbols in reverse,
+ * record production string.
+ * @param {string[]} stack - Parse stack (mutated in-place)
+ * @param {string[]} output - Output list (mutated in-place)
+ * @param {Object} prod - Production to expand
+ * @returns {string} Production string for logging
+ */
+function _performExpand(stack, output, prod) {
   stack.pop();
   const rhs = prod.rhs;
   for (let j = rhs.length - 1; j >= 0; j--) {
@@ -436,17 +346,7 @@ function _handleExpand(top, lookahead, table, stack, inputBuf, output) {
     prodStr += 'ε';
   }
   output.push(prodStr);
-
-  return {
-    type: 'expand',
-    step: {
-      stack: [].concat(stack),
-      input: [].concat(inputBuf),
-      output: [].concat(output),
-      action: 'expand',
-      production: prodStr
-    }
-  };
+  return prodStr;
 }
 
 /**
@@ -461,47 +361,88 @@ function parseInput(grammar, table, input) {
   const nonTerminals = grammar.nonTerminals;
 
   const stack = [END_MARKER, startSymbol];
-  const inputBuf = [];
-  for (let i = 0; i < input.length; i++) {
-    inputBuf.push(input[i]);
-  }
-  inputBuf.push(END_MARKER);
+  const inputBuf = _buildInputBuffer(input);
   const output = [];
+  const steps = [];
 
-  const steps = _pushInitialState(stack, inputBuf);
+  // Record initial state
+  steps.push({
+    stack: [].concat(stack),
+    input: [].concat(inputBuf),
+    output: [],
+    action: null,
+    production: null
+  });
 
   while (true) {
-    const top = stack[stack.length - 1];
-    const lookahead = inputBuf[0];
+    let top = stack[stack.length - 1];
+    let lookahead = inputBuf[0];
 
     // Accept
     if (top === END_MARKER && lookahead === END_MARKER) {
-      const result = _handleAccept(stack, inputBuf, output);
-      steps.push(result.step);
+      steps.push({
+        stack: [].concat(stack),
+        input: [].concat(inputBuf),
+        output: [].concat(output),
+        action: 'accept',
+        production: null
+      });
       break;
     }
 
     // Match terminal
     if (top === lookahead) {
-      const result = _handleMatch(top, stack, inputBuf, output);
-      steps.push(result.step);
+      stack.pop();
+      inputBuf.shift();
+      steps.push({
+        stack: [].concat(stack),
+        input: [].concat(inputBuf),
+        output: [].concat(output),
+        action: 'match',
+        production: null,
+        matched: top
+      });
       continue;
     }
 
     // Terminal mismatch
     if (!nonTerminals.has(top)) {
-      const result = _handleError(top, lookahead, stack, inputBuf, output);
-      steps.push(result.step);
+      steps.push({
+        stack: [].concat(stack),
+        input: [].concat(inputBuf),
+        output: [].concat(output),
+        action: 'error',
+        production: null,
+        error: '期望 "' + top + '"，但遇到 "' + lookahead + '"'
+      });
+      break;
+    }
+
+    // Look up parse table
+    const row = table[top];
+    const prod = row ? row[lookahead] : null;
+    if (!prod) {
+      steps.push({
+        stack: [].concat(stack),
+        input: [].concat(inputBuf),
+        output: [].concat(output),
+        action: 'error',
+        production: null,
+        error: '表项 M[' + top + ', ' + lookahead + '] 为空，无法展开'
+      });
       break;
     }
 
     // Expand
-    const result = _handleExpand(top, lookahead, table, stack, inputBuf, output);
-    if (result.type === 'error') {
-      steps.push(result.step);
-      break;
-    }
-    steps.push(result.step);
+    const prodStr = _performExpand(stack, output, prod);
+
+    steps.push({
+      stack: [].concat(stack),
+      input: [].concat(inputBuf),
+      output: [].concat(output),
+      action: 'expand',
+      production: prodStr
+    });
   }
 
   const lastStep = steps[steps.length - 1];
@@ -542,7 +483,7 @@ function buildParseTree(steps, grammar) {
     return { root: null, flatNodes: [] };
   }
 
-  const root = {
+  var root = {
     symbol: grammar.startSymbol,
     children: [],
     isNonTerminal: true,
@@ -551,25 +492,27 @@ function buildParseTree(steps, grammar) {
   };
 
   // Collect only expand steps
-  const expandSteps = [];
-  for (let i = 0; i < steps.length; i++) {
+  var expandSteps = [];
+  for (var i = 0; i < steps.length; i++) {
     if (steps[i].action === 'expand') {
       expandSteps.push(steps[i]);
     }
   }
 
-  for (let e = 0; e < expandSteps.length; e++) {
-    const step = expandSteps[e];
-    const arrowIdx = step.production.indexOf(' → ');
+  for (var e = 0; e < expandSteps.length; e++) {
+    var step = expandSteps[e];
+    // Parse production string: "E → T E'" or "E' → ε"
+    var arrowIdx = step.production.indexOf(' → ');
     if (arrowIdx < 0) continue;
-    const lhs = step.production.substring(0, arrowIdx);
-    const rhsStr = step.production.substring(arrowIdx + 3);
-    const rhs = rhsStr === EPSILON ? [EPSILON] : rhsStr.split(' ');
+    var lhs = step.production.substring(0, arrowIdx);
+    var rhsStr = step.production.substring(arrowIdx + 3);
+    var rhs = rhsStr === EPSILON ? ['ε'] : rhsStr.split(' ');
 
-    const target = _findLeftmostUnexpanded(root);
+    // Find the leftmost unexpanded non-terminal
+    var target = _findLeftmostUnexpanded(root);
     if (target) {
-      for (let j = 0; j < rhs.length; j++) {
-        const sym = rhs[j];
+      for (var j = 0; j < rhs.length; j++) {
+        var sym = rhs[j];
         target.children.push({
           symbol: sym,
           children: [],
@@ -585,7 +528,7 @@ function buildParseTree(steps, grammar) {
   _markLastChild(root);
 
   // Flatten tree for WXML rendering
-  const flatNodes = _flattenTree(root);
+  var flatNodes = _flattenTree(root);
 
   return { root: root, flatNodes: flatNodes };
 }
@@ -599,8 +542,8 @@ function _findLeftmostUnexpanded(node) {
   if (node.children.length === 0) {
     return node;
   }
-  for (let i = 0; i < node.children.length; i++) {
-    const result = _findLeftmostUnexpanded(node.children[i]);
+  for (var i = 0; i < node.children.length; i++) {
+    var result = _findLeftmostUnexpanded(node.children[i]);
     if (result) return result;
   }
   return null;
@@ -611,7 +554,7 @@ function _findLeftmostUnexpanded(node) {
  * @param {Object} node
  */
 function _markLastChild(node) {
-  for (let i = 0; i < node.children.length; i++) {
+  for (var i = 0; i < node.children.length; i++) {
     node.children[i].isLastChild = (i === node.children.length - 1);
     _markLastChild(node.children[i]);
   }
@@ -623,8 +566,8 @@ function _markLastChild(node) {
  * @returns {Object[]}
  */
 function _flattenTree(node) {
-  const result = [];
-  const ancestorIsLast = [];
+  var result = [];
+  var ancestorIsLast = [];
   _flattenNode(node, result, ancestorIsLast);
   return result;
 }
@@ -637,8 +580,8 @@ function _flattenTree(node) {
  */
 function _flattenNode(node, result, ancestorIsLast) {
   // Build prefix string
-  let prefix = '';
-  for (let i = 0; i < ancestorIsLast.length; i++) {
+  var prefix = '';
+  for (var i = 0; i < ancestorIsLast.length; i++) {
     if (i === ancestorIsLast.length - 1) {
       prefix += node.isLastChild ? '└── ' : '├── ';
     } else {
@@ -655,9 +598,9 @@ function _flattenNode(node, result, ancestorIsLast) {
     prefix: prefix
   });
 
-  const newAncestorIsLast = ancestorIsLast.concat([node.isLastChild]);
+  var newAncestorIsLast = ancestorIsLast.concat([node.isLastChild]);
 
-  for (let i = 0; i < node.children.length; i++) {
+  for (var i = 0; i < node.children.length; i++) {
     _flattenNode(node.children[i], result, newAncestorIsLast);
   }
 }

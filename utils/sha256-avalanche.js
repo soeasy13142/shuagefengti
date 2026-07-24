@@ -7,33 +7,7 @@
 
 const { sha256 } = require('./sha256');
 const { hammingDistance } = require('./sha256-trace');
-
-function _utf8Encode(str) {
-  const bytes = [];
-  for (let i = 0; i < str.length; i++) {
-    let code = str.charCodeAt(i);
-    if (code < 0x80) {
-      bytes.push(code);
-    } else if (code < 0x800) {
-      bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
-    } else if (code >= 0xd800 && code <= 0xdbff && i + 1 < str.length) {
-      const low = str.charCodeAt(i + 1);
-      if (low >= 0xdc00 && low <= 0xdfff) {
-        code = 0x10000 + (((code & 0x3ff) << 10) | (low & 0x3ff));
-        i++;
-        bytes.push(
-          0xf0 | (code >> 18), 0x80 | ((code >> 12) & 0x3f),
-          0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f)
-        );
-      } else {
-        bytes.push(0xef, 0xbf, 0xbd);
-      }
-    } else {
-      bytes.push(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
-    }
-  }
-  return new Uint8Array(bytes);
-}
+const { utf8Encode } = require('./encoding');
 
 /**
  * Flip bit 0 of the first byte of the UTF-8 encoding.
@@ -46,7 +20,7 @@ function flipFirstBit(text, encoding) {
   if (encoding && encoding !== 'utf-8') {
     throw new Error('Only utf-8 encoding is supported');
   }
-  const original = _utf8Encode(text);
+  const original = utf8Encode(text);
   if (original.length === 0) {
     throw new Error('Cannot flip bit of empty input');
   }

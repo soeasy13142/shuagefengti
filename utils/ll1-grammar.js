@@ -89,9 +89,6 @@ function parseGrammar(text) {
 
   // Terminals: all symbols not in nonTerminals and not epsilon
   const terminals = new Set();
-  const symbolIterator = allSymbols.values
-    ? allSymbols.values()
-    : Array.from(allSymbols);
 
   allSymbols.forEach(function(sym) {
     if (!nonTerminals.has(sym) && sym !== EPSILON) {
