@@ -2,7 +2,7 @@
    全部工具列表页 — 复用首页工具箱样式
    ═══════════════════════════════════════════ */
 
-@import "../styles/tools-shared.wxss";
+@import "../../styles/tools-shared.wxss";
 
 .page {
   min-height: 100vh;

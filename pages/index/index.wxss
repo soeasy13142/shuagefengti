@@ -3,7 +3,7 @@
    工具箱优先 · 紧凑头部 · 大网格卡片
    ═══════════════════════════════════════════ */
 
-@import "../styles/tools-shared.wxss";
+@import "../../styles/tools-shared.wxss";
 
 /* ── 入场动画 ── */
 @keyframes fadeSlideIn {
