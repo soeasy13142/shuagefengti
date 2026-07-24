@@ -6,7 +6,7 @@ page {
 
   font-family: var(--font-sans);
   font-size: 28rpx;
-  color: #1a1a2e;
+  color: #141413;
   background-color: #faf9f5;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
@@ -18,7 +18,7 @@ page {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #07c160, #06ad56);
+  background: #cc785c;
   color: #fff;
   border: none;
   border-radius: 16rpx;
@@ -29,17 +29,27 @@ page {
   letter-spacing: 2rpx;
 }
 
+.btn-primary:active {
+  background: #a9583e;
+}
+
 .btn-primary::after { border: none; }
 
 .btn-secondary {
   background: #fff;
-  color: #07c160;
-  border: 2rpx solid rgba(7, 193, 96, 0.3);
+  color: #cc785c;
+  border: 2rpx solid rgba(204, 120, 92, 0.3);
   border-radius: 16rpx;
   padding: 24rpx 40rpx;
   font-size: 30rpx;
   font-weight: 500;
   text-align: center;
+}
+
+.btn-secondary:active {
+  background: #fff;
+  color: #a9583e;
+  border-color: rgba(169, 88, 62, 0.3);
 }
 
 .tag {

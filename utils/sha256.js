@@ -7,6 +7,8 @@
  * No BigInt, no external dependencies.
  */
 
+const { utf8Encode } = require('./encoding');
+
 /**
  * Round constants K[0..63] — first 32 bits of fractional parts of
  * cube roots of the first 64 primes (2..311). FIPS 180-4 §4.2.2.
@@ -60,41 +62,6 @@ function _add32(...args) {
   let sum = 0;
   for (let i = 0; i < args.length; i++) sum = (sum + args[i]) >>> 0;
   return sum;
-}
-
-/* ── UTF-8 encoding ── */
-
-/**
- * Encode a JS string to UTF-8 bytes.
- * WeChat mini-program lacks TextEncoder in some contexts; manual implementation.
- * @param {string} str
- * @returns {Uint8Array}
- */
-function _utf8Encode(str) {
-  const bytes = [];
-  for (let i = 0; i < str.length; i++) {
-    let code = str.charCodeAt(i);
-    if (code < 0x80) {
-      bytes.push(code);
-    } else if (code < 0x800) {
-      bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
-    } else if (code >= 0xd800 && code <= 0xdbff && i + 1 < str.length) {
-      const low = str.charCodeAt(i + 1);
-      if (low >= 0xdc00 && low <= 0xdfff) {
-        code = 0x10000 + (((code & 0x3ff) << 10) | (low & 0x3ff));
-        i++;
-        bytes.push(
-          0xf0 | (code >> 18), 0x80 | ((code >> 12) & 0x3f),
-          0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f)
-        );
-      } else {
-        bytes.push(0xef, 0xbf, 0xbd);
-      }
-    } else {
-      bytes.push(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
-    }
-  }
-  return new Uint8Array(bytes);
 }
 
 /* ── Compression ── */
@@ -161,7 +128,7 @@ function sha256(message, encoding) {
   }
 
   // 1. UTF-8 encode
-  const msgBytes = _utf8Encode(message === undefined || message === null ? '' : String(message));
+  const msgBytes = utf8Encode(message === undefined || message === null ? '' : String(message));
   const msgLenBits = msgBytes.length * 8;
 
   // 2. Pad

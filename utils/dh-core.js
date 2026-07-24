@@ -99,7 +99,7 @@ function findPrimitiveRoots(p) {
     }
   }
   _rootCache[p] = roots;
-  return roots;
+  return roots.slice();
 }
 
 /**

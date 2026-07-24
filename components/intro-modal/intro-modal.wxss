@@ -60,7 +60,7 @@
   display: block;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 36rpx;
-  font-weight: 700;
+  font-weight: 400;
   color: #141413;
   margin-bottom: 8rpx;
   padding-right: 48rpx;

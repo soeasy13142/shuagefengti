@@ -44,7 +44,7 @@
   font-weight: 400;
   color: #141413;
   line-height: 1.05;
-  letter-spacing: -2rpx;
+  letter-spacing: -3rpx;
   margin-bottom: 28rpx;
   text-align: center;
 }

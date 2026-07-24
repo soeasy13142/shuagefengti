@@ -30,7 +30,11 @@ Page({
     let displayList = [...wrongQuestions];
 
     if (sortBy === 'time') {
-      displayList.sort((a, b) => new Date(b.lastWrongTime) - new Date(a.lastWrongTime));
+      displayList.sort((a, b) => {
+        const timeA = a.lastWrongTime ? new Date(a.lastWrongTime).getTime() : 0;
+        const timeB = b.lastWrongTime ? new Date(b.lastWrongTime).getTime() : 0;
+        return timeB - timeA;
+      });
     } else {
       displayList.sort((a, b) => a.paperId.localeCompare(b.paperId));
     }

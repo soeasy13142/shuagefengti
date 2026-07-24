@@ -46,7 +46,6 @@ Page({
     dfaTotalSteps: 0,
 
     testInput: '',
-    simResult: null
     simResult: null,
 
     // 引导弹窗

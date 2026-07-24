@@ -8,8 +8,9 @@
  */
 
 const { sha256, _K, _H_INIT } = require('./sha256');
+const { utf8Encode } = require('./encoding');
 
-/* ── UTF-8 + padding helpers (mirror utils/sha256.js to expose block bytes) ── */
+/* ── Padding helper ──
 
 function _utf8Encode(str) {
   const bytes = [];

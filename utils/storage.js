@@ -11,6 +11,7 @@ function _get(key) {
     return data ? JSON.parse(data) : [];
   } catch (e) {
     console.warn('[storage] JSON.parse failed for key:', key, e);
+    wx.showToast({ title: '数据读取异常', icon: 'none' });
     return [];
   }
 }
@@ -97,7 +98,10 @@ function getRecords() {
 
 function saveRecord(record) {
   const records = getRecords();
-  const newRecords = [...records, record];
+  const existingIndex = records.findIndex(r => r.id === record.id);
+  const newRecords = existingIndex >= 0
+    ? records.map((r, i) => i === existingIndex ? record : r)
+    : [...records, record];
   _set(KEYS.RECORDS, newRecords);
 }
 
@@ -168,7 +172,21 @@ function getTempImportData() {
 function clearTempImportData() {
   try {
     wx.removeStorageSync(KEYS.TEMP_IMPORT);
-  } catch (e) {}
+  } catch (e) {
+    console.warn('[storage] error clearing temp import:', e);
+  }
+}
+
+function _removeAsync(key) {
+  return new Promise((resolve, reject) => {
+    wx.removeStorage({
+      key,
+      success: resolve,
+      fail(err) {
+        reject(err);
+      }
+    });
+  });
 }
 
 // ---------- Async public methods ----------
@@ -209,7 +227,10 @@ async function getRecordsAsync() {
 
 async function saveRecordAsync(record) {
   const records = await getRecordsAsync();
-  const newRecords = [...records, record];
+  const existingIndex = records.findIndex(r => r.id === record.id);
+  const newRecords = existingIndex >= 0
+    ? records.map((r, i) => i === existingIndex ? record : r)
+    : [...records, record];
   await _setAsync(KEYS.RECORDS, newRecords);
 }
 
@@ -286,8 +307,10 @@ async function getTempImportDataAsync() {
 
 async function clearTempImportDataAsync() {
   try {
-    await _setAsync(KEYS.TEMP_IMPORT, null);
-  } catch {}
+    await _removeAsync(KEYS.TEMP_IMPORT);
+  } catch (e) {
+    console.warn('[storage] error clearing temp import:', e);
+  }
 }
 
 async function deletePaperAsync(id) {

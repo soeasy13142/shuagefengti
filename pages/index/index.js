@@ -94,13 +94,9 @@ Page({
   },
 
   loadCardMode() {
-    try {
-      const mode = wx.getStorageSync('cardDisplayMode');
-      if (mode === 'simple' || mode === 'detail') {
-        this.setData({ cardMode: mode });
-      }
-    } catch (e) {
-      // 默认 'simple'
+    const mode = wx.getStorageSync('cardDisplayMode');
+    if (mode === 'simple' || mode === 'detail') {
+      this.setData({ cardMode: mode });
     }
   },
 
@@ -135,19 +131,23 @@ Page({
 
   // 导航加载动画兜底：300ms 延迟后显示 loading，避免快速加载闪一下
   _navigateWithLoading: function(url, showLoading) {
-    if (!showLoading) {
-      wx.navigateTo({ url: url });
-      return;
+    if (this._navigating) return;
+    this._navigating = true;
+    var that = this;
+    var loadingTimer = null;
+    if (showLoading) {
+      loadingTimer = setTimeout(function() {
+        wx.showLoading({ title: '加载中...', mask: true });
+        that.setData({ showLoading: true });
+      }, 300);
     }
-    const loadingTimer = setTimeout(function() {
-      wx.showLoading({ title: '加载中...', mask: true });
-    }, 300);
 
     wx.navigateTo({
       url: url,
       complete: function() {
-        clearTimeout(loadingTimer);
+        if (loadingTimer) clearTimeout(loadingTimer);
         wx.hideLoading();
+        that._navigating = false;
       }
     });
   },
