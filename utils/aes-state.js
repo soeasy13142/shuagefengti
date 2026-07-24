@@ -11,9 +11,6 @@ const { getRoundKey } = require('./aes-key-expansion');
 const AES_ROWS = 4;
 const AES_COLS = 4;
 
-const AES_ROWS = 4;
-const AES_COLS = 4;
-
 /**
  * @typedef {number[][]} State - 4x4 byte matrix, state[row][col]
  */
